@@ -9,6 +9,9 @@ export async function register(formData: FormData) {
   const data = await fetch(
     "https://api.eventownik.solvro.pl/api/v1/auth/register",
     {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "POST",
       body: JSON.stringify({
         email,
@@ -53,6 +56,9 @@ export async function login(formData: FormData) {
   const data = await fetch(
     "https://api.eventownik.solvro.pl/api/v1/auth/login",
     {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "POST",
       body: JSON.stringify({
         email,
