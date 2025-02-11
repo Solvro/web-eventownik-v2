@@ -7,7 +7,7 @@ export async function register(formData: FormData) {
   const lastName = formData.get("lastName") as string;
   console.warn(email, password);
   const data = await fetch(
-    "https://api.eventownik.solvro.pl/api/v1/auth/login",
+    "https://api.eventownik.solvro.pl/api/v1/auth/register",
     {
       method: "POST",
       body: JSON.stringify({
