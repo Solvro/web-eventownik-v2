@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 
+import { Toaster } from "@/components/ui/toaster";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased ${spaceGrotesk.className}`}>
         {children}
+        <Toaster />
       </body>
     </html>
   );
