@@ -55,17 +55,17 @@ export function MacbookScroll({
   const scaleX = useTransform(
     scrollYProgress,
     [0, 0.3],
-    [1.2, isMobile ? 1.5 : 1.2],
+    [1.2, isMobile ? 1.4 : 1.2],
   );
   const scaleY = useTransform(
     scrollYProgress,
     [0, 0.3],
-    [0.6, isMobile ? 1.5 : 1.2],
+    [0.6, isMobile ? 1.4 : 1.2],
   );
   const translate = useTransform(
     scrollYProgress,
     [0, isMobile ? 0.8 : 0.9],
-    [0, isMobile ? 1850 : 950],
+    [0, isMobile ? 2050 : 950],
   );
   const rotate = useTransform(scrollYProgress, [0.1, 0.12, 0.3], [-28, -28, 0]);
 
