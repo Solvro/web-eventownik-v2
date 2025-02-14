@@ -2,7 +2,7 @@
 
 import type { z } from "zod";
 
-import type { loginFormSchema, registerFormSchema } from "@/types";
+import type { loginFormSchema, registerFormSchema } from "@/types/schemas";
 
 const API_URL = process.env.EVENTOWNIK_API ?? "";
 

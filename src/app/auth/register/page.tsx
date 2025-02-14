@@ -1,26 +1,40 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { registerFormSchema } from "@/types";
+import { registerFormSchema } from "@/types/schemas";
 
 import { register } from "../actions";
 
 export default function RegisterPage() {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+    },
   });
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    toast({
-      description: "Tworzenie konta...",
-    });
+    setLoading(true);
     try {
       const result = await register(values);
       if ("errors" in result) {
@@ -38,6 +52,7 @@ export default function RegisterPage() {
         description: "Sprawdź swoje połączenie z internetem.",
       });
     }
+    setLoading(false);
   }
   return (
     <>
@@ -55,9 +70,18 @@ export default function RegisterPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">E-mail</FormLabel>
                 <FormControl>
-                  <Input placeholder="E-mail" {...field} />
+                  <Input
+                    placeholder="E-mail"
+                    disabled={loading}
+                    type="email"
+                    {...field}
+                  />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.email?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -66,9 +90,18 @@ export default function RegisterPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">Hasło</FormLabel>
                 <FormControl>
-                  <Input placeholder="Hasło" {...field} />
+                  <Input
+                    placeholder="Hasło"
+                    disabled={loading}
+                    type="password"
+                    {...field}
+                  />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.password?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -77,25 +110,39 @@ export default function RegisterPage() {
             name="firstName"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">Imię</FormLabel>
                 <FormControl>
-                  <Input placeholder="Imię" {...field} />
+                  <Input placeholder="Imię" disabled={loading} {...field} />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.firstName?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="firstName"
+            name="lastName"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">Nazwisko</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nazwisko" {...field} />
+                  <Input placeholder="Nazwisko" disabled={loading} {...field} />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.lastName?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            Kontynuuj
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" /> Tworzenie konta...
+              </>
+            ) : (
+              "Kontynuuj"
+            )}
           </Button>
           <Button className="w-full text-neutral-600" variant="link" asChild>
             <Link href="/auth/login">Posiadasz już konto? Zaloguj się</Link>

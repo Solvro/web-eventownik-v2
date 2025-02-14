@@ -1,19 +1,29 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { loginFormSchema } from "@/types";
+import { loginFormSchema } from "@/types/schemas";
 
 import { login } from "../actions";
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -24,9 +34,7 @@ export default function LoginPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    toast({
-      description: "Logowanie...",
-    });
+    setLoading(true);
     try {
       const result = await login(values);
       if ("errors" in result) {
@@ -44,6 +52,7 @@ export default function LoginPage() {
         description: "Sprawdź swoje połączenie z internetem.",
       });
     }
+    setLoading(false);
   }
   return (
     <>
@@ -61,9 +70,18 @@ export default function LoginPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">E-mail</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="E-mail" {...field} />
+                  <Input
+                    type="email"
+                    disabled={loading}
+                    placeholder="E-mail"
+                    {...field}
+                  />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.email?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -72,14 +90,29 @@ export default function LoginPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="sr-only">Hasło</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Hasło" {...field} />
+                  <Input
+                    type="password"
+                    disabled={loading}
+                    placeholder="Hasło"
+                    {...field}
+                  />
                 </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.password?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            Kontynuuj
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" /> Logowanie...
+              </>
+            ) : (
+              "Kontynuuj"
+            )}
           </Button>
           <Button className="w-full text-neutral-600" variant="link" asChild>
             <Link href="/auth/register">
