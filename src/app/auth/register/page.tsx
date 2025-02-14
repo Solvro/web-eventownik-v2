@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -144,9 +144,12 @@ export default function RegisterPage() {
               "Kontynuuj"
             )}
           </Button>
-          <Button className="w-full text-neutral-600" variant="link" asChild>
-            <Link href="/auth/login">Posiadasz już konto? Zaloguj się</Link>
-          </Button>
+          <Link
+            href="/auth/login"
+            className={`w-full text-neutral-600 ${buttonVariants({ variant: "link" })}`}
+          >
+            Posiadasz już konto? Zaloguj się
+          </Link>
         </form>
       </Form>
     </>
