@@ -56,6 +56,26 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        sans: ["var(--font-sans)"],
+      },
+      gradientColorStops: {
+        instagram: {
+          0: "#FCAE4C",
+          50: "#EB3F57",
+          75: "#B033AE",
+          100: "#4C65D4",
+        },
+        facebook: {
+          0: "#17A9FD",
+          100: "#0164E1",
+        },
+        messenger: {
+          0: "#FF6969",
+          50: "#B53AE2",
+          100: "#297FFF",
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
