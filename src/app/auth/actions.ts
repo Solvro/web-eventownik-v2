@@ -2,6 +2,7 @@
 
 import type { z } from "zod";
 
+import type { AuthErrorResponse, AuthSuccessResponse } from "@/types/auth";
 import type { loginFormSchema, registerFormSchema } from "@/types/schemas";
 
 const API_URL = process.env.EVENTOWNIK_API ?? "";
@@ -23,37 +24,9 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
       lastName: values.lastName,
     }),
   }).then(async (response) => {
-    if (response.status === 200) {
-      return response.json() as Promise<{
-        admin: {
-          id: number;
-          firstName: string;
-          lastName: string;
-          email: string;
-          active: boolean;
-          createdAt: string;
-          updatedAt: string;
-        };
-        token: string;
-      }>;
-    } else if (response.status === 400) {
-      return response.json() as Promise<{
-        errors: [
-          {
-            message: string;
-          },
-        ];
-      }>;
-    } else {
-      return response.json() as Promise<{
-        errors: [
-          {
-            message: string;
-            field: string;
-          },
-        ];
-      }>;
-    }
+    return response.status === 200
+      ? (response.json() as Promise<AuthSuccessResponse>)
+      : (response.json() as Promise<AuthErrorResponse>);
   });
   return data;
 }
@@ -71,25 +44,8 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
     }),
   }).then(async (response) => {
     return response.status === 200
-      ? (response.json() as Promise<{
-          admin: {
-            id: number;
-            firstName: string;
-            lastName: string;
-            email: string;
-            active: boolean;
-            createdAt: string;
-            updatedAt: string;
-          };
-          token: string;
-        }>)
-      : (response.json() as Promise<{
-          errors: [
-            {
-              message: string;
-            },
-          ];
-        }>);
+      ? (response.json() as Promise<AuthSuccessResponse>)
+      : (response.json() as Promise<AuthErrorResponse>);
   });
   return data;
 }

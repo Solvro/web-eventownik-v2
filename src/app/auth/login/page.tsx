@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -23,7 +22,6 @@ import { loginFormSchema } from "@/types/schemas";
 import { login } from "../actions";
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -34,7 +32,6 @@ export default function LoginPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    setLoading(true);
     try {
       const result = await login(values);
       if ("errors" in result) {
@@ -52,7 +49,6 @@ export default function LoginPage() {
         description: "Sprawdź swoje połączenie z internetem.",
       });
     }
-    setLoading(false);
   }
   return (
     <>
@@ -74,7 +70,7 @@ export default function LoginPage() {
                 <FormControl>
                   <Input
                     type="email"
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting}
                     placeholder="E-mail"
                     {...field}
                   />
@@ -94,7 +90,7 @@ export default function LoginPage() {
                 <FormControl>
                   <Input
                     type="password"
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting}
                     placeholder="Hasło"
                     {...field}
                   />
@@ -105,8 +101,12 @@ export default function LoginPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? (
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="w-full"
+          >
+            {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="animate-spin" /> Logowanie...
               </>

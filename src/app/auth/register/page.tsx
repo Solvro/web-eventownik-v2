@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -23,7 +22,6 @@ import { registerFormSchema } from "@/types/schemas";
 import { register } from "../actions";
 
 export default function RegisterPage() {
-  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -34,7 +32,6 @@ export default function RegisterPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    setLoading(true);
     try {
       const result = await register(values);
       if ("errors" in result) {
@@ -52,7 +49,6 @@ export default function RegisterPage() {
         description: "Sprawdź swoje połączenie z internetem.",
       });
     }
-    setLoading(false);
   }
   return (
     <>
@@ -74,7 +70,7 @@ export default function RegisterPage() {
                 <FormControl>
                   <Input
                     placeholder="E-mail"
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting}
                     type="email"
                     {...field}
                   />
@@ -94,7 +90,7 @@ export default function RegisterPage() {
                 <FormControl>
                   <Input
                     placeholder="Hasło"
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting}
                     type="password"
                     {...field}
                   />
@@ -112,7 +108,11 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel className="sr-only">Imię</FormLabel>
                 <FormControl>
-                  <Input placeholder="Imię" disabled={loading} {...field} />
+                  <Input
+                    placeholder="Imię"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.firstName?.message}
@@ -127,7 +127,11 @@ export default function RegisterPage() {
               <FormItem>
                 <FormLabel className="sr-only">Nazwisko</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nazwisko" disabled={loading} {...field} />
+                  <Input
+                    placeholder="Nazwisko"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.lastName?.message}
@@ -135,8 +139,12 @@ export default function RegisterPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? (
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="w-full"
+          >
+            {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="animate-spin" /> Tworzenie konta...
               </>
