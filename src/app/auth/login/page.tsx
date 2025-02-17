@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -23,6 +24,7 @@ import { login } from "../actions";
 
 export default function LoginPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -34,15 +36,21 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     try {
       const result = await login(values);
-      if ("errors" in result) {
+      if (result.success) {
+        toast({
+          title: "Logowanie zakończone sukcesem!",
+          duration: 2000,
+        });
+        //redirect jest zjebany w authjs v5 dlatego ręcznie to robie na kliencie
+        router.replace("/dashboard");
+      } else {
         toast({
           variant: "destructive",
           title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj zalogować się ponownie.",
+          description: result.error,
         });
       }
     } catch {
-      // this error only happens when the client has no internet connection (afaik)
       toast({
         variant: "destructive",
         title: "Brak połączenia z serwerem.",

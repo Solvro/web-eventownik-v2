@@ -1,6 +1,7 @@
 import { BookText, Laptop, Server, Table } from "lucide-react";
 import Link from "next/link";
 
+import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +24,7 @@ export default function Home() {
             <Button asChild>
               <Link href="/dashboard">Panel&#47;Dashboard</Link>
             </Button>
+            <SignOutButton />
           </div>
         </nav>
       </header>

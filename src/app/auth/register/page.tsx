@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -32,22 +33,15 @@ export default function RegisterPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    try {
-      const result = await register(values);
-      if ("errors" in result) {
-        toast({
-          variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj zarejestrować się ponownie.",
-        });
-      }
-    } catch {
-      // this error only happens when the client has no internet connection (afaik)
+    const result = await register(values);
+    if ("errors" in result) {
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: "O nie! Coś poszło nie tak.",
+        description: "Spróbuj zarejestrować się ponownie.",
       });
+    } else {
+      redirect("/auth/login");
     }
   }
   return (
