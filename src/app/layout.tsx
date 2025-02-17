@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "next-themes";
 import { Space_Grotesk } from "next/font/google";
 
-import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Eventownik",
-  description: "Eventowo i kolorowo v2",
-};
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-sans",
 });
+
+export const metadata: Metadata = {
+  title: "Eventownik",
+  description: "Eventownik v2",
+};
 
 export default function RootLayout({
   children,
@@ -21,10 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`antialiased ${spaceGrotesk.className}`}>
-        {children}
-        <Toaster />
+    <html lang="pl">
+      <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Toaster />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
