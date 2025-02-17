@@ -1,4 +1,4 @@
-import { Package, Table } from "lucide-react";
+import { BookText, Laptop, Server, Table } from "lucide-react";
 import Link from "next/link";
 
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -26,7 +26,7 @@ export default function Home() {
           </div>
         </nav>
       </header>
-      <main className="flex min-h-[calc(100vh-68px)] flex-col items-center justify-center">
+      <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center">
         <h1 className="text-4xl font-bold">Eventownik v2</h1>
         <p className="text-lg">Work in progress</p>
         <div className="mt-4 flex gap-4">
@@ -35,8 +35,8 @@ export default function Home() {
               href="https://github.com/Solvro/web-eventownik-v2"
               target="_blank"
             >
-              <Package className="mr-1 h-5 w-5" />
-              web-eventownik-v2
+              <Laptop className="mr-1 h-5 w-5" />
+              Frontend
             </Link>
           </Button>
           <Button asChild>
@@ -44,8 +44,8 @@ export default function Home() {
               href="https://github.com/Solvro/backend-eventownik"
               target="_blank"
             >
-              <Package className="mr-1 h-5 w-5" />
-              backend-eventownik
+              <Server className="mr-1 h-5 w-5" />
+              Backend
             </Link>
           </Button>
           <Button asChild>
@@ -54,7 +54,16 @@ export default function Home() {
               target="_blank"
             >
               <Table className="mr-1 h-5 w-5" />
-              lista zadań
+              Lista zadań
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link
+              href="https://api.eventownik.solvro.pl/docs#tag/v1"
+              target="_blank"
+            >
+              <BookText className="mr-1 h-5 w-5" />
+              Dokumentacja API
             </Link>
           </Button>
         </div>
