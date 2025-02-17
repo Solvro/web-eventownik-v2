@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -23,6 +23,7 @@ import { registerFormSchema } from "@/types/schemas";
 import { register } from "../actions";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -33,15 +34,23 @@ export default function RegisterPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    const result = await register(values);
-    if ("errors" in result) {
+    try {
+      const result = await register(values);
+      if ("errors" in result) {
+        toast({
+          variant: "destructive",
+          title: "O nie! Coś poszło nie tak.",
+          description: "Spróbuj zarejestrować się ponownie.",
+        });
+      } else {
+        router.replace("/auth/login");
+      }
+    } catch {
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Spróbuj zarejestrować się ponownie.",
+        title: "Brak połączenia z serwerem.",
+        description: "Sprawdź swoje połączenie z internetem.",
       });
-    } else {
-      redirect("/auth/login");
     }
   }
   return (
