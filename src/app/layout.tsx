@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Space_Grotesk } from "next/font/google";
 
+import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
@@ -24,12 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
+    <html lang="pl" suppressHydrationWarning={true}>
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Providers>
           <Toaster />
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
