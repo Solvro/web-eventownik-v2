@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,9 +27,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-const createEventFormSchema = z.object({
+import { FormContainer } from "../form-container";
+import { eventAtom } from "../state";
+
+const EventGeneralinfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
-  description: z.string().nonempty("Opis nie może być pusty."),
+  description: z.string().optional(),
   startDate: z.date().min(new Date(), {
     message: "Data musi być w przyszłości.",
   }),
@@ -41,9 +46,9 @@ const createEventFormSchema = z.object({
   organizer: z.string().optional(),
 });
 
-export default function CreateEvent() {
-  const form = useForm<z.infer<typeof createEventFormSchema>>({
-    resolver: zodResolver(createEventFormSchema),
+export default function EventGeneralInfoForm() {
+  const form = useForm<z.infer<typeof EventGeneralinfoSchema>>({
+    resolver: zodResolver(EventGeneralinfoSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -51,27 +56,33 @@ export default function CreateEvent() {
       endTime: "",
       lat: 0,
       long: 0,
+      organizer: "",
     },
   });
-
+  const setEvent = useSetAtom(eventAtom);
+  const router = useRouter();
+  function onSubmit(values: z.infer<typeof EventGeneralinfoSchema>) {
+    setEvent(values);
+    router.push("/dashboard/event/create/personalize");
+  }
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div className="flex flex-col items-center gap-4">
-        <div className="flex rounded-full border border-neutral-300 p-3">
-          <CalendarIcon />
-        </div>
-        <div className="space-y-1 text-center">
-          <p className="text-neutral-500">Krok 1</p>
-          <p className="text-lg font-medium">Podaj ogólne dane wydarzenia.</p>
-        </div>
-      </div>
+    <FormContainer
+      step="1/4"
+      title="Krok 1"
+      description="Podaj podstawowe informacje o wydarzeniu"
+      icon={<CalendarIcon />}
+    >
       <Form {...form}>
-        <form className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex w-full flex-col items-end gap-4"
+        >
+          <div className="grid w-full grid-cols-2 gap-4">
             <div className="w-full space-y-4">
               <FormField
                 name="name"
                 control={form.control}
+                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nazwa</FormLabel>
@@ -83,6 +94,9 @@ export default function CreateEvent() {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.name?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -92,6 +106,7 @@ export default function CreateEvent() {
                   <FormField
                     control={form.control}
                     name="startDate"
+                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <Popover>
@@ -119,20 +134,34 @@ export default function CreateEvent() {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date <= new Date()}
+                              disabled={(date) =>
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                form.getValues("endDate") === undefined
+                                  ? date <= new Date()
+                                  : new Date() >= date ||
+                                    date > form.getValues("endDate")
+                              }
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
+                        <FormMessage className="text-sm text-red-500">
+                          {form.formState.errors.startDate?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="startTime"
+                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <Input type="time" {...field} />
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-sm text-red-500">
+                          {form.formState.errors.startTime?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -142,7 +171,8 @@ export default function CreateEvent() {
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
-                    name="startDate"
+                    name="endDate"
+                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <Popover>
@@ -170,20 +200,34 @@ export default function CreateEvent() {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date <= new Date()}
+                              disabled={(date) =>
+                                date <
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                (form.getValues("startDate") === undefined
+                                  ? new Date()
+                                  : form.getValues("startDate"))
+                              }
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
+                        <FormMessage className="text-sm text-red-500">
+                          {form.formState.errors.endDate?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="endTime"
+                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <Input type="time" {...field} />
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-sm text-red-500">
+                          {form.formState.errors.endTime?.message}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -194,6 +238,7 @@ export default function CreateEvent() {
               <FormField
                 name="description"
                 control={form.control}
+                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex h-full flex-col gap-2">
                     <FormLabel>Opis</FormLabel>
@@ -205,23 +250,60 @@ export default function CreateEvent() {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.description?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid w-full grid-cols-2 gap-4">
             <div className="space-y-2">
               <FormLabel>Miejsce</FormLabel>
-              <Input type="text" placeholder="Wybierz miejsce wydarzenia" />
+              <FormControl>
+                <Input type="text" placeholder="Wybierz miejsce wydarzenia" />
+              </FormControl>
             </div>
-            <div className="space-y-2">
-              <FormLabel>Organizator (opcjonalnie)</FormLabel>
-              <Input type="text" placeholder="Podaj organizatora wydarzenia" />
-            </div>
+            <FormField
+              name="organizer"
+              disabled={form.formState.isSubmitting}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Organizator (opcjonalnie)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Podaj organizatora wydarzenia"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500">
+                    {form.formState.errors.organizer?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
           </div>
+          <Button
+            className="w-min"
+            variant="ghost"
+            disabled={form.formState.isSubmitting}
+            type="submit"
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                Zapisywanie danych... <Loader2 className="animate-spin" />
+              </>
+            ) : (
+              <>
+                Dalej <ArrowRight />
+              </>
+            )}
+          </Button>
         </form>
       </Form>
-    </div>
+    </FormContainer>
   );
 }

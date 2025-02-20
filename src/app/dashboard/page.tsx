@@ -7,7 +7,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <Link
-        href="/dashboard/event/create"
+        href="/dashboard/event/create/general-info"
         className={buttonVariants({ variant: "default" })}
       >
         Click me <Smile />

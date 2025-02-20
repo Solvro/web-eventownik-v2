@@ -1,3 +1,4 @@
+import { Provider } from "jotai";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Space_Grotesk } from "next/font/google";
@@ -24,13 +25,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
-      <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Toaster />
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+    <Provider>
+      <html lang="pl">
+        <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Toaster />
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
+    </Provider>
   );
 }
