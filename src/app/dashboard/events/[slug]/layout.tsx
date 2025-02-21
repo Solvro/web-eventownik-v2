@@ -1,15 +1,16 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
-export default function DashboardEventLayout({
+export default async function DashboardEventLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const awaited = await params;
   return (
     <div className="flex grow gap-14">
-      <DashboardSidebar slug={params.slug} />
+      <DashboardSidebar slug={awaited.slug} />
       <div className="grow">{children}</div>
     </div>
   );
