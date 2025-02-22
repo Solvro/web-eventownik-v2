@@ -17,7 +17,7 @@ interface SidebarLink {
   route: string;
 }
 
-export function DashboardSidebar({ slug }: { slug: string }) {
+export function DashboardSidebar({ id }: { id: string }) {
   const pathname = usePathname();
 
   const sections: SidebarSection[] = [
@@ -27,7 +27,7 @@ export function DashboardSidebar({ slug }: { slug: string }) {
         {
           title: "Wydarzenie",
           icon: <Play />,
-          route: slug,
+          route: id,
         },
         {
           title: "Formularze",
@@ -47,7 +47,7 @@ export function DashboardSidebar({ slug }: { slug: string }) {
         {
           title: "Lista uczestników",
           icon: <Users />,
-          route: "attendees",
+          route: "participants",
         },
       ],
     },
@@ -82,7 +82,7 @@ export function DashboardSidebar({ slug }: { slug: string }) {
                   asChild
                 >
                   <Link
-                    href={`/dashboard/events/${slug}/${link.route === slug ? "" : link.route}`}
+                    href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
                   >
                     {link.icon}
                     {link.title}
