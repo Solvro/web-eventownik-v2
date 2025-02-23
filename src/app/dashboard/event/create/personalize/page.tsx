@@ -1,13 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAtom } from "jotai";
 import { SettingsIcon, UploadIcon } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useId, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,25 +21,34 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { FormContainer } from "../form-container";
+import { eventAtom } from "../state";
 
 const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
   color: z.string().optional(),
+  participantsNumber: z.number().min(1),
   links: z.array(z.string()),
   slug: z.string(),
 });
 
 export default function EventPersonalizationForm() {
+  const router = useRouter();
+  const [event, setEvent] = useAtom(eventAtom);
+  const [links, setLinks] = useState<string[]>([]);
+  if (event.name === "") {
+    router.push("/dashboard/event/create/general-info");
+  }
   const fileInputId = useId();
   const imageInputId = useId();
   const [eventImage, setEventImage] = useState<string | null>(null);
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
     defaultValues: {
-      image: "",
-      color: "#3672fd",
-      links: [],
-      slug: "",
+      image: event.image,
+      color: event.color,
+      participantsNumber: event.participantsNumber,
+      links: event.links,
+      slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
     },
   });
   function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
@@ -97,8 +108,8 @@ export default function EventPersonalizationForm() {
                     accept="image/png, image/gif, image/jpeg"
                     disabled={form.formState.isSubmitting}
                     {...field}
-                    onChangeCapture={(event) => {
-                      const input = event.target as HTMLInputElement;
+                    onChangeCapture={(event_) => {
+                      const input = event_.target as HTMLInputElement;
                       if (input.files?.[0] != null) {
                         setEventImage(URL.createObjectURL(input.files[0]));
                       }
@@ -130,6 +141,59 @@ export default function EventPersonalizationForm() {
                         type="color"
                         className="hidden"
                         id={imageInputId}
+                        disabled={form.formState.isSubmitting}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="participantsNumber"
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>Liczba uczestników</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        disabled={form.formState.isSubmitting}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="links"
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>Linki</FormLabel>
+                    <Input type="url" />
+                    <FormControl>
+                      <Input
+                        type="hidden"
+                        disabled={form.formState.isSubmitting}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="slug"
+                control={form.control}
+                disabled={form.formState.isSubmitting}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
                         disabled={form.formState.isSubmitting}
                         {...field}
                       />
