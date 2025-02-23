@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -47,22 +47,39 @@ const EventGeneralinfoSchema = z.object({
 });
 
 export default function EventGeneralInfoForm() {
+  const [event, setEvent] = useAtom(eventAtom);
   const form = useForm<z.infer<typeof EventGeneralinfoSchema>>({
     resolver: zodResolver(EventGeneralinfoSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      startTime: "",
-      endTime: "",
+      name: event.name,
+      description: event.description,
+      startDate: event.startDate,
+      startTime: `${event.startDate.getHours().toString().padStart(2, "0")}:${event.startDate.getMinutes().toString().padStart(2, "0")}`,
+      endDate: event.endDate,
+      endTime: `${event.endDate.getHours().toString().padStart(2, "0")}:${event.endDate.getMinutes().toString().padStart(2, "0")}`,
       lat: 0,
       long: 0,
-      organizer: "",
+      organizer: event.organizer,
     },
   });
-  const setEvent = useSetAtom(eventAtom);
   const router = useRouter();
   function onSubmit(values: z.infer<typeof EventGeneralinfoSchema>) {
-    setEvent(values);
+    values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
+    values.startDate.setMinutes(
+      Number.parseInt(values.startTime.split(":")[1]),
+    );
+    values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
+    values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+    setEvent({
+      ...event,
+      name: values.name,
+      description: values.description,
+      startDate: values.startDate,
+      endDate: values.endDate,
+      lat: values.lat,
+      long: values.long,
+      organizer: values.organizer,
+    });
     router.push("/dashboard/event/create/personalize");
   }
   return (
