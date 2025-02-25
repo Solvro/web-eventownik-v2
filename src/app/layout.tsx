@@ -1,8 +1,7 @@
-import { Provider } from "jotai";
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Space_Grotesk } from "next/font/google";
 
+import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
@@ -25,15 +24,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider>
-      <html lang="pl">
-        <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Toaster />
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </Provider>
+    <html lang="pl">
+      <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
+        <Providers>
+          <Toaster />
+          {children}
+        </Providers>
+      </body>
+    </html>
   );
 }
