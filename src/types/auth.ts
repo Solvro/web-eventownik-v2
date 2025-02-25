@@ -1,3 +1,5 @@
+import type { JWTPayload } from "jose";
+
 export interface AuthSuccessResponse {
   admin: Admin;
   token: string;
@@ -20,4 +22,8 @@ export interface Admin {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SessionPayload extends JWTPayload {
+  bearerToken: string;
 }

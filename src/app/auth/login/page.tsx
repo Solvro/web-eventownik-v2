@@ -34,27 +34,18 @@ export default function LoginPage() {
     },
   });
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    try {
-      const result = await login(values);
-      if (result.success) {
-        toast({
-          title: "Logowanie zakończone sukcesem!",
-          duration: 2000,
-        });
-        //redirect jest zjebany w authjs v5 dlatego ręcznie to robie na kliencie
-        router.replace("/dashboard");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: result.error,
-        });
-      }
-    } catch {
+    const result = await login(values);
+    if (result.success) {
+      toast({
+        title: "Logowanie zakończone sukcesem!",
+        duration: 2000,
+      });
+      router.replace("/dashboard");
+    } else {
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: "O nie! Coś poszło nie tak.",
+        description: result.error,
       });
     }
   }
