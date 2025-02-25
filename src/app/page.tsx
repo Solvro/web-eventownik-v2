@@ -12,7 +12,6 @@ export default function Home() {
       <header>
         <nav className="flex justify-between p-4">
           <AppLogo />
-          <Link href="/events">Wydarzenia</Link>
           <div className="flex gap-4">
             <ThemeSwitch />
             <Button asChild>
