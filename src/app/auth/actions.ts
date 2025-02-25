@@ -1,10 +1,9 @@
 "use server";
 
-import { AuthError } from "next-auth";
 import type { z } from "zod";
 
-import { signIn } from "@/auth";
 import { API_URL } from "@/lib/api";
+import { createSession } from "@/lib/session";
 import type { AuthErrorResponse, AuthSuccessResponse } from "@/types/auth";
 import type { loginFormSchema, registerFormSchema } from "@/types/schemas";
 
@@ -32,20 +31,37 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
 
 export async function login(values: z.infer<typeof loginFormSchema>) {
   try {
-    //czemu redirect wyłączony -> https://github.com/nextauthjs/next-auth/issues/10928
-    await signIn("credentials", { ...values, redirect: false });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
-      switch (error.type) {
-        case "CredentialsSignin": {
-          return { error: "Nieprawidłowe dane logowania", success: false };
+    const user = await fetch(`${API_URL}/auth/login`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password,
+        rememberMe: true,
+      }),
+    }).then(async (response) => {
+      switch (response.status) {
+        case 200: {
+          return response.json() as Promise<AuthSuccessResponse>;
+        }
+        case 400: {
+          return { error: "Nieprawidłowe dane logowania" };
         }
         default: {
-          return { error: "Server error", success: false };
+          return { error: "Coś poszło nie tak" };
         }
       }
+    });
+    if ("error" in user) {
+      return { success: false, error: user.error };
     }
+    await createSession({ bearerToken: user.token });
+    //return user;
+  } catch (error) {
+    console.error("Error during logging in", error);
+    return { success: false, error: "Internal server error" };
   }
   return { success: true };
 }
