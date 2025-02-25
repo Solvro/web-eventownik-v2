@@ -15,6 +15,7 @@ interface Event {
   participantsNumber: number;
   links: string[];
   slug: string;
+  coorganizers: string[];
 }
 
 export const eventAtom = atom<Event>({
@@ -30,4 +31,5 @@ export const eventAtom = atom<Event>({
   participantsNumber: 1,
   links: [],
   slug: "",
+  coorganizers: [],
 });
