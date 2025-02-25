@@ -6,7 +6,10 @@ import "server-only";
 
 import type { SessionPayload } from "@/types/auth";
 
-const SECRET_KEY = process.env.SESSION_SECRET;
+const SECRET_KEY = process.env.SESSION_SECRET ?? "";
+if (SECRET_KEY === "") {
+  throw new Error("SECRET_KEY env variable is not set!!!");
+}
 const encodedKey = new TextEncoder().encode(SECRET_KEY);
 
 export async function encrypt(payload: SessionPayload) {
