@@ -2,6 +2,17 @@
 
 import { atom } from "jotai";
 
+export const AttributeTypes = [
+  "text",
+  "number",
+  "datetime-local",
+  "time",
+  "color",
+  "password",
+  "radio",
+  "checkbox",
+] as const;
+
 interface Event {
   name: string;
   description: string | undefined;
@@ -16,6 +27,10 @@ interface Event {
   links: string[];
   slug: string;
   coorganizers: string[];
+  attributes: {
+    name: string;
+    type: (typeof AttributeTypes)[number];
+  }[];
 }
 
 export const eventAtom = atom<Event>({
@@ -32,4 +47,5 @@ export const eventAtom = atom<Event>({
   links: [],
   slug: "",
   coorganizers: [],
+  attributes: [],
 });
