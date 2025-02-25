@@ -46,7 +46,7 @@ const EventGeneralinfoSchema = z.object({
   organizer: z.string().optional(),
 });
 
-export default function EventGeneralInfoModal() {
+export default function EventGeneralInfoForm() {
   const [event, setEvent] = useAtom(eventAtom);
   const form = useForm<z.infer<typeof EventGeneralinfoSchema>>({
     resolver: zodResolver(EventGeneralinfoSchema),

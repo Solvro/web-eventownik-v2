@@ -39,7 +39,7 @@ const EventPersonalizationFormSchema = z.object({
   slug: z.string(),
 });
 
-export default function EventGeneralInfoModal() {
+export default function EventPersonalizationForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   if (event.name === "") {
@@ -61,7 +61,7 @@ export default function EventGeneralInfoModal() {
   function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
     setEvent({
       ...event,
-      image: data.image ?? "",
+      image: eventImage ?? "",
       color: data.color ?? "#3672fd",
       participantsNumber: data.participantsNumber,
       links: data.links,
