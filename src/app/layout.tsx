@@ -1,4 +1,3 @@
-import { Provider } from "jotai";
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 
