@@ -11,6 +11,18 @@ declare module "next-auth" {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  callbacks: {
+    jwt({ user, token }) {
+      console.log("USER IN JWT CALLBACK:", JSON.stringify(user));
+      console.log("TOKEN IN JWT CALLBACK:", JSON.stringify(token));
+      return token;
+    },
+    session({ session, user }) {
+      console.log("USER IN SESSION CALLBACK:", JSON.stringify(user));
+      console.log("SESSION IN SESSION CALLBACK:", JSON.stringify(session));
+      return session;
+    },
+  },
   providers: [
     Credentials({
       credentials: {
@@ -49,7 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if ("errors" in user) {
             return null;
           }
-
+          console.log("USER IN AUTHORIZE METHOD:", JSON.stringify(user));
           return user;
         } catch (error) {
           if (error instanceof ZodError) {
