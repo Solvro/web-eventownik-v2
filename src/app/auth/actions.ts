@@ -50,7 +50,7 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
           return { error: "Nieprawidłowe dane logowania" };
         }
         default: {
-          return { error: "Coś poszło nie tak" };
+          return { error: "Wystąpił błąd serwera. Spróbuj ponownie później" };
         }
       }
     });
