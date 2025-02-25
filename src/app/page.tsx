@@ -1,6 +1,8 @@
 import { BookText, Laptop, Server, Table } from "lucide-react";
 import Link from "next/link";
 
+import { AppLogo } from "@/components/app-logo";
+import { AuthButton } from "@/components/auth-button";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
@@ -9,20 +11,13 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <header>
         <nav className="flex justify-between p-4">
-          <Link href="/" className="text-lg font-bold">
-            Eventownik v2
-          </Link>
+          <AppLogo />
           <div className="flex gap-4">
             <ThemeSwitch />
             <Button asChild>
-              <Link href="/auth/login">Logowanie</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/register">Rejestracja</Link>
-            </Button>
-            <Button asChild>
               <Link href="/dashboard">Panel&#47;Dashboard</Link>
             </Button>
+            <AuthButton />
           </div>
         </nav>
       </header>

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -22,6 +23,7 @@ import { registerFormSchema } from "@/types/schemas";
 import { register } from "../actions";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -40,9 +42,10 @@ export default function RegisterPage() {
           title: "O nie! Coś poszło nie tak.",
           description: "Spróbuj zarejestrować się ponownie.",
         });
+      } else {
+        router.replace("/auth/login");
       }
     } catch {
-      // this error only happens when the client has no internet connection (afaik)
       toast({
         variant: "destructive",
         title: "Brak połączenia z serwerem.",

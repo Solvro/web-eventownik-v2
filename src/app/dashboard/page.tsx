@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 
-export default function Dashboard() {
+export default function DashboardHomepage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
+    <div className="flex flex-col gap-4">
+      <h1 className="text-3xl font-bold">Panel organizatora</h1>
       <Link
         href="/dashboard/event/create/general-info"
         className={buttonVariants({ variant: "default" })}

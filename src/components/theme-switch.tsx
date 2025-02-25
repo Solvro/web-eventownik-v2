@@ -2,6 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 function ThemeSwitch() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
-  return (
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button>{theme === "light" ? <Sun /> : <Moon />}</Button>
+        <Button>{resolvedTheme === "light" ? <Sun /> : <Moon />}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem
@@ -43,6 +50,8 @@ function ThemeSwitch() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <Button className="h-12 w-12 bg-primary"></Button>
   );
 }
 

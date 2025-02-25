@@ -32,5 +32,8 @@ jobs:
         if: always()
 
       - name: Build
+        env:
+          EVENTOWNIK_API: https://example.com/
+          AUTH_SECRET: MEGATAJNYKLUCZ
         run: npm run build
         if: always()

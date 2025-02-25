@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
+    <html lang="pl" suppressHydrationWarning={true}>
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
         <Providers>
           <Toaster />
