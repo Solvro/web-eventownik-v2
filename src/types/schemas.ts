@@ -11,3 +11,9 @@ export const registerFormSchema = loginFormSchema.extend({
   firstName: z.string().nonempty("Imię nie może być puste."),
   lastName: z.string().nonempty("Nazwisko nie może być puste."),
 });
+
+export const registerParticipantFormSchema = z.object({
+  email: z.string().email("Nieprawidłowy adres email."),
+  firstName: z.string().nonempty("Imię nie może być puste."),
+  lastName: z.string().nonempty("Nazwisko nie może być puste."),
+});
