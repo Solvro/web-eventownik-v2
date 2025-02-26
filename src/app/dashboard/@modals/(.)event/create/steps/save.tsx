@@ -2,7 +2,7 @@
 
 import { useAtomValue } from "jotai";
 import { Frown, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { saveEvent } from "../actions";
@@ -19,8 +19,11 @@ export function SaveEvent() {
   useEffect(() => {
     let ignore = false;
     void saveEvent(event).then((_result) => {
-      if (!ignore) {
-        setResult(_result?.errors[0].message);
+      if (!ignore && _result?.errors !== undefined) {
+        setResult(_result.errors[0].message);
+      } else {
+        // soon™
+        redirect("/dashboard/event/share");
       }
     });
     return () => {
