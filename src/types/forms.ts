@@ -7,4 +7,5 @@ export interface EventForm {
   slug: string;
   startDate: Date;
   endDate: Date;
+  attributeIds: number[];
 }

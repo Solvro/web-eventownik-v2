@@ -5,16 +5,20 @@ import { useState } from "react";
 import { AttributesForm } from "./(steps)/attributes";
 import { GeneralInfoForm } from "./(steps)/general-info";
 
-/* 
-  Root komponent dla formularza tworzenia formularza wydarzenia
-  Renderuje odpowiedni krok w zależności od URL paramsów
-  Jest wykorzystywany zarówno w parallel roucie gdzie jest wsadzany do modalu
-  oraz w dynamic routingu gdzie jest renderowany wewnątrz regularnej strony
-*/
+interface EventAttribute {
+  id: number;
+  name: string;
+}
 
 type FormStep = "general-info" | "attributes";
 
-function EventFormForm() {
+function EventFormForm({
+  eventId,
+  attributes,
+}: {
+  eventId: number;
+  attributes: EventAttribute[];
+}) {
   const [formStep, setFormStep] = useState<FormStep>("general-info");
 
   switch (formStep) {
@@ -30,6 +34,8 @@ function EventFormForm() {
     case "attributes": {
       return (
         <AttributesForm
+          eventId={eventId}
+          attributes={attributes}
           goToPreviousStep={() => {
             setFormStep("general-info");
           }}

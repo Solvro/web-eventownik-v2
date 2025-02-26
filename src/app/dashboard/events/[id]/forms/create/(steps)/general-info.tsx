@@ -60,7 +60,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
 
   function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     // console.log(values);
-    setNewEventForm(values);
+    setNewEventForm({ ...newEventForm, ...values });
     goToNextStep();
   }
 
@@ -258,6 +258,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormItem>
               )}
             />
+            {/* TODO: Not currently handled on the backend */}
             <FormField
               name="isOpen"
               control={form.control}

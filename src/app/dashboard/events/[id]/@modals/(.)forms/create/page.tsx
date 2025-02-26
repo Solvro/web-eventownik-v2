@@ -1,3 +1,4 @@
+import { getEventFormAttributes } from "../../../forms/data-access";
 import { CreateEventFormModal } from "./form-modal";
 
 export default async function CreateEventFormModalPage({
@@ -7,5 +8,7 @@ export default async function CreateEventFormModalPage({
 }) {
   const { id } = await params;
 
-  return <CreateEventFormModal eventId={id} />;
+  const attributes = await getEventFormAttributes(id);
+
+  return <CreateEventFormModal eventId={Number(id)} attributes={attributes} />;
 }

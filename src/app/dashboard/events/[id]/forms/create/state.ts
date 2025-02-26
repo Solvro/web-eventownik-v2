@@ -18,4 +18,5 @@ export const newEventFormAtom = atom<NewEventForm>({
   endTime: "",
   startDate: new Date(),
   endDate: new Date(),
+  attributeIds: [],
 });
