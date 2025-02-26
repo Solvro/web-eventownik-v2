@@ -23,7 +23,7 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
     if (response.status === 200) {
       return response.json() as Promise<AuthSuccessResponse>;
     }
-    console.error("Error", response);
+    console.error("Error when registering", response);
     return response.json() as Promise<AuthErrorResponse>;
   });
   return data;
