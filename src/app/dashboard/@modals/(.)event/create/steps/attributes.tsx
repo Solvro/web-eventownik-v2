@@ -51,7 +51,7 @@ export function AttributesForm() {
   }
   function saveAttributes() {
     setEvent({ ...event, attributes });
-    router.push("/dashboard/event/create?step=5");
+    router.push("/dashboard/event/create");
   }
   return (
     <FormContainer
@@ -133,7 +133,7 @@ export function AttributesForm() {
         <div className="flex flex-row items-center justify-between gap-4">
           <Link
             className={buttonVariants({ variant: "ghost" })}
-            href="/dashboard/event/create?step=5"
+            href="/dashboard/event/create"
           >
             Może później
           </Link>

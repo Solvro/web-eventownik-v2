@@ -13,7 +13,7 @@ export const AttributeTypes = [
   "checkbox",
 ] as const;
 
-interface Event {
+export interface Event {
   name: string;
   description: string | undefined;
   startDate: Date;

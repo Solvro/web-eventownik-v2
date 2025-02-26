@@ -1,11 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 
 import { AttributesForm } from "./steps/attributes";
 import { CoorganizersForm } from "./steps/coorganizers";
 import { GeneralInfoForm } from "./steps/general-info";
 import { PersonalizationForm } from "./steps/personalization";
+import { SaveEvent } from "./steps/save";
 
 export default function Page() {
   const searchParameters = useSearchParams();
@@ -18,7 +19,9 @@ export default function Page() {
     <CoorganizersForm />
   ) : step === "4" ? (
     <AttributesForm />
-  ) : step === "5" ? (
-    "WIP"
-  ) : null;
+  ) : step === null ? (
+    <SaveEvent />
+  ) : (
+    notFound()
+  );
 }
