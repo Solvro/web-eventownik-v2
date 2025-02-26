@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import { auth, signOut } from "@/auth";
+import { deleteSession, verifySession } from "@/lib/session";
 
 import { Button } from "./ui/button";
 
 export async function AuthButton() {
-  const session = await auth();
+  const session = await verifySession();
   return session === null ? (
     <Button asChild>
       <Link href="/auth/login">Zaloguj się</Link>
@@ -14,7 +14,7 @@ export async function AuthButton() {
     <form
       action={async () => {
         "use server";
-        await signOut();
+        await deleteSession();
       }}
     >
       <Button type="submit">Wyloguj się</Button>
