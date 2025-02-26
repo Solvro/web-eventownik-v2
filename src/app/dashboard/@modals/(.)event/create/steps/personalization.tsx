@@ -58,10 +58,30 @@ export function PersonalizationForm() {
       slug: `/${event.name.toLowerCase().replaceAll(/\s+/g, "-")}`,
     },
   });
-  function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
+  async function onSubmit(
+    data: z.infer<typeof EventPersonalizationFormSchema>,
+  ) {
+    let image = "";
+    if (eventImage !== null) {
+      // convert image to base64
+      image = await new Promise((resolve) => {
+        // Fetch the Blob from the Blob URL
+        void fetch(eventImage)
+          .then(async (response) => response.blob()) // Get the Blob from the URL
+          .then((blob) => {
+            // Use FileReader to read the Blob as a base64 string
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string); // This will be a base64 string
+            };
+            reader.readAsDataURL(blob); // Read Blob as a Data URL (base64)
+          });
+      });
+    }
+    console.log(image);
     setEvent({
       ...event,
-      image: eventImage ?? "",
+      image,
       color: data.color ?? "#3672fd",
       participantsNumber: data.participantsNumber,
       links: data.links,
