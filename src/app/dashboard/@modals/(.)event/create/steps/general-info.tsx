@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
 
-const EventGeneralinfoSchema = z.object({
+const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
   description: z.string().optional(),
   startDate: z.date().min(new Date(), {
@@ -48,8 +48,8 @@ const EventGeneralinfoSchema = z.object({
 
 export function GeneralInfoForm() {
   const [event, setEvent] = useAtom(eventAtom);
-  const form = useForm<z.infer<typeof EventGeneralinfoSchema>>({
-    resolver: zodResolver(EventGeneralinfoSchema),
+  const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
+    resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: {
       name: event.name,
       description: event.description,
@@ -63,7 +63,7 @@ export function GeneralInfoForm() {
     },
   });
   const router = useRouter();
-  function onSubmit(values: z.infer<typeof EventGeneralinfoSchema>) {
+  function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
     values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
     values.startDate.setMinutes(
       Number.parseInt(values.startTime.split(":")[1]),

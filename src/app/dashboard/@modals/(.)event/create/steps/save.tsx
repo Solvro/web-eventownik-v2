@@ -23,7 +23,7 @@ export function SaveEvent() {
         setResult(_result.errors[0].message);
       } else {
         // soon™
-        redirect("/dashboard/event/share");
+        router.push("/dashboard/event/share");
       }
     });
     return () => {
