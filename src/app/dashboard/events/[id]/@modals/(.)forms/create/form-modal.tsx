@@ -24,7 +24,7 @@ function CreateEventFormModal({ eventId }: { eventId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="mb-4">
           <DialogTitle>Stwórz formularz</DialogTitle>
         </DialogHeader>
         <EventFormForm eventId={eventId} />

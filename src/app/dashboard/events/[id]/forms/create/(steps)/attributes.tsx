@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-function EventFormAttributesStep({
+function AttributesForm({
   goToPreviousStep,
 }: {
   goToPreviousStep: () => void;
@@ -18,4 +18,4 @@ function EventFormAttributesStep({
   );
 }
 
-export { EventFormAttributesStep };
+export { AttributesForm };

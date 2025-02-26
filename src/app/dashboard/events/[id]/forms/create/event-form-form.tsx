@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { EventFormAttributesStep } from "./(steps)/attributes";
-import { EventFormGeneralInfoStep } from "./(steps)/general-info";
+import { AttributesForm } from "./(steps)/attributes";
+import { GeneralInfoForm } from "./(steps)/general-info";
 
 /* 
   Root komponent dla formularza tworzenia formularza wydarzenia
@@ -20,7 +20,7 @@ function EventFormForm() {
   switch (formStep) {
     case "general-info": {
       return (
-        <EventFormGeneralInfoStep
+        <GeneralInfoForm
           goToNextStep={() => {
             setFormStep("attributes");
           }}
@@ -29,7 +29,7 @@ function EventFormForm() {
     }
     case "attributes": {
       return (
-        <EventFormAttributesStep
+        <AttributesForm
           goToPreviousStep={() => {
             setFormStep("general-info");
           }}

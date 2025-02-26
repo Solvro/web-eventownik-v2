@@ -4,13 +4,18 @@ import { atom } from "jotai";
 
 import type { EventForm } from "@/types/forms";
 
-type NewEventForm = Omit<EventForm, "id" | "eventId">;
+interface NewEventForm extends Omit<EventForm, "id" | "eventId"> {
+  startTime: string;
+  endTime: string;
+}
 
 export const newEventFormAtom = atom<NewEventForm>({
   isOpen: true,
-  description: "lorem ipsum",
+  description: "",
   name: "",
   slug: "",
+  startTime: "",
+  endTime: "",
   startDate: new Date(),
   endDate: new Date(),
 });
