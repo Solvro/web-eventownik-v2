@@ -33,7 +33,7 @@ const EventAttributesFormSchema = z.object({
   type: z.enum(AttributeTypes),
 });
 
-export default function EventAttributesForm() {
+export function AttributesForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [attributes, setAttributes] = useState<
@@ -51,7 +51,7 @@ export default function EventAttributesForm() {
   }
   function saveAttributes() {
     setEvent({ ...event, attributes });
-    router.push("/dashboard/event/create/share");
+    router.push("/dashboard/event/create?step=5");
   }
   return (
     <FormContainer
@@ -133,7 +133,7 @@ export default function EventAttributesForm() {
         <div className="flex flex-row items-center justify-between gap-4">
           <Link
             className={buttonVariants({ variant: "ghost" })}
-            href="/dashboard/event/create/share"
+            href="/dashboard/event/create?step=5"
           >
             Może później
           </Link>

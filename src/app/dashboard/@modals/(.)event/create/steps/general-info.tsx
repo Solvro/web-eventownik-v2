@@ -46,7 +46,7 @@ const EventGeneralinfoSchema = z.object({
   organizer: z.string().optional(),
 });
 
-export default function EventGeneralInfoForm() {
+export function GeneralInfoForm() {
   const [event, setEvent] = useAtom(eventAtom);
   const form = useForm<z.infer<typeof EventGeneralinfoSchema>>({
     resolver: zodResolver(EventGeneralinfoSchema),
@@ -80,7 +80,7 @@ export default function EventGeneralInfoForm() {
       long: values.long,
       organizer: values.organizer,
     });
-    router.push("/dashboard/event/create/personalize");
+    router.push("/dashboard/event/create?step=2");
   }
   return (
     <FormContainer
