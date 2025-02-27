@@ -11,12 +11,13 @@ if (SECRET_KEY === "") {
   throw new Error("SECRET_KEY env variable is not set!!!");
 }
 const encodedKey = new TextEncoder().encode(SECRET_KEY);
+const expirationTimeDays = 30;
 
 export async function encrypt(payload: SessionPayload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(`${expirationTimeDays.toString()}d`)
     .sign(encodedKey);
 }
 
@@ -32,7 +33,9 @@ async function decrypt(session: string | undefined = "") {
 }
 
 export async function createSession(sessionPayload: SessionPayload) {
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); //30 days
+  const expiresAt = new Date(
+    Date.now() + expirationTimeDays * 24 * 60 * 60 * 1000,
+  );
   const session = await encrypt(sessionPayload);
   const cookieStore = await cookies();
 
