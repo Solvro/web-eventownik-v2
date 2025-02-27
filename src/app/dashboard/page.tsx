@@ -1,13 +1,18 @@
-import { getUser } from "@/lib/dal";
-import { verifySession } from "@/lib/session";
+import { Smile } from "lucide-react";
+import Link from "next/link";
 
-export default async function DashboardHomepage() {
-  const session = await verifySession();
-  const user = await getUser();
+import { buttonVariants } from "@/components/ui/button";
+
+export default function DashboardHomepage() {
   return (
-    <h1 className="text-3xl font-bold">
-      Panel organizatora | Bearer token: {session?.bearerToken} | Email:{" "}
-      {user?.email}
-    </h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-3xl font-bold">Panel organizatora</h1>
+      <Link
+        href="/dashboard/event/create?step=1"
+        className={buttonVariants({ variant: "default" })}
+      >
+        Click me <Smile />
+      </Link>
+    </div>
   );
 }
