@@ -5,11 +5,16 @@ import { atom } from "jotai";
 export const AttributeTypes = [
   "text",
   "number",
-  "datetime-local",
+  "file",
+  "select",
+  "block",
+  "date",
   "time",
+  "datetime",
+  "email",
+  "tel",
   "color",
   "password",
-  "radio",
   "checkbox",
 ] as const;
 
