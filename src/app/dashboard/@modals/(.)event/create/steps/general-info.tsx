@@ -25,7 +25,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
@@ -131,16 +130,9 @@ export function GeneralInfoForm() {
                             <FormControl>
                               <Button
                                 variant={"outline"}
-                                className={cn(
-                                  "w-[240px] pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
+                                className="w-[240px] pl-3 text-left font-normal"
                               >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Data rozpoczęcia</span>
-                                )}
+                                {format(field.value, "PPP")}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -197,16 +189,9 @@ export function GeneralInfoForm() {
                             <FormControl>
                               <Button
                                 variant={"outline"}
-                                className={cn(
-                                  "w-[240px] pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
+                                className="w-[240px] pl-3 text-left font-normal"
                               >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Data zakończenia</span>
-                                )}
+                                {format(field.value, "PPP")}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>

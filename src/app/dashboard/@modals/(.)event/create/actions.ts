@@ -1,6 +1,6 @@
 "use server";
 
-import { formatISO, formatISO9075 } from "date-fns";
+import { formatISO9075 } from "date-fns";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
@@ -8,7 +8,11 @@ import { verifySession } from "@/lib/session";
 import type { Event } from "./state";
 
 export async function saveEvent(event: Event) {
-  const { bearerToken } = await verifySession();
+  const session = await verifySession();
+  if (session == null || typeof session.bearerToken !== "string") {
+    throw new Error("Invalid session");
+  }
+  const { bearerToken } = session;
   const formData = new FormData();
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");

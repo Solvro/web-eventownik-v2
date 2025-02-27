@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowRight, Loader2, PlusIcon, TextIcon } from "lucide-react";
 import Link from "next/link";
@@ -40,6 +41,7 @@ export function AttributesForm() {
     z.infer<typeof EventAttributesFormSchema>[]
   >(event.attributes);
   const form = useForm<z.infer<typeof EventAttributesFormSchema>>({
+    resolver: zodResolver(EventAttributesFormSchema),
     defaultValues: {
       name: "",
       type: "text",

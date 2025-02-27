@@ -21,7 +21,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -85,11 +84,13 @@ export function CoorganizersForm() {
                 disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem>
-                    <Input
-                      type="email"
-                      placeholder="Podaj adres email"
-                      {...field}
-                    />
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Podaj adres email"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage>
                       {form.formState.errors.coorganizer?.message}
                     </FormMessage>

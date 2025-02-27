@@ -78,7 +78,6 @@ export function PersonalizationForm() {
           });
       });
     }
-    console.log(image);
     setEvent({
       ...event,
       image,
