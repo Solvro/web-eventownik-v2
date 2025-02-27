@@ -1,4 +1,7 @@
+import { cache } from "react";
+
 import { API_URL } from "@/lib/api";
+import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { EventForm } from "@/types/forms";
 
@@ -32,7 +35,7 @@ async function getEventFormAttributes(eventId: string) {
   return attributes;
 }
 
-async function getEventForms(eventId: string) {
+const getEventForms = cache(async (eventId: string) => {
   const session = await verifySession();
   if (session == null) {
     return [];
@@ -53,8 +56,8 @@ async function getEventForms(eventId: string) {
     return [];
   }
 
-  const forms = (await response.json()) as EventForm[];
-  return forms;
-}
+  const parsed = (await response.json()) as PaginatedResponse<EventForm>;
+  return parsed.data;
+});
 
 export { getEventFormAttributes, getEventForms };
