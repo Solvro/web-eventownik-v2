@@ -6,10 +6,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { registerParticipant } from "@/app/[eventSlug]/actions";
-import { useToast } from "@/hooks/use-toast";
-import { registerParticipantFormSchema } from "@/types/schemas";
-
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,8 +14,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { registerParticipantFormSchema } from "@/types/schemas";
 
 export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
   //TODO fetch additional attributes from API
