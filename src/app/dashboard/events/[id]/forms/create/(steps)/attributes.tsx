@@ -17,8 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 
-// import { createEventForm } from "../../actions";
+import { createEventForm } from "../../actions";
 import { newEventFormAtom } from "../state";
 
 interface EventAttribute {
@@ -27,7 +28,7 @@ interface EventAttribute {
 }
 
 const EventFormAttributesSchema = z.object({
-  attributeIds: z.array(z.number()),
+  attributesIds: z.array(z.number()),
 });
 
 function AttributesForm({
@@ -35,17 +36,18 @@ function AttributesForm({
   attributes,
   goToPreviousStep,
 }: {
-  eventId: number;
+  eventId: string;
   attributes: EventAttribute[];
   goToPreviousStep: () => void;
 }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof EventFormAttributesSchema>>({
     resolver: zodResolver(EventFormAttributesSchema),
     defaultValues: {
-      attributeIds: newEventForm.attributeIds,
+      attributesIds: newEventForm.attributesIds,
     },
   });
 
@@ -53,14 +55,39 @@ function AttributesForm({
     setNewEventForm({ ...newEventForm, ...form.getValues() });
   }
 
-  function onSubmit(values: z.infer<typeof EventFormAttributesSchema>) {
+  async function onSubmit(values: z.infer<typeof EventFormAttributesSchema>) {
     setNewEventForm({ ...newEventForm, ...values });
-    router.replace(`/dashboard/events/${eventId.toString()}/forms/`);
-    // TODO: Send request to the backend to create a form. Should be handled when creating events is implemented
-    // const result = await createEventForm(eventId.toString(), {
-    //   eventId,
-    //   ...newEventForm,
-    // });
+
+    const result = await createEventForm(eventId, {
+      ...newEventForm,
+    });
+
+    if (result.success) {
+      toast({
+        title: "Dodano nowy formularz",
+      });
+
+      // Reset to default values
+      setNewEventForm({
+        isOpen: true,
+        description: "",
+        name: "",
+        slug: "",
+        startTime: "",
+        endTime: "",
+        startDate: new Date(),
+        endDate: new Date(),
+        attributesIds: [],
+      });
+
+      router.replace(`/dashboard/events/${eventId.toString()}/forms/`);
+    } else {
+      toast({
+        title: "Nie udało się dodać formularza",
+        description: result.error,
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -68,7 +95,7 @@ function AttributesForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="attributeIds"
+          name="attributesIds"
           render={() => (
             <FormItem className="space-y-3">
               <FormLabel>Wybierz atrybuty</FormLabel>
@@ -76,7 +103,7 @@ function AttributesForm({
                 <FormField
                   key={attribute.id}
                   control={form.control}
-                  name="attributeIds"
+                  name="attributesIds"
                   render={({ field }) => (
                     <FormItem
                       key={attribute.id}

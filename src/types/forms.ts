@@ -1,11 +1,11 @@
 export interface EventForm {
-  id: number;
-  eventId: number;
+  id: string;
+  eventId: string;
   isOpen: boolean;
   description: string;
   name: string;
   slug: string;
   startDate: Date;
   endDate: Date;
-  attributeIds: number[];
+  attributesIds: number[];
 }

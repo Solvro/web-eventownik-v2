@@ -12,12 +12,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+interface EventAttribute {
+  id: number;
+  name: string;
+}
+
 function CreateEventFormModal({
   eventId,
   attributes,
 }: {
-  eventId: number;
-  attributes: { id: number; name: string }[];
+  eventId: string;
+  attributes: EventAttribute[];
 }) {
   const [open, setOpen] = useState(true);
   const router = useRouter();

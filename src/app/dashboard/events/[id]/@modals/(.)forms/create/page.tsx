@@ -10,5 +10,5 @@ export default async function CreateEventFormModalPage({
 
   const attributes = await getEventFormAttributes(id);
 
-  return <CreateEventFormModal eventId={Number(id)} attributes={attributes} />;
+  return <CreateEventFormModal eventId={id} attributes={attributes} />;
 }

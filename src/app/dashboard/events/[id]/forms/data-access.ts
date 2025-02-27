@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
-
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { EventForm } from "@/types/forms";
 
 interface EventAttribute {
   id: number;
@@ -11,7 +10,7 @@ interface EventAttribute {
 async function getEventFormAttributes(eventId: string) {
   const session = await verifySession();
   if (session == null) {
-    redirect("/login");
+    return [];
   }
 
   const response = await fetch(`${API_URL}/events/${eventId}/attributes`, {
@@ -23,19 +22,39 @@ async function getEventFormAttributes(eventId: string) {
 
   if (!response.ok) {
     console.error(
-      `[getEventFormAttributes] Failed to fetch attributes for event ${eventId}:`,
+      `[getEventFormAttributes] Failed to fetch available attributes when attempting to create a new form for event ${eventId}:`,
       response,
     );
-    // TODO: This is a placeholder. Should be removed when creating events is implemented
-    return [
-      { id: 1, name: "Foo" },
-      { id: 2, name: "Bar" },
-      { id: 3, name: "Baz" },
-    ];
+    return [];
   }
 
   const attributes = (await response.json()) as EventAttribute[];
   return attributes;
 }
 
-export { getEventFormAttributes };
+async function getEventForms(eventId: string) {
+  const session = await verifySession();
+  if (session == null) {
+    return [];
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}/forms`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(
+      `[getEventForms] Failed to fetch forms for event ${eventId}:`,
+      response,
+    );
+    return [];
+  }
+
+  const forms = (await response.json()) as EventForm[];
+  return forms;
+}
+
+export { getEventFormAttributes, getEventForms };

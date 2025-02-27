@@ -16,7 +16,7 @@ function EventFormForm({
   eventId,
   attributes,
 }: {
-  eventId: number;
+  eventId: string;
   attributes: EventAttribute[];
 }) {
   const [formStep, setFormStep] = useState<FormStep>("general-info");
