@@ -1,10 +1,12 @@
-import { Eye, SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import type { EventForm } from "@/types/forms";
 
-function FormEntry({ form }: { form: EventForm }) {
+import { DeleteFormPopup } from "./delete-form-popup";
+
+function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
   return (
     <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
@@ -22,13 +24,11 @@ function FormEntry({ form }: { form: EventForm }) {
             <span className="sr-only">Podgląd formularzu</span>
           </Link>
         </Button>
-        {/* TODO: Implement form removal */}
-        <Button variant="ghost" size="icon" className="text-red-700" asChild>
-          <Link href="/">
-            <Trash2 />
-            <span className="sr-only">Usuń formularz</span>
-          </Link>
-        </Button>
+        <DeleteFormPopup
+          eventId={eventId}
+          formId={form.id.toString()}
+          formName={form.name}
+        />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-2">
         <p className="text-lg font-bold">{form.name}</p>

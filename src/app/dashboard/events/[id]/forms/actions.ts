@@ -48,3 +48,35 @@ export async function createEventForm(eventId: string, form: Payload) {
 
   return { success: true };
 }
+
+export async function deleteEventForm(eventId: string, formId: string) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return {
+      success: false,
+      error: "Brak autoryzacji",
+    };
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}/forms/${formId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[deleteEventForm action] Failed to delete event form ${formId} for event ${eventId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
+}

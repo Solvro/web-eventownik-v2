@@ -22,7 +22,9 @@ export default async function DashboardEventFormsPage({
           <SquarePlus className="h-6 w-6" /> Stwórz formularz
         </Link>
         {forms.length > 0
-          ? forms.map((form) => <FormEntry form={form} key={form.id} />)
+          ? forms.map((form) => (
+              <FormEntry form={form} eventId={params.id} key={form.id} />
+            ))
           : null}
       </div>
     </div>
