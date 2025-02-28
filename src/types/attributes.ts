@@ -10,19 +10,21 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   showInList: boolean;
   options: string[] | null;
   //TODO string enum values
-  type:
-    | "text"
-    | "number"
-    | "file"
-    | "select"
-    | "block"
-    | "date"
-    | "time"
-    | "datetime"
-    | "email"
-    | "tel"
-    | "color"
-    | "checkbox";
+  type: AttributeType;
   createdAt: string;
   updatedAt: string;
 }
+
+export type AttributeType =
+  | "text"
+  | "number"
+  | "file"
+  | "select"
+  | "block"
+  | "date"
+  | "time"
+  | "datetime"
+  | "email"
+  | "tel"
+  | "color"
+  | "checkbox";

@@ -28,9 +28,6 @@ export default async function DashboardEventParticipantsPage({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold">
-        Lista uczestników DANE SĄ ZMOCKOWANE
-      </h1>
       {participants == null || attributes == null ? (
         <div>Nie udało się załadować danych o uczestnikach</div>
       ) : (
