@@ -30,6 +30,7 @@ declare module "@tanstack/react-table" {
 export function generateColumns(attributes: Attribute[]) {
   const columnHelper = createColumnHelper<FlattenedParticipant>();
   const baseColumns = [
+    // columnHelper.accessor("id", {}),
     columnHelper.display({
       id: "select",
       header: ({ table }) => (
@@ -103,6 +104,21 @@ export function generateColumns(attributes: Attribute[]) {
       }),
     columnHelper.display({
       id: "expand",
+      header: ({ table }) => {
+        const isAnyExpanded = table.getIsSomeRowsExpanded();
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              isAnyExpanded
+                ? table.resetExpanded(isAnyExpanded)
+                : table.toggleAllRowsExpanded();
+            }}
+          >
+            {isAnyExpanded ? "Zwiń" : "Rozwiń"}
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         return row.getCanExpand() ? (
           <Button

@@ -31,7 +31,11 @@ export default async function DashboardEventParticipantsPage({
       {participants == null || attributes == null ? (
         <div>Nie udało się załadować danych o uczestnikach</div>
       ) : (
-        <ParticipantTable participants={participants} attributes={attributes} />
+        <ParticipantTable
+          participants={participants}
+          attributes={attributes}
+          eventId={id}
+        />
       )}
     </div>
   );

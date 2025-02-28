@@ -10,10 +10,28 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, FilterX } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FilterX,
+  Pencil,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -23,20 +41,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
+import { deleteParticipant as deleteParticipantAction } from "./actions";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
 
 export function ParticipantTable({
   participants,
   attributes,
+  eventId,
 }: {
   participants: Participant[];
   attributes: Attribute[];
+  eventId: string;
 }) {
-  const data = useMemo(() => flattenParticipants(participants), [participants]);
+  const { toast } = useToast();
+
+  const [data, setData] = useState(() => flattenParticipants(participants));
   const columns = useMemo(() => generateColumns(attributes), [attributes]);
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -56,9 +81,37 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
-      pagination: { pageSize: 15, pageIndex: 0 },
+      pagination: { pageSize: 2, pageIndex: 0 },
+      columnVisibility: {
+        id: false,
+      },
     },
   });
+
+  async function deleteParticipant(participantId: number) {
+    //TODO call to API
+    console.log("Participant id which is deleted", participantId);
+
+    const { success, error } = await deleteParticipantAction(
+      eventId,
+      participantId.toString(),
+    );
+
+    if (!success) {
+      toast({
+        variant: "destructive",
+        title: "Usunięcie uczestnika nie powiodło się!",
+        description: error,
+      });
+      return;
+    }
+
+    setData((previousData) => {
+      return previousData.filter(
+        (participant) => participant.id !== participantId,
+      );
+    });
+  }
 
   return (
     <>
@@ -115,7 +168,10 @@ export function ParticipantTable({
                 return (
                   <TableHead
                     key={header.id}
-                    className="border-r-2 border-border"
+                    className={cn(
+                      "border-r-2 border-border",
+                      header.id === "expand" ? "w-16 text-right" : "",
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
@@ -134,18 +190,79 @@ export function ParticipantTable({
             <>
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      cell.column.id === "expand" ? "text-right" : "",
+                    )}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
               {row.getIsExpanded() ? (
-                <TableRow key={`${row.id}-edit`}>
+                <TableRow
+                  key={`${row.id}-edit`}
+                  className="border-l-2 border-l-primary"
+                >
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <TableCell key={`${cell.id}-edit`}>
-                        {cell.column.columnDef.meta?.attribute ===
-                        undefined ? null : (
+                        {cell.column.id === "expand" ? (
+                          <div className="flex w-fit flex-col">
+                            <Button variant="outline">
+                              <Pencil />
+                              Edytuj
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="text-red-500"
+                                >
+                                  <Trash2 />
+                                  Usuń
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="flex flex-col items-center">
+                                <AlertDialogHeader className="flex flex-col items-center">
+                                  <AlertDialogTitle className="flex flex-col items-center self-center">
+                                    <XCircle
+                                      strokeWidth={1}
+                                      stroke={"red"}
+                                      size={64}
+                                    />
+                                    Jesteś pewny?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription className="text-pretty text-center text-foreground">
+                                    Na pewno chcesz usunąć tego uczestnika? Tej
+                                    operacji nie będzie można cofnąć.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="flex gap-x-4">
+                                  <AlertDialogAction
+                                    onClick={async () => {
+                                      await deleteParticipant(row.original.id);
+                                    }}
+                                    className={buttonVariants({
+                                      variant: "destructive",
+                                    })}
+                                  >
+                                    Usuń
+                                  </AlertDialogAction>
+                                  <AlertDialogCancel
+                                    className={buttonVariants({
+                                      variant: "outline",
+                                    })}
+                                  >
+                                    Anuluj
+                                  </AlertDialogCancel>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        ) : cell.column.columnDef.meta?.attribute ===
+                          undefined ? null : (
                           <>Tu beda inputy</>
                         )}
                       </TableCell>

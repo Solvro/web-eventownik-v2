@@ -12,7 +12,8 @@ export function flattenParticipants(participants: Participant[]) {
 
     for (const attribute of participant.attributes) {
       //New key in flatParticipant must match in definition of columns,
-      //so if you use id there than in columns also use id (not slug for example)
+      //so if you use id there than in columns also use id in accessor
+      //(not slug for example)
       flatParticipant[attribute.id] = attribute.value;
     }
     return flatParticipant;
