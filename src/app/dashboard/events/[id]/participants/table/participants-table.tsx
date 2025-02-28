@@ -10,28 +10,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FilterX,
-  Pencil,
-  Trash2,
-  XCircle,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -46,7 +28,12 @@ import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
-import { deleteParticipant as deleteParticipantAction } from "./actions";
+import { deleteParticipant as deleteParticipantAction } from "../actions";
+import {
+  DeleteParticipantDialog,
+  EditParticipantButton,
+} from "./action-components";
+import { AttributeInput } from "./attribute-input";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
 
@@ -60,6 +47,7 @@ export function ParticipantTable({
   eventId: string;
 }) {
   const { toast } = useToast();
+  const [isQuering, setIsQuering] = useState(false);
 
   const [data, setData] = useState(() => flattenParticipants(participants));
   const columns = useMemo(() => generateColumns(attributes), [attributes]);
@@ -86,16 +74,16 @@ export function ParticipantTable({
         id: false,
       },
     },
+    autoResetPageIndex: false,
   });
 
   async function deleteParticipant(participantId: number) {
-    //TODO call to API
-    console.log("Participant id which is deleted", participantId);
-
+    setIsQuering(true);
     const { success, error } = await deleteParticipantAction(
       eventId,
       participantId.toString(),
     );
+    setIsQuering(false);
 
     if (!success) {
       toast({
@@ -210,60 +198,37 @@ export function ParticipantTable({
                       <TableCell key={`${cell.id}-edit`}>
                         {cell.column.id === "expand" ? (
                           <div className="flex w-fit flex-col">
-                            <Button variant="outline">
-                              <Pencil />
-                              Edytuj
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className="text-red-500"
-                                >
-                                  <Trash2 />
-                                  Usuń
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="flex flex-col items-center">
-                                <AlertDialogHeader className="flex flex-col items-center">
-                                  <AlertDialogTitle className="flex flex-col items-center self-center">
-                                    <XCircle
-                                      strokeWidth={1}
-                                      stroke={"red"}
-                                      size={64}
-                                    />
-                                    Jesteś pewny?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription className="text-pretty text-center text-foreground">
-                                    Na pewno chcesz usunąć tego uczestnika? Tej
-                                    operacji nie będzie można cofnąć.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter className="flex gap-x-4">
-                                  <AlertDialogAction
-                                    onClick={async () => {
-                                      await deleteParticipant(row.original.id);
-                                    }}
-                                    className={buttonVariants({
-                                      variant: "destructive",
-                                    })}
-                                  >
-                                    Usuń
-                                  </AlertDialogAction>
-                                  <AlertDialogCancel
-                                    className={buttonVariants({
-                                      variant: "outline",
-                                    })}
-                                  >
-                                    Anuluj
-                                  </AlertDialogCancel>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <EditParticipantButton
+                              participant={row.original}
+                              setData={setData}
+                              disabled={isQuering}
+                            />
+                            <DeleteParticipantDialog
+                              isQuering={isQuering}
+                              participantId={row.original.id}
+                              deleteParticipant={deleteParticipant}
+                            />
                           </div>
                         ) : cell.column.columnDef.meta?.attribute ===
-                          undefined ? null : (
-                          <>Tu beda inputy</>
+                          undefined ? null : row.original.mode === "edit" ? (
+                          <AttributeInput
+                            attribute={cell.column.columnDef.meta.attribute}
+                            initialValue={
+                              cell.getValue() as
+                                | string
+                                | number
+                                | boolean
+                                | Date
+                                | null
+                            }
+                          />
+                        ) : (
+                          <div>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
                         )}
                       </TableCell>
                     );

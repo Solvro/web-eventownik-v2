@@ -96,7 +96,6 @@ export function generateColumns(attributes: Attribute[]) {
               </div>
             );
           },
-          //TODO generate UI based on type of attribute
           cell: (info) => info.getValue(),
 
           filterFn: "arrIncludesSome",

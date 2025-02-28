@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
-import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/participants-table";
+import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
 import { verifySession } from "@/lib/session";
 
 import { getAttributes, getParticipants } from "./actions";
-import { mockedAttributes, mockedParticipants } from "./mocked-data";
+import { mockedAttributes, mockedParticipants } from "./table/mocked-data";
 
 export default async function DashboardEventParticipantsPage({
   params,

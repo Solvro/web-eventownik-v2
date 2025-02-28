@@ -8,6 +8,7 @@ export function flattenParticipants(participants: Participant[]) {
       slug: participant.slug,
       createdAt: participant.createdAt,
       updatedAt: participant.updatedAt,
+      mode: "view",
     } as FlattenedParticipant;
 
     for (const attribute of participant.attributes) {

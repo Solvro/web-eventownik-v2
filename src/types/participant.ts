@@ -16,4 +16,5 @@ export interface FlattenedParticipant {
   createdAt: string;
   updatedAt: string;
   [key: string]: string | number | boolean | Date | null;
+  mode: "edit" | "view";
 }
