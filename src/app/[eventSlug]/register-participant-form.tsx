@@ -25,8 +25,6 @@ export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
     resolver: zodResolver(registerParticipantFormSchema),
     defaultValues: {
       email: "",
-      firstName: "",
-      lastName: "",
     },
   });
   const { toast } = useToast();
@@ -79,44 +77,8 @@ export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">Imię</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={form.formState.isSubmitting}
-                  {...field}
-                  placeholder="Imię"
-                />
-              </FormControl>
-              <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.firstName?.message}
-              </FormMessage>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">Nazwisko</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={form.formState.isSubmitting}
-                  {...field}
-                  placeholder="Nazwisko"
-                />
-              </FormControl>
-              <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.lastName?.message}
-              </FormMessage>
-            </FormItem>
-          )}
-        />
+        {/* TODO generate rest inputs using AttributeInput component */}
+
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}

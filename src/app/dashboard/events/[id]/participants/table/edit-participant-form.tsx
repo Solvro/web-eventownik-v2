@@ -5,12 +5,12 @@ import type { Dispatch, SetStateAction } from "react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { AttributeInput } from "@/components/attribute-input";
 import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../actions";
 import { EditParticipantButton } from "./action-components";
-import { AttributeInput } from "./attribute-input";
 
 export function EditParticipantForm({
   cells,

@@ -13,8 +13,6 @@ export const registerFormSchema = loginFormSchema.extend({
 });
 
 export const registerParticipantFormSchema = z.object({
-  //TODO additional attributes fetched from api
   email: z.string().email("Nieprawidłowy adres email."),
-  firstName: z.string().nonempty("Imię nie może być puste."),
-  lastName: z.string().nonempty("Nazwisko nie może być puste."),
+  //TODO additional attributes fetched from api
 });

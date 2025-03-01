@@ -17,9 +17,7 @@ export async function registerParticipant(
       method: "POST",
       body: JSON.stringify({
         email: values.email,
-        eventId,
-        firstName: values.firstName,
-        lastName: values.lastName,
+        participantAttributes: [],
       }),
     });
     if (!response.ok) {
@@ -32,4 +30,24 @@ export async function registerParticipant(
   }
 
   return { success: true };
+}
+
+export async function getRegisterForm(eventId: string, formId: string) {
+  try {
+    const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
+      headers: {
+        Authorization: `Bearer ${formId}`,
+      },
+      method: "GET",
+    });
+    if (!response.ok) {
+      console.error("Error when registering participant", response);
+      return null;
+    }
+    const form = await response.json();
+    return form;
+  } catch (error) {
+    console.error("Error when registering participant", error);
+    return null;
+  }
 }

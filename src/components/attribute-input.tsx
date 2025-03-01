@@ -17,6 +17,7 @@ export function AttributeInput({
   attribute: Attribute;
   field: ControllerRenderProps<FieldValues, string>;
 }) {
+  //TODO add lacking implementations for rest inputs
   switch (attribute.type) {
     case "text": {
       return <Input type="text" {...field} />;
