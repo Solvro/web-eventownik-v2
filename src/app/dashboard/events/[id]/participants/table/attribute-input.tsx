@@ -15,7 +15,6 @@ export function AttributeInput({
   field,
 }: {
   attribute: Attribute;
-  initialValue: string | number | boolean | Date | null;
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   switch (attribute.type) {

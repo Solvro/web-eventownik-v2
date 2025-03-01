@@ -14,16 +14,12 @@ import { AttributeInput } from "./attribute-input";
 
 export function EditParticipantForm({
   cells,
-
   eventId,
-
   setData,
   row,
 }: {
   cells: Cell<FlattenedParticipant, unknown>[];
-
   eventId: string;
-
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   row: Row<FlattenedParticipant>;
 }) {
@@ -67,7 +63,7 @@ export function EditParticipantForm({
   }
 
   return (
-    <form className="my-2 flex flex-col items-center gap-y-2">
+    <form className="my-2 flex flex-col items-center gap-y-2 justify-self-center">
       {cells.map((cell) => {
         const attribute = cell.column.columnDef.meta?.attribute;
         return attribute === undefined ? null : (
@@ -80,9 +76,6 @@ export function EditParticipantForm({
               <AttributeInput
                 field={field}
                 attribute={attribute}
-                initialValue={
-                  cell.getValue() as string | number | boolean | Date | null
-                }
               ></AttributeInput>
             )}
           ></Controller>
