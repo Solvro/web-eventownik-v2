@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
-import { createEventForm } from "../../actions";
+import { createEventForm } from "../actions";
 import { newEventFormAtom } from "../state";
 
 interface EventAttribute {
@@ -112,8 +112,7 @@ function AttributesForm({
                       <FormControl>
                         <Checkbox
                           checked={field.value.includes(attribute.id)}
-                          onCheckedChange={(checked) => {
-                            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                          onCheckedChange={(checked: boolean) => {
                             checked
                               ? field.onChange([...field.value, attribute.id])
                               : field.onChange(
