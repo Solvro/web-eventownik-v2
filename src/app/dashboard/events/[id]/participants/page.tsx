@@ -4,7 +4,6 @@ import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table
 import { verifySession } from "@/lib/session";
 
 import { getAttributes, getParticipants } from "./actions";
-import { mockedAttributes, mockedParticipants } from "./table/mocked-data";
 
 export default async function DashboardEventParticipantsPage({
   params,
@@ -23,8 +22,6 @@ export default async function DashboardEventParticipantsPage({
     participantsData,
     attributesData,
   ]);
-  // const participants = mockedParticipants;
-  // const attributes = mockedAttributes;
 
   return (
     <div>
