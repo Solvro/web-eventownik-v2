@@ -193,7 +193,6 @@ export function ParticipantTable({
             );
             //headers structure - [select, email, ...attributes, expand]
             const emailCell = allVisibleCells.at(1);
-
             return (
               <Fragment key={row.id}>
                 <TableRow>
@@ -225,16 +224,11 @@ export function ParticipantTable({
                             emailCell.getContext(),
                           )}
                     </TableCell>
-                    <TableCell
-                      className="p-0"
-                      colSpan={attributesCells.length + 1}
-                    >
+                    <TableCell className="p-0" colSpan={attributesCells.length}>
                       <EditParticipantForm
                         cells={attributesCells}
-                        attributes={attributes}
-                        disabled={row.original.mode === "view"}
-                        participantId={row.original.id.toString()}
-                        participant={row.original}
+                        eventId={eventId}
+                        row={row}
                         setData={setData}
                       ></EditParticipantForm>
                     </TableCell>

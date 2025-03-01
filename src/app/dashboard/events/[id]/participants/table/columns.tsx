@@ -110,7 +110,7 @@ export function generateColumns(attributes: Attribute[]) {
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant="ghost"
+            variant={row.getIsExpanded() ? "outline" : "ghost"}
             onClick={() => {
               row.toggleExpanded();
             }}

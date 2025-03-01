@@ -78,24 +78,16 @@ export function EditParticipantButton({
   participant: FlattenedParticipant;
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   disabled: boolean;
-  handleSubmit: (event?: React.BaseSyntheticEvent) => void;
+  handleSubmit: (event?: React.BaseSyntheticEvent) => Promise<void>;
 }) {
   return participant.mode === "edit" ? (
     <Button
       variant="outline"
       type="submit"
       disabled={disabled}
-      onClick={(event) => {
+      onClick={async (event) => {
         event.preventDefault();
-        handleSubmit(event);
-        console.log("submited");
-        setData((previousData) => {
-          return previousData.map((_participant) =>
-            _participant.id === participant.id
-              ? { ..._participant, mode: "view" }
-              : _participant,
-          );
-        });
+        await handleSubmit(event);
       }}
     >
       <Save />

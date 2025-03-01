@@ -62,3 +62,42 @@ export async function deleteParticipant(
   }
   return { success: true };
 }
+
+export async function updateParticipant(
+  values: Record<number, string>,
+  eventId: string,
+  participantId: string,
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/${participantId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        participantAttributes: Object.entries(values)
+          .filter(([, value]) => value !== "")
+          .map(([key, value]) => ({ id: key, value })),
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error("Failed to update user", response);
+    if (response.status === 500) {
+      return {
+        success: false,
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+      };
+    }
+    return { success: false };
+  }
+  return { success: true };
+}
