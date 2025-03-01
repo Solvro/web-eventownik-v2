@@ -10,14 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { EventAttribute } from "@/types/attributes";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { GeneralInfoForm } from "./(steps)/general-info";
-
-interface EventAttribute {
-  id: number;
-  name: string;
-}
 
 function EventFormForm({
   eventId,
@@ -52,7 +48,7 @@ function EventFormForm({
               eventId={eventId}
               attributes={attributes}
               goToPreviousStep={() => {
-                setCurrentStep(2);
+                setCurrentStep(0);
               }}
             />
           )}

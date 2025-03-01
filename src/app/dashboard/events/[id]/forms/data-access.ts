@@ -3,14 +3,10 @@ import { cache } from "react";
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
-interface EventAttribute {
-  id: number;
-  name: string;
-}
-
-async function getEventFormAttributes(eventId: string) {
+async function getEventAttributes(eventId: string) {
   const session = await verifySession();
   if (session == null) {
     return [];
@@ -25,7 +21,7 @@ async function getEventFormAttributes(eventId: string) {
 
   if (!response.ok) {
     console.error(
-      `[getEventFormAttributes] Failed to fetch available attributes when attempting to create a new form for event ${eventId}:`,
+      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new form for event ${eventId}:`,
       response,
     );
     return [];
@@ -60,4 +56,29 @@ const getEventForms = cache(async (eventId: string) => {
   return parsed.data;
 });
 
-export { getEventFormAttributes, getEventForms };
+const getSingleEventForm = cache(async (eventId: string, formId: string) => {
+  const session = await verifySession();
+  if (session == null) {
+    return null;
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}/forms/${formId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(
+      `[getSingleEventForm] Failed to fetch form ${formId} for event ${eventId}:`,
+      response,
+    );
+    return null;
+  }
+
+  const parsed = (await response.json()) as EventForm;
+  return parsed;
+});
+
+export { getEventAttributes, getEventForms, getSingleEventForm };

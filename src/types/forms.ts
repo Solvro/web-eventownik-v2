@@ -1,3 +1,5 @@
+import type { EventAttribute } from "./attributes";
+
 export interface EventForm {
   id: string;
   eventId: string;
@@ -7,5 +9,5 @@ export interface EventForm {
   slug: string;
   startDate: Date;
   endDate: Date;
-  attributesIds: number[];
+  attributes: EventAttribute[];
 }

@@ -1,4 +1,4 @@
-import { getEventFormAttributes, getEventForms } from "./data-access";
+import { getEventAttributes, getEventForms } from "./data-access";
 import { EventFormForm } from "./event-form-form";
 import { FormEntry } from "./form-entry";
 
@@ -9,7 +9,7 @@ export default async function DashboardEventFormsPage({
 }) {
   const { id } = await params;
   const forms = await getEventForms(id);
-  const attributes = await getEventFormAttributes(id);
+  const attributes = await getEventAttributes(id);
 
   return (
     <div className="flex flex-col gap-8">

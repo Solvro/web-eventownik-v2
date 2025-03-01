@@ -18,14 +18,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import type { EventAttribute } from "@/types/attributes";
 
 import { createEventForm } from "../actions";
 import { newEventFormAtom } from "../state";
-
-interface EventAttribute {
-  id: number;
-  name: string;
-}
 
 const EventFormAttributesSchema = z.object({
   attributesIds: z.array(z.number()),
@@ -47,7 +43,7 @@ function AttributesForm({
   const form = useForm<z.infer<typeof EventFormAttributesSchema>>({
     resolver: zodResolver(EventFormAttributesSchema),
     defaultValues: {
-      attributesIds: newEventForm.attributesIds,
+      attributesIds: newEventForm.attributes.map((attribute) => attribute.id),
     },
   });
 
@@ -77,7 +73,7 @@ function AttributesForm({
         endTime: "",
         startDate: new Date(),
         endDate: new Date(),
-        attributesIds: [],
+        attributes: [],
       });
 
       router.replace(`/dashboard/events/${eventId.toString()}/forms/`);
