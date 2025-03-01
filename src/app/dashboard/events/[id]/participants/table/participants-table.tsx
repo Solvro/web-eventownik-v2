@@ -1,6 +1,5 @@
 "use client";
 
-import type { Table as TanstackTable } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -10,8 +9,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, FilterX } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
+import { Fragment, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,17 +25,21 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
-import type { FlattenedParticipant, Participant } from "@/types/participant";
+import type { Participant } from "@/types/participant";
 
 import { deleteParticipant as deleteParticipantAction } from "../actions";
-import {
-  DeleteParticipantDialog,
-  EditParticipantButton,
-} from "./action-components";
-import { AttributeInput } from "./attribute-input";
+import { DeleteParticipantDialog } from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { EditParticipantForm } from "./edit-participant-form";
+import { getPaginationInfoText } from "./utils";
 
+/**
+ * To seamlessly navigate during working on this component
+ * get familiar with [Tanstack Table V8 docs](https://tanstack.com/table/latest/docs/introduction)
+ *
+ * There is a lot of space to improve since the first version of the component was made in a hurry 😭.
+ */
 export function ParticipantTable({
   participants,
   attributes,
@@ -69,7 +72,7 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
-      pagination: { pageSize: 2, pageIndex: 0 },
+      pagination: { pageSize: 15, pageIndex: 0 },
       columnVisibility: {
         id: false,
       },
@@ -100,7 +103,6 @@ export function ParticipantTable({
       );
     });
   }
-
   return (
     <>
       <div className="my-2 flex items-center gap-x-4">
@@ -122,6 +124,16 @@ export function ParticipantTable({
           title="Resetuj filtry"
         >
           <FilterX />
+        </Button>
+        <Button
+          onClick={() => {
+            table.resetSorting();
+          }}
+          size="icon"
+          variant="outline"
+          title="Resetuj sortowanie"
+        >
+          <ArrowUpDown />
         </Button>
         <div className="ml-auto">
           <span className="mr-2">{getPaginationInfoText(table)}</span>
@@ -174,69 +186,72 @@ export function ParticipantTable({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <>
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={cn(
-                      cell.column.id === "expand" ? "text-right" : "",
-                    )}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-              {row.getIsExpanded() ? (
-                <TableRow
-                  key={`${row.id}-edit`}
-                  className="border-l-2 border-l-primary"
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <TableCell key={`${cell.id}-edit`}>
-                        {cell.column.id === "expand" ? (
-                          <div className="flex w-fit flex-col">
-                            <EditParticipantButton
-                              participant={row.original}
-                              setData={setData}
-                              disabled={isQuering}
-                            />
-                            <DeleteParticipantDialog
-                              isQuering={isQuering}
-                              participantId={row.original.id}
-                              deleteParticipant={deleteParticipant}
-                            />
-                          </div>
-                        ) : cell.column.columnDef.meta?.attribute ===
-                          undefined ? null : row.original.mode === "edit" ? (
-                          <AttributeInput
-                            attribute={cell.column.columnDef.meta.attribute}
-                            initialValue={
-                              cell.getValue() as
-                                | string
-                                | number
-                                | boolean
-                                | Date
-                                | null
-                            }
-                          />
-                        ) : (
-                          <div>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </div>
-                        )}
-                      </TableCell>
-                    );
-                  })}
+          {table.getRowModel().rows.map((row) => {
+            const allVisibleCells = row.getVisibleCells();
+            const attributesCells = allVisibleCells.filter(
+              (cell) => cell.column.columnDef.meta?.attribute !== undefined,
+            );
+            //headers structure - [select, email, ...attributes, expand]
+            const emailCell = allVisibleCells.at(1);
+
+            return (
+              <Fragment key={row.id}>
+                <TableRow>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.column.id === "expand" ? "text-right" : "",
+                      )}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ) : null}
-            </>
-          ))}
+                {row.getIsExpanded() ? (
+                  <TableRow
+                    key={`${row.id}-edit`}
+                    className="border-l-2 border-l-primary"
+                  >
+                    <TableCell>{null}</TableCell>
+                    <TableCell>
+                      {emailCell === undefined
+                        ? null
+                        : flexRender(
+                            emailCell.column.columnDef.cell,
+                            emailCell.getContext(),
+                          )}
+                    </TableCell>
+                    <TableCell
+                      className="p-0"
+                      colSpan={attributesCells.length + 1}
+                    >
+                      <EditParticipantForm
+                        cells={attributesCells}
+                        attributes={attributes}
+                        disabled={row.original.mode === "view"}
+                        participantId={row.original.id.toString()}
+                        participant={row.original}
+                        setData={setData}
+                      ></EditParticipantForm>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex w-fit flex-col">
+                        <DeleteParticipantDialog
+                          isQuering={isQuering}
+                          participantId={row.original.id}
+                          deleteParticipant={deleteParticipant}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </Fragment>
+            );
+          })}
         </TableBody>
       </Table>
       {table.getRowCount() === 0 ? (
@@ -246,15 +261,4 @@ export function ParticipantTable({
       ) : null}
     </>
   );
-}
-
-function getPaginationInfoText(table: TanstackTable<FlattenedParticipant>) {
-  const { pageIndex, pageSize } = table.getState().pagination;
-  return `${
-    table.getPaginationRowModel().rows.length === 0
-      ? "0"
-      : (pageIndex * pageSize + 1).toString()
-  }
-  -${Math.min(pageSize * pageIndex + pageSize, table.getRowCount()).toString()} z 
-  ${table.getRowCount().toString()}`;
 }

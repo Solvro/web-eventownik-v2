@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -13,19 +14,21 @@ import type { Attribute } from "@/types/attributes";
 export function AttributeInput({
   attribute,
   initialValue,
+  field,
 }: {
   attribute: Attribute;
   initialValue: string | number | boolean | Date | null;
+  field: ControllerRenderProps<FieldValues, string>;
 }) {
   const [newValue, setNewValue] = useState<
     string | number | boolean | Date | null
   >(initialValue);
   switch (attribute.type) {
     case "text": {
-      return <Input defaultValue={initialValue as string} />;
+      return <Input type="text" {...field} />;
     }
     case "number": {
-      return <Input defaultValue={initialValue as number} type="number" />;
+      return <Input type="number" {...field} />;
     }
     case "datetime": {
       throw new Error('Not implemented yet: "datetime" case');
@@ -37,6 +40,7 @@ export function AttributeInput({
           onValueChange={(value) => {
             setNewValue(value);
           }}
+          {...field}
         >
           <SelectTrigger>
             <SelectValue>{newValue as string}</SelectValue>
@@ -52,7 +56,9 @@ export function AttributeInput({
       );
     }
     case "email": {
-      return <Input defaultValue={initialValue as number} type="email" />;
+      return (
+        <Input defaultValue={initialValue as string} type="email" {...field} />
+      );
     }
     case "time": {
       throw new Error('Not implemented yet: "time" case');

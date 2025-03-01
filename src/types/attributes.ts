@@ -9,7 +9,6 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   eventId: number;
   showInList: boolean;
   options: string[] | null;
-  //TODO string enum values
   type: AttributeType;
   createdAt: string;
   updatedAt: string;

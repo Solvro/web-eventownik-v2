@@ -1,3 +1,5 @@
+"use client";
+
 import { Pencil, Save, Trash2, XCircle } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -71,18 +73,22 @@ export function EditParticipantButton({
   participant,
   setData,
   disabled,
+  handleSubmit,
 }: {
   participant: FlattenedParticipant;
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   disabled: boolean;
+  handleSubmit: (event?: React.BaseSyntheticEvent) => void;
 }) {
   return participant.mode === "edit" ? (
     <Button
-      type="submit"
       variant="outline"
+      type="submit"
       disabled={disabled}
-      onClick={() => {
-        //TODO submit changes
+      onClick={(event) => {
+        event.preventDefault();
+        handleSubmit(event);
+        console.log("submited");
         setData((previousData) => {
           return previousData.map((_participant) =>
             _participant.id === participant.id
@@ -98,8 +104,10 @@ export function EditParticipantButton({
   ) : (
     <Button
       variant="outline"
+      type="button"
       disabled={disabled}
-      onClick={() => {
+      onClick={(event) => {
+        event.preventDefault();
         setData((previousData) => {
           return previousData.map((_participant) =>
             _participant.id === participant.id

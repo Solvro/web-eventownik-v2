@@ -19,12 +19,12 @@ export default async function DashboardEventParticipantsPage({
   const participantsData = getParticipants(id, session.bearerToken);
   const attributesData = getAttributes(id, session.bearerToken);
 
-  const [participants, attributes] = await Promise.all([
-    participantsData,
-    attributesData,
-  ]);
-  // const participants = mockedParticipants;
-  // const attributes = mockedAttributes;
+  // const [participants, attributes] = await Promise.all([
+  //   participantsData,
+  //   attributesData,
+  // ]);
+  const participants = mockedParticipants;
+  const attributes = mockedAttributes;
 
   return (
     <div>
