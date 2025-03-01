@@ -51,7 +51,7 @@ export function EditParticipantForm({
     if (!success) {
       toast({
         variant: "destructive",
-        title: "Usunięcie uczestnika nie powiodło się!",
+        title: "Aktualizacja uczestnika nie powiodła się!",
         description: error,
       });
       return;

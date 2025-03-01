@@ -50,7 +50,7 @@ export function ParticipantTable({
   eventId: string;
 }) {
   const { toast } = useToast();
-  const [isQuering, setIsQuering] = useState(false);
+  const [isQuerying, setIsQuerying] = useState(false);
 
   const [data, setData] = useState(() => flattenParticipants(participants));
   const columns = useMemo(() => generateColumns(attributes), [attributes]);
@@ -81,12 +81,12 @@ export function ParticipantTable({
   });
 
   async function deleteParticipant(participantId: number) {
-    setIsQuering(true);
+    setIsQuerying(true);
     const { success, error } = await deleteParticipantAction(
       eventId,
       participantId.toString(),
     );
-    setIsQuering(false);
+    setIsQuerying(false);
 
     if (!success) {
       toast({
@@ -235,7 +235,7 @@ export function ParticipantTable({
                     <TableCell>
                       <div className="flex w-fit flex-col">
                         <DeleteParticipantDialog
-                          isQuering={isQuering}
+                          isQuerying={isQuerying}
                           participantId={row.original.id}
                           deleteParticipant={deleteParticipant}
                         />

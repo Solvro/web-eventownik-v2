@@ -18,18 +18,22 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import type { FlattenedParticipant } from "@/types/participant";
 
 export function DeleteParticipantDialog({
-  isQuering,
+  isQuerying,
   participantId,
   deleteParticipant,
 }: {
-  isQuering: boolean;
+  isQuerying: boolean;
   participantId: number;
   deleteParticipant: (_participantId: number) => Promise<void>;
 }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="text-red-500" disabled={isQuering}>
+        <Button
+          variant="outline"
+          className="text-red-500"
+          disabled={isQuerying}
+        >
           <Trash2 />
           Usuń
         </Button>

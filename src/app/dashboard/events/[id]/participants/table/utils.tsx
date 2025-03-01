@@ -112,7 +112,5 @@ export function getPaginationInfoText(table: Table<FlattenedParticipant>) {
     table.getPaginationRowModel().rows.length === 0
       ? "0"
       : (pageIndex * pageSize + 1).toString()
-  }
-    -${Math.min(pageSize * pageIndex + pageSize, table.getRowCount()).toString()} z 
-    ${table.getRowCount().toString()}`;
+  }-${Math.min(pageSize * pageIndex + pageSize, table.getRowCount()).toString()} z ${table.getRowCount().toString()}`;
 }
