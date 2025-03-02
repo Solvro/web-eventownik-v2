@@ -34,7 +34,7 @@ const EventAttributesFormSchema = z.object({
   type: z.enum(AttributeTypes),
 });
 
-export function AttributesForm() {
+export default function AttributesForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [attributes, setAttributes] = useState<

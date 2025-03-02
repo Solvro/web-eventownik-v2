@@ -39,11 +39,11 @@ const EventPersonalizationFormSchema = z.object({
   slug: z.string(),
 });
 
-export function PersonalizationForm() {
+export default function PersonalizationForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   if (event.name === "") {
-    router.push("/dashboard/event/create?step=1");
+    router.push("/dashboard/event/create/general-info");
   }
   const fileInputId = useId();
   const imageInputId = useId();
@@ -86,7 +86,7 @@ export function PersonalizationForm() {
       links: data.links,
       slug: data.slug,
     });
-    router.push("/dashboard/event/create?step=3");
+    router.push("/dashboard/event/create/coorganizers");
   }
   return (
     <FormContainer
@@ -282,7 +282,7 @@ export function PersonalizationForm() {
           <div className="flex flex-row items-center justify-between gap-4">
             <Link
               className={buttonVariants({ variant: "ghost" })}
-              href="/dashboard/event/create?step=3"
+              href="/dashboard/event/create/coorganizers"
             >
               Może później
             </Link>

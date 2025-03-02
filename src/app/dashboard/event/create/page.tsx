@@ -5,17 +5,19 @@ import { Frown, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { saveEvent } from "../actions";
-import { eventAtom } from "../state";
+import { saveEvent } from "./actions";
+import { eventAtom } from "./state";
 
-export function SaveEvent() {
+export default function SaveEvent() {
   const event = useAtomValue(eventAtom);
   const router = useRouter();
   const [result, setResult] = useState<string | undefined>();
   // check if event has the required field
-  if (event.name === "") {
-    router.push("/dashboard/event/create?step=1");
-  }
+  useEffect(() => {
+    if (event.name === "") {
+      router.push("/dashboard/event/create/general-info");
+    }
+  }, []);
   useEffect(() => {
     let ignore = false;
     void saveEvent(event).then((_result) => {

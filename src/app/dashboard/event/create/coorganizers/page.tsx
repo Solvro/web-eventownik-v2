@@ -32,7 +32,7 @@ const EventCoorganizersFormSchema = z.object({
   coorganizer: z.string().email("Podaj poprawny adres email"),
 });
 
-export function CoorganizersForm() {
+export default function CoorganizersForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [coorganizers, setCoorganizers] = useState(event.coorganizers);
@@ -48,7 +48,7 @@ export function CoorganizersForm() {
   }
   function saveCoorganizers() {
     setEvent((_event) => ({ ..._event, coorganizers }));
-    router.push("/dashboard/event/create?step=4");
+    router.push("/dashboard/event/create/attributes");
   }
   return (
     <FormContainer
@@ -106,7 +106,7 @@ export function CoorganizersForm() {
         <div className="flex flex-row items-center justify-between gap-4">
           <Link
             className={buttonVariants({ variant: "ghost" })}
-            href="/dashboard/event/create?step=4"
+            href="/dashboard/event/create/attributes"
           >
             Może później
           </Link>
