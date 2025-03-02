@@ -7,6 +7,7 @@ import { ArrowRight, CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -25,8 +26,6 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-
-import { newEventFormAtom } from "../state";
 
 const EventFormGeneralInfoSchema = z.object({
   name: z.string().nonempty({ message: "Nazwa jest wymagana" }),

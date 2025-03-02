@@ -31,7 +31,7 @@ async function getEventAttributes(eventId: string) {
   return attributes;
 }
 
-const getEventForms = cache(async (eventId: string) => {
+async function getEventForms(eventId: string) {
   const session = await verifySession();
   if (session == null) {
     return [];
@@ -54,7 +54,7 @@ const getEventForms = cache(async (eventId: string) => {
 
   const parsed = (await response.json()) as PaginatedResponse<EventForm>;
   return parsed.data;
-});
+}
 
 const getSingleEventForm = cache(async (eventId: string, formId: string) => {
   const session = await verifySession();

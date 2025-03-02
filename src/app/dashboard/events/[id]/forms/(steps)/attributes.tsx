@@ -2,11 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Loader, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -21,7 +22,6 @@ import { useToast } from "@/hooks/use-toast";
 import type { EventAttribute } from "@/types/attributes";
 
 import { createEventForm } from "../actions";
-import { newEventFormAtom } from "../state";
 
 const EventFormAttributesSchema = z.object({
   attributesIds: z.array(z.number()),
@@ -89,47 +89,41 @@ function AttributesForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="attributesIds"
-          render={() => (
-            <FormItem className="space-y-3">
-              <FormLabel>Wybierz atrybuty</FormLabel>
-              {attributes.map((attribute) => (
-                <FormField
+        <FormItem className="space-y-3">
+          <FormLabel>Wybierz atrybuty</FormLabel>
+          {attributes.map((attribute) => (
+            <FormField
+              key={attribute.id}
+              control={form.control}
+              name="attributesIds"
+              render={({ field }) => (
+                <FormItem
                   key={attribute.id}
-                  control={form.control}
-                  name="attributesIds"
-                  render={({ field }) => (
-                    <FormItem
-                      key={attribute.id}
-                      className="flex flex-row items-start space-x-3 space-y-0"
-                    >
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value.includes(attribute.id)}
-                          disabled={form.formState.isSubmitting}
-                          onCheckedChange={(checked: boolean) => {
-                            checked
-                              ? field.onChange([...field.value, attribute.id])
-                              : field.onChange(
-                                  field.value.filter(
-                                    (value) => value !== attribute.id,
-                                  ),
-                                );
-                            saveSelectedAttributes();
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel>{attribute.name}</FormLabel>
-                    </FormItem>
-                  )}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  className="flex flex-row items-start space-x-3 space-y-0"
+                >
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value.includes(attribute.id)}
+                      disabled={form.formState.isSubmitting}
+                      onCheckedChange={(checked: boolean) => {
+                        checked
+                          ? field.onChange([...field.value, attribute.id])
+                          : field.onChange(
+                              field.value.filter(
+                                (value) => value !== attribute.id,
+                              ),
+                            );
+                        saveSelectedAttributes();
+                      }}
+                    />
+                  </FormControl>
+                  <FormLabel>{attribute.name}</FormLabel>
+                </FormItem>
+              )}
+            />
+          ))}
+          <FormMessage />
+        </FormItem>
         <div className="flex justify-between">
           <Button
             variant="ghost"
@@ -139,7 +133,12 @@ function AttributesForm({
             <ArrowLeft /> Wróć
           </Button>
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            <Save /> Zapisz
+            {form.formState.isSubmitting ? (
+              <Loader className="animate-spin" />
+            ) : (
+              <Save />
+            )}{" "}
+            Zapisz
           </Button>
         </div>
       </form>
