@@ -8,7 +8,7 @@ import { API_URL, PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
-import { RegisterParitcipantForm } from "./register-participant-form";
+import { RegisterParticipantForm } from "./register-participant-form";
 
 export default async function EventPage({
   params,
@@ -26,12 +26,11 @@ export default async function EventPage({
   }
   const event = (await response.json()) as Event;
 
-  //TODO primaryColor set based on color from API
+  // TODO: primaryColor set based on color from API
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <div
-        id="leftColumn"
-        className="flex flex-1 flex-col justify-between py-4 text-[#f0f0ff]"
+        className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
           backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl})`,
         }}
@@ -40,8 +39,8 @@ export default async function EventPage({
           <AppLogo forceTheme="dark" />
         </nav>
         <div className="flex flex-col gap-2">
-          <div className="relative p-8">
-            <h1 className="mb-4 text-3xl font-bold md:text-5xl">
+          <div className="p-8">
+            <h1 className="mb-4 text-4xl font-bold md:text-5xl">
               {event.name}
             </h1>
             <div className="mb-8 flex flex-col gap-y-2">
@@ -75,21 +74,18 @@ export default async function EventPage({
                 </div>
               ) : null}
             </div>
-            <p className="max-h-48 overflow-y-auto whitespace-pre-line">
+            <p className="max-h-72 overflow-y-auto whitespace-pre-line leading-relaxed">
               {event.description}
             </p>
           </div>
         </div>
       </div>
-      <div
-        id="rightColumn"
-        className="flex flex-1 flex-col items-center gap-y-2 py-8"
-      >
-        <h2 className="text-3xl font-bold md:text-4xl">
+      <div className="flex flex-1 flex-col items-center gap-y-2 p-4">
+        <h2 className="text-center text-3xl font-bold md:text-4xl">
           Rejestracja na wydarzenie
         </h2>
-        <span>Wypełnij formularz, aby się zarejestrować</span>
-        <RegisterParitcipantForm eventId={event.id.toString()} />
+        <p className="mb-8">Wypełnij formularz, aby się zarejestrować</p>
+        <RegisterParticipantForm eventId={event.id.toString()} />
       </div>
     </div>
   );
@@ -106,7 +102,7 @@ function EventInfoDiv({
     <div
       className={cn(
         className,
-        "flex w-fit gap-x-2 rounded-lg bg-accent/10 px-2 py-1 backdrop-blur-sm",
+        "flex w-fit items-center gap-x-2 rounded-lg bg-accent/10 px-2 py-1 backdrop-blur-sm",
       )}
     >
       {children}

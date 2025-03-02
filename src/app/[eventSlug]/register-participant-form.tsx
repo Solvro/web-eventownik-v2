@@ -19,8 +19,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { registerParticipantFormSchema } from "@/types/schemas";
 
-export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
-  //TODO fetch additional attributes from API
+export function RegisterParticipantForm({ eventId }: { eventId: string }) {
+  // TODO: Fetch additional attributes from API
   const form = useForm<z.infer<typeof registerParticipantFormSchema>>({
     resolver: zodResolver(registerParticipantFormSchema),
     defaultValues: {
@@ -38,7 +38,7 @@ export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
         toast({
           variant: "destructive",
           title: "Rejestracja na wydarzenie nie powiodła się",
-          //TODO more informative message based on error returned from registerParticipant() action
+          // TODO: More informative message based on error returned from registerParticipant() action
           description: "Spróbuj ponownie później",
         });
       }
@@ -62,12 +62,12 @@ export function RegisterParitcipantForm({ eventId }: { eventId: string }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">E-mail</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
                   type="email"
                   disabled={form.formState.isSubmitting}
-                  placeholder="E-mail"
+                  placeholder="Podaj swój adres e-mail"
                   {...field}
                 />
               </FormControl>
