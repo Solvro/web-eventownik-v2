@@ -97,10 +97,7 @@ function AttributesForm({
               control={form.control}
               name="attributesIds"
               render={({ field }) => (
-                <FormItem
-                  key={attribute.id}
-                  className="flex flex-row items-start space-x-3 space-y-0"
-                >
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl>
                     <Checkbox
                       checked={field.value.includes(attribute.id)}
