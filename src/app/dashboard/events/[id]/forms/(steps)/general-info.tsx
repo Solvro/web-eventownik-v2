@@ -37,7 +37,6 @@ const EventFormGeneralInfoSchema = z.object({
   endDate: z.date().refine((date) => date > new Date(), {
     message: "Data zakończenia musi być po dacie rozpoczęcia.",
   }),
-  slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isOpen: z.boolean(),
 });
 
@@ -49,38 +48,27 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
-      startTime: `${newEventForm.startDate.getHours().toString().padStart(2, "0")}:${newEventForm.startDate.getMinutes().toString().padStart(2, "0")}`,
-      endTime: `${newEventForm.endDate.getHours().toString().padStart(2, "0")}:${newEventForm.endDate.getMinutes().toString().padStart(2, "0")}`,
+      startTime: format(newEventForm.startDate, "HH:mm"),
+      endTime: format(newEventForm.endDate, "HH:mm"),
       startDate: newEventForm.startDate,
       endDate: newEventForm.endDate,
       isOpen: newEventForm.isOpen,
-      slug: newEventForm.slug,
     },
   });
 
   function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
-    // console.log(values);
     setNewEventForm({ ...newEventForm, ...values });
     goToNextStep();
   }
 
-  function onError(errors: unknown) {
-    console.warn(errors);
-    console.warn(form.getValues());
-  }
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid gap-8 md:grid-cols-2 md:gap-10">
           <div className="w-full space-y-8">
             <FormField
               name="name"
               control={form.control}
-              disabled={form.formState.isSubmitting}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nazwa formularza</FormLabel>
@@ -88,8 +76,8 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     <Input
                       type="text"
                       placeholder="Podaj nazwę formularza"
-                      disabled={form.formState.isSubmitting}
                       {...field}
+                      disabled={form.formState.isSubmitting}
                     />
                   </FormControl>
                   <FormMessage>
@@ -104,7 +92,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 <FormField
                   control={form.control}
                   name="startDate"
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <Popover>
@@ -113,6 +100,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             <Button
                               variant={"outline"}
                               className="w-[240px] pl-3 text-left font-normal"
+                              disabled={form.formState.isSubmitting}
                             >
                               {format(field.value, "PPP")}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -144,11 +132,14 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 <FormField
                   control={form.control}
                   name="startTime"
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          {...field}
+                          disabled={form.formState.isSubmitting}
+                        />
                       </FormControl>
                       <FormMessage className="text-sm text-red-500">
                         {form.formState.errors.startTime?.message}
@@ -163,7 +154,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 <FormField
                   control={form.control}
                   name="endDate"
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem>
                       <Popover>
@@ -172,6 +162,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             <Button
                               variant={"outline"}
                               className="w-[240px] pl-3 text-left font-normal"
+                              disabled={form.formState.isSubmitting}
                             >
                               {format(field.value, "PPP")}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -203,11 +194,14 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 <FormField
                   control={form.control}
                   name="endTime"
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          disabled={form.formState.isSubmitting}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-sm text-red-500">
                         {form.formState.errors.endTime?.message}
@@ -217,40 +211,21 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 />
               </div>
             </div>
-            {/* TODO: Make the slug auto-generated from the name */}
-            <FormField
-              name="slug"
-              control={form.control}
-              disabled={form.formState.isSubmitting}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="nazwa-formularza"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.slug?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
           </div>
           <div className="flex flex-col gap-8">
             {/* TODO: Replace with a WYSIWYG editor */}
             <FormField
               name="description"
               control={form.control}
-              disabled={form.formState.isSubmitting}
               render={({ field }) => (
                 <FormItem className="grow">
                   <FormLabel>Dodaj tekst wstępny</FormLabel>
                   <FormControl>
-                    <Textarea {...field} className="h-5/6 resize-none" />
+                    <Textarea
+                      {...field}
+                      className="h-5/6 resize-none"
+                      disabled={form.formState.isSubmitting}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.description?.message}

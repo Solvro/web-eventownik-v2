@@ -15,7 +15,7 @@ import type { EventAttribute } from "@/types/attributes";
 import { AttributesForm } from "./(steps)/attributes";
 import { GeneralInfoForm } from "./(steps)/general-info";
 
-function EventFormForm({
+function CreateEventFormForm({
   eventId,
   attributes,
 }: {
@@ -58,4 +58,4 @@ function EventFormForm({
   );
 }
 
-export { EventFormForm };
+export { CreateEventFormForm };

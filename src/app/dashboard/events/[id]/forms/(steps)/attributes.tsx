@@ -108,6 +108,7 @@ function AttributesForm({
                       <FormControl>
                         <Checkbox
                           checked={field.value.includes(attribute.id)}
+                          disabled={form.formState.isSubmitting}
                           onCheckedChange={(checked: boolean) => {
                             checked
                               ? field.onChange([...field.value, attribute.id])
@@ -130,10 +131,14 @@ function AttributesForm({
           )}
         />
         <div className="flex justify-between">
-          <Button variant="ghost" onClick={goToPreviousStep}>
+          <Button
+            variant="ghost"
+            onClick={goToPreviousStep}
+            disabled={form.formState.isSubmitting}
+          >
             <ArrowLeft /> Wróć
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={form.formState.isSubmitting}>
             <Save /> Zapisz
           </Button>
         </div>
