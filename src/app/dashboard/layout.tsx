@@ -6,10 +6,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 
 export default function DashboardLayout({
   children,
-  modals,
 }: {
-  children: React.ReactNode;
-  modals: React.ReactNode;
+  children: Readonly<React.ReactNode>;
 }) {
   return (
     <div className="min-h-screen">
@@ -27,7 +25,6 @@ export default function DashboardLayout({
       </header>
       <main className="flex min-h-[calc(100vh-80px)] flex-col px-4 py-8">
         {children}
-        {modals}
       </main>
     </div>
   );
