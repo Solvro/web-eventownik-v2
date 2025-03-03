@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { Loader2, PlusIcon, TextIcon } from "lucide-react";
+import { ArrowLeft, Loader2, PlusIcon, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,9 +35,14 @@ const EventAttributesFormSchema = z.object({
   type: z.enum(AttributeTypes),
 });
 
-export default function AttributesForm() {
+export function AttributesForm({
+  goToPreviousStep,
+}: {
+  goToPreviousStep: () => void;
+}) {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
+  const [loading, setLoading] = useState(false);
   const [attributes, setAttributes] = useState<
     z.infer<typeof EventAttributesFormSchema>[]
   >(event.attributes);
@@ -53,6 +58,7 @@ export default function AttributesForm() {
     form.reset();
   }
   async function createEvent() {
+    setLoading(true);
     try {
       const result = await saveEvent({ ...event, attributes });
       if ("errors" in result) {
@@ -62,7 +68,7 @@ export default function AttributesForm() {
           description: "Spróbuj utworzyć wydarzenie ponownie.",
         });
       } else {
-        router.push(`/dashboard/event/share/${result.id}`);
+        //router.push(`/dashboard/event/share/${result.id}`);
       }
     } catch {
       toast({
@@ -71,6 +77,7 @@ export default function AttributesForm() {
         description: "Sprawdź swoje połączenie z internetem.",
       });
     }
+    setLoading(false);
   }
   return (
     <FormContainer
@@ -80,7 +87,7 @@ export default function AttributesForm() {
       icon={<TextIcon />}
     >
       <div className="flex w-full flex-col items-center">
-        <div className="space-y-4">
+        <div className="w-full space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
               {attributes.length > 0 && (
@@ -158,13 +165,16 @@ export default function AttributesForm() {
               </form>
             </Form>
           </div>
-          <div className="flex w-full flex-row justify-end">
+          <div className="flex w-full flex-row justify-between gap-4">
             <Button
-              className="w-min"
-              onClick={createEvent}
-              disabled={form.formState.isSubmitting}
+              variant="ghost"
+              onClick={goToPreviousStep}
+              disabled={loading}
             >
-              {form.formState.isSubmitting ? (
+              <ArrowLeft /> Wróć
+            </Button>
+            <Button className="w-min" onClick={createEvent} disabled={loading}>
+              {loading ? (
                 <>
                   Zapisywanie danych... <Loader2 className="animate-spin" />
                 </>

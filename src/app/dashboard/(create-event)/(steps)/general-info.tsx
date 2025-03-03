@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, getHours, getMinutes } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -26,8 +25,8 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 
-import { FormContainer } from "./form-container";
-import { eventAtom } from "./state";
+import { FormContainer } from "../form-container";
+import { eventAtom } from "../state";
 
 const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
@@ -45,7 +44,11 @@ const EventGeneralInfoSchema = z.object({
   organizer: z.string().optional(),
 });
 
-export default function GeneralInfoForm() {
+export function GeneralInfoForm({
+  goToNextStep,
+}: {
+  goToNextStep: () => void;
+}) {
   const [event, setEvent] = useAtom(eventAtom);
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
@@ -61,7 +64,6 @@ export default function GeneralInfoForm() {
       organizer: event.organizer,
     },
   });
-  const router = useRouter();
   function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
     values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
     values.startDate.setMinutes(
@@ -79,7 +81,7 @@ export default function GeneralInfoForm() {
       long: values.long,
       organizer: values.organizer,
     });
-    router.push("/dashboard/event/create/personalization");
+    goToNextStep();
   }
   return (
     <FormContainer

@@ -3,19 +3,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import {
+  ArrowLeft,
   ArrowRight,
   EllipsisVertical,
   Loader2,
   PlusIcon,
   Users,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -32,8 +31,13 @@ const EventCoorganizersFormSchema = z.object({
   coorganizer: z.string().email("Podaj poprawny adres email"),
 });
 
-export default function CoorganizersForm() {
-  const router = useRouter();
+export function CoorganizersForm({
+  goToPreviousStep,
+  goToNextStep,
+}: {
+  goToPreviousStep: () => void;
+  goToNextStep: () => void;
+}) {
   const [event, setEvent] = useAtom(eventAtom);
   const [coorganizers, setCoorganizers] = useState(event.coorganizers);
   const form = useForm<z.infer<typeof EventCoorganizersFormSchema>>({
@@ -48,7 +52,7 @@ export default function CoorganizersForm() {
   }
   function saveCoorganizers() {
     setEvent((_event) => ({ ..._event, coorganizers }));
-    router.push("/dashboard/event/create/attributes");
+    goToNextStep();
   }
   return (
     <FormContainer
@@ -104,12 +108,13 @@ export default function CoorganizersForm() {
           </Form>
         </div>
         <div className="flex flex-row items-center justify-between gap-4">
-          <Link
-            className={buttonVariants({ variant: "ghost" })}
-            href="/dashboard/event/create/attributes"
+          <Button
+            variant="ghost"
+            onClick={goToPreviousStep}
+            disabled={form.formState.isSubmitting}
           >
-            Może później
-          </Link>
+            <ArrowLeft /> Wróć
+          </Button>
           <Button
             className="w-min"
             variant="ghost"

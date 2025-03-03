@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import {
+  ArrowLeft,
   ArrowRight,
   Loader2,
   MinusIcon,
@@ -11,8 +12,6 @@ import {
   UploadIcon,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -39,12 +38,14 @@ const EventPersonalizationFormSchema = z.object({
   slug: z.string(),
 });
 
-export default function PersonalizationForm() {
-  const router = useRouter();
+export function PersonalizationForm({
+  goToPreviousStep,
+  goToNextStep,
+}: {
+  goToPreviousStep: () => void;
+  goToNextStep: () => void;
+}) {
   const [event, setEvent] = useAtom(eventAtom);
-  if (event.name === "") {
-    router.push("/dashboard/event/create");
-  }
   const fileInputId = useId();
   const imageInputId = useId();
   const [eventImage, setEventImage] = useState<string | null>(null);
@@ -55,7 +56,7 @@ export default function PersonalizationForm() {
       color: event.color,
       participantsNumber: event.participantsNumber,
       links: event.links,
-      slug: `/${event.name.toLowerCase().replaceAll(/\s+/g, "-")}`,
+      slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
     },
   });
   async function onSubmit(
@@ -86,7 +87,7 @@ export default function PersonalizationForm() {
       links: data.links,
       slug: data.slug,
     });
-    router.push("/dashboard/event/create/coorganizers");
+    goToNextStep();
   }
   return (
     <FormContainer
@@ -276,12 +277,13 @@ export default function PersonalizationForm() {
             </div>
           </div>
           <div className="flex flex-row items-center justify-between gap-4">
-            <Link
-              className={buttonVariants({ variant: "ghost" })}
-              href="/dashboard/event/create/coorganizers"
+            <Button
+              variant="ghost"
+              onClick={goToPreviousStep}
+              disabled={form.formState.isSubmitting}
             >
-              Może później
-            </Link>
+              <ArrowLeft /> Wróć
+            </Button>
             <Button
               className="w-min"
               variant="ghost"
