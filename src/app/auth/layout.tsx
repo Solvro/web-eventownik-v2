@@ -1,3 +1,9 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Autentykacja",
+};
+
 export default function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

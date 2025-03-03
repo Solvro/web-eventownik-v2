@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
 
@@ -10,11 +11,38 @@ import type { Event } from "@/types/event";
 
 import { RegisterParticipantForm } from "./register-participant-form";
 
-export default async function EventPage({
-  params,
-}: {
+interface EventPageProps {
   params: Promise<{ eventSlug: string }>;
-}) {
+}
+
+export async function generateMetadata({
+  params,
+}: EventPageProps): Promise<Metadata> {
+  const { eventSlug } = await params;
+
+  const response = await fetch(`${API_URL}/events/${eventSlug}`, {
+    method: "GET",
+  });
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(error);
+    return {
+      title: "Eventownik",
+      description: "Nie znaleziono wydarzenia 😪",
+    };
+  }
+  const event = (await response.json()) as Event;
+
+  return {
+    title: event.name,
+    description: `${event.description} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
+    openGraph: {
+      images: [`${PHOTO_URL}/${event.photoUrl}`],
+    },
+  };
+}
+
+export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
   const response = await fetch(`${API_URL}/events/${eventSlug}`, {
     method: "GET",
