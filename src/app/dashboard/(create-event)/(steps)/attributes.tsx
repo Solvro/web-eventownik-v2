@@ -56,7 +56,7 @@ async function getBase64FromUrl(url: string) {
       `[getBase64FromUrl] Failed to get base64 from url ${url}:`,
       error,
     );
-    throw new Error(`Failed to get base64 from url ${url}`);
+    return "";
   }
 }
 
