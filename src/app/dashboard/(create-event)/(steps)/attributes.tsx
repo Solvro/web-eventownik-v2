@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtomValue } from "jotai";
 import { ArrowLeft, Loader2, PlusIcon, TextIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -34,6 +35,31 @@ const EventAttributesFormSchema = z.object({
   type: z.enum(AttributeTypes),
 });
 
+async function getBase64FromUrl(url: string) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      // eslint-disable-next-line unicorn/prefer-add-event-listener
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    return base64;
+  } catch (error) {
+    console.error(
+      `[getBase64FromUrl] Failed to get base64 from url ${url}:`,
+      error,
+    );
+    throw new Error(`Failed to get base64 from url ${url}`);
+  }
+}
+
 export function AttributesForm({
   goToPreviousStep,
 }: {
@@ -51,14 +77,19 @@ export function AttributesForm({
       type: "text",
     },
   });
+
+  const router = useRouter();
+
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
     setAttributes([...attributes, data]);
     form.reset();
   }
+
   async function createEvent() {
-    setLoading(true);
+    const base64Image = await getBase64FromUrl(event.image);
+    const newEventObject = { ...event, attributes, image: base64Image };
     try {
-      const result = await saveEvent({ ...event, attributes });
+      const result = await saveEvent(newEventObject);
       if ("errors" in result) {
         toast({
           variant: "destructive",
@@ -66,7 +97,12 @@ export function AttributesForm({
           description: "Spróbuj utworzyć wydarzenie ponownie.",
         });
       } else {
-        //router.push(`/dashboard/event/share/${result.id}`);
+        toast({
+          title: "Pomyślnie utworzono nowe wydarzenie",
+        });
+        setTimeout(() => {
+          router.push(`/dashboard/events/${result.id}`);
+        }, 200);
       }
     } catch {
       toast({
@@ -91,8 +127,11 @@ export function AttributesForm({
               {attributes.length > 0 && (
                 <p className="text-sm font-medium">Atrybuty</p>
               )}
-              {attributes.map((attribute, key) => (
-                <div key={key} className="flex flex-row items-center gap-2">
+              {attributes.map((attribute) => (
+                <div
+                  key={attribute.name}
+                  className="flex flex-row items-center gap-2"
+                >
                   <p className="flex h-12 w-full rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm">
                     {attribute.name}
                   </p>

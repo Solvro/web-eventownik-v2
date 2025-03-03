@@ -49,6 +49,7 @@ export function PersonalizationForm({
   const fileInputId = useId();
   const imageInputId = useId();
   const [eventImage, setEventImage] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
     defaultValues: {
@@ -59,29 +60,11 @@ export function PersonalizationForm({
       slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
     },
   });
-  async function onSubmit(
-    data: z.infer<typeof EventPersonalizationFormSchema>,
-  ) {
-    let image = "";
-    if (eventImage !== null) {
-      // convert image to base64
-      image = await new Promise((resolve) => {
-        // Fetch the Blob from the Blob URL
-        void fetch(eventImage)
-          .then(async (response) => response.blob()) // Get the Blob from the URL
-          .then((blob) => {
-            // Use FileReader to read the Blob as a base64 string
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              resolve(reader.result as string); // This will be a base64 string
-            };
-            reader.readAsDataURL(blob); // Read Blob as a Data URL (base64)
-          });
-      });
-    }
+
+  function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
     setEvent({
       ...event,
-      image,
+      image: eventImage ?? "",
       color: data.color ?? "#3672fd",
       participantsNumber: data.participantsNumber,
       links: data.links,
@@ -89,6 +72,7 @@ export function PersonalizationForm({
     });
     goToNextStep();
   }
+
   return (
     <FormContainer
       step="2/4"
@@ -105,52 +89,59 @@ export function PersonalizationForm({
             <FormField
               name="image"
               control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex w-full flex-col gap-2">
-                  <FormLabel>Zdjęcie</FormLabel>
-                  <FormLabel
-                    htmlFor={fileInputId}
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
-                      eventImage !== null && "overflow-hidden p-0",
-                    )}
-                  >
-                    {eventImage === null ? (
-                      <>
-                        <div className="flex flex-row items-center gap-2">
-                          <UploadIcon /> Dodaj zdjęcie
-                        </div>
-                        <p className="text-sm font-normal">
-                          Format 1:1, zalecane 1080x1080px
-                        </p>
-                      </>
-                    ) : (
-                      <Image
-                        src={eventImage}
-                        alt="Podgląd zdjęcia wydarzenia"
-                        width={1080}
-                        height={1080}
-                        className="rounded-md"
-                      />
-                    )}
-                  </FormLabel>
-                  <Input
-                    id={fileInputId}
-                    className="hidden"
-                    type="file"
-                    accept="image/png, image/gif, image/jpeg"
-                    disabled={form.formState.isSubmitting}
-                    {...field}
-                    onChangeCapture={(event_) => {
-                      const input = event_.target as HTMLInputElement;
-                      if (input.files?.[0] != null) {
-                        setEventImage(URL.createObjectURL(input.files[0]));
-                      }
-                    }}
-                  />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const processedField = { ...field, value: "" };
+                return (
+                  <FormItem className="flex w-full flex-col gap-2">
+                    <FormLabel>Zdjęcie</FormLabel>
+                    <FormLabel
+                      htmlFor={fileInputId}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
+                        eventImage !== "" && "overflow-hidden p-0",
+                      )}
+                    >
+                      {event.image === "" && eventImage === null ? (
+                        <>
+                          <div className="flex flex-row items-center gap-2">
+                            <UploadIcon /> Dodaj zdjęcie
+                          </div>
+                          <p className="text-sm font-normal">
+                            Format 1:1, zalecane 1080x1080px
+                          </p>
+                        </>
+                      ) : (
+                        <Image
+                          src={
+                            event.image === ""
+                              ? (eventImage ?? "")
+                              : event.image
+                          }
+                          alt="Podgląd zdjęcia wydarzenia"
+                          width={1080}
+                          height={1080}
+                          className="rounded-md"
+                        />
+                      )}
+                    </FormLabel>
+                    <Input
+                      id={fileInputId}
+                      className="hidden"
+                      type="file"
+                      accept="image/png, image/gif, image/jpeg"
+                      disabled={form.formState.isSubmitting}
+                      {...processedField}
+                      onChangeCapture={(event_) => {
+                        const input = event_.target as HTMLInputElement;
+                        if (input.files?.[0] != null) {
+                          setEventImage(URL.createObjectURL(input.files[0]));
+                        }
+                      }}
+                    />
+                  </FormItem>
+                );
+              }}
             />
             <div className="flex flex-col gap-4">
               <FormField
