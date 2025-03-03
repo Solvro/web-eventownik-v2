@@ -8,3 +8,18 @@ if (API_URL === "") {
 if (PHOTO_URL === "") {
   throw new Error("PHOTO_URL was not set in enviroment variables!");
 }
+
+export interface PaginatedResponse<T> {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string;
+    lastPageUrl: string;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: T[];
+}
