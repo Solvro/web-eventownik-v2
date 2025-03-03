@@ -108,7 +108,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {/* @ts-expect-error zod schema object are dynamic */}
-                  {form.formState.errors[attribute.slug]?.message}
+                  {form.formState.errors[attribute.id.toString()]?.message}
                 </FormMessage>
               </FormItem>
             )}
