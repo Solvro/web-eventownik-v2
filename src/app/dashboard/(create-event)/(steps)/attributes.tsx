@@ -86,6 +86,7 @@ export function AttributesForm({
   }
 
   async function createEvent() {
+    setLoading(true);
     const base64Image = await getBase64FromUrl(event.image);
     const newEventObject = { ...event, attributes, image: base64Image };
     try {
@@ -97,6 +98,7 @@ export function AttributesForm({
           description: "Spróbuj utworzyć wydarzenie ponownie.",
         });
       } else {
+        URL.revokeObjectURL(event.image);
         toast({
           title: "Pomyślnie utworzono nowe wydarzenie",
         });
