@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -27,7 +28,9 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   // generate schema for form based on event.firstForm.attributes
   const registerParticipantFormSchema = z.object({
     email: z.string().email("Nieprawidłowy adres email."),
-    ...getSchemaObjectForAttributes(event.firstForm.attributes),
+    ...getSchemaObjectForAttributes(
+      event.firstForm?.attributes.sort((a, b) => a.id - b.id) ?? [],
+    ), // TODO: change to order after backend changes
   });
 
   const form = useForm<z.infer<typeof registerParticipantFormSchema>>({
@@ -64,6 +67,36 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         description: "Błąd serwera",
       });
     }
+  }
+
+  if (event.firstForm === null) {
+    return (
+      <div>
+        <p className="text-sm text-red-500">
+          Brak formularza rejestracyjnego dla tego wydarzenia.
+        </p>
+      </div>
+    );
+  }
+
+  if (form.formState.isSubmitSuccessful) {
+    return (
+      <div>
+        <h2 className="text-1xl text-center font-bold text-green-500 md:text-2xl">
+          Twoja rejestracja przebiegła pomyślnie!
+        </h2>
+        <br />
+        <div className="text-center">
+          <Button
+            onClick={() => {
+              form.reset();
+            }}
+          >
+            Uzupełnij kolejny formularz
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
