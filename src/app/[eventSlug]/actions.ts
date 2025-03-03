@@ -6,6 +6,15 @@ import { API_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 import type { registerParticipantFormSchema } from "@/types/schemas";
 
+interface ErrorObject {
+  rule: string;
+  field: string;
+}
+
+interface ErrorResponse {
+  errors: ErrorObject[];
+}
+
 export async function registerParticipant(
   values: z.infer<typeof registerParticipantFormSchema>,
   event: Event,
@@ -30,11 +39,9 @@ export async function registerParticipant(
     );
     if (!response.ok) {
       console.error("Error when registering participant", response);
-      console.error(
-        "Error when registering participant",
-        await response.json(),
-      );
-      return { success: false };
+      const errorData = (await response.json()) as ErrorResponse;
+      console.error("Error when registering participant", errorData.errors);
+      return { success: false, errors: errorData.errors };
     }
   } catch (error) {
     console.error("Error when registering participant", error);
