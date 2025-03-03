@@ -10,6 +10,9 @@ export async function registerParticipant(
   values: z.infer<typeof registerParticipantFormSchema>,
   event: Event,
 ) {
+  if (event.firstForm === null) {
+    return { success: false };
+  }
   try {
     const response = await fetch(
       `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,

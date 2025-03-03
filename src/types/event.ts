@@ -17,5 +17,5 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   photoUrl: string;
-  firstForm: Form;
+  firstForm: Form | null;
 }
