@@ -37,6 +37,9 @@ export function getSchemaObjectForAttribute(attribute: Attribute) {
     // }
     // Temporary use textarea for color input
     case "color": {
+      if (attribute.slug === "thoughts") {
+        return z.string().optional();
+      }
       return z.string({
         required_error: `To pole nie może być puste.`,
       });
