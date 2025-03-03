@@ -74,7 +74,7 @@ export function getSchemaObjectForAttribute(attribute: Attribute) {
 export function getSchemaObjectForAttributes(attributes: Attribute[]) {
   return Object.fromEntries(
     attributes.map((attribute) => [
-      attribute.slug,
+      attribute.id.toString(),
       getSchemaObjectForAttribute(attribute),
     ]),
   );

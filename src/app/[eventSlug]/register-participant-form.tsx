@@ -30,7 +30,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     ...getSchemaObjectForAttributes(event.firstForm.attributes),
   });
 
-  // console.log("RegisterParticipantForm", event);
   const form = useForm<z.infer<typeof registerParticipantFormSchema>>({
     resolver: zodResolver(registerParticipantFormSchema),
     defaultValues: {
@@ -43,7 +42,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     values: z.infer<typeof registerParticipantFormSchema>,
   ) {
     try {
-      const result = await registerParticipant(values, event.id.toString());
+      const result = await registerParticipant(values, event);
       if (!result.success) {
         toast({
           variant: "destructive",
@@ -94,7 +93,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
             key={attribute.id}
             control={form.control}
             // @ts-expect-error zod schema object are dynamic
-            name={attribute.slug}
+            name={attribute.id.toString()}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{attribute.name}</FormLabel>
