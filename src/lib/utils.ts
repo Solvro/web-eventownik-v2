@@ -14,6 +14,9 @@ export function getSchemaObjectForAttribute(attribute: Attribute) {
     case "select":
     case "text":
     case "time": {
+      if (attribute.slug === "section") {
+        return z.coerce.string();
+      }
       return z.string({
         required_error: `Pole ${attribute.name} nie może być puste.`,
       });

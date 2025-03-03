@@ -47,17 +47,34 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     try {
       const result = await registerParticipant(values, event);
       if (!result.success) {
-        form.setError("root", {
-          type: "manual",
-          message:
-            "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
-        });
-        toast({
-          variant: "destructive",
-          title: "Rejestracja na wydarzenie nie powiodła się",
-          // TODO: More informative message based on error returned from registerParticipant() action
-          description: "Spróbuj ponownie później",
-        });
+        if (
+          result.errors?.[0]?.rule === "database.unique" &&
+          result.errors[0]?.field === "email"
+        ) {
+          form.setError("email", {
+            type: "manual",
+            message:
+              "Ten adres email jest już zarejestrowany na to wydarzenie.",
+          });
+          toast({
+            variant: "destructive",
+            title: "Adres email jest już zajęty",
+            description:
+              "Ten adres email jest już zarejestrowany na to wydarzenie.",
+          });
+        } else {
+          form.setError("root", {
+            type: "manual",
+            message:
+              "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
+          });
+          toast({
+            variant: "destructive",
+            title: "Rejestracja na wydarzenie nie powiodła się",
+            // TODO: More informative message based on error returned from registerParticipant() action
+            description: "Spróbuj ponownie później",
+          });
+        }
       }
     } catch (error) {
       console.error("Participant register failed", error);
