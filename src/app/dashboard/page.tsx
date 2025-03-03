@@ -1,13 +1,10 @@
-import { getUser } from "@/lib/dal";
-import { verifySession } from "@/lib/session";
+import { CreateEventForm } from "./(create-event)/create-event-form";
 
-export default async function DashboardHomepage() {
-  const session = await verifySession();
-  const user = await getUser();
+export default function DashboardHomepage() {
   return (
-    <h1 className="text-3xl font-bold">
-      Panel organizatora | Bearer token: {session?.bearerToken} | Email:{" "}
-      {user?.email}
-    </h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-3xl font-bold">Panel organizatora</h1>
+      <CreateEventForm />
+    </div>
   );
 }
