@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AppLogo } from "@/components/app-logo";
 import { AuthButton } from "@/components/auth-button";
 import { ThemeSwitch } from "@/components/theme-switch";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default function DashboardLayout({
   children,
