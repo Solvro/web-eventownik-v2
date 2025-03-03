@@ -47,6 +47,11 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     try {
       const result = await registerParticipant(values, event);
       if (!result.success) {
+        form.setError("root", {
+          type: "manual",
+          message:
+            "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
+        });
         toast({
           variant: "destructive",
           title: "Rejestracja na wydarzenie nie powiodła się",
@@ -142,6 +147,12 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
             )}
           />
         ))}
+
+        {form.formState.errors.root?.message != null && (
+          <FormMessage className="whitespace-break-spaces text-center text-sm text-red-500">
+            {form.formState.errors.root.message}
+          </FormMessage>
+        )}
 
         <Button
           type="submit"
