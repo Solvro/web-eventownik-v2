@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import type { Attribute } from "@/types/attributes";
 
 export function AttributeInput({
@@ -55,8 +56,12 @@ export function AttributeInput({
     case "time": {
       return <Input type="time" {...field} />;
     }
+    // case "color": {
+    //   return <Input type="color" className="h-16 w-full" {...field} />;
+    // }
+    // Temporary use textarea for color input
     case "color": {
-      return <Input type="color" className="h-16 w-full" {...field} />;
+      return <Textarea rows={3} {...field} />;
     }
     case "checkbox": {
       return (
