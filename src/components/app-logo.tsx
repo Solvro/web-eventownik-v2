@@ -8,7 +8,16 @@ import { useEffect, useState } from "react";
 import DarkLogo from "@/../public/logo-dark.png";
 import LightLogo from "@/../public/logo-light.png";
 
-export function AppLogo() {
+const getSource = (theme?: string) => {
+  if (theme === "dark") {
+    return DarkLogo;
+  }
+  return LightLogo;
+};
+
+export function AppLogo({
+  forceTheme,
+}: { forceTheme?: "dark" | "light" } = {}) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState<boolean>(false);
 
@@ -19,7 +28,7 @@ export function AppLogo() {
   return mounted ? (
     <Link href="/" className="text-lg font-bold">
       <Image
-        src={resolvedTheme === "dark" ? DarkLogo : LightLogo}
+        src={forceTheme ? getSource(forceTheme) : getSource(resolvedTheme)}
         alt="Eventownik"
       />
     </Link>

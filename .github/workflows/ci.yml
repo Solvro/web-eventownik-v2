@@ -35,5 +35,6 @@ jobs:
         env:
           EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
+          PHOTO_URL: https://example.com/
         run: npm run build
         if: always()

@@ -14,8 +14,22 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Eventownik",
-  description: "Eventownik v2",
+  title: {
+    template: "%s | Eventownik",
+    default: "Eventownik - organizacja wydarzeń",
+  },
+  description:
+    "Eventownik to rozwiązanie służące wspomaganiu organizacji wydarzeń, ze szczególnym uwzględnieniem działalności Politechniki Wrocławskiej.",
+  robots: "index, follow",
+  keywords: [
+    "eventownik",
+    "wydarzenia",
+    "politechnika wrocławska",
+    "organizacja wydarzeń",
+  ],
+  alternates: {
+    canonical: "./",
+  },
 };
 
 export default function RootLayout({
