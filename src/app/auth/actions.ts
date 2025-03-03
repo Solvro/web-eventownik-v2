@@ -26,6 +26,14 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
     console.error("Error when registering", response);
     return response.json() as Promise<AuthErrorResponse>;
   });
+  if ("token" in data) {
+    try {
+      await createSession({ bearerToken: data.token });
+    } catch (error) {
+      console.error("Error when creating session", error);
+      return { errors: ["Internal server error"] };
+    }
+  }
   return data;
 }
 

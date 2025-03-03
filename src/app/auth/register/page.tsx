@@ -43,7 +43,7 @@ export default function RegisterPage() {
           description: "Spróbuj zarejestrować się ponownie.",
         });
       } else {
-        router.replace("/auth/login");
+        router.replace("/dashboard");
       }
     } catch {
       toast({
