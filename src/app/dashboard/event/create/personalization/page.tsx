@@ -34,7 +34,7 @@ import { eventAtom } from "../state";
 const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
   color: z.string().optional(),
-  participantsNumber: z.number().min(1),
+  participantsNumber: z.coerce.number().min(1),
   links: z.array(z.string()),
   slug: z.string(),
 });
@@ -43,7 +43,7 @@ export default function PersonalizationForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   if (event.name === "") {
-    router.push("/dashboard/event/create/general-info");
+    router.push("/dashboard/event/create");
   }
   const fileInputId = useId();
   const imageInputId = useId();
