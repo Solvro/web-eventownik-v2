@@ -86,7 +86,6 @@ export default function AttributesForm() {
                 <FormField
                   name="name"
                   control={form.control}
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <Input
                       {...field}
@@ -98,7 +97,6 @@ export default function AttributesForm() {
                 <FormField
                   name="type"
                   control={form.control}
-                  disabled={form.formState.isSubmitting}
                   render={({ field }) => (
                     <FormItem>
                       <Select
@@ -106,7 +104,10 @@ export default function AttributesForm() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-full capitalize">
+                          <SelectTrigger
+                            disabled={form.formState.isSubmitting}
+                            className="h-full capitalize"
+                          >
                             <SelectValue placeholder="Wybierz typ atrybutu" />
                           </SelectTrigger>
                         </FormControl>
@@ -125,7 +126,11 @@ export default function AttributesForm() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" variant="outline">
+                <Button
+                  disabled={form.formState.isSubmitting}
+                  type="submit"
+                  variant="outline"
+                >
                   <PlusIcon />
                 </Button>
               </div>

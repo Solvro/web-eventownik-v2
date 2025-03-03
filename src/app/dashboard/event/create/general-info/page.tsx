@@ -98,7 +98,6 @@ export default function GeneralInfoForm() {
               <FormField
                 name="name"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nazwa</FormLabel>
@@ -122,7 +121,6 @@ export default function GeneralInfoForm() {
                   <FormField
                     control={form.control}
                     name="startDate"
-                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <Popover>
@@ -162,11 +160,14 @@ export default function GeneralInfoForm() {
                   <FormField
                     control={form.control}
                     name="startTime"
-                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormControl>
-                          <Input type="time" {...field} />
+                          <Input
+                            disabled={form.formState.isSubmitting}
+                            type="time"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage className="text-sm text-red-500">
                           {form.formState.errors.startTime?.message}
@@ -181,7 +182,6 @@ export default function GeneralInfoForm() {
                   <FormField
                     control={form.control}
                     name="endDate"
-                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <Popover>
@@ -190,6 +190,7 @@ export default function GeneralInfoForm() {
                               <Button
                                 variant={"outline"}
                                 className="w-[240px] pl-3 text-left font-normal"
+                                disabled={form.formState.isSubmitting}
                               >
                                 {format(field.value, "PPP")}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -221,11 +222,14 @@ export default function GeneralInfoForm() {
                   <FormField
                     control={form.control}
                     name="endTime"
-                    disabled={form.formState.isSubmitting}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormControl>
-                          <Input type="time" {...field} />
+                          <Input
+                            disabled={form.formState.isSubmitting}
+                            type="time"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage className="text-sm text-red-500">
                           {form.formState.errors.endTime?.message}
@@ -240,7 +244,6 @@ export default function GeneralInfoForm() {
               <FormField
                 name="description"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex h-full flex-col gap-2">
                     <FormLabel>Opis</FormLabel>
@@ -269,7 +272,6 @@ export default function GeneralInfoForm() {
             </div>
             <FormField
               name="organizer"
-              disabled={form.formState.isSubmitting}
               control={form.control}
               render={({ field }) => (
                 <FormItem className="space-y-2">
@@ -277,6 +279,7 @@ export default function GeneralInfoForm() {
                   <FormControl>
                     <Input
                       type="text"
+                      disabled={form.formState.isSubmitting}
                       placeholder="Podaj organizatora wydarzenia"
                       {...field}
                     />

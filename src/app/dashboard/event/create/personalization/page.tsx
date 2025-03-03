@@ -104,7 +104,6 @@ export default function PersonalizationForm() {
             <FormField
               name="image"
               control={form.control}
-              disabled={form.formState.isSubmitting}
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col gap-2">
                   <FormLabel>Zdjęcie</FormLabel>
@@ -156,7 +155,6 @@ export default function PersonalizationForm() {
               <FormField
                 name="color"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Kolor wydarzenia</FormLabel>
@@ -185,7 +183,6 @@ export default function PersonalizationForm() {
               <FormField
                 name="participantsNumber"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Liczba uczestników</FormLabel>
@@ -203,7 +200,6 @@ export default function PersonalizationForm() {
               <FormField
                 name="links"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Linki</FormLabel>
@@ -225,6 +221,7 @@ export default function PersonalizationForm() {
                           <Button
                             type="button"
                             title="Usuń link"
+                            disabled={form.formState.isSubmitting}
                             variant="outline"
                             onClick={() => {
                               const newLinks = [...form.getValues("links")];
@@ -263,7 +260,6 @@ export default function PersonalizationForm() {
               <FormField
                 name="slug"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Slug</FormLabel>

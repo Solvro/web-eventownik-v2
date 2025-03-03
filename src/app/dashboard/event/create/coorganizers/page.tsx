@@ -81,11 +81,11 @@ export default function CoorganizersForm() {
               <FormField
                 name="coorganizer"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
+                        disabled={form.formState.isSubmitting}
                         type="email"
                         placeholder="Podaj adres email"
                         {...field}
