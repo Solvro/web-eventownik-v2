@@ -46,12 +46,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   ) {
     try {
       const result = await registerParticipant(values, event);
-      if (result.success) {
-        toast({
-          title: "Rejestracja na wydarzenie powiodła się",
-          description: "Zostałeś dodany do wydarzenia",
-        });
-      } else {
+      if (!result.success) {
         toast({
           variant: "destructive",
           title: "Rejestracja na wydarzenie nie powiodła się",
