@@ -21,11 +21,13 @@ export function CreateEventForm() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const steps = [
     <GeneralInfoForm
+      key={0}
       goToNextStep={() => {
         setCurrentStep((value) => value + 1);
       }}
     />,
     <PersonalizationForm
+      key={1}
       goToPreviousStep={() => {
         setCurrentStep((value) => value - 1);
       }}
@@ -34,6 +36,7 @@ export function CreateEventForm() {
       }}
     />,
     <CoorganizersForm
+      key={2}
       goToPreviousStep={() => {
         setCurrentStep((value) => value - 1);
       }}
@@ -42,6 +45,7 @@ export function CreateEventForm() {
       }}
     />,
     <AttributesForm
+      key={3}
       goToPreviousStep={() => {
         setCurrentStep((value) => value - 1);
       }}

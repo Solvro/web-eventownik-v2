@@ -1,9 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { ArrowLeft, Loader2, PlusIcon, TextIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,8 +39,7 @@ export function AttributesForm({
 }: {
   goToPreviousStep: () => void;
 }) {
-  const router = useRouter();
-  const [event, setEvent] = useAtom(eventAtom);
+  const event = useAtomValue(eventAtom);
   const [loading, setLoading] = useState(false);
   const [attributes, setAttributes] = useState<
     z.infer<typeof EventAttributesFormSchema>[]
