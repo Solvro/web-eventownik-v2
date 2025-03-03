@@ -33,6 +33,8 @@ export default async function EventPage({
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
           backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <nav className="flex items-center px-8">
