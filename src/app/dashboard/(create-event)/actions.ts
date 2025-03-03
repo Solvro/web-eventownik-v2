@@ -30,7 +30,14 @@ export async function saveEvent(event: Event) {
   formData.append("long", event.long.toString());
   formData.append("primaryColor", event.color);
   formData.append("participantsCount", event.participantsNumber.toString());
-  formData.append("photo", event.image);
+  if (event.image !== "") {
+    const photo = await fetch(event.image)
+      .then(async (response) => response.blob())
+      .then((blob) => {
+        return new File([blob], "File name", { type: "image/jpeg" });
+      });
+    formData.append("photo", photo);
+  }
   const data = await fetch(`${API_URL}/events`, {
     method: "POST",
     headers: {
