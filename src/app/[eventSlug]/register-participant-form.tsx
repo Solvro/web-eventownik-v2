@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import type { z } from "zod";
+import { z } from "zod";
 
 import { registerParticipant } from "@/app/[eventSlug]/actions";
+import { AttributeInput } from "@/components/attribute-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,10 +18,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { registerParticipantFormSchema } from "@/types/schemas";
+import { getSchemaObjectForAttributes } from "@/lib/utils";
+import type { Event } from "@/types/event";
 
-export function RegisterParticipantForm({ eventId }: { eventId: string }) {
-  // TODO: Fetch additional attributes from API
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+export function RegisterParticipantForm({ event }: { event: Event }) {
+  // generate schema for form based on event.firstForm.attributes
+  const registerParticipantFormSchema = z.object({
+    email: z.string().email("Nieprawidłowy adres email."),
+    ...getSchemaObjectForAttributes(event.firstForm.attributes),
+  });
+
+  // console.log("RegisterParticipantForm", event);
   const form = useForm<z.infer<typeof registerParticipantFormSchema>>({
     resolver: zodResolver(registerParticipantFormSchema),
     defaultValues: {
@@ -33,7 +43,7 @@ export function RegisterParticipantForm({ eventId }: { eventId: string }) {
     values: z.infer<typeof registerParticipantFormSchema>,
   ) {
     try {
-      const result = await registerParticipant(values, eventId);
+      const result = await registerParticipant(values, event.id.toString());
       if (!result.success) {
         toast({
           variant: "destructive",
@@ -51,6 +61,7 @@ export function RegisterParticipantForm({ eventId }: { eventId: string }) {
       });
     }
   }
+
   return (
     <Form {...form}>
       <form
@@ -77,7 +88,28 @@ export function RegisterParticipantForm({ eventId }: { eventId: string }) {
             </FormItem>
           )}
         />
-        {/* TODO generate rest inputs using AttributeInput component */}
+
+        {event.firstForm.attributes.map((attribute) => (
+          <FormField
+            key={attribute.id}
+            control={form.control}
+            // @ts-expect-error zod schema object are dynamic
+            name={attribute.slug}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{attribute.name}</FormLabel>
+                <FormControl>
+                  {/* @ts-expect-error zod schema object are dynamic */}
+                  <AttributeInput attribute={attribute} field={field} />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {/* @ts-expect-error zod schema object are dynamic */}
+                  {form.formState.errors[attribute.slug]?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ))}
 
         <Button
           type="submit"

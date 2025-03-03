@@ -1,5 +1,6 @@
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,7 +18,7 @@ export function AttributeInput({
   attribute: Attribute;
   field: ControllerRenderProps<FieldValues, string>;
 }) {
-  //TODO add lacking implementations for rest inputs
+  //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
       return <Input type="text" {...field} />;
@@ -26,7 +27,7 @@ export function AttributeInput({
       return <Input type="number" {...field} />;
     }
     case "datetime": {
-      throw new Error('Not implemented yet: "datetime" case');
+      return <Input type="datetime-local" {...field} />;
     }
     case "select": {
       return (
@@ -52,22 +53,33 @@ export function AttributeInput({
       return <Input type="email" {...field} />;
     }
     case "time": {
-      throw new Error('Not implemented yet: "time" case');
+      return <Input type="time" {...field} />;
     }
     case "color": {
-      throw new Error('Not implemented yet: "color" case');
+      return <Input type="color" className="h-16 w-full" {...field} />;
     }
     case "checkbox": {
-      throw new Error('Not implemented yet: "checkbox" case');
+      return (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={field.name}
+            checked={field.value === "true" || field.value === true}
+            onCheckedChange={(checked) => {
+              field.onChange(checked);
+            }}
+          />
+          {/*<Label htmlFor={field.name}>{attribute.label || field.name}</Label>*/}
+        </div>
+      );
     }
     case "tel": {
-      throw new Error('Not implemented yet: "tel" case');
+      return <Input type="tel" {...field} />;
     }
     case "date": {
-      throw new Error('Not implemented yet: "date" case');
+      return <Input type="date" {...field} />;
     }
     case "file": {
-      throw new Error('Not implemented yet: "file" case');
+      return <Input type="file" {...field} />;
     }
     case "block": {
       throw new Error('Not implemented yet: "block" case');

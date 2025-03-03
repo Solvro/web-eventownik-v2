@@ -28,7 +28,7 @@ export default async function EventPage({
 
   // TODO: primaryColor set based on color from API
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
@@ -80,12 +80,12 @@ export default async function EventPage({
           </div>
         </div>
       </div>
-      <div className="flex flex-1 flex-col items-center gap-y-2 p-4">
+      <div className="flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           Rejestracja na wydarzenie
         </h2>
         <p className="mb-8">Wypełnij formularz, aby się zarejestrować</p>
-        <RegisterParticipantForm eventId={event.id.toString()} />
+        <RegisterParticipantForm event={event} />
       </div>
     </div>
   );

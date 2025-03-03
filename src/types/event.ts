@@ -1,3 +1,5 @@
+import type { Form } from "@/types/form";
+
 export interface Event {
   id: number;
   organizerId: number;
@@ -15,4 +17,5 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   photoUrl: string;
+  firstForm: Form;
 }
