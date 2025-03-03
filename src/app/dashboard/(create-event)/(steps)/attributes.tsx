@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { ArrowLeft, Loader2, PlusIcon, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -65,7 +65,7 @@ export function AttributesForm({
 }: {
   goToPreviousStep: () => void;
 }) {
-  const event = useAtomValue(eventAtom);
+  const [event, setEvent] = useAtom(eventAtom);
   const [loading, setLoading] = useState(false);
   const [attributes, setAttributes] = useState<
     z.infer<typeof EventAttributesFormSchema>[]
@@ -99,9 +99,28 @@ export function AttributesForm({
         });
       } else {
         URL.revokeObjectURL(event.image);
+
         toast({
           title: "Pomyślnie utworzono nowe wydarzenie",
         });
+
+        setEvent({
+          name: "",
+          description: "",
+          startDate: new Date(),
+          endDate: new Date(),
+          lat: 0,
+          long: 0,
+          organizer: "",
+          image: "",
+          color: "#3672fd",
+          participantsNumber: 1,
+          links: [],
+          slug: "",
+          coorganizers: [],
+          attributes: [],
+        });
+
         setTimeout(() => {
           router.push(`/dashboard/events/${result.id}`);
         }, 200);

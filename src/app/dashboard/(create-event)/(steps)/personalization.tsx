@@ -48,7 +48,7 @@ export function PersonalizationForm({
   const [event, setEvent] = useAtom(eventAtom);
   const fileInputId = useId();
   const imageInputId = useId();
-  const [eventImage, setEventImage] = useState<string | null>(null);
+  const [lastImageUrl, setLastImageUrl] = useState<string>("");
 
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
@@ -64,7 +64,7 @@ export function PersonalizationForm({
   function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
     setEvent({
       ...event,
-      image: eventImage ?? "",
+      image: event.image,
       color: data.color ?? "#3672fd",
       participantsNumber: data.participantsNumber,
       links: data.links,
@@ -99,10 +99,10 @@ export function PersonalizationForm({
                       className={cn(
                         buttonVariants({ variant: "outline" }),
                         "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
-                        eventImage !== "" && "overflow-hidden p-0",
+                        event.image !== "" && "overflow-hidden p-0",
                       )}
                     >
-                      {event.image === "" && eventImage === null ? (
+                      {event.image === "" ? (
                         <>
                           <div className="flex flex-row items-center gap-2">
                             <UploadIcon /> Dodaj zdjęcie
@@ -113,11 +113,7 @@ export function PersonalizationForm({
                         </>
                       ) : (
                         <Image
-                          src={
-                            event.image === ""
-                              ? (eventImage ?? "")
-                              : event.image
-                          }
+                          src={event.image === "" ? "" : event.image}
                           alt="Podgląd zdjęcia wydarzenia"
                           width={1080}
                           height={1080}
@@ -135,7 +131,15 @@ export function PersonalizationForm({
                       onChangeCapture={(event_) => {
                         const input = event_.target as HTMLInputElement;
                         if (input.files?.[0] != null) {
-                          setEventImage(URL.createObjectURL(input.files[0]));
+                          URL.revokeObjectURL(lastImageUrl);
+                          const newBlobUrl = URL.createObjectURL(
+                            input.files[0],
+                          );
+                          setLastImageUrl(newBlobUrl);
+                          setEvent({
+                            ...event,
+                            image: newBlobUrl,
+                          });
                         }
                       }}
                     />
