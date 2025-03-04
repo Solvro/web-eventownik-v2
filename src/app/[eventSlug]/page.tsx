@@ -110,7 +110,7 @@ export default async function EventPage({ params }: EventPageProps) {
           </div>
         </div>
       </div>
-      <div className="flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
+      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           Rejestracja na wydarzenie
         </h2>
