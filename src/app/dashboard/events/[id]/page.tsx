@@ -13,7 +13,7 @@ import { notFound, unauthorized } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { Button } from "@/components/ui/button";
-import { API_URL } from "@/lib/api";
+import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -82,8 +82,8 @@ export default async function DashboardEventPage({
             ? EventPhotoPlaceholder
             : `${PHOTO_URL}/${event.photoUrl}`
         }
-        width="400"
-        height="400"
+        width={400}
+        height={400}
         className="aspect-square rounded-xl object-cover"
         alt={event.name}
       />
