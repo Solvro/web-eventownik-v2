@@ -18,12 +18,12 @@ export default async function EventListPage() {
     unauthorized();
   }
   const { bearerToken } = session;
-  const data = await fetch(`${API_URL}/events`, {
+  const response = await fetch(`${API_URL}/events`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
-  const events = (await data.json()) as Event[];
+  const events = (await response.json()) as Event[];
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
@@ -54,7 +54,7 @@ export default async function EventListPage() {
                     <EventInfoDiv className="bg-accent-foreground/60 text-background">
                       <Calendar1 size={16} />
                       <p className="text-sm">
-                        {format(event.startDate, "dd.MM.yyyy")}
+                        {format(event.startDate, "dd.MM.yyyy HH:mm")}
                       </p>
                     </EventInfoDiv>
                     <EventInfoDiv className="bg-accent-foreground/60 text-background">
