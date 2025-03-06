@@ -1,12 +1,19 @@
 import { format } from "date-fns";
-import { Calendar1, CircleHelpIcon, Share2Icon, Users } from "lucide-react";
+import {
+  AlertCircle,
+  Calendar1,
+  CircleHelpIcon,
+  Share2Icon,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { unauthorized } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
@@ -15,7 +22,7 @@ import type { Event } from "@/types/event";
 export default async function EventListPage() {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {
-    unauthorized();
+    notFound();
   }
   const { bearerToken } = session;
   const response = await fetch(`${API_URL}/events`, {
@@ -23,6 +30,19 @@ export default async function EventListPage() {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
+  if (!response.ok) {
+    return (
+      <div className="flex w-full flex-col items-center gap-4">
+        <Alert variant="destructive">
+          <AlertCircle className="size-6" />
+          <AlertTitle>Wystąpił błąd podczas pobierania danych.</AlertTitle>
+          <AlertDescription>
+            Sprawdź swoje połączenie z internetem i spróbuj ponownie.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
   const events = (await response.json()) as Event[];
   return (
     <div className="flex flex-col gap-4">
