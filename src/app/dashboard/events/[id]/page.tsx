@@ -28,15 +28,15 @@ export default async function DashboardEventPage({
   }
   const { bearerToken } = session;
   const { id } = await params;
-  const data = await fetch(`${API_URL}/events/${id}`, {
+  const response = await fetch(`${API_URL}/events/${id}`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
-  if (!data.ok) {
+  if (!response.ok) {
     notFound();
   }
-  const event = (await data.json()) as Event;
+  const event = (await response.json()) as Event;
   return (
     <div className="flex flex-col-reverse gap-4 lg:flex-row lg:justify-between">
       <div className="space-y-8">
@@ -50,11 +50,11 @@ export default async function DashboardEventPage({
           ) : null}
           <div className="flex flex-row items-center space-x-2">
             <Calendar1 size={24} />
-            <p>{`${format(event.startDate, "dd.MM.yyyy")} ${getHours(event.startDate).toString()}:${getMinutes(event.startDate).toString().padStart(2, "0")}`}</p>
+            <p>{format(event.startDate, "dd.MM.yyyy HH:mm")}</p>
           </div>
           <div className="flex flex-row items-center space-x-2">
             <CalendarX size={24} />
-            <p>{`${format(event.endDate, "dd.MM.yyyy")} ${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`}</p>
+            <p>{format(event.endDate, "dd.MM.yyyy HH:mm")}</p>
           </div>
           <div className="flex flex-row items-center space-x-2">
             <Users size={24} />
