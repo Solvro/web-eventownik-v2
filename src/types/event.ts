@@ -16,6 +16,6 @@ export interface Event {
   participantsCount: number;
   createdAt: string;
   updatedAt: string;
-  photoUrl: string;
+  photoUrl: string | null;
   firstForm: Form | null;
 }
