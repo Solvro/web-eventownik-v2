@@ -1,4 +1,4 @@
-import { format, getHours, getMinutes } from "date-fns";
+import { format } from "date-fns";
 import {
   Calendar1,
   CalendarX,
@@ -23,49 +23,54 @@ export default async function DashboardEventPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await verifySession();
-  if (session == null || typeof session.bearerToken !== "string") {
+  if (session == null) {
     unauthorized();
   }
   const { bearerToken } = session;
   const { id } = await params;
+
   const response = await fetch(`${API_URL}/events/${id}`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
+
   if (!response.ok) {
     notFound();
   }
+
   const event = (await response.json()) as Event;
   return (
     <div className="flex flex-col-reverse gap-4 lg:flex-row lg:justify-between">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold">{event.name}</h1>
+          <h1 className="text-3xl font-bold">{event.name}</h1>
           {event.organizer ? (
-            <div className="flex flex-row items-center space-x-2">
+            <div className="flex flex-row items-center gap-2">
               <User size={24} />
               <p>{event.organizer}</p>
             </div>
           ) : null}
-          <div className="flex flex-row items-center space-x-2">
+          <div className="flex flex-row items-center gap-2">
             <Calendar1 size={24} />
             <p>{format(event.startDate, "dd.MM.yyyy HH:mm")}</p>
           </div>
-          <div className="flex flex-row items-center space-x-2">
+          <div className="flex flex-row items-center gap-2">
             <CalendarX size={24} />
             <p>{format(event.endDate, "dd.MM.yyyy HH:mm")}</p>
           </div>
-          <div className="flex flex-row items-center space-x-2">
-            <Users size={24} />
-            <p>{event.participantsCount}</p>
-          </div>
+          {event.participantsCount ? (
+            <div className="flex flex-row items-center gap-2">
+              <Users size={24} />
+              <p>{event.participantsCount}</p>
+            </div>
+          ) : null}
           {/* Mockup suggested that there also should be location,
            * but for now the backend does not return it - mejsiejdev
            */}
         </div>
         {event.description ? <p>{event.description}</p> : null}
-        <div className="space-x-4">
+        <div className="flex flex-col gap-2 md:flex-row">
           <Button asChild>
             <Link href={`/dashboard/events/${id}/settings`}>
               <SquarePenIcon /> Edytuj wydarzenie
@@ -85,7 +90,7 @@ export default async function DashboardEventPage({
         width={400}
         height={400}
         className="aspect-square rounded-xl object-cover"
-        alt={event.name}
+        alt={`Zdjęcie wydarzenia ${event.name}`}
       />
     </div>
   );
