@@ -15,8 +15,8 @@ export default function DashboardLayout({
   children: Readonly<React.ReactNode>;
 }) {
   return (
-    <div className="flex min-h-screen justify-center">
-      <div className="container">
+    <div className="min-h-screen">
+      <div className="container mx-auto">
         <header className="flex justify-between p-4">
           <nav className="flex items-center gap-8">
             <AppLogo />

@@ -48,10 +48,7 @@ export default async function EventListPage() {
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
         <div className="flex justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Moje wydarzenia</h1>
-            <h3 className="text-muted-foreground">{events.length} wydarzeń</h3>
-          </div>
+          <h1 className="text-3xl font-bold">Moje wydarzenia</h1>
           <CreateEventForm />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -67,7 +64,7 @@ export default async function EventListPage() {
                   width="500"
                   height="500"
                   className="aspect-square w-full rounded-t-xl object-cover"
-                  alt={event.name}
+                  alt={`Zdjęcie wydarzenia ${event.name}`}
                 />
                 <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
                   <div className="flex flex-row justify-between">
@@ -88,10 +85,8 @@ export default async function EventListPage() {
                 </div>
               </div>
               <div className="flex flex-col gap-4 rounded-b-xl border-x border-b border-muted-foreground p-4">
-                <p className="text-2xl font-bold">{event.name}</p>
-                <p className="line-clamp-3 text-xs font-normal">
-                  {event.description}
-                </p>
+                <p className="line-clamp-3 text-2xl font-bold">{event.name}</p>
+                <p className="line-clamp-3 text-xs">{event.description}</p>
                 <div className="flex w-full justify-between">
                   <Button asChild variant="ghost">
                     <Link href={`/dashboard/events/${event.id.toString()}`}>
