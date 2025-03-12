@@ -87,7 +87,7 @@ export function AttributesForm({
 
   async function createEvent() {
     setLoading(true);
-    const base64Image = await getBase64FromUrl(event.image);
+    const base64Image = event.image ? await getBase64FromUrl(event.image) : "";
     const newEventObject = { ...event, attributes, image: base64Image };
     try {
       const result = await saveEvent(newEventObject);
