@@ -12,7 +12,7 @@ import { notFound } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
-import { EventInfoDiv } from "@/components/event-info-div";
+import { EventInfoBlock } from "@/components/event-info-block";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
@@ -68,16 +68,16 @@ export default async function EventListPage() {
                 />
                 <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
                   <div className="flex flex-row justify-between">
-                    <EventInfoDiv className="bg-accent-foreground/60 text-background">
+                    <EventInfoBlock>
                       <Calendar1 size={16} />
                       <p className="text-sm">
                         {format(event.startDate, "dd.MM.yyyy HH:mm")}
                       </p>
-                    </EventInfoDiv>
-                    <EventInfoDiv className="bg-accent-foreground/60 text-background">
+                    </EventInfoBlock>
+                    <EventInfoBlock>
                       <p className="text-sm">{event.participantsCount}</p>
                       <Users size={16} />
-                    </EventInfoDiv>
+                    </EventInfoBlock>
                   </div>
                   {/* Mockup suggested that there also should be location,
                    * but for now the backend does not return it - mejsiejdev

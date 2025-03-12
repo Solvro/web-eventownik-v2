@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-function EventInfoDiv({
+function EventInfoBlock({
   children,
   className,
 }: {
@@ -10,7 +10,7 @@ function EventInfoDiv({
   return (
     <div
       className={cn(
-        "flex w-fit items-center gap-x-2 rounded-lg bg-accent/10 px-2 py-1 backdrop-blur-sm",
+        "flex w-fit items-center gap-x-2 rounded-lg bg-accent-foreground/60 px-2 py-1 text-background backdrop-blur-sm",
         className,
       )}
     >
@@ -19,4 +19,4 @@ function EventInfoDiv({
   );
 }
 
-export { EventInfoDiv };
+export { EventInfoBlock };
