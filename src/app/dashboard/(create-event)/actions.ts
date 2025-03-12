@@ -35,7 +35,7 @@ export async function saveEvent(event: Event) {
   formData.append("primaryColor", event.color);
   formData.append("participantsCount", event.participantsNumber.toString());
 
-  if (event.image !== "") {
+  if (event.image) {
     const photo = await fetch(event.image)
       .then(async (response) => response.blob())
       .then((blob) => {
