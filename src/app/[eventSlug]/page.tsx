@@ -90,7 +90,7 @@ export default async function EventPage({ params }: EventPageProps) {
               {event.location ? (
                 <div className="flex flex-wrap gap-x-2">
                   <Link
-                    href={`https://www.google.com/maps/search/?api=1&query=${event.location}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                     target="_blank"
                   >
                     <EventInfoDiv>
