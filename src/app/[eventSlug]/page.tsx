@@ -37,7 +37,7 @@ export async function generateMetadata({
     title: event.name,
     description: `${event.description} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl}`],
+      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },
   };
 }
@@ -60,7 +60,7 @@ export default async function EventPage({ params }: EventPageProps) {
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
-          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl})`,
+          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl ?? ""})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
