@@ -30,8 +30,7 @@ export async function saveEvent(event: Event) {
     formatISO9075(event.endDate, { representation: "complete" }),
   );
 
-  formData.append("lat", event.lat.toString());
-  formData.append("long", event.long.toString());
+  formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.color);
   formData.append("participantsCount", event.participantsNumber.toString());
 

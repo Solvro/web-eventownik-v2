@@ -1,18 +1,19 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import type { StaticImageData } from "next/image";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import DarkLogo from "@/../public/logo-dark.png";
-import LightLogo from "@/../public/logo-light.png";
+import DarkLogo from "@/../public/logo-dark.svg";
+import LightLogo from "@/../public/logo-light.svg";
 
-const getSource = (theme?: string) => {
+const getSource = (theme: string | undefined): StaticImageData => {
   if (theme === "dark") {
-    return DarkLogo;
+    return DarkLogo as StaticImageData;
   }
-  return LightLogo;
+  return LightLogo as StaticImageData;
 };
 
 export function AppLogo({

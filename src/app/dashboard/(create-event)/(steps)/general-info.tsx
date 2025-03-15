@@ -39,8 +39,7 @@ const EventGeneralInfoSchema = z.object({
     message: "Data zakończenia musi być po dacie rozpoczęcia.",
   }),
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-  lat: z.number().min(-90).max(90),
-  long: z.number().min(-180).max(180),
+  location: z.string().optional(),
   organizer: z.string().optional(),
 });
 
@@ -59,11 +58,11 @@ export function GeneralInfoForm({
       startTime: `${getHours(event.startDate).toString()}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
       endDate: event.endDate,
       endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-      lat: 0,
-      long: 0,
+      location: event.location,
       organizer: event.organizer,
     },
   });
+
   function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
     values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
     values.startDate.setMinutes(
@@ -77,12 +76,12 @@ export function GeneralInfoForm({
       description: values.description,
       startDate: values.startDate,
       endDate: values.endDate,
-      lat: values.lat,
-      long: values.long,
+      location: values.location,
       organizer: values.organizer,
     });
     goToNextStep();
   }
+
   return (
     <FormContainer
       step="1/4"
@@ -266,12 +265,26 @@ export function GeneralInfoForm({
             </div>
           </div>
           <div className="grid w-full grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <FormLabel>Miejsce</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Wybierz miejsce wydarzenia" />
-              </FormControl>
-            </div>
+            <FormField
+              name="location"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Miejsce (opcjonalnie)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      disabled={form.formState.isSubmitting}
+                      placeholder="Podaj miejsce wydarzenia"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500">
+                    {form.formState.errors.location?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
             <FormField
               name="organizer"
               control={form.control}
