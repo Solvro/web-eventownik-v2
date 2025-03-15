@@ -28,6 +28,11 @@ async function getEventAttributes(eventId: string) {
   }
 
   const attributes = (await response.json()) as EventAttribute[];
+
+  console.log(
+    `[getEventAttributes] Attributes for event ${eventId}:`,
+    attributes,
+  );
   return attributes;
 }
 
