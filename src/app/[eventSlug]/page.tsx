@@ -87,15 +87,14 @@ export default async function EventPage({ params }: EventPageProps) {
                 </EventInfoDiv>
                 <EventInfoDiv>{format(event.endDate, "HH:mm")}</EventInfoDiv>
               </div>
-              {event.lat && event.long ? (
-                <div className="flex gap-x-2">
+              {event.location ? (
+                <div className="flex flex-wrap gap-x-2">
                   <Link
-                    href={`https://www.google.com/maps/search/?api=1&query=${event.lat.toString()}%2C${event.long.toString()}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                     target="_blank"
                   >
                     <EventInfoDiv>
-                      <MapPin size={20} />
-                      Sprawdź lokalizację
+                      <MapPin size={20} /> {event.location}
                     </EventInfoDiv>
                   </Link>
                   <EventInfoDiv>

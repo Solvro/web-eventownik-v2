@@ -30,13 +30,12 @@ export function getSchemaObjectForAttribute(attribute: Attribute) {
           message: `Pole ${attribute.name} musi być adresem email`,
         });
     }
-    // case "color": {
-    //   return z.string({
-    //     required_error: `Wybierz kolor dla pola ${attribute.name}.`,
-    //   });
-    // }
-    // Temporary use textarea for color input
     case "color": {
+      return z.string({
+        required_error: `Wybierz kolor dla pola ${attribute.name}.`,
+      });
+    }
+    case "textarea": {
       if (attribute.slug === "thoughts") {
         return z.string().optional();
       }

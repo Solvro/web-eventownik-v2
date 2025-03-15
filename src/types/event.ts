@@ -9,8 +9,7 @@ export interface Event {
   startDate: string;
   endDate: string;
   firstFormId: number;
-  lat: number;
-  long: number;
+  location: string;
   primaryColor: string;
   organizer: string;
   participantsCount: number;

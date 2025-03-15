@@ -1,3 +1,5 @@
+import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
+
 export interface EventAttribute {
   id: number;
   name: string;
@@ -34,16 +36,4 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   updatedAt: string;
 }
 
-export type AttributeType =
-  | "text"
-  | "number"
-  | "file"
-  | "select"
-  | "block"
-  | "date"
-  | "time"
-  | "datetime"
-  | "email"
-  | "tel"
-  | "color"
-  | "checkbox";
+export type AttributeType = (typeof AttributeTypes)[number];

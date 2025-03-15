@@ -5,6 +5,7 @@ import { atom } from "jotai";
 export const AttributeTypes = [
   "text",
   "number",
+  "textarea",
   "file",
   "select",
   "block",
@@ -14,7 +15,7 @@ export const AttributeTypes = [
   "email",
   "tel",
   "color",
-  "password",
+  // "password",
   "checkbox",
 ] as const;
 
@@ -23,8 +24,7 @@ export interface Event {
   description: string | undefined;
   startDate: Date;
   endDate: Date;
-  lat: number;
-  long: number;
+  location: string | undefined;
   organizer: string | undefined;
   image: string;
   color: string;
@@ -43,8 +43,7 @@ export const eventAtom = atom<Event>({
   description: "",
   startDate: new Date(),
   endDate: new Date(),
-  lat: 0,
-  long: 0,
+  location: "",
   organizer: "",
   image: "",
   color: "#3672fd",
