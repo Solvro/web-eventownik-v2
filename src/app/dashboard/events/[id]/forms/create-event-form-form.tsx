@@ -32,7 +32,7 @@ function CreateEventFormForm({
         </button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="sr-only">
           <DialogTitle>Stwórz formularz</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">

@@ -28,9 +28,10 @@ export async function createEventForm(eventId: string, form: Payload) {
       name: form.name,
       description: form.description,
       startDate: formatISO9075(form.startDate),
-      attributesIds: form.attributes.map((attribute) => attribute.id),
+      attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
       isOpen: form.isOpen,
+      isFirstForm: form.isFirstForm,
     }),
   });
 

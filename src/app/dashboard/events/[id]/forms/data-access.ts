@@ -28,6 +28,7 @@ async function getEventAttributes(eventId: string) {
   }
 
   const attributes = (await response.json()) as EventAttribute[];
+
   return attributes;
 }
 
