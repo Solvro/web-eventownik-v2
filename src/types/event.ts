@@ -9,7 +9,7 @@ export interface Event {
   startDate: string;
   endDate: string;
   firstFormId: number;
-  location: string | null;
+  location: string;
   primaryColor: string;
   organizer: string;
   participantsCount: number | null;

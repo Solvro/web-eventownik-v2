@@ -66,12 +66,12 @@ export default async function DashboardEventPage({
               <p>{event.participantsCount}</p>
             </div>
           )}
-          {event.location != null && (
+          {event.location ? (
             <div className="flex flex-row items-center gap-2">
               <MapPin size={24} />
               <p>{event.location}</p>
             </div>
-          )}
+          ) : null}
         </div>
         {event.description ? <p>{event.description}</p> : null}
         <div className="flex flex-col gap-2 md:flex-row">
