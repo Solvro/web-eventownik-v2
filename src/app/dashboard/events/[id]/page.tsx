@@ -73,7 +73,9 @@ export default async function DashboardEventPage({
             </div>
           ) : null}
         </div>
-        {event.description ? <p>{event.description}</p> : null}
+        {event.description ? (
+          <p className="whitespace-pre-line">{event.description}</p>
+        ) : null}
         <div className="flex flex-col gap-2 md:flex-row">
           <Button asChild>
             <Link href={`/dashboard/events/${id}/settings`}>
