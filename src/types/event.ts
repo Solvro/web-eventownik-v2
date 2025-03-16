@@ -12,7 +12,7 @@ export interface Event {
   location: string;
   primaryColor: string;
   organizer: string;
-  participantsCount: number;
+  participantsCount: number | null;
   createdAt: string;
   updatedAt: string;
   photoUrl: string | null;
