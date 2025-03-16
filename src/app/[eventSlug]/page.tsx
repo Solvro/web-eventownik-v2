@@ -87,8 +87,8 @@ export default async function EventPage({ params }: EventPageProps) {
                 </EventInfoDiv>
                 <EventInfoDiv>{format(event.endDate, "HH:mm")}</EventInfoDiv>
               </div>
-              {event.location ? (
-                <div className="flex flex-wrap gap-x-2">
+              <div className="flex flex-wrap gap-2">
+                {event.location ? (
                   <Link
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                     target="_blank"
@@ -97,11 +97,13 @@ export default async function EventPage({ params }: EventPageProps) {
                       <MapPin size={20} /> {event.location}
                     </EventInfoDiv>
                   </Link>
+                ) : null}
+                {event.organizer ? (
                   <EventInfoDiv>
                     <Building2 size={20} /> {event.organizer}
                   </EventInfoDiv>
-                </div>
-              ) : null}
+                ) : null}
+              </div>
             </div>
             <p className="max-h-72 overflow-y-auto whitespace-pre-line leading-relaxed">
               {event.description}
