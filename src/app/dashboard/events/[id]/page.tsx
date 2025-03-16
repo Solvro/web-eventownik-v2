@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import {
   Calendar1,
   CalendarX,
+  MapPin,
   Share2Icon,
   SquarePenIcon,
   User,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, unauthorized } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ export default async function DashboardEventPage({
 }) {
   const session = await verifySession();
   if (session == null) {
-    unauthorized();
+    redirect("/auth/login");
   }
   const { bearerToken } = session;
   const { id } = await params;
@@ -59,15 +60,18 @@ export default async function DashboardEventPage({
             <CalendarX size={24} />
             <p>{format(event.endDate, "dd.MM.yyyy HH:mm")}</p>
           </div>
-          {event.participantsCount ? (
+          {event.participantsCount != null && (
             <div className="flex flex-row items-center gap-2">
               <Users size={24} />
               <p>{event.participantsCount}</p>
             </div>
-          ) : null}
-          {/* Mockup suggested that there also should be location,
-           * but for now the backend does not return it - mejsiejdev
-           */}
+          )}
+          {event.location != null && (
+            <div className="flex flex-row items-center gap-2">
+              <MapPin size={24} />
+              <p>{event.location}</p>
+            </div>
+          )}
         </div>
         {event.description ? <p>{event.description}</p> : null}
         <div className="flex flex-col gap-2 md:flex-row">

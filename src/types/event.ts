@@ -9,10 +9,10 @@ export interface Event {
   startDate: string;
   endDate: string;
   firstFormId: number;
-  location: string;
+  location: string | null;
   primaryColor: string;
   organizer: string;
-  participantsCount: number;
+  participantsCount: number | null;
   createdAt: string;
   updatedAt: string;
   photoUrl: string | null;
