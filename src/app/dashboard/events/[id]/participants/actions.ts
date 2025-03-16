@@ -84,7 +84,7 @@ export async function updateParticipant(
       body: JSON.stringify({
         participantAttributes: Object.entries(values)
           .filter(([, value]) => value !== "")
-          .map(([key, value]) => ({ id: key, value })),
+          .map(([key, value]) => ({ attributeId: key, value })),
       }),
     },
   );
