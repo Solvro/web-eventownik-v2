@@ -4,6 +4,7 @@ import type { Event } from "@/types/event";
 
 export interface TabProps {
   event: Event;
-  setEvent: (event: Event) => void;
-  saveFormRef: RefObject<() => Promise<boolean>>;
+  saveFormRef: RefObject<
+    () => Promise<{ success: boolean; event: Event | null }>
+  >;
 }

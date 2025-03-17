@@ -34,9 +34,6 @@ export default async function DashboardEventSettingsPage({
       <div className="">
         <EventSettingsTabs unmodifiedEvent={event} />
       </div>
-      <button className="mt-6 rounded-2xl bg-blue-500 px-6 py-3 text-white">
-        Zapisz
-      </button>
     </>
   );
 }

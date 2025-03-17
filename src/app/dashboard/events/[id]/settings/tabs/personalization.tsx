@@ -1,12 +1,10 @@
-// WiP - Work in Progress
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, UploadIcon } from "lucide-react";
+import { PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { useId, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -14,56 +12,101 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import type { TabProps } from "./tab-props";
 
+// Required for usage of useFieldArray hook
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 const EventPersonalizationFormSchema = z.object({
-  image: z.string().optional(),
-  color: z.string().optional(),
-  participantsNumber: z.coerce.number().min(1),
-  links: z.array(z.string()),
-  slug: z.string(),
+  photoUrl: z.string().optional(),
+  primaryColor: z
+    .string()
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Nieprawidłowy format koloru"),
+  participantsCount: z.coerce
+    .number()
+    .min(1, "Musi być co najmniej 1 uczestnik"),
+  socialMediaLinks: z.array(
+    z.object({
+      value: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+    }),
+  ),
+  slug: z
+    .string()
+    .min(3, "Slug musi mieć co najmniej 3 znaki")
+    .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
 });
 
-export function Personalization({ event, setEvent, saveFormRef }: TabProps) {
-  const fileInputId = useId();
+export function Personalization({ event, saveFormRef }: TabProps) {
   const imageInputId = useId();
-  const [lastImageUrl, setLastImageUrl] = useState<string>("");
+  const colorInputId = useId();
+  const slugInputId = useId();
+  const [lastImageUrl, setLastImageUrl] = useState<string>(
+    event.photoUrl ?? "",
+  );
 
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
     defaultValues: {
-      image: event.photoUrl ?? "",
-      // color: event.color,
-      // participantsNumber: event.participantsNumber,
-      // links: event.links,
-      slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
+      photoUrl: event.photoUrl ?? "",
+      primaryColor: event.primaryColor,
+      participantsCount: event.participantsCount ?? undefined,
+      socialMediaLinks:
+        event.socialMediaLinks?.map((link) => ({
+          value: link,
+        })) ?? [],
+      slug: event.slug,
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    name: "socialMediaLinks",
+    control: form.control,
+  });
+
+  async function saveForm() {
+    if (!(await form.trigger())) {
+      return { success: false, event: null };
+    }
+    const values = form.getValues();
+    const newEvent = {
+      ...event,
+      photoUrl: lastImageUrl,
+      primaryColor: values.primaryColor,
+      participantsCount: values.participantsCount,
+      socialMediaLinks: values.socialMediaLinks.map((link) => link.value),
+      slug: values.slug,
+    };
+    return { success: true, event: newEvent };
+  }
+
+  saveFormRef.current = saveForm;
+
   return (
     <Form {...form}>
-      <form className="flex w-full flex-col gap-4">
-        <div className="grid w-full grid-cols-2 gap-4">
+      <form className="flex w-full flex-row flex-wrap gap-4">
+        <div className="min-w-80 space-y-4">
           <FormField
-            name="image"
+            name="photoUrl"
             control={form.control}
             render={({ field }) => {
               const processedField = { ...field, value: "" };
               return (
-                <FormItem className="flex w-full flex-col gap-2">
-                  <FormLabel>Zdjęcie</FormLabel>
+                <FormItem className="flex w-full flex-col">
+                  <FormLabel htmlFor={imageInputId}>Zdjęcie</FormLabel>
                   <FormLabel
-                    htmlFor={fileInputId}
+                    htmlFor={imageInputId}
                     className={cn(
                       buttonVariants({ variant: "outline" }),
                       "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
-                      event.photoUrl !== "" && "overflow-hidden p-0",
+                      lastImageUrl !== "" && "overflow-hidden p-0",
                     )}
                   >
-                    {event.photoUrl === "" ? (
+                    {lastImageUrl === "" ? (
                       <>
                         <div className="flex flex-row items-center gap-2">
                           <UploadIcon /> Dodaj zdjęcie
@@ -74,20 +117,16 @@ export function Personalization({ event, setEvent, saveFormRef }: TabProps) {
                       </>
                     ) : (
                       <Image
-                        src={
-                          event.photoUrl === null || event.photoUrl === ""
-                            ? EventPhotoPlaceholder
-                            : event.photoUrl
-                        }
+                        src={lastImageUrl}
+                        width={1000}
+                        height={1000}
                         alt="Podgląd zdjęcia wydarzenia"
-                        width={1080}
-                        height={1080}
-                        className="rounded-md"
+                        className="h-100 rounded-md object-cover"
                       />
                     )}
                   </FormLabel>
                   <Input
-                    id={fileInputId}
+                    id={imageInputId}
                     className="hidden"
                     type="file"
                     accept="image/png, image/gif, image/jpeg"
@@ -99,137 +138,159 @@ export function Personalization({ event, setEvent, saveFormRef }: TabProps) {
                         URL.revokeObjectURL(lastImageUrl);
                         const newBlobUrl = URL.createObjectURL(input.files[0]);
                         setLastImageUrl(newBlobUrl);
-                        setEvent({
-                          ...event,
-                          photoUrl: newBlobUrl,
-                        });
                       }
                     }}
                   />
+                  <FormMessage className="text-sm text-red-500">
+                    {form.formState.errors.photoUrl?.message}
+                  </FormMessage>
                 </FormItem>
               );
             }}
           />
-          <div className="flex flex-col gap-4">
-            <FormField
-              name="color"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Kolor wydarzenia</FormLabel>
+          <FormField
+            name="participantsCount"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Liczba uczestników</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="Podaj liczbę uczestników"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.participantsCount?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="min-w-80 space-y-4">
+          <FormField
+            name="primaryColor"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel htmlFor={colorInputId}>Kolor wydarzenia</FormLabel>
+                <FormLabel
+                  htmlFor={colorInputId}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "cursor-pointer justify-start",
+                  )}
+                >
+                  <span
+                    className="aspect-square w-6 rounded-full"
+                    style={{ backgroundColor: form.getValues("primaryColor") }}
+                  />
+                  <p>{form.getValues("primaryColor")}</p>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="color"
+                    className="pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
+                    id={colorInputId}
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.primaryColor?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="slug"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel htmlFor={slugInputId}>Slug</FormLabel>
+                <FormControl>
                   <FormLabel
-                    htmlFor={imageInputId}
-                    className={cn(buttonVariants({ variant: "outline" }))}
+                    htmlFor={slugInputId}
+                    className="flex h-12 w-full cursor-text items-center rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors focus-within:ring-1 focus-within:ring-ring"
                   >
-                    <span
-                      className="aspect-square w-6 rounded-full"
-                      style={{ backgroundColor: form.getValues("color") }}
+                    <span className="select-none text-neutral-500 md:text-sm">
+                      eventownik.solvro.pl/
+                    </span>
+                    <Input
+                      id={slugInputId}
+                      type="text"
+                      placeholder="twoje-wydarzenie"
+                      className="flex-1 border-0 p-0 shadow-none focus-visible:ring-0"
+                      {...field}
                     />
-                    <p>{form.getValues("color")}</p>
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="color"
-                      className="hidden"
-                      id={imageInputId}
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="participantsNumber"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Liczba uczestników</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="links"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Linki</FormLabel>
-                  {/*{form.getValues("links").map((link) => {*/}
-                  {/*  const linkId = form.getValues("links").indexOf(link);*/}
-                  {/*  return (*/}
-                  {/*    <div className="flex flex-row gap-2" key={linkId}>*/}
-                  {/*      <Input*/}
-                  {/*        type="url"*/}
-                  {/*        placeholder="https://"*/}
-                  {/*        disabled={form.formState.isSubmitting}*/}
-                  {/*        value={link}*/}
-                  {/*        onChange={(_event) => {*/}
-                  {/*          const newLinks = [...form.getValues("links")];*/}
-                  {/*          newLinks[linkId] = _event.target.value;*/}
-                  {/*          form.setValue("links", newLinks);*/}
-                  {/*        }}*/}
-                  {/*      />*/}
-                  {/*      <Button*/}
-                  {/*        type="button"*/}
-                  {/*        title="Usuń link"*/}
-                  {/*        disabled={form.formState.isSubmitting}*/}
-                  {/*        variant="outline"*/}
-                  {/*        onClick={() => {*/}
-                  {/*          const newLinks = [...form.getValues("links")];*/}
-                  {/*          newLinks.splice(linkId, 1);*/}
-                  {/*          form.setValue("links", newLinks);*/}
-                  {/*        }}*/}
-                  {/*      >*/}
-                  {/*        <MinusIcon />*/}
-                  {/*      </Button>*/}
-                  {/*    </div>*/}
-                  {/*  );*/}
-                  {/*})}*/}
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.slug?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="socialMediaLinks"
+            control={form.control}
+            render={() => (
+              <FormItem>
+                <FormLabel>Linki</FormLabel>
+                <div className="space-y-3">
+                  {fields.map((field, index) => (
+                    <div className="flex flex-col gap-2" key={field.id}>
+                      <div className="flex items-center gap-2">
+                        <FormControl>
+                          <Input
+                            type="url"
+                            placeholder="https://tiktok.com/@antonio_._banderas"
+                            {...form.register(
+                              `socialMediaLinks.${index}.value` as const,
+                            )}
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          className="hover:bg-red-500/90 hover:text-white"
+                          onClick={() => {
+                            remove(index);
+                          }}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {form.formState.errors.socialMediaLinks?.[index]?.value
+                        ?.message != null && (
+                        <p className="text-[0.8rem] text-sm font-medium text-red-500">
+                          {
+                            form.formState.errors.socialMediaLinks[index].value
+                              .message
+                          }
+                        </p>
+                      )}
+                    </div>
+                  ))}
                   <Button
                     type="button"
                     variant="outline"
+                    className="gap-2"
                     onClick={() => {
-                      form.setValue("links", [...form.getValues("links"), ""]);
+                      append({ value: "" });
                     }}
                   >
-                    <PlusIcon />
-                    Dodaj link
+                    <PlusIcon className="h-4 w-4" />
+                    Dodaj Linka
                   </Button>
-                  <FormControl>
-                    <Input
-                      type="hidden"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="slug"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+                </div>
+              </FormItem>
+            )}
+          />
         </div>
       </form>
     </Form>

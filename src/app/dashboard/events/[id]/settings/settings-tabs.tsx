@@ -4,8 +4,10 @@ import * as Tabs from "@radix-ui/react-tabs";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import { toast } from "@/hooks/use-toast";
 import type { Event } from "@/types/event";
 
+import { updateEvent } from "./actions";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/coorganizers";
 import { General } from "./tabs/general-info";
@@ -45,7 +47,11 @@ export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
   const [event, setEvent] = useState(unmodifiedEvent);
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
   // eslint-disable-next-line @typescript-eslint/require-await
-  const saveFormRef = useRef<() => Promise<boolean>>(async () => true);
+  const saveFormRef = useRef<
+    () => Promise<{ success: boolean; event: Event | null }>
+  >(async () => {
+    return { success: true, event };
+  });
 
   useEffect(() => {
     setEvent(unmodifiedEvent);
@@ -53,37 +59,85 @@ export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
-    const canChange = await saveFormRef.current();
-    if (canChange) {
+    const { success, event: newEvent } = await saveFormRef.current();
+    if (success && newEvent != null) {
       setActiveTabValue(newValue);
+      setEvent(newEvent);
+    }
+  };
+
+  const saveForm = async () => {
+    // setLoading(true);
+    const { success, event: newEvent } = await saveFormRef.current();
+    if (!success || newEvent == null) {
+      toast({
+        variant: "destructive",
+        title: "O nie! Coś poszło nie tak.",
+        description: "Spróbuj utworzyć wydarzenie ponownie.",
+      });
+      return;
+    }
+    setEvent(newEvent);
+    try {
+      const result = await updateEvent(unmodifiedEvent, newEvent);
+      if ("errors" in result) {
+        toast({
+          variant: "destructive",
+          title: "O nie! Coś poszło nie tak.",
+          description: `Spróbuj utworzyć wydarzenie ponownie.\n${result.errors
+            .map((error) => error.message)
+            .join("\n")}`,
+        });
+      } else {
+        toast({
+          variant: "default",
+          title: "Wydarzenie zostało zapisane.",
+          description: "Twoje zmiany zostały zapisane.",
+        });
+      }
+    } catch (error) {
+      console.error("[EventSettingsTabs] Error saving event:", error);
+      toast({
+        variant: "destructive",
+        title: "O nie! Coś poszło nie tak.",
+        description: "Spróbuj utworzyć wydarzenie ponownie.",
+      });
     }
   };
 
   return (
-    <Tabs.Root
-      value={activeTabValue}
-      className="space-y-6"
-      onValueChange={handleTabChange}
-    >
-      {/* Tabs Navigation */}
-      <Tabs.List className="border-gray-250 flex w-fit space-x-2 rounded-xl border p-1 shadow-sm">
-        {TABS.map((tab) => (
-          <Tabs.Trigger
-            key={tab.value}
-            value={tab.value}
-            className={`rounded-md px-4 py-1 transition-colors hover:bg-gray-100 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:hover:bg-blue-600`}
-          >
-            {tab.name}
-          </Tabs.Trigger>
-        ))}
-      </Tabs.List>
+    <>
+      <Tabs.Root
+        value={activeTabValue}
+        className="space-y-6"
+        onValueChange={handleTabChange}
+      >
+        {/* Tabs Navigation */}
+        <Tabs.List className="border-gray-250 flex w-fit space-x-2 rounded-xl border p-1 shadow-sm">
+          {TABS.map((tab) => (
+            <Tabs.Trigger
+              key={tab.value}
+              value={tab.value}
+              className="rounded-lg px-4 py-1 transition-colors hover:bg-primary/10 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:hover:bg-blue-600"
+            >
+              {tab.name}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
 
-      {/* Active Tab Content */}
-      {TABS.map((tab) => (
-        <Tabs.Content key={tab.value} value={tab.value}>
-          {tab.component({ event, setEvent, saveFormRef })}
-        </Tabs.Content>
-      ))}
-    </Tabs.Root>
+        {/* Active Tab Content */}
+        {TABS.map((tab) => (
+          <Tabs.Content key={tab.value} value={tab.value}>
+            {tab.component({ event, saveFormRef })}
+          </Tabs.Content>
+        ))}
+      </Tabs.Root>
+      <button
+        className="mt-6 rounded-2xl bg-blue-500 px-6 py-3 text-white"
+        onClick={saveForm}
+      >
+        Zapisz
+      </button>
+    </>
   );
 }

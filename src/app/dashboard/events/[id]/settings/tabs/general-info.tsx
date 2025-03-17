@@ -54,24 +54,24 @@ const EventGeneralInfoSchema = z
     },
   );
 
-export function General({ event, setEvent, saveFormRef }: TabProps) {
+export function General({ event, saveFormRef }: TabProps) {
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: {
       name: event.name,
-      description: event.description,
+      description: event.description ?? "",
       startDate: new Date(event.startDate),
       startTime: `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
       endDate: new Date(event.endDate),
       endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-      location: event.location,
-      organizer: event.organizer,
+      location: event.location ?? "",
+      organizer: event.organizer ?? "",
     },
   });
 
   async function saveForm() {
     if (!(await form.trigger())) {
-      return false;
+      return { success: false, event: null };
     }
     const values = form.getValues();
     values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
@@ -80,7 +80,7 @@ export function General({ event, setEvent, saveFormRef }: TabProps) {
     );
     values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
     values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
-    setEvent({
+    const newEvent = {
       ...event,
       name: values.name,
       description: values.description ?? "",
@@ -90,217 +90,215 @@ export function General({ event, setEvent, saveFormRef }: TabProps) {
       endDate: formatISO9075(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
-    });
-    return true;
+    };
+    return { success: true, event: newEvent };
   }
 
   saveFormRef.current = saveForm;
 
   return (
     <Form {...form}>
-      <form className="flex w-full flex-col items-end gap-4">
-        <div className="flex w-full flex-row gap-4">
-          <div className="space-y-4">
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      disabled={form.formState.isSubmitting}
-                      placeholder="Podaj nazwę wydarzenia"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {form.formState.errors.name?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <div className="space-y-2">
-              <FormLabel>Data i godzina</FormLabel>
-              <div className="flex flex-row flex-wrap gap-2">
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex grow flex-col">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className="justify-start pl-3 text-left font-normal"
-                            >
-                              {format(field.value, "PPP")}
-                              <CalendarArrowDown className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            className="z-50"
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.startDate?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="startTime"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormControl>
-                        <Input
-                          disabled={form.formState.isSubmitting}
-                          type="time"
-                          {...field}
+      <form className="flex w-full flex-row flex-wrap gap-4">
+        <div className="min-w-80 space-y-4">
+          <FormField
+            name="name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Nazwa</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Podaj nazwę wydarzenia"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.name?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <div className="space-y-2">
+            <FormLabel>Data i godzina</FormLabel>
+            <div className="flex flex-row flex-wrap gap-2">
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem className="flex grow flex-col">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className="justify-start pl-3 text-left font-normal"
+                          >
+                            {format(field.value, "PPP")}
+                            <CalendarArrowDown className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          className="z-50"
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
                         />
-                      </FormControl>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.startTime?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.startDate?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormControl>
+                      <Input
+                        disabled={form.formState.isSubmitting}
+                        type="time"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.startTime?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
             </div>
-            <div className="space-y-2">
-              <div className="flex flex-row flex-wrap gap-2">
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex grow flex-col">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className="justify-start pl-3 text-left font-normal"
-                              disabled={form.formState.isSubmitting}
-                            >
-                              {format(field.value, "PPP")}
-                              <CalendarArrowUp className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            className="z-50"
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <
-                              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                              (form.getValues("startDate") === undefined
-                                ? new Date()
-                                : form.getValues("startDate"))
-                            }
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.endDate?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="endTime"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormControl>
-                        <Input
-                          disabled={form.formState.isSubmitting}
-                          type="time"
-                          {...field}
+          </div>
+          <div className="space-y-2">
+            <div className="flex flex-row flex-wrap gap-2">
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem className="flex grow flex-col">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className="justify-start pl-3 text-left font-normal"
+                            disabled={form.formState.isSubmitting}
+                          >
+                            {format(field.value, "PPP")}
+                            <CalendarArrowUp className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          className="z-50"
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date <
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                            (form.getValues("startDate") === undefined
+                              ? new Date()
+                              : form.getValues("startDate"))
+                          }
                         />
-                      </FormControl>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.endTime?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.endDate?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormControl>
+                      <Input
+                        disabled={form.formState.isSubmitting}
+                        type="time"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.endTime?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
             </div>
-            <FormField
-              name="location"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Miejsce (opcjonalnie)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      disabled={form.formState.isSubmitting}
-                      placeholder="Podaj miejsce wydarzenia"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {form.formState.errors.location?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="organizer"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>Organizator (opcjonalnie)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      disabled={form.formState.isSubmitting}
-                      placeholder="Podaj organizatora wydarzenia"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {form.formState.errors.organizer?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
           </div>
-          <div>
-            <FormField
-              name="description"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Opis</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={form.formState.isSubmitting}
-                      placeholder="Opisz wydarzenie"
-                      className="h-60 w-80 resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {form.formState.errors.description?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            name="location"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Miejsce (opcjonalnie)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Podaj miejsce wydarzenia"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.location?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="organizer"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Organizator (opcjonalnie)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Podaj organizatora wydarzenia"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.organizer?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="min-w-80 space-y-4">
+          <FormField
+            name="description"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>Opis</FormLabel>
+                <FormControl>
+                  <Textarea
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Opisz wydarzenie"
+                    className="h-60 resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.description?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
         </div>
       </form>
     </Form>

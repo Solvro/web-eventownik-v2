@@ -1,5 +1,5 @@
 import type { TabProps } from "./tab-props";
 
-export function CoOrganizers({ event, setEvent, saveFormRef }: TabProps) {
+export function CoOrganizers({ event, saveFormRef }: TabProps) {
   return <p>CoOrganizers</p>;
 }
