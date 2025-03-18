@@ -90,3 +90,28 @@ export function getSchemaObjectForAttributes(attributes: Attribute[]) {
     ]),
   );
 }
+
+export async function getBase64FromUrl(url: string) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      // eslint-disable-next-line unicorn/prefer-add-event-listener
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    return base64;
+  } catch (error) {
+    console.error(
+      `[getBase64FromUrl] Failed to get base64 from url ${url}:`,
+      error,
+    );
+    return "";
+  }
+}

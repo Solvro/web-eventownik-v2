@@ -79,9 +79,6 @@ export default async function EventListPage() {
                       <Users size={16} />
                     </EventInfoBlock>
                   </div>
-                  {/* Mockup suggested that there also should be location,
-                   * but for now the backend does not return it - mejsiejdev
-                   */}
                 </div>
               </div>
               <div className="flex flex-col gap-4 rounded-b-xl border-x border-b border-muted-foreground p-4">
