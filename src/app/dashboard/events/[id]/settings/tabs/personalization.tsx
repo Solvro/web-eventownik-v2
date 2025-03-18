@@ -139,7 +139,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     onChangeCapture={(event_) => {
                       const input = event_.target as HTMLInputElement;
                       if (input.files?.[0] != null) {
-                        URL.revokeObjectURL(lastImageUrl);
+                        if (lastImageUrl.startsWith('blob:')) URL.revokeObjectURL(lastImageUrl);
                         const newBlobUrl = URL.createObjectURL(input.files[0]);
                         setLastImageUrl(newBlobUrl);
                       }

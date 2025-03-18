@@ -43,7 +43,7 @@ export async function updateEvent(
   formData.append("primaryColor", event.primaryColor);
   formData.append(
     "participantsCount",
-    (event.participantsCount ?? "").toString(),
+    (event.participantsCount ?? 0).toString(),
   );
   for (const link of event.socialMediaLinks ?? []) {
     if (link.trim() === "") {
