@@ -1,10 +1,12 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
+import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { toast } from "@/hooks/use-toast";
+import { getBase64FromUrl } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import { updateEvent } from "./actions";
@@ -46,9 +48,10 @@ interface TabsProps {
 export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
   const [event, setEvent] = useState(unmodifiedEvent);
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
-  // eslint-disable-next-line @typescript-eslint/require-await
+  const router = useRouter();
   const saveFormRef = useRef<
     () => Promise<{ success: boolean; event: Event | null }>
+    // eslint-disable-next-line @typescript-eslint/require-await
   >(async () => {
     return { success: true, event };
   });
@@ -72,19 +75,26 @@ export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
     if (!success || newEvent == null) {
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Spróbuj utworzyć wydarzenie ponownie.",
+        title: "Wydarzenie nie zostało zapisane.",
+        description: "Popraw błędy w formularzu, aby kontynuować.",
       });
       return;
     }
     setEvent(newEvent);
     try {
-      const result = await updateEvent(unmodifiedEvent, newEvent);
+      const base64Image =
+        newEvent.photoUrl?.startsWith("blob:") === true // Check if image is a blob
+          ? await getBase64FromUrl(newEvent.photoUrl)
+          : newEvent.photoUrl;
+      const result = await updateEvent(unmodifiedEvent, {
+        ...newEvent,
+        photoUrl: base64Image,
+      });
       if ("errors" in result) {
         toast({
           variant: "destructive",
           title: "O nie! Coś poszło nie tak.",
-          description: `Spróbuj utworzyć wydarzenie ponownie.\n${result.errors
+          description: `Spróbuj zapisać wydarzenie ponownie.\n${result.errors
             .map((error) => error.message)
             .join("\n")}`,
         });
@@ -100,7 +110,7 @@ export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
       toast({
         variant: "destructive",
         title: "O nie! Coś poszło nie tak.",
-        description: "Spróbuj utworzyć wydarzenie ponownie.",
+        description: "Spróbuj zapisać wydarzenie ponownie.",
       });
     }
   };

@@ -117,11 +117,15 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                       </>
                     ) : (
                       <Image
-                        src={lastImageUrl}
+                        src={
+                          lastImageUrl.startsWith("blob:")
+                            ? lastImageUrl
+                            : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${lastImageUrl}`
+                        }
                         width={1000}
                         height={1000}
                         alt="Podgląd zdjęcia wydarzenia"
-                        className="h-100 rounded-md object-cover"
+                        className="h-full rounded-md object-cover"
                       />
                     )}
                   </FormLabel>
@@ -223,7 +227,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                       id={slugInputId}
                       type="text"
                       placeholder="twoje-wydarzenie"
-                      className="flex-1 border-0 p-0 shadow-none focus-visible:ring-0"
+                      className="w-0 flex-1 border-0 p-0 shadow-none focus-visible:ring-0" // w-0 to prevent flex wrap on form
                       {...field}
                     />
                   </FormLabel>

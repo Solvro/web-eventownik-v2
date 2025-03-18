@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { getBase64FromUrl } from "@/lib/utils";
 
 import { saveEvent } from "../actions";
 import { FormContainer } from "../form-container";
@@ -34,31 +35,6 @@ const EventAttributesFormSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta"),
   type: z.enum(AttributeTypes),
 });
-
-async function getBase64FromUrl(url: string) {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result as string);
-      };
-      // eslint-disable-next-line unicorn/prefer-add-event-listener
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-
-    return base64;
-  } catch (error) {
-    console.error(
-      `[getBase64FromUrl] Failed to get base64 from url ${url}:`,
-      error,
-    );
-    return "";
-  }
-}
 
 export function AttributesForm({
   goToPreviousStep,
@@ -133,6 +109,7 @@ export function AttributesForm({
     }
     setLoading(false);
   }
+
   return (
     <FormContainer
       step="4/4"
