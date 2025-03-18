@@ -6,7 +6,7 @@ if (API_URL === "") {
 }
 
 if (PHOTO_URL === "") {
-  throw new Error("PHOTO_URL was not set in enviroment variables!");
+  throw new Error("NEXT_PUBLIC_PHOTO_URL was not set in enviroment variables!");
 }
 
 export interface PaginatedResponse<T> {
