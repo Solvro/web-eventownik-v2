@@ -1,7 +1,6 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -48,7 +47,6 @@ interface TabsProps {
 export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
   const [event, setEvent] = useState(unmodifiedEvent);
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
-  const router = useRouter();
   const saveFormRef = useRef<
     () => Promise<{ success: boolean; event: Event | null }>
     // eslint-disable-next-line @typescript-eslint/require-await

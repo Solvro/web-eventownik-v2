@@ -35,7 +35,7 @@ export async function generateMetadata({
 
   return {
     title: event.name,
-    description: `${event.description} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
+    description: `${event.description ?? event.name} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
       images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },
@@ -88,7 +88,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 <EventInfoDiv>{format(event.endDate, "HH:mm")}</EventInfoDiv>
               </div>
               <div className="flex flex-wrap gap-2">
-                {event.location ? (
+                {event.location != null && event.location.trim() !== "" ? (
                   <Link
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                     target="_blank"
@@ -98,7 +98,7 @@ export default async function EventPage({ params }: EventPageProps) {
                     </EventInfoDiv>
                   </Link>
                 ) : null}
-                {event.organizer ? (
+                {event.organizer != null && event.organizer.trim() !== "" ? (
                   <EventInfoDiv>
                     <Building2 size={20} /> {event.organizer}
                   </EventInfoDiv>

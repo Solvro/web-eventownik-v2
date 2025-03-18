@@ -46,7 +46,7 @@ export default async function DashboardEventPage({
       <div className="space-y-8">
         <div className="space-y-4">
           <h1 className="text-3xl font-bold">{event.name}</h1>
-          {event.organizer ? (
+          {event.organizer != null && event.organizer.trim() !== "" ? (
             <div className="flex flex-row items-center gap-2">
               <User size={24} />
               <p>{event.organizer}</p>
@@ -66,14 +66,14 @@ export default async function DashboardEventPage({
               <p>{event.participantsCount}</p>
             </div>
           )}
-          {event.location ? (
+          {event.location != null && event.location.trim() !== "" ? (
             <div className="flex flex-row items-center gap-2">
               <MapPin size={24} />
               <p>{event.location}</p>
             </div>
           ) : null}
         </div>
-        {event.description ? (
+        {event.description != null && event.description.trim() !== "" ? (
           <p className="whitespace-pre-line">{event.description}</p>
         ) : null}
         <div className="flex flex-col gap-2 md:flex-row">
