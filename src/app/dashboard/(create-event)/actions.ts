@@ -1,7 +1,5 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
-
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 
@@ -21,14 +19,8 @@ export async function saveEvent(event: Event) {
   formData.append("organizer", event.organizer ?? "");
   formData.append("slug", event.slug);
 
-  formData.append(
-    "startDate",
-    formatISO9075(event.startDate, { representation: "complete" }),
-  );
-  formData.append(
-    "endDate",
-    formatISO9075(event.endDate, { representation: "complete" }),
-  );
+  formData.append("startDate", event.startDate.toISOString());
+  formData.append("endDate", event.endDate.toISOString());
 
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.color);

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, formatISO9075, getHours, getMinutes } from "date-fns";
+import { format, getHours, getMinutes } from "date-fns";
 import { CalendarArrowDown, CalendarArrowUp } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -84,10 +84,8 @@ export function General({ event, saveFormRef }: TabProps) {
       ...event,
       name: values.name,
       description: values.description ?? "",
-      startDate: formatISO9075(values.startDate, {
-        representation: "complete",
-      }),
-      endDate: formatISO9075(values.endDate, { representation: "complete" }),
+      startDate: values.startDate.toISOString(),
+      endDate: values.endDate.toISOString(),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
     };

@@ -1,6 +1,5 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
@@ -26,14 +25,8 @@ export async function updateEvent(
 
   // Basic fields
   formData.append("name", event.name);
-  formData.append(
-    "startDate",
-    formatISO9075(event.startDate, { representation: "complete" }),
-  );
-  formData.append(
-    "endDate",
-    formatISO9075(event.endDate, { representation: "complete" }),
-  );
+  formData.append("startDate", event.startDate);
+  formData.append("endDate", event.endDate);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
   if (event.slug !== unmodifiedEvent.slug) {

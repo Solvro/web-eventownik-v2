@@ -1,7 +1,5 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
-
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { EventForm } from "@/types/forms";
@@ -27,9 +25,9 @@ export async function createEventForm(eventId: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      startDate: formatISO9075(form.startDate),
+      startDate: form.startDate,
       attributes: form.attributes,
-      endDate: formatISO9075(form.endDate),
+      endDate: form.endDate,
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
     }),
@@ -73,9 +71,9 @@ export async function updateEventForm(
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      startDate: formatISO9075(form.startDate),
+      startDate: form.startDate,
       attributesIds: form.attributes.map((attribute) => attribute.id),
-      endDate: formatISO9075(form.endDate),
+      endDate: form.endDate,
       isOpen: form.isOpen,
     }),
   });
