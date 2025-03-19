@@ -101,3 +101,41 @@ export async function updateParticipant(
   }
   return { success: true };
 }
+
+export async function exportData(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/export`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    console.error("Failed to export participants", response);
+
+    if (response.status === 404) {
+      return {
+        success: false,
+        error: "Nie znaleziono wydarzenia lub endpoint nie istnieje.",
+      };
+    }
+    if (response.status === 500) {
+      return {
+        success: false,
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+      };
+    }
+    return { success: false };
+  }
+
+  const fileBlob = await response.blob();
+  return { success: true, file: fileBlob };
+}

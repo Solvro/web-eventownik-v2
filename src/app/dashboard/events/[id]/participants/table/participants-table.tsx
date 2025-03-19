@@ -12,6 +12,7 @@ import {
 import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 
+import { ExportButton } from "@/components/export-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -135,6 +136,7 @@ export function ParticipantTable({
         >
           <ArrowUpDown />
         </Button>
+        <ExportButton eventId={eventId} />
         <div className="ml-auto">
           <span className="mr-2">{getPaginationInfoText(table)}</span>
           <Button
