@@ -12,7 +12,7 @@ import {
 import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 
-import { ExportButton } from "@/components/export-button";
+import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/export-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

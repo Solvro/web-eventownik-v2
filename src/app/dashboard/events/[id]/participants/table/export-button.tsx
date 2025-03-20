@@ -1,6 +1,6 @@
 "use client";
 
-import { Sheet } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { exportData } from "@/app/dashboard/events/[id]/participants/actions";
@@ -45,7 +45,7 @@ export function ExportButton({ eventId }: { eventId: string }) {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Eksport nie powiódł się!",
+        title: "Spróbuj ponownie",
         description: String(error),
       });
     }
@@ -56,10 +56,10 @@ export function ExportButton({ eventId }: { eventId: string }) {
       onClick={handleExportClick}
       size="icon"
       variant="outline"
-      title="Eksportuj"
+      title="Eksportuj do Excela"
       disabled={isQuerying}
     >
-      <Sheet />
+      {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download />}
     </Button>
   );
 }
