@@ -216,23 +216,18 @@ export function Personalization({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel htmlFor={slugInputId}>Slug</FormLabel>
+                <FormLabel htmlFor={slugInputId}>
+                  Slug{" "}
+                  <span className="text-neutral-500">
+                    (eventownik.solvro.pl/...)
+                  </span>
+                </FormLabel>
                 <FormControl>
-                  <FormLabel
-                    htmlFor={slugInputId}
-                    className="border-input focus-within:ring-ring flex h-12 w-full cursor-text items-center rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors focus-within:ring-1"
-                  >
-                    <span className="text-neutral-500 select-none md:text-sm">
-                      eventownik.solvro.pl/
-                    </span>
-                    <Input
-                      id={slugInputId}
-                      type="text"
-                      placeholder="twoje-wydarzenie"
-                      className="w-0 flex-1 border-0 p-0 shadow-none focus-visible:ring-0" // w-0 to prevent flex wrap on form
-                      {...field}
-                    />
-                  </FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="twoje-wydarzenie"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.slug?.message}
