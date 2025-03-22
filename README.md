@@ -20,10 +20,12 @@ Eventownik is a software solution designed to support event organization, with a
 
 ## 👨‍🔧 Team
 
-- [Maciej Król](https://github.com/maciejkrol18) - Tech Lead
+- [Antoni Czaplicki](https://github.com/Antoni-Czaplicki) - Tech Lead
+- [Maciej Król](https://github.com/maciejkrol18) - Frontend Developer
 - [Maciej Malinowski](https://github.com/mejsiejdev) - Frontend Developer
-- [Maciej Talarczyk](https://github.com/muclx) - UI/UX Designer, Frontend Developer
+- [Tymon Jędryczka](https://github.com/jedryczkatymon) - Frontend Developer
 - [Wojciech Kosmalski](https://github.com/chewmanji) - Frontend Developer, Project Manager
+- [Maciej Talarczyk](https://github.com/muclx) - UI/UX Designer
 
 ## 👀 Technologies
 
