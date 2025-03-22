@@ -45,8 +45,8 @@ export function ExportButton({ eventId }: { eventId: string }) {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Spróbuj ponownie",
-        description: String(error),
+        title: "Eksport nie powiódł się!",
+        description: "Spróbuj ponownie",
       });
     }
   }
