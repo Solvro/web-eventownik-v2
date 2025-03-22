@@ -58,7 +58,6 @@ export function AttributeInputFile({
     if (_file !== undefined && validateFile(_file)) {
       setFile(_file);
     } else {
-      event.target.value = "";
       setFile(null);
     }
   }

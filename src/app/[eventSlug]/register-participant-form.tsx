@@ -39,6 +39,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       email: "",
     },
   });
+
   const { toast } = useToast();
 
   async function onSubmit(
@@ -178,7 +179,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
 
         <Button
           type="submit"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
           className="w-full"
         >
           {form.formState.isSubmitting ? (
