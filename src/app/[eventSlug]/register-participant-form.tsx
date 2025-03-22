@@ -44,46 +44,47 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   async function onSubmit(
     values: z.infer<typeof registerParticipantFormSchema>,
   ) {
-    try {
-      const result = await registerParticipant(values, event);
-      if (!result.success) {
-        if (
-          result.errors?.[0]?.rule === "database.unique" &&
-          result.errors[0]?.field === "email"
-        ) {
-          form.setError("email", {
-            type: "manual",
-            message:
-              "Ten adres email jest już zarejestrowany na to wydarzenie.",
-          });
-          toast({
-            variant: "destructive",
-            title: "Adres email jest już zajęty",
-            description:
-              "Ten adres email jest już zarejestrowany na to wydarzenie.",
-          });
-        } else {
-          form.setError("root", {
-            type: "manual",
-            message:
-              "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
-          });
-          toast({
-            variant: "destructive",
-            title: "Rejestracja na wydarzenie nie powiodła się",
-            // TODO: More informative message based on error returned from registerParticipant() action
-            description: "Spróbuj ponownie później",
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Participant register failed", error);
-      toast({
-        variant: "destructive",
-        title: "Rejestracja na wydarzenie nie powiodła się",
-        description: "Błąd serwera",
-      });
-    }
+    console.log(`Values = ${JSON.stringify(values)}`);
+    // try {
+    //   const result = await registerParticipant(values, event);
+    //   if (!result.success) {
+    //     if (
+    //       result.errors?.[0]?.rule === "database.unique" &&
+    //       result.errors[0]?.field === "email"
+    //     ) {
+    //       form.setError("email", {
+    //         type: "manual",
+    //         message:
+    //           "Ten adres email jest już zarejestrowany na to wydarzenie.",
+    //       });
+    //       toast({
+    //         variant: "destructive",
+    //         title: "Adres email jest już zajęty",
+    //         description:
+    //           "Ten adres email jest już zarejestrowany na to wydarzenie.",
+    //       });
+    //     } else {
+    //       form.setError("root", {
+    //         type: "manual",
+    //         message:
+    //           "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
+    //       });
+    //       toast({
+    //         variant: "destructive",
+    //         title: "Rejestracja na wydarzenie nie powiodła się",
+    //         // TODO: More informative message based on error returned from registerParticipant() action
+    //         description: "Spróbuj ponownie później",
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.error("Participant register failed", error);
+    //   toast({
+    //     variant: "destructive",
+    //     title: "Rejestracja na wydarzenie nie powiodła się",
+    //     description: "Błąd serwera",
+    //   });
+    // }
   }
 
   if (event.firstForm === null) {
@@ -154,7 +155,11 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
                 <FormLabel>{attribute.name}</FormLabel>
                 <FormControl>
                   {/* @ts-expect-error zod schema object are dynamic */}
-                  <AttributeInput attribute={attribute} field={field} />
+                  <AttributeInput
+                    attribute={attribute}
+                    field={field}
+                    setError={form.control.setError}
+                  />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {/* @ts-expect-error zod schema object are dynamic */}
