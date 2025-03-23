@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { toast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
+import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -44,11 +45,13 @@ const TABS: { name: string; value: string; component: TabComponent }[] = [
 interface TabsProps {
   unmodifiedEvent: Event;
   unmodifiedCoOrganizers: CoOrganizer[];
+  unmodifiedAttributes: EventAttribute[];
 }
 
 export function EventSettingsTabs({
   unmodifiedEvent,
   unmodifiedCoOrganizers,
+  unmodifiedAttributes,
 }: TabsProps) {
   const [event, setEvent] = useState(unmodifiedEvent);
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
@@ -56,6 +59,13 @@ export function EventSettingsTabs({
     added: [] as CoOrganizer[],
     updated: [] as CoOrganizer[],
     deleted: [] as CoOrganizer[],
+  });
+  const [attributes, setAttributes] =
+    useState<EventAttribute[]>(unmodifiedAttributes);
+  const [attributesChanges, setAttributesChanges] = useState({
+    added: [] as EventAttribute[],
+    updated: [] as EventAttribute[],
+    deleted: [] as EventAttribute[],
   });
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
   const saveFormRef = useRef<
@@ -102,6 +112,7 @@ export function EventSettingsTabs({
           photoUrl: base64Image,
         },
         coOrganizersChanges,
+        attributesChanges,
       );
       if ("errors" in eventResult) {
         toast({
@@ -113,6 +124,11 @@ export function EventSettingsTabs({
         });
       } else {
         setCoOrganizersChanges({
+          added: [],
+          updated: [],
+          deleted: [],
+        });
+        setAttributesChanges({
           added: [],
           updated: [],
           deleted: [],
@@ -162,6 +178,9 @@ export function EventSettingsTabs({
               coOrganizers,
               setCoOrganizers,
               setCoOrganizersChanges,
+              attributes,
+              setAttributes,
+              setAttributesChanges,
             })}
           </Tabs.Content>
         ))}

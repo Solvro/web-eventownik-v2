@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -19,6 +20,11 @@ export async function updateEvent(
     added: CoOrganizer[];
     updated: CoOrganizer[];
     deleted: CoOrganizer[];
+  },
+  attributesChanges: {
+    added: EventAttribute[];
+    updated: EventAttribute[];
+    deleted: EventAttribute[];
   },
 ): Promise<Event | ErrorResponse> {
   const session = await verifySession();
@@ -202,6 +208,96 @@ export async function updateEvent(
 
     if (coOrganizersErrors.length > 0) {
       return { errors: coOrganizersErrors };
+    }
+
+    // Update attributes
+    const attributesErrors: { message: string }[] = [];
+
+    try {
+      for (const attribute of attributesChanges.added) {
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: attribute.name,
+              type: attribute.type,
+              slug: attribute.slug,
+              showInList: attribute.showInList,
+              // required: attribute.required,
+              options: attribute.options,
+            }),
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[updateEvent] Error adding attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+          });
+        }
+      }
+
+      for (const attribute of attributesChanges.updated) {
+        if (attribute.id == null) {
+          continue; // Skip attributes without an ID
+        }
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: attribute.name,
+              type: attribute.type,
+              slug: attribute.slug,
+              showInList: attribute.showInList,
+              // required: attribute.required,
+              options: attribute.options,
+            }),
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[updateEvent] Error updating attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+          });
+        }
+      }
+
+      for (const attribute of attributesChanges.deleted) {
+        if (attribute.id == null) {
+          continue; // Skip attributes without an ID
+        }
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${bearerToken}` },
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[updateEvent] Error deleting attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to delete attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("[updateEvent] Attribute update error:", error);
+      attributesErrors.push({
+        message: "Failed to update attributes",
+      });
+    }
+
+    if (attributesErrors.length > 0) {
+      return { errors: attributesErrors };
     }
 
     revalidatePath(`/dashboard/events/${event.id.toString()}/settings`);

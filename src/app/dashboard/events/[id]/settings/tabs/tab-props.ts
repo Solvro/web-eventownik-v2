@@ -1,5 +1,6 @@
 import type { Dispatch, RefObject, SetStateAction } from "react";
 
+import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -15,6 +16,15 @@ export interface TabProps {
       added: CoOrganizer[];
       updated: CoOrganizer[];
       deleted: CoOrganizer[];
+    }>
+  >;
+  attributes: EventAttribute[];
+  setAttributes: Dispatch<SetStateAction<EventAttribute[]>>;
+  setAttributesChanges: Dispatch<
+    SetStateAction<{
+      added: EventAttribute[];
+      updated: EventAttribute[];
+      deleted: EventAttribute[];
     }>
   >;
 }

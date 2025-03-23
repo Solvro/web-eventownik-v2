@@ -8,6 +8,7 @@ export const AttributeTypes = [
   "textarea",
   "file",
   "select",
+  "select-multiple",
   "block",
   "date",
   "time",

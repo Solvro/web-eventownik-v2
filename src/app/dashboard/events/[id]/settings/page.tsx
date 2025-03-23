@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { EventSettingsTabs } from "@/app/dashboard/events/[id]/settings/settings-tabs";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -41,6 +42,16 @@ export default async function DashboardEventSettingsPage({
   }
   const coOrganizers = (await coOrganizersResponse.json()) as CoOrganizer[];
 
+  const attributesResponse = await fetch(`${API_URL}/events/${id}/attributes`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+  if (!attributesResponse.ok) {
+    notFound();
+  }
+  const attributes = (await attributesResponse.json()) as EventAttribute[];
+
   return (
     <>
       <h1 className="pb-8 text-3xl font-bold">Edytuj wydarzenie</h1>
@@ -48,6 +59,7 @@ export default async function DashboardEventSettingsPage({
         <EventSettingsTabs
           unmodifiedEvent={event}
           unmodifiedCoOrganizers={coOrganizers}
+          unmodifiedAttributes={attributes}
         />
       </div>
     </>
