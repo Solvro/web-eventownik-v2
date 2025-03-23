@@ -25,45 +25,30 @@ export async function registerParticipant(
   }
 
   try {
-    let response;
-    if (files.length > 0) {
-      const formData = new FormData();
-      for (const f of files) {
-        formData.append(f.name, f);
-        console.log(`Adding ${f.name} to form data`);
-      }
-      for (const [key, value] of Object.entries(values)) {
-        formData.append(key, value);
-        console.log(`Adding ${key} to form data`);
-      }
-      response = await fetch(
-        `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-    } else {
-      response = await fetch(
-        `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            email: values.email,
-            participantSlug: crypto.randomUUID(),
-            attributes: values,
-          }),
-        },
-      );
+    const formData = new FormData();
+
+    for (const f of files) {
+      formData.append(f.name, f);
+      console.log(`Adding ${f.name} to form data`);
     }
+
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, value);
+      console.log(`Adding ${key} to form data`);
+    }
+
+    const response = await fetch(
+      `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
     if (!response.ok) {
       console.error("Error when registering participant", response);
       const errorData = (await response.json()) as ErrorResponse;
-      console.error("Error when registering participant", errorData.errors);
+      console.error("Error when registering participant", errorData);
       return { success: false, errors: errorData.errors };
     }
   } catch (error) {
