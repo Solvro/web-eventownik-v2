@@ -65,7 +65,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
           </div>
         </div>
 
-        <Collapsible.Content className="data-[state=open]:block data-[state=closed]:hidden sm:hidden">
+        <Collapsible.Content className="data-[state=closed]:hidden data-[state=open]:block sm:hidden">
           <div className="space-y-1 px-2 pt-2">
             {navigation.map((item) => (
               <Link
@@ -73,8 +73,8 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
                 href={item.href}
                 className={
                   isCurrent(item.href)
-                    ? "block rounded-md bg-primary/10 px-3 py-2 text-base font-medium"
-                    : "block rounded-md px-3 py-2 text-base font-medium hover:bg-primary/10 hover:text-primary-foreground"
+                    ? "bg-primary/10 block rounded-md px-3 py-2 text-base font-medium"
+                    : "hover:bg-primary/10 hover:text-primary-foreground block rounded-md px-3 py-2 text-base font-medium"
                 }
                 onClick={() => {
                   setIsMenuOpen(false);

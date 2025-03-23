@@ -46,14 +46,17 @@ export function CoorganizersForm({
       coorganizer: "",
     },
   });
+
   function onSubmit(data: z.infer<typeof EventCoorganizersFormSchema>) {
     setCoorganizers((_coorganizers) => [..._coorganizers, data.coorganizer]);
     form.reset();
   }
+
   function saveCoorganizers() {
     setEvent((_event) => ({ ..._event, coorganizers }));
     goToNextStep();
   }
+
   return (
     <FormContainer
       step="3/4"
@@ -69,7 +72,7 @@ export function CoorganizersForm({
               key={coorganizer}
               className="flex w-full flex-row items-center justify-between gap-2"
             >
-              <p className="flex h-12 w-full rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm">
+              <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
                 {coorganizer}
               </p>
               <Button variant="outline">
