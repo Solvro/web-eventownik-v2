@@ -31,16 +31,14 @@ export async function registerParticipant(
         },
         method: "POST",
         body: JSON.stringify({
-          email: values.email,
-          participantSlug: crypto.randomUUID(),
-          attributes: values,
+          ...values,
         }),
       },
     );
     if (!response.ok) {
       console.error("Error when registering participant", response);
       const errorData = (await response.json()) as ErrorResponse;
-      console.error("Error when registering participant", errorData.errors);
+      console.error("Error when registering participant", errorData);
       return { success: false, errors: errorData.errors };
     }
   } catch (error) {
