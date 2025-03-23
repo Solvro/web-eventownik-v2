@@ -51,7 +51,7 @@ function ThemeSwitch() {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <Button className="h-12 w-12 bg-primary"></Button>
+    <Button className="bg-primary h-12 w-12"></Button>
   );
 }
 
