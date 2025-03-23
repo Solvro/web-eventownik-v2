@@ -12,21 +12,47 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type {
+  CoOrganizer,
+  Permission,
+  PermissionType,
+} from "@/types/co-organizer";
 
 import type { TabProps } from "./tab-props";
 
-type PermissionType = "settings" | "forms" | "participants" | "mails";
-
-interface CoOrganizer {
-  email: string;
-  permissions: PermissionType[];
-}
-
-const PERMISSIONS_CONFIG: { id: PermissionType; label: string }[] = [
-  { id: "settings", label: "Ustawienia" },
-  { id: "forms", label: "Formularze" },
-  { id: "participants", label: "Uczestnicy" },
-  { id: "mails", label: "Maile" },
+const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
+  {
+    permission: {
+      id: 3,
+      action: "manage",
+      subject: "setting",
+    },
+    label: "Ustawienia",
+  },
+  {
+    permission: {
+      id: 4,
+      action: "manage",
+      subject: "form",
+    },
+    label: "Formularze",
+  },
+  {
+    permission: {
+      id: 5,
+      action: "manage",
+      subject: "participant",
+    },
+    label: "Uczestnicy",
+  },
+  {
+    permission: {
+      id: 6,
+      action: "manage",
+      subject: "email",
+    },
+    label: "Maile",
+  },
 ];
 
 const DEFAULT_AVATAR_PARAMS = {
@@ -49,7 +75,7 @@ const generateAvatarUrl = (email: string) => {
 };
 
 interface CoOrganizerItemProps extends CoOrganizer {
-  onPermissionToggle: (permission: PermissionType) => void;
+  onPermissionToggle: (permission: Permission) => void;
   onRemove: () => void;
 }
 
@@ -61,7 +87,6 @@ const CoOrganizerItem = memo(
     onRemove,
   }: CoOrganizerItemProps) => {
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
-
     return (
       <div className="flex items-center gap-2">
         <div className="flex h-12 w-full min-w-80 items-center rounded-xl border border-input bg-transparent py-3 pe-4 ps-1 text-lg shadow-sm transition-colors file:border-0 file:bg-transparent placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
@@ -91,16 +116,29 @@ const CoOrganizerItem = memo(
             className="w-min bg-accent"
           >
             <div className="flex flex-col gap-2">
-              {PERMISSIONS_CONFIG.map(({ id, label }) => (
-                <div key={id} className="mb-2 flex items-center space-x-2">
+              <span className="text-sm font-medium leading-none">
+                Tymczasowo nie można rozdzielać uprawnień
+              </span>
+              {PERMISSIONS_CONFIG.map(({ permission, label }) => (
+                <div
+                  key={permission.id}
+                  className="mb-2 flex items-center space-x-2"
+                >
                   <Checkbox
-                    id={id}
-                    checked={permissions.includes(id)}
+                    id={`permission-${permission.id.toString()}`}
+                    checked={
+                      permissions.map((p) => p.id).includes(permission.id) ||
+                      permissions.map((p) => p.id).includes(1)
+                    }
                     onCheckedChange={() => {
-                      onPermissionToggle(id);
+                      onPermissionToggle(permission);
                     }}
+                    disabled={true} // temporary disabled
                   />
-                  <Label htmlFor={id} className="cursor-pointer">
+                  <Label
+                    htmlFor={`permission-${permission.id.toString()}`}
+                    className="cursor-pointer"
+                  >
                     {label}
                   </Label>
                 </div>
@@ -123,24 +161,11 @@ const CoOrganizerItem = memo(
 
 CoOrganizerItem.displayName = "CoOrganizerItem";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function CoOrganizers({ event, saveFormRef }: TabProps) {
-  // Dummy data
-  const [coOrganizers, setCoOrganizers] = useState<CoOrganizer[]>([
-    {
-      email: "john.smith@example.com",
-      permissions: ["settings", "forms", "mails"],
-    },
-    {
-      email: "joe.biden@gov.us",
-      permissions: ["forms", "participants", "mails"],
-    },
-    {
-      email: "antekczaplicki@gmail.com",
-      permissions: ["settings", "forms", "participants"],
-    },
-  ]);
-
+export function CoOrganizers({
+  coOrganizers,
+  setCoOrganizers,
+  setCoOrganizersChanges,
+}: TabProps) {
   const [newEmail, setNewEmail] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<
     PermissionType[]
@@ -148,38 +173,83 @@ export function CoOrganizers({ event, saveFormRef }: TabProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const isEmailValid = isValidEmail(newEmail);
 
-  const handleAddOrganizer = (email: string, permissions: PermissionType[]) => {
+  const handleAddOrganizer = (
+    email: string,
+    permissionsIds: PermissionType[],
+  ) => {
+    const permissions = permissionsIds
+      .map(
+        (id) =>
+          PERMISSIONS_CONFIG.find((config) => config.permission.id === id)
+            ?.permission,
+      )
+      .filter(
+        (permission): permission is Permission => permission !== undefined,
+      );
     setCoOrganizers((previous) => [
       ...previous,
       {
+        id: null,
         email,
         permissions,
       },
     ]);
+    setCoOrganizersChanges((previous) => ({
+      ...previous,
+      added: [
+        ...previous.added,
+        {
+          id: null,
+          email,
+          permissions,
+        },
+      ],
+    }));
   };
 
   const handleRemoveOrganizer = (email: string) => {
     setCoOrganizers((previous) =>
       previous.filter((org) => org.email !== email),
     );
+    setCoOrganizersChanges((previous) => ({
+      ...previous,
+      deleted: [
+        ...previous.deleted,
+        previous.added.find((org) => org.email === email),
+      ].filter((org): org is CoOrganizer => org !== undefined),
+    }));
   };
 
   const handlePermissionToggle = useCallback(
-    (email: string, permission: PermissionType) => {
-      setCoOrganizers((previous) =>
-        previous.map((org) =>
+    (email: string, permission: Permission) => {
+      setCoOrganizers((previous) => {
+        const newCoOrganizers = previous.map((org) =>
           org.email === email
             ? {
                 ...org,
-                permissions: org.permissions.includes(permission)
-                  ? org.permissions.filter((p) => p !== permission)
+                permissions: org.permissions.some((p) => p.id === permission.id)
+                  ? org.permissions.filter((p) => p.id !== permission.id)
                   : [...org.permissions, permission],
               }
             : org,
-        ),
-      );
+        );
+
+        const updatedCoOrganizer = newCoOrganizers.find(
+          (org) => org.email === email,
+        );
+        if (updatedCoOrganizer != null) {
+          setCoOrganizersChanges((previousChanges) => ({
+            ...previousChanges,
+            updated: [
+              ...previousChanges.updated.filter((org) => org.email !== email),
+              updatedCoOrganizer,
+            ],
+          }));
+        }
+        return newCoOrganizers;
+      });
     },
-    [],
+    [setCoOrganizers, setCoOrganizersChanges],
   );
 
   return (
@@ -215,14 +285,12 @@ export function CoOrganizers({ event, saveFormRef }: TabProps) {
                 <Button
                   variant="outline"
                   className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={!isEmailValid}
+                  disabled={
+                    !isEmailValid ||
+                    coOrganizers.some((co) => co.email === newEmail)
+                  }
                   onClick={() => {
-                    setSelectedPermissions([
-                      "settings",
-                      "forms",
-                      "participants",
-                      "mails",
-                    ]);
+                    setSelectedPermissions([6, 5, 4, 3]);
                   }}
                 >
                   <Plus className="h-4 w-4" />
@@ -230,25 +298,37 @@ export function CoOrganizers({ event, saveFormRef }: TabProps) {
               </PopoverTrigger>
               <PopoverContent className="w-min bg-accent">
                 <div className="flex flex-col gap-2">
-                  {PERMISSIONS_CONFIG.map(({ id, label }) => (
-                    <div key={id} className="flex items-center space-x-2">
+                  <span className="text-sm font-medium leading-none">
+                    Tymczasowo nie można rozdzielać uprawnień
+                  </span>
+                  {PERMISSIONS_CONFIG.map(({ permission, label }) => (
+                    <div
+                      key={permission.id}
+                      className="flex items-center space-x-2"
+                    >
                       <Checkbox
-                        id={`permission-${id}`}
-                        checked={selectedPermissions.includes(id)}
+                        id={`permission-${permission.id.toString()}-new`}
+                        checked={selectedPermissions.includes(permission.id)}
                         onCheckedChange={(checked) => {
                           if (checked === true) {
                             setSelectedPermissions((previous) => [
                               ...previous,
-                              id,
+                              permission.id,
                             ]);
                           } else {
                             setSelectedPermissions((previous) =>
-                              previous.filter((p) => p !== id),
+                              previous.filter((p) => p !== permission.id),
                             );
                           }
                         }}
+                        disabled={true} // temporary disabled
                       />
-                      <Label htmlFor={`permission-${id}`}>{label}</Label>
+                      <Label
+                        htmlFor={`permission-${permission.id.toString()}-new`}
+                        className="cursor-pointer"
+                      >
+                        {label}
+                      </Label>
                     </div>
                   ))}
                   <div className="mt-4 flex justify-end gap-2">

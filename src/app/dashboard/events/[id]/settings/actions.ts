@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 interface ErrorResponse {
@@ -14,6 +15,11 @@ interface ErrorResponse {
 export async function updateEvent(
   unmodifiedEvent: Event,
   event: Event,
+  coOrganizersChanges: {
+    added: CoOrganizer[];
+    updated: CoOrganizer[];
+    deleted: CoOrganizer[];
+  },
 ): Promise<Event | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
@@ -89,6 +95,107 @@ export async function updateEvent(
         error: errorData,
       });
       return { errors: errorData.errors };
+    }
+
+    // Update co-organizers
+    const coOrganizersErrors: { message: string }[] = [];
+
+    try {
+      for (const coOrganizer of coOrganizersChanges.added) {
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: coOrganizer.email,
+              permissionsIds: coOrganizer.permissions.map((perm) => perm.id),
+            }),
+          },
+        );
+        if (coOrganizerResponse.ok) {
+          if (coOrganizer.id == null) {
+            const newCoOrganizer =
+              (await coOrganizerResponse.json()) as CoOrganizer;
+            const existingCoOrganizer = coOrganizersChanges.added.find(
+              (co) => co.email === coOrganizer.email && co.id == null,
+            );
+            if (existingCoOrganizer != null) {
+              existingCoOrganizer.id = newCoOrganizer.id;
+            }
+          }
+        } else {
+          console.error(
+            "[updateEvent] Error adding co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+          });
+        }
+      }
+
+      for (const coOrganizer of coOrganizersChanges.updated) {
+        if (coOrganizer.id === null) {
+          continue; // Skip co-organizers without an ID
+        }
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              permissionsIds: coOrganizer.permissions.map((perm) => perm.id),
+            }),
+          },
+        );
+        if (!coOrganizerResponse.ok) {
+          console.error(
+            "[updateEvent] Error updating co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Failed to update co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+          });
+        }
+      }
+
+      for (const coOrganizer of coOrganizersChanges.deleted) {
+        if (coOrganizer.id == null) {
+          continue; // Skip co-organizers without an ID
+        }
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${bearerToken}` },
+          },
+        );
+        if (!coOrganizerResponse.ok) {
+          console.error(
+            "[updateEvent] Error deleting co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Failed to delete co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("[updateEvent] Co-organizer update error:", error);
+      coOrganizersErrors.push({
+        message: "Failed to update co-organizers",
+      });
+    }
+
+    if (coOrganizersErrors.length > 0) {
+      return { errors: coOrganizersErrors };
     }
 
     revalidatePath(`/dashboard/events/${event.id.toString()}/settings`);
