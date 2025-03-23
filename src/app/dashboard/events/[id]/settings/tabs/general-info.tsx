@@ -284,7 +284,7 @@ export function General({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>Opis</FormLabel>
+                <FormLabel className="mb-0">Opis</FormLabel>
                 <FormControl>
                   <Textarea
                     disabled={form.formState.isSubmitting}

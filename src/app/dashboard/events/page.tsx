@@ -63,7 +63,7 @@ export default async function EventListPage() {
                   }
                   width="500"
                   height="500"
-                  className="aspect-square w-full rounded-t-xl object-cover"
+                  className="border-muted-foreground aspect-square w-full rounded-t-xl border-x border-t object-cover"
                   alt={`Zdjęcie wydarzenia ${event.name}`}
                 />
                 <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
@@ -81,7 +81,7 @@ export default async function EventListPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 rounded-b-xl border-x border-b border-muted-foreground p-4">
+              <div className="border-muted-foreground flex flex-col gap-4 rounded-b-xl border-x border-b p-4">
                 <p className="line-clamp-3 text-2xl font-bold">{event.name}</p>
                 <p className="line-clamp-3 text-xs">{event.description}</p>
                 <div className="flex w-full justify-between">

@@ -121,12 +121,12 @@ export function EventSettingsTabs({ unmodifiedEvent }: TabsProps) {
         onValueChange={handleTabChange}
       >
         {/* Tabs Navigation */}
-        <Tabs.List className="border-gray-250 flex w-fit space-x-2 rounded-xl border p-1 shadow-sm">
+        <Tabs.List className="border-gray-250 flex w-fit space-x-2 rounded-xl border p-1 shadow-xs">
           {TABS.map((tab) => (
             <Tabs.Trigger
               key={tab.value}
               value={tab.value}
-              className="rounded-lg px-4 py-1 transition-colors hover:bg-primary/10 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:hover:bg-blue-600"
+              className="hover:bg-primary/10 rounded-lg px-4 py-1 transition-colors data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:hover:bg-blue-600"
             >
               {tab.name}
             </Tabs.Trigger>

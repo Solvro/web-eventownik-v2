@@ -220,9 +220,9 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                 <FormControl>
                   <FormLabel
                     htmlFor={slugInputId}
-                    className="flex h-12 w-full cursor-text items-center rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors focus-within:ring-1 focus-within:ring-ring"
+                    className="border-input focus-within:ring-ring flex h-12 w-full cursor-text items-center rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors focus-within:ring-1"
                   >
-                    <span className="select-none text-neutral-500 md:text-sm">
+                    <span className="text-neutral-500 select-none md:text-sm">
                       eventownik.solvro.pl/
                     </span>
                     <Input
@@ -273,7 +273,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                       </div>
                       {form.formState.errors.socialMediaLinks?.[index]?.value
                         ?.message != null && (
-                        <p className="text-[0.8rem] text-sm font-medium text-red-500">
+                        <p className="text-sm text-[0.8rem] font-medium text-red-500">
                           {
                             form.formState.errors.socialMediaLinks[index].value
                               .message

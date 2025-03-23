@@ -44,7 +44,7 @@ export function DeleteParticipantDialog({
             <XCircle strokeWidth={1} stroke={"red"} size={64} />
             Jesteś pewny?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-pretty text-center text-foreground">
+          <AlertDialogDescription className="text-foreground text-center text-pretty">
             Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie
             można cofnąć.
           </AlertDialogDescription>
