@@ -28,6 +28,7 @@ export async function registerParticipant(
     const formData = new FormData();
 
     for (const f of files) {
+      //Filename of file is corresponding attribute id
       formData.append(f.name, f);
     }
 
