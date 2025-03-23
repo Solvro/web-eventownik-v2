@@ -29,12 +29,10 @@ export async function registerParticipant(
 
     for (const f of files) {
       formData.append(f.name, f);
-      console.log(`Adding ${f.name} to form data`);
     }
 
     for (const [key, value] of Object.entries(values)) {
       formData.append(key, value);
-      console.log(`Adding ${key} to form data`);
     }
 
     const response = await fetch(

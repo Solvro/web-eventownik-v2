@@ -58,11 +58,12 @@ export function AttributeInputFile({
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file !== undefined && validateFile(file)) {
+      const fileWithAttributeName = new File([file], attribute.id.toString());
       setFiles((previousFiles) => {
-        if (previousFiles.includes(file)) {
+        if (previousFiles.includes(fileWithAttributeName)) {
           return previousFiles;
         }
-        return [...previousFiles, file];
+        return [...previousFiles, fileWithAttributeName];
       });
     }
   }
