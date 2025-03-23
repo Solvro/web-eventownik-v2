@@ -89,7 +89,7 @@ const CoOrganizerItem = memo(
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
     return (
       <div className="flex items-center gap-2">
-        <div className="flex h-12 w-full min-w-80 items-center rounded-xl border border-input bg-transparent py-3 pe-4 ps-1 text-lg shadow-sm transition-colors file:border-0 file:bg-transparent placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
+        <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full min-w-80 items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-1 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
           <Image
             src={avatarUrl}
             alt={`${email}'s avatar`}
@@ -98,7 +98,7 @@ const CoOrganizerItem = memo(
             className="mr-2 h-10 w-10 rounded-lg"
             aria-hidden="true"
           />
-          <span className="px-2 py-2 text-sm font-medium leading-none">
+          <span className="px-2 py-2 text-sm leading-none font-medium">
             {email}
           </span>
         </div>
@@ -113,10 +113,10 @@ const CoOrganizerItem = memo(
           <PopoverContent
             side="right"
             align="start"
-            className="w-min bg-accent"
+            className="bg-accent w-min"
           >
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium leading-none">
+              <span className="text-sm leading-none font-medium">
                 Tymczasowo nie można rozdzielać uprawnień
               </span>
               {PERMISSIONS_CONFIG.map(({ permission, label }) => (
@@ -145,7 +145,7 @@ const CoOrganizerItem = memo(
               ))}
               <Button
                 variant="link"
-                className="m-0 h-6 justify-start p-0 text-destructive"
+                className="text-destructive m-0 h-6 justify-start p-0"
                 onClick={onRemove}
               >
                 <UserRoundMinus />
@@ -215,7 +215,7 @@ export function CoOrganizers({
       ...previous,
       deleted: [
         ...previous.deleted,
-        previous.added.find((org) => org.email === email),
+        coOrganizers.find((org) => org.email === email),
       ].filter((org): org is CoOrganizer => org !== undefined),
     }));
   };
@@ -255,7 +255,7 @@ export function CoOrganizers({
   return (
     <div className="flex w-full flex-row flex-wrap gap-4">
       <div className="flex flex-col">
-        <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <p className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           Współorganizatorzy
         </p>
         <div className="space-y-2 pt-2">
@@ -296,9 +296,9 @@ export function CoOrganizers({
                   <Plus className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-min bg-accent">
+              <PopoverContent className="bg-accent w-min">
                 <div className="flex flex-col gap-2">
-                  <span className="text-sm font-medium leading-none">
+                  <span className="text-sm leading-none font-medium">
                     Tymczasowo nie można rozdzielać uprawnień
                   </span>
                   {PERMISSIONS_CONFIG.map(({ permission, label }) => (
@@ -354,6 +354,9 @@ export function CoOrganizers({
               </PopoverContent>
             </Popover>
           </div>
+          <span className="text-muted-foreground text-sm leading-none font-medium">
+            Możesz dodać tylko osoby, które mają konto w Eventowniku
+          </span>
         </div>
       </div>
     </div>

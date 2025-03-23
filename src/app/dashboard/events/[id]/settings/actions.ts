@@ -57,6 +57,9 @@ export async function updateEvent(
     }
     formData.append("socialMediaLinks[]", link);
   }
+  if (event.socialMediaLinks === null || event.socialMediaLinks.length === 0) {
+    formData.append("socialMediaLinks", "");
+  }
 
   // Handle photo upload
   if (event.photoUrl != null && event.photoUrl !== unmodifiedEvent.photoUrl) {
@@ -117,23 +120,26 @@ export async function updateEvent(
           },
         );
         if (coOrganizerResponse.ok) {
-          if (coOrganizer.id == null) {
-            const newCoOrganizer =
-              (await coOrganizerResponse.json()) as CoOrganizer;
-            const existingCoOrganizer = coOrganizersChanges.added.find(
-              (co) => co.email === coOrganizer.email && co.id == null,
-            );
-            if (existingCoOrganizer != null) {
-              existingCoOrganizer.id = newCoOrganizer.id;
-            }
-          }
+          // For now backend doesn't return the new co-organizer ID so we can't update it here yet
+          // if (coOrganizer.id == null) {
+          //   const newCoOrganizer =
+          //     (await coOrganizerResponse.json()) as CoOrganizer;
+          //   const existingCoOrganizer = coOrganizersChanges.added.find(
+          //     (co) => co.email === coOrganizer.email && co.id == null,
+          //   );
+          //   if (existingCoOrganizer != null) {
+          //     existingCoOrganizer.id = newCoOrganizer.id;
+          //   }
+          // }
         } else {
           console.error(
             "[updateEvent] Error adding co-organizer:",
             coOrganizer,
           );
           coOrganizersErrors.push({
-            message: `Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+            message: `Upewnij się że ta osoba ma konto w Eventowniku.
+            
+            Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
           });
         }
       }
