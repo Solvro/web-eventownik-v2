@@ -105,7 +105,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 ) : null}
               </div>
             </div>
-            <p className="max-h-72 overflow-y-auto whitespace-pre-line leading-relaxed">
+            <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
           </div>
@@ -133,7 +133,7 @@ function EventInfoDiv({
     <div
       className={cn(
         className,
-        "flex w-fit items-center gap-x-2 rounded-lg bg-accent/10 px-2 py-1 backdrop-blur-sm",
+        "bg-accent/10 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-xs",
       )}
     >
       {children}

@@ -43,7 +43,7 @@ export function AttributeInput({
       // temporary hardcoded. It means that section attribute should be multiple checkboxes
       if (attribute.slug === "section") {
         return (
-          <div className="flex w-full flex-col rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors">
+          <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
             {attribute.options?.map((option) => (
               <div key={option} className="mb-2 flex items-center space-x-2">
                 <Checkbox

@@ -103,6 +103,7 @@ export function ParticipantTable({
       );
     });
   }
+
   return (
     <>
       <div className="my-2 flex items-center gap-x-4">
@@ -161,7 +162,7 @@ export function ParticipantTable({
       </div>
       {/* //TODO prevent resizing width of columns */}
       <Table>
-        <TableHeader className="border-b-2 border-border">
+        <TableHeader className="border-border border-b-2">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -169,7 +170,7 @@ export function ParticipantTable({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      "border-r-2 border-border",
+                      "border-border border-r-2",
                       header.id === "expand" ? "w-16 text-right" : "",
                     )}
                   >
@@ -213,7 +214,7 @@ export function ParticipantTable({
                 {row.getIsExpanded() ? (
                   <TableRow
                     key={`${row.id}-edit`}
-                    className="border-l-2 border-l-primary"
+                    className="border-l-primary border-l-2"
                   >
                     <TableCell>{null}</TableCell>
                     <TableCell>

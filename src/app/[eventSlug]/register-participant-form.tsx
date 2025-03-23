@@ -166,7 +166,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         ))}
 
         {form.formState.errors.root?.message != null && (
-          <FormMessage className="whitespace-break-spaces text-center text-sm text-red-500">
+          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
             {form.formState.errors.root.message}
           </FormMessage>
         )}
