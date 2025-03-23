@@ -1,8 +1,8 @@
 import type { ChangeEvent } from "react";
-import { useState } from "react";
 import type {
   ControllerRenderProps,
   FieldValues,
+  UseFormResetField,
   UseFormSetError,
 } from "react-hook-form";
 import { z } from "zod";
@@ -17,13 +17,12 @@ const EXTENSION_TO_MIME_TYPE = {
   pdf: "application/pdf",
 };
 
-const MAX_FILE_SIZE_MB = 1 * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 10 * 1024 * 1024;
 
 const fileSchema = z
   .instanceof(File)
   .refine(
     (file: File) => {
-      console.log("Value received:", file);
       return Object.values(EXTENSION_TO_MIME_TYPE).includes(file.type);
     },
     {
@@ -32,7 +31,6 @@ const fileSchema = z
   )
   .refine(
     (file: File) => {
-      console.log("Value received:", file);
       return file.size <= MAX_FILE_SIZE_MB;
     },
     {
@@ -44,31 +42,39 @@ export function AttributeInputFile({
   field,
   attribute,
   setError,
+  resetField,
+  setFiles,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   attribute: Attribute;
   setError: UseFormSetError<{
     email: string;
   }>;
+  resetField: UseFormResetField<{
+    email: string;
+  }>;
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) {
-  const [file, setFile] = useState<File | null>(null);
-
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const _file = event.target.files?.[0];
-    if (_file !== undefined && validateFile(_file)) {
-      setFile(_file);
-    } else {
-      setFile(null);
+    const file = event.target.files?.[0];
+    if (file !== undefined && validateFile(file)) {
+      setFiles((previousFiles) => {
+        if (previousFiles.includes(file)) {
+          return previousFiles;
+        }
+        return [...previousFiles, file];
+      });
     }
   }
 
-  function validateFile(_file: File) {
-    const result = fileSchema.safeParse(_file);
+  function validateFile(file: File) {
+    const result = fileSchema.safeParse(file);
     if (result.success) {
-      setError(attribute.id.toString(), { message: "" });
-
+      /* @ts-expect-error zod schema object are dynamic */
+      resetField(attribute.id.toString());
       return true;
     } else {
+      /* @ts-expect-error zod schema object are dynamic */
       setError(attribute.id.toString(), {
         message: result.error.errors[0].message,
       });

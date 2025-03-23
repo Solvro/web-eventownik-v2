@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { registerParticipant } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
+import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,6 +26,7 @@ import type { Event } from "@/types/event";
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 export function RegisterParticipantForm({ event }: { event: Event }) {
+  const [files, setFiles] = useState<File[]>([]);
   // generate schema for form based on event.firstForm.attributes
   const registerParticipantFormSchema = z.object({
     email: z.string().email("Nieprawidłowy adres email."),
@@ -45,47 +47,47 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   async function onSubmit(
     values: z.infer<typeof registerParticipantFormSchema>,
   ) {
-    console.log(`Values = ${JSON.stringify(values)}`);
-    // try {
-    //   const result = await registerParticipant(values, event);
-    //   if (!result.success) {
-    //     if (
-    //       result.errors?.[0]?.rule === "database.unique" &&
-    //       result.errors[0]?.field === "email"
-    //     ) {
-    //       form.setError("email", {
-    //         type: "manual",
-    //         message:
-    //           "Ten adres email jest już zarejestrowany na to wydarzenie.",
-    //       });
-    //       toast({
-    //         variant: "destructive",
-    //         title: "Adres email jest już zajęty",
-    //         description:
-    //           "Ten adres email jest już zarejestrowany na to wydarzenie.",
-    //       });
-    //     } else {
-    //       form.setError("root", {
-    //         type: "manual",
-    //         message:
-    //           "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
-    //       });
-    //       toast({
-    //         variant: "destructive",
-    //         title: "Rejestracja na wydarzenie nie powiodła się",
-    //         // TODO: More informative message based on error returned from registerParticipant() action
-    //         description: "Spróbuj ponownie później",
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error("Participant register failed", error);
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Rejestracja na wydarzenie nie powiodła się",
-    //     description: "Błąd serwera",
-    //   });
-    // }
+    try {
+      const result = await registerParticipant(values, event, files);
+      if (!result.success) {
+        if (
+          result.errors?.[0]?.rule === "database.unique" &&
+          result.errors[0]?.field === "email"
+        ) {
+          form.setError("email", {
+            type: "manual",
+            message:
+              "Ten adres email jest już zarejestrowany na to wydarzenie.",
+          });
+          toast({
+            variant: "destructive",
+            title: "Adres email jest już zajęty",
+            description:
+              "Ten adres email jest już zarejestrowany na to wydarzenie.",
+          });
+        } else {
+          form.setError("root", {
+            type: "manual",
+            message:
+              "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
+          });
+          toast({
+            variant: "destructive",
+            title: "Rejestracja na wydarzenie nie powiodła się",
+            // TODO: More informative message based on error returned from registerParticipant() action
+            description: "Spróbuj ponownie później",
+          });
+        }
+      }
+      setFiles([]);
+    } catch (error) {
+      console.error("Participant register failed", error);
+      toast({
+        variant: "destructive",
+        title: "Rejestracja na wydarzenie nie powiodła się",
+        description: "Błąd serwera",
+      });
+    }
   }
 
   if (event.firstForm === null) {
@@ -117,7 +119,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       </div>
     );
   }
-
   return (
     <Form {...form}>
       <form
@@ -155,12 +156,25 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
               <FormItem>
                 <FormLabel>{attribute.name}</FormLabel>
                 <FormControl>
-                  {/* @ts-expect-error zod schema object are dynamic */}
-                  <AttributeInput
-                    attribute={attribute}
-                    field={field}
-                    setError={form.control.setError}
-                  />
+                  {attribute.type === "file" ? (
+                    <AttributeInputFile
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      files={files}
+                      setFiles={setFiles}
+                    ></AttributeInputFile>
+                  ) : (
+                    <AttributeInput
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                    />
+                  )}
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {/* @ts-expect-error zod schema object are dynamic */}
@@ -179,7 +193,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
 
         <Button
           type="submit"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={form.formState.isSubmitting}
           className="w-full"
         >
           {form.formState.isSubmitting ? (

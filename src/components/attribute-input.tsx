@@ -1,8 +1,4 @@
-import type {
-  ControllerRenderProps,
-  FieldValues,
-  UseFormSetError,
-} from "react-hook-form";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -17,18 +13,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { Attribute } from "@/types/attributes";
 
-import { AttributeInputFile } from "./attribute-input-file";
-
 export function AttributeInput({
   attribute,
   field,
-  setError,
 }: {
   attribute: Attribute;
   field: ControllerRenderProps<FieldValues, string>;
-  setError: UseFormSetError<{
-    email: string;
-  }>;
 }) {
   //TODO add lacking implementation for block type
   switch (attribute.type) {
@@ -132,13 +122,7 @@ export function AttributeInput({
       return <Input type="date" {...field} />;
     }
     case "file": {
-      return (
-        <AttributeInputFile
-          field={field}
-          setError={setError}
-          attribute={attribute}
-        />
-      );
+      break;
     }
     case "block": {
       throw new Error('Not implemented yet: "block" case');
