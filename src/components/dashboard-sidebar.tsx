@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Pen, Play, Sheet, SlidersHorizontal, Users } from "lucide-react";
+import { Mail, Play, Sheet, SlidersHorizontal, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -55,14 +55,9 @@ export function DashboardSidebar({ id }: { id: string }) {
       title: "Maile",
       links: [
         {
-          title: "Skrzynka odbiorcza",
+          title: "Szablony maili",
           icon: <Mail />,
-          route: "inbox",
-        },
-        {
-          title: "Wyślij maila",
-          icon: <Pen />,
-          route: "send",
+          route: "emails",
         },
       ],
     },
