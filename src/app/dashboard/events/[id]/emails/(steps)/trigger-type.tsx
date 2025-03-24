@@ -21,11 +21,31 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 
-const EventEmailTemplateTriggerTypeSchema = z.object({
-  trigger: z.enum(EMAIL_TRIGGERS.map((t) => t.value) as [string, ...string[]]),
-  triggerValue: z.string(),
-  triggerValue2: z.string(),
-});
+const EventEmailTemplateTriggerTypeSchema = z
+  .object({
+    trigger: z.enum(
+      EMAIL_TRIGGERS.map((t) => t.value) as [string, ...string[]],
+    ),
+    triggerValue: z.string().optional(),
+    triggerValue2: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.trigger === "form_filled") {
+        return data.triggerValue !== undefined && data.triggerValue !== "";
+      }
+      if (data.trigger === "attribute_changed") {
+        return (
+          (data.triggerValue !== undefined && data.triggerValue !== "") ||
+          (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
+        );
+      }
+      return true;
+    },
+    {
+      message: "Wybrany wyzwalacz potrzebuje dodatkowej konfiguracji",
+    },
+  );
 
 function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
@@ -176,7 +196,12 @@ function TriggerTypeForm({ goToNextStep }: { goToNextStep: () => void }) {
                           key={trigger.value}
                         >
                           <FormControl>
-                            <RadioGroupItem value={trigger.value} />
+                            <RadioGroupItem
+                              value={trigger.value}
+                              onClick={() => {
+                                form.clearErrors();
+                              }}
+                            />
                           </FormControl>
                           <FormLabel>{trigger.name}</FormLabel>
                         </FormItem>
@@ -194,6 +219,11 @@ function TriggerTypeForm({ goToNextStep }: { goToNextStep: () => void }) {
           <div className="h-[1px] w-full bg-muted-foreground/25" />
           <div className="flex min-h-[216px] flex-col gap-4">
             <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
+            <FormMessage>
+              {Object.keys(form.formState.errors).length > 0
+                ? "Wybrany wyzwalacz wymaga dodatkowej konfiguracji. Wypełnij wszystkie poniższe pola"
+                : ""}
+            </FormMessage>
             <div className="flex flex-col gap-8">
               <TriggerConfigurationInputs
                 trigger={form.getValues("trigger")}

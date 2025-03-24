@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { MessageContentForm } from "./(steps)/message-content";
 import { TriggerTypeForm } from "./(steps)/trigger-type";
 
 function CreateEmailTemplateForm({ eventId }: { eventId: string }) {
@@ -35,15 +36,14 @@ function CreateEmailTemplateForm({ eventId }: { eventId: string }) {
               }}
             />
           )}
-          {/* {currentStep === 1 && (
-            <AttributesForm
+          {currentStep === 1 && (
+            <MessageContentForm
               eventId={eventId}
-              attributes={attributes}
               goToPreviousStep={() => {
                 setCurrentStep(0);
               }}
             />
-          )} */}
+          )}
         </div>
       </DialogContent>
     </Dialog>
