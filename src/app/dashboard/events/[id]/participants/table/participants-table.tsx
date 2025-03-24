@@ -32,6 +32,7 @@ import { deleteParticipant as deleteParticipantAction } from "../actions";
 import { DeleteParticipantDialog } from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { DownloadAttributeFileButton } from "./download-file-attribute-button";
 import { EditParticipantForm } from "./edit-participant-form";
 import { getPaginationInfoText } from "./utils";
 
@@ -199,19 +200,30 @@ export function ParticipantTable({
             return (
               <Fragment key={row.id}>
                 <TableRow>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.id === "expand" ? "text-right" : "",
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const attribute = cell.column.columnDef.meta?.attribute;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          cell.column.id === "expand" ? "text-right" : "",
+                        )}
+                      >
+                        {attribute?.type === "file" ? (
+                          <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
                 {row.getIsExpanded() ? (
                   <TableRow

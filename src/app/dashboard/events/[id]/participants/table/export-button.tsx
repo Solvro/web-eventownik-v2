@@ -6,17 +6,7 @@ import { useState } from "react";
 import { exportData } from "@/app/dashboard/events/[id]/participants/actions";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-
-function downloadFile(blob: Blob, fileName: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.append(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
+import { downloadFile } from "@/lib/utils";
 
 export function ExportButton({ eventId }: { eventId: string }) {
   const { toast } = useToast();
