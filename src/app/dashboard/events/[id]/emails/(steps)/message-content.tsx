@@ -55,8 +55,13 @@ function MessageContentForm({
     });
   }
 
-  async function onSubmit() {
-    const result = await createEventEmailTemplate(eventId, newEmailTemplate);
+  async function onSubmit(
+    values: z.infer<typeof EventEmailTemplateContentSchema>,
+  ) {
+    const result = await createEventEmailTemplate(eventId, {
+      ...newEmailTemplate,
+      ...values,
+    });
 
     if (result.success) {
       toast({
