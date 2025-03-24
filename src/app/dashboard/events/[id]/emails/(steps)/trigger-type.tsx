@@ -97,7 +97,7 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Slug formularza</FormLabel>
+                <FormLabel>ID formularza</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -120,7 +120,7 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Slug atrybutu</FormLabel>
+                <FormLabel>ID atrybutu</FormLabel>
                 <FormControl>
                   <Input type="text" placeholder="czy_zaplacil" {...field} />
                 </FormControl>

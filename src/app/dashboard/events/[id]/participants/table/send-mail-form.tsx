@@ -144,7 +144,7 @@ function SendMailForm({
                   )}
                 />
                 <h2>
-                  Zamierasz wysłać tą wiadomość do {targetParticipants.length}{" "}
+                  Zamierzasz wysłać tą wiadomość do {targetParticipants.length}{" "}
                   uczestników z następującymi adresami:
                 </h2>
                 <pre className="max-h-16 overflow-y-auto whitespace-pre-wrap rounded-md bg-muted/20 p-4">
