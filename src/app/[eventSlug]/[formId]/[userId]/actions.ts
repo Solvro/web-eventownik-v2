@@ -22,15 +22,6 @@ export async function submitForm(
     const session = await verifySession();
     const { bearerToken } = session;
     // why this thing needs event's slug instead of the event's id?!
-    let attributes = [];
-    for (const [key, value] of Object.entries(values)) {
-      attributes.push({
-        id: Number.parseInt(key),
-        name: "date",
-        value: value,
-      });
-    }
-    console.log(attributes);
     const response = await fetch(
       `${API_URL}/events/${eventSlug}/forms/${formId}/submit`,
       {
@@ -41,7 +32,7 @@ export async function submitForm(
         method: "POST",
         body: JSON.stringify({
           participantSlug: userId,
-          attributes: attributes,
+          ...values,
         }),
       },
     );
