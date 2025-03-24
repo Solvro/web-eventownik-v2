@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
 import { verifySession } from "@/lib/session";
 
-import { getAttributes, getParticipants } from "./actions";
+import { getAttributes, getEmails, getParticipants } from "./actions";
 
 export default async function DashboardEventParticipantsPage({
   params,
@@ -17,10 +17,12 @@ export default async function DashboardEventParticipantsPage({
   const { id } = await params;
   const participantsData = getParticipants(id, session.bearerToken);
   const attributesData = getAttributes(id, session.bearerToken);
+  const emailsData = getEmails(id);
 
-  const [participants, attributes] = await Promise.all([
+  const [participants, attributes, emails] = await Promise.all([
     participantsData,
     attributesData,
+    emailsData,
   ]);
 
   return (
@@ -31,6 +33,7 @@ export default async function DashboardEventParticipantsPage({
         <ParticipantTable
           participants={participants}
           attributes={attributes}
+          emails={emails}
           eventId={id}
         />
       )}

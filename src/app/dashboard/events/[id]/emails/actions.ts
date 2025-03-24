@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import type { NewEventEmailTemplate } from "@/atoms/new-email-template-atom";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
@@ -10,10 +12,7 @@ async function createEventEmailTemplate(
 ) {
   const session = await verifySession();
   if (session == null) {
-    return {
-      success: false,
-      error: "Brak autoryzacji",
-    };
+    redirect("/auth/login");
   }
 
   const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
