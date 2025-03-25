@@ -70,9 +70,9 @@ const AttributeItem = memo(
 
     const handleSlugChange = (value: string) => {
       if (!slugRegex.test(value)) {
-        setSlugError("Only lowercase letters, numbers, and hyphens allowed");
+        setSlugError("Slug może zawierać tylko małe litery, cyfry i myślniki");
       } else if (value.length < 3) {
-        setSlugError("Slug must be at least 3 characters");
+        setSlugError("Slug musi mieć co najmniej 3 znaki");
       } else {
         setSlugError("");
       }
