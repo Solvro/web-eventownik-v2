@@ -32,7 +32,7 @@ export function DownloadAttributeFileButton({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Eksport nie powiódł się!",
+          title: "Pobieranie pliku nie powiodło się!",
           description: error ?? "Wystąpił nieznany błąd.",
         });
         return;
@@ -42,7 +42,7 @@ export function DownloadAttributeFileButton({
         const fileExtension = file.type.split("/")[1];
         downloadFile(
           file,
-          `${attribute.name}-${participant.slug}.${fileExtension}`,
+          `${participant.email}-${attribute.slug}.${fileExtension}`,
         );
       }
     } catch (error) {

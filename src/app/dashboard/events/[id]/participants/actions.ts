@@ -166,7 +166,7 @@ export async function downloadAttributeFile(
     if (response.status === 404) {
       return {
         success: false,
-        error: "Nie znaleziono wydarzenia lub endpoint nie istnieje.",
+        error: "Nie znaleziono pliku.",
       };
     }
     if (response.status === 500) {

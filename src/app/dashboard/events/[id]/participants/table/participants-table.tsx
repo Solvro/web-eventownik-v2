@@ -209,7 +209,9 @@ export function ParticipantTable({
                           cell.column.id === "expand" ? "text-right" : "",
                         )}
                       >
-                        {attribute?.type === "file" ? (
+                        {attribute?.type === "file" &&
+                        (row.original[attribute.id] !== null ||
+                          row.original[attribute.id] !== "") ? (
                           <DownloadAttributeFileButton
                             attribute={attribute}
                             eventId={eventId}
