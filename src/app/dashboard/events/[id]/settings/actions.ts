@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import { EventAttribute } from "@/types/attributes";
+import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -63,7 +63,10 @@ export async function updateEvent(
     }
     formData.append("socialMediaLinks[]", link);
   }
-  if (event.socialMediaLinks === null || event.socialMediaLinks.length === 0) {
+  if (
+    event.socialMediaLinks === null ||
+    event.socialMediaLinks.map((link) => link.trim()).length === 0
+  ) {
     formData.append("socialMediaLinks", "");
   }
 
@@ -145,7 +148,9 @@ export async function updateEvent(
           coOrganizersErrors.push({
             message: `Upewnij się że ta osoba ma konto w Eventowniku.
             
-            Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+            Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
           });
         }
       }
@@ -173,7 +178,9 @@ export async function updateEvent(
             coOrganizer,
           );
           coOrganizersErrors.push({
-            message: `Failed to update co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+            message: `Failed to update co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
           });
         }
       }
@@ -195,7 +202,9 @@ export async function updateEvent(
             coOrganizer,
           );
           coOrganizersErrors.push({
-            message: `Failed to delete co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText}`,
+            message: `Failed to delete co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
           });
         }
       }
@@ -228,22 +237,42 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
-              // required: attribute.required,
-              options: attribute.options,
+              options:
+                (attribute.options ?? []).length > 0
+                  ? attribute.options
+                  : undefined,
             }),
           },
         );
-        if (!attributeResponse.ok) {
+        if (attributeResponse.ok) {
+          // Update the attribute with the new ID
+          const newAttribute =
+            (await attributeResponse.json()) as EventAttribute;
+          attributesChanges.updated = attributesChanges.updated.map(
+            (attribute_) =>
+              attribute_.id === attribute.id
+                ? { ...attribute_, id: newAttribute.id }
+                : attribute_,
+          );
+          attributesChanges.deleted = attributesChanges.deleted.map(
+            (attribute_) =>
+              attribute_.id === attribute.id
+                ? { ...attribute_, id: newAttribute.id }
+                : attribute_,
+          );
+        } else {
           console.error("[updateEvent] Error adding attribute:", attribute);
           attributesErrors.push({
-            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
           });
         }
       }
 
       for (const attribute of attributesChanges.updated) {
-        if (attribute.id == null) {
-          continue; // Skip attributes without an ID
+        if (attribute.id < 0) {
+          continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
           `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
@@ -258,22 +287,26 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
-              // required: attribute.required,
-              options: attribute.options,
+              options:
+                (attribute.options ?? []).length > 0
+                  ? attribute.options
+                  : undefined,
             }),
           },
         );
         if (!attributeResponse.ok) {
           console.error("[updateEvent] Error updating attribute:", attribute);
           attributesErrors.push({
-            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
           });
         }
       }
 
       for (const attribute of attributesChanges.deleted) {
-        if (attribute.id == null) {
-          continue; // Skip attributes without an ID
+        if (attribute.id < 0) {
+          continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
           `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
@@ -285,7 +318,9 @@ export async function updateEvent(
         if (!attributeResponse.ok) {
           console.error("[updateEvent] Error deleting attribute:", attribute);
           attributesErrors.push({
-            message: `Failed to delete attribute ${attribute.name}, error: ${attributeResponse.statusText}`,
+            message: `Failed to delete attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
           });
         }
       }

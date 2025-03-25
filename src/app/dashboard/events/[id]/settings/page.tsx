@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { EventSettingsTabs } from "@/app/dashboard/events/[id]/settings/settings-tabs";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import { EventAttribute } from "@/types/attributes";
+import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 

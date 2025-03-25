@@ -11,6 +11,7 @@ import {
   ListTodo,
   Mail,
   Palette,
+  PlusIcon,
   Smartphone,
   SquareDashedMousePointer,
   TrashIcon,
@@ -33,21 +34,25 @@ import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import type { TabProps } from "./tab-props";
 
-const ATTRIBUTE_TYPES: { value: AttributeType; icon: JSX.Element }[] = [
-  { value: "text", icon: <ALargeSmall /> },
-  { value: "number", icon: <Binary /> },
-  { value: "textarea", icon: <LetterText /> },
-  { value: "file", icon: <CloudUpload /> },
-  { value: "select", icon: <SquareDashedMousePointer /> },
-  { value: "select-multiple", icon: <ListTodo /> },
-  { value: "block", icon: <Cuboid /> },
-  { value: "date", icon: <Calendar /> },
-  { value: "time", icon: <Clock /> },
-  { value: "datetime", icon: <CalendarClock /> },
-  { value: "email", icon: <Mail /> },
-  { value: "tel", icon: <Smartphone /> },
-  { value: "color", icon: <Palette /> },
-  { value: "checkbox", icon: <Check /> },
+const ATTRIBUTE_TYPES: {
+  value: AttributeType;
+  title: string;
+  icon: JSX.Element;
+}[] = [
+  { value: "text", title: "Tekst", icon: <ALargeSmall /> },
+  { value: "number", title: "Liczba", icon: <Binary /> },
+  { value: "textarea", title: "Pole tekstowe", icon: <LetterText /> },
+  { value: "file", title: "Plik", icon: <CloudUpload /> },
+  { value: "select", title: "Wybór", icon: <SquareDashedMousePointer /> },
+  { value: "multiselect", title: "Wielokrotny wybór", icon: <ListTodo /> },
+  { value: "block", title: "Blok", icon: <Cuboid /> },
+  { value: "date", title: "Data", icon: <Calendar /> },
+  { value: "time", title: "Czas", icon: <Clock /> },
+  { value: "datetime", title: "Data i czas", icon: <CalendarClock /> },
+  { value: "email", title: "Email", icon: <Mail /> },
+  { value: "tel", title: "Telefon", icon: <Smartphone /> },
+  { value: "color", title: "Kolor", icon: <Palette /> },
+  { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
 ];
 
 const slugRegex = /^[a-z0-9-]+$/;
@@ -83,24 +88,25 @@ const AttributeItem = memo(
     };
 
     return (
-      <div className="mb-2 flex items-center gap-4 rounded-lg border p-4">
+      <div className="mb-2 flex gap-2 rounded-lg p-2">
         <Button
           variant="ghost"
           size="icon"
           onClick={onRemove}
-          className="text-destructive"
+          className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
         >
           <TrashIcon className="h-4 w-4" />
         </Button>
 
-        <div className="flex-1 space-y-2">
-          <div className="flex gap-2">
+        <div className="flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               value={attribute.name}
               onChange={(event_) => {
                 onUpdate({ ...attribute, name: event_.target.value });
               }}
               placeholder="Attribute label"
+              className="flex-1"
             />
 
             <Select
@@ -117,83 +123,93 @@ const AttributeItem = memo(
                   <SelectItem key={type.value} value={type.value}>
                     <div className="flex items-center gap-2">
                       {type.icon}
-                      <span>{type.value}</span>
+                      <span className="overflow-x-hidden text-ellipsis">
+                        {type.title}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
+            <div className="flex flex-col gap-2">
+              <Input
+                value={attribute.slug}
+                onChange={(event_) => {
+                  handleSlugChange(event_.target.value);
+                }}
+                placeholder="slug"
+                className={`flex-1 ${slugError ? "border-destructive" : ""}`}
+              />
+              {slugError ? (
+                <span className="text-destructive text-sm">{slugError}</span>
+              ) : null}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={`showInTable-${attribute.slug}`}
+                checked={attribute.showInList}
+                onCheckedChange={(checked) => {
+                  onUpdate({ ...attribute, showInList: checked === true });
+                }}
+              />
+              <Label htmlFor={`showInTable-${attribute.slug}`}>
+                Pokaż w tabeli
+              </Label>
+            </div>
           </div>
 
-          {attribute.type === "select" ||
-            (attribute.type === "select-multiple" && (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    value={optionsInput}
-                    onChange={(event_) => {
-                      setOptionsInput(event_.target.value);
-                    }}
-                    placeholder="Add option"
-                    onKeyDown={(event_) => {
-                      event_.key === "Enter" && addOption();
-                    }}
-                  />
-                  <Button onClick={addOption}>Add Option</Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {attribute.options?.map((option, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
-                    >
-                      {option}
-                      <button
-                        onClick={() => {
-                          onUpdate({
-                            ...attribute,
-                            options:
-                              attribute.options?.filter(
-                                (_, index_) => index_ !== index,
-                              ) ?? [],
-                          });
-                        }}
-                        className="text-destructive"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+          {(attribute.type === "select" ||
+            attribute.type === "multiselect") && (
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={optionsInput}
+                  onChange={(event_) => {
+                    setOptionsInput(event_.target.value);
+                  }}
+                  placeholder="Nowa opcja"
+                  onKeyDown={(event_) => {
+                    event_.key === "Enter" && addOption();
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={addOption}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Dodaj opcję
+                </Button>
               </div>
-            ))}
-
-          <div className="flex gap-2">
-            <Input
-              value={attribute.slug}
-              onChange={(event_) => {
-                handleSlugChange(event_.target.value);
-              }}
-              placeholder="slug"
-              className={`flex-1 ${slugError ? "border-destructive" : ""}`}
-            />
-            {slugError ? (
-              <span className="text-destructive text-sm">{slugError}</span>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id={`showInTable-${attribute.slug}`}
-            checked={attribute.showInList}
-            onCheckedChange={(checked) => {
-              onUpdate({ ...attribute, showInList: checked === true });
-            }}
-          />
-          <Label htmlFor={`showInTable-${attribute.slug}`}>
-            Pokaż w tabeli
-          </Label>
+              <div className="flex flex-wrap gap-2">
+                {attribute.options?.map((option, index) => (
+                  <div
+                    key={`${attribute.id.toString()}-${option}`}
+                    className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+                  >
+                    {option}
+                    <button
+                      onClick={() => {
+                        onUpdate({
+                          ...attribute,
+                          options:
+                            attribute.options?.filter(
+                              (_, index_) => index_ !== index,
+                            ) ?? [],
+                        });
+                      }}
+                      className="text-destructive"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -220,7 +236,7 @@ export function Attributes({
       .replaceAll(/^-|-$/g, "");
 
     const newAttribute: EventAttribute = {
-      id: Date.now(), // Temporary ID for new attributes
+      id: -Date.now(),
       name: newAttributeLabel.trim(),
       slug: newSlug,
       eventId: 0, // Will be set by parent component
@@ -295,13 +311,21 @@ export function Attributes({
               onChange={(event_) => {
                 setNewAttributeLabel(event_.target.value);
               }}
-              placeholder="New attribute label"
+              placeholder="Nazwa nowego atrybutu"
               className="flex-1"
               onKeyDown={(event_) => {
                 event_.key === "Enter" && handleAddAttribute();
               }}
             />
-            <Button onClick={handleAddAttribute}>Add Attribute</Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              onClick={handleAddAttribute}
+            >
+              <PlusIcon className="h-4 w-4" />
+              Nowy atrybut
+            </Button>
           </div>
         </div>
       </div>
