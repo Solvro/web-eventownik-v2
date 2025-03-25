@@ -85,7 +85,6 @@ export function generateColumns(attributes: Attribute[]) {
             );
           },
           cell: (info) => info.getValue(),
-
           filterFn: "arrIncludesSome",
         });
       }),

@@ -139,3 +139,45 @@ export async function exportData(eventId: string) {
   const fileBlob = await response.blob();
   return { success: true, file: fileBlob };
 }
+
+export async function downloadAttributeFile(
+  eventId: string,
+  participantId: string,
+  attributeId: string,
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/${participantId}/attributes/${attributeId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    console.error("Failed to download file from attribute", response);
+
+    if (response.status === 404) {
+      return {
+        success: false,
+        error: "Nie znaleziono pliku.",
+      };
+    }
+    if (response.status === 500) {
+      return {
+        success: false,
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+      };
+    }
+    return { success: false };
+  }
+
+  const fileBlob = await response.blob();
+  return { success: true, file: fileBlob };
+}

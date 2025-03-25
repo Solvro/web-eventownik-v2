@@ -122,7 +122,7 @@ export function AttributeInput({
       return <Input type="date" {...field} />;
     }
     case "file": {
-      return <Input type="file" {...field} />;
+      break;
     }
     case "block": {
       throw new Error('Not implemented yet: "block" case');
