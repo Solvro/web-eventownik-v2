@@ -11,9 +11,9 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard" },
+  // { name: "Dashboard", href: "/dashboard" },
   { name: "Wydarzenia", href: "/dashboard/events" },
-  { name: "Ustawienia konta", href: "/dashboard/settings" },
+  // { name: "Ustawienia konta", href: "/dashboard/settings" },
 ];
 
 export function Navbar({ authButton }: { authButton: React.ReactNode }) {
