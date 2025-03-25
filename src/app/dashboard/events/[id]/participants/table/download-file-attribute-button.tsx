@@ -63,7 +63,7 @@ export function DownloadAttributeFileButton({
       disabled={isQuerying}
       title={`Pobierz ${attribute.name} dla ${participant.email}`}
     >
-      Pobierz {attribute.name}
+      Pobierz
     </Button>
   );
 }

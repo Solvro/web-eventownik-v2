@@ -210,8 +210,9 @@ export function ParticipantTable({
                         )}
                       >
                         {attribute?.type === "file" &&
-                        (row.original[attribute.id] !== null ||
-                          row.original[attribute.id] !== "") ? (
+                        row.original[attribute.id] !== null &&
+                        row.original[attribute.id] !== undefined &&
+                        row.original[attribute.id] !== "" ? (
                           <DownloadAttributeFileButton
                             attribute={attribute}
                             eventId={eventId}
