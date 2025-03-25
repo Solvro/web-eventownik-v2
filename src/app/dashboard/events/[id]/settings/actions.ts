@@ -124,7 +124,7 @@ export async function updateEvent(
             },
             body: JSON.stringify({
               email: coOrganizer.email,
-              permissionsIds: coOrganizer.permissions.map((perm) => perm.id),
+              permissionsIds: [1], //coOrganizer.permissions.map((perm) => perm.id), // Temporary only one permission
             }),
           },
         );
