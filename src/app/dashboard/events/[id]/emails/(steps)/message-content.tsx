@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Image } from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -17,6 +18,7 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  ImageIcon,
   Italic,
   Loader,
   Save,
@@ -39,6 +41,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { getBase64FromUrl } from "@/lib/utils";
 
 import { createEventEmailTemplate } from "../actions";
 
@@ -63,7 +66,10 @@ function Editor({
       StarterKit,
       Placeholder.configure({ placeholder: "Napisz wiadomość" }),
       TextAlign.configure({
-        types: ["heading", "paragraph"],
+        types: ["heading", "paragraph", "image"],
+      }),
+      Image.configure({
+        allowBase64: true,
       }),
     ],
     content: form.getValues("content"),
@@ -73,7 +79,7 @@ function Editor({
     editorProps: {
       attributes: {
         class:
-          "pb-4 focus:outline-none cursor-text max-h-[200px] leading-relaxed",
+          "pb-4 focus:outline-none cursor-text max-h-[200px] overflow-y-auto leading-relaxed",
       },
       handleKeyDown: (_, event) => {
         if (event.key === "Enter") {
@@ -84,7 +90,7 @@ function Editor({
   });
 
   return (
-    <div className="min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+    <div className="min-h-[60px] max-w-[974px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
       <EditorMenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>
@@ -92,6 +98,8 @@ function Editor({
 }
 
 function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <div className="flex gap-2 pb-4">
       <Button
@@ -199,6 +207,29 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         title="Justuj"
       >
         <AlignJustify />
+      </Button>
+      <input
+        type="file"
+        className="sr-only"
+        ref={fileInputRef}
+        onChangeCapture={async (event) => {
+          const input = event.target as HTMLInputElement;
+          if (input.files?.[0] != null) {
+            const newBlobUrl = URL.createObjectURL(input.files[0]);
+            const base64 = await getBase64FromUrl(newBlobUrl);
+            editor?.chain().focus().setImage({ src: base64 }).run();
+            URL.revokeObjectURL(newBlobUrl);
+          }
+        }}
+      />
+      <Button
+        size="icon"
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        variant={editor?.isActive("image") ? "default" : "ghost"}
+        title="Wstaw zdjęcie"
+      >
+        <ImageIcon />
       </Button>
     </div>
   );
