@@ -1,0 +1,32 @@
+import { CreateEmailTemplateForm } from "./create-email-template-form";
+import { getEventEmails } from "./data-access";
+import { EmailTemplateEntry } from "./template-entry";
+
+export default async function DashboardEventEmailTemplatesPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const templates = await getEventEmails(id);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <h1 className="text-3xl font-bold">Szablony maili</h1>
+      <div className="mt-8 flex flex-wrap gap-8">
+        <CreateEmailTemplateForm eventId={id} />
+        {templates === null ? (
+          <p className="text-red-600">Nie udało się pobrać szablonów</p>
+        ) : (
+          templates.map((template) => (
+            <EmailTemplateEntry
+              emailTemplate={template}
+              eventId={id}
+              key={template.id}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

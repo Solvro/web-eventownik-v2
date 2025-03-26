@@ -153,6 +153,26 @@
   }
 }
 
+.tiptap p.is-editor-empty:first-child::before {
+  color: hsl(0 0% 73%);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap h1 {
+  font-size: 24px;
+}
+
+.tiptap h2 {
+  font-size: 20px;
+}
+
+.tiptap h3 {
+  font-size: 18px;
+}
+
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {

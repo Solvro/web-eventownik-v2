@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
+import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 import { deleteParticipant as deleteParticipantAction } from "../actions";
@@ -34,6 +35,7 @@ import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
 import { EditParticipantForm } from "./edit-participant-form";
+import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";
 
 /**
@@ -45,10 +47,12 @@ import { getPaginationInfoText } from "./utils";
 export function ParticipantTable({
   participants,
   attributes,
+  emails,
   eventId,
 }: {
   participants: Participant[];
   attributes: Attribute[];
+  emails: EventEmail[] | null;
   eventId: string;
 }) {
   const { toast } = useToast();
@@ -139,6 +143,13 @@ export function ParticipantTable({
         >
           <ArrowUpDown />
         </Button>
+        <SendMailForm
+          eventId={eventId}
+          targetParticipants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original)}
+          emails={emails}
+        />
         <ExportButton eventId={eventId} />
         <div className="ml-auto">
           <span className="mr-2">{getPaginationInfoText(table)}</span>
