@@ -43,7 +43,13 @@ const EventFormSchema = z.object({
   }),
   slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isOpen: z.boolean(),
-  attributesIds: z.array(z.number()),
+  attributes: z.array(
+    z.object({
+      id: z.number(),
+      isRequired: z.boolean(),
+      isEditable: z.boolean(),
+    }),
+  ),
 });
 
 function EventFormEditForm({
@@ -62,11 +68,11 @@ function EventFormEditForm({
       description: formToEdit.description,
       startTime: `${new Date(formToEdit.startDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.startDate).getMinutes().toString().padStart(2, "0")}`,
       endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
-      startDate: formToEdit.startDate,
-      endDate: formToEdit.endDate,
+      startDate: new Date(formToEdit.startDate),
+      endDate: new Date(formToEdit.endDate),
       isOpen: formToEdit.isOpen,
       slug: formToEdit.slug,
-      attributesIds: formToEdit.attributes.map((attribute) => attribute.id),
+      attributes: formToEdit.attributes,
     },
   });
 
@@ -102,7 +108,8 @@ function EventFormEditForm({
             <FormField
               name="name"
               control={form.control}
-              disabled={form.formState.isSubmitting}
+              // https://github.com/orgs/react-hook-form/discussions/10964?sort=new#discussioncomment-8481087
+              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nazwa formularza</FormLabel>
@@ -110,7 +117,7 @@ function EventFormEditForm({
                     <Input
                       type="text"
                       placeholder="Podaj nazwę formularza"
-                      disabled={form.formState.isSubmitting}
+                      disabled={form.formState.isSubmitting ? true : undefined}
                       {...field}
                     />
                   </FormControl>
@@ -126,7 +133,7 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="startDate"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <Popover>
@@ -163,7 +170,7 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="startTime"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -182,7 +189,7 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="endDate"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <Popover>
@@ -219,7 +226,7 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="endTime"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -237,7 +244,7 @@ function EventFormEditForm({
             <FormField
               name="slug"
               control={form.control}
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Slug</FormLabel>
@@ -245,7 +252,7 @@ function EventFormEditForm({
                     <Input
                       type="text"
                       placeholder="nazwa-formularza"
-                      disabled={form.formState.isSubmitting}
+                      disabled={form.formState.isSubmitting ? true : undefined}
                       {...field}
                     />
                   </FormControl>
@@ -261,7 +268,7 @@ function EventFormEditForm({
             <FormField
               name="description"
               control={form.control}
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem className="grow">
                   <FormLabel>Dodaj tekst wstępny</FormLabel>
@@ -278,7 +285,7 @@ function EventFormEditForm({
             <FormField
               name="isOpen"
               control={form.control}
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem className="flex w-fit flex-col">
                   <FormLabel>Formularz rejestracyjny?</FormLabel>
@@ -295,7 +302,7 @@ function EventFormEditForm({
           </div>
           <FormField
             control={form.control}
-            name="attributesIds"
+            name="attributes"
             render={() => (
               <FormItem className="space-y-3">
                 <FormLabel>Wybierz atrybuty</FormLabel>
@@ -303,7 +310,7 @@ function EventFormEditForm({
                   <FormField
                     key={attribute.id}
                     control={form.control}
-                    name="attributesIds"
+                    name="attributes"
                     render={({ field }) => (
                       <FormItem
                         key={attribute.id}
@@ -311,19 +318,58 @@ function EventFormEditForm({
                       >
                         <FormControl>
                           <Checkbox
-                            checked={field.value.includes(attribute.id)}
+                            id={`select-${attribute.id.toString()}`}
+                            checked={field.value.some(
+                              (value) => value.id === attribute.id,
+                            )}
                             onCheckedChange={(checked: boolean) => {
                               checked
-                                ? field.onChange([...field.value, attribute.id])
+                                ? field.onChange([
+                                    ...field.value,
+                                    { ...attribute, isEditable: true },
+                                  ])
                                 : field.onChange(
                                     field.value.filter(
-                                      (value) => value !== attribute.id,
+                                      (value) => value.id !== attribute.id,
                                     ),
                                   );
                             }}
                           />
                         </FormControl>
-                        <FormLabel>{attribute.name}</FormLabel>
+                        <FormLabel
+                          htmlFor={`select-${attribute.id.toString()}`}
+                        >
+                          {attribute.name}
+                        </FormLabel>
+
+                        <FormControl>
+                          <Checkbox
+                            id={`required-${attribute.id.toString()}`}
+                            checked={field.value.some(
+                              (value) =>
+                                value.id === attribute.id && value.isRequired,
+                            )}
+                            onCheckedChange={(checked: boolean) => {
+                              field.onChange(
+                                field.value.map((value) =>
+                                  value.id === attribute.id
+                                    ? { ...value, isRequired: checked }
+                                    : value,
+                                ),
+                              );
+                            }}
+                            disabled={
+                              !field.value.some(
+                                (value) => value.id === attribute.id,
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormLabel
+                          htmlFor={`required-${attribute.id.toString()}`}
+                        >
+                          Obowiązkowe
+                        </FormLabel>
                       </FormItem>
                     )}
                   />

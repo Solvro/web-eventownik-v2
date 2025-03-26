@@ -10,5 +10,7 @@ export interface EventForm {
   slug: string;
   startDate: Date;
   endDate: Date;
+  startTime: string;
+  endTime: string;
   attributes: FormAttribute[];
 }

@@ -60,7 +60,6 @@ function AttributesForm({
         return {
           id: attribute.id,
           name: attribute.name,
-          isIncluded: existingConfig?.isIncluded ?? false,
           isRequired: existingConfig?.isRequired ?? true,
           isEditable: existingConfig?.isEditable ?? true,
         };
