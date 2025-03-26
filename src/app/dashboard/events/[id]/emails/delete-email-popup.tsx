@@ -56,7 +56,7 @@ function DeleteEmailPopup({
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="text-red-700">
           <Trash2 />
-          <span className="sr-only">Usuń formularz</span>
+          <span className="sr-only">Usuń szablon</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-96 max-w-96">

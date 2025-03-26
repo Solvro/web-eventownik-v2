@@ -62,7 +62,7 @@ export async function deleteEventMail(eventId: string, mailId: string) {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteEventMail action] Failed to delete event form ${mailId} for event ${eventId}:`,
+      `[deleteEventMail action] Failed to delete event mail ${mailId} for event ${eventId}:`,
       error,
     );
     return {

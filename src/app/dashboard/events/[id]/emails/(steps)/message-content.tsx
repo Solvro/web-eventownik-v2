@@ -90,7 +90,7 @@ function Editor({
   });
 
   return (
-    <div className="min-h-[60px] max-w-[974px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+    <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
       <EditorMenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>
@@ -333,7 +333,9 @@ function MessageContentForm({
               <FormItem>
                 <FormLabel>Treść wiadomości</FormLabel>
                 <Editor form={form} onChange={field.onChange} />
-                <FormMessage>{form.formState.errors.name?.message}</FormMessage>
+                <FormMessage>
+                  {form.formState.errors.content?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

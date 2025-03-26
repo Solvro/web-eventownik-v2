@@ -55,7 +55,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-primary/25 p-4">
+    <div className="border-primary/25 flex max-w-lg grow flex-col gap-2 rounded-md border p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -84,7 +84,7 @@ function TriggerConfigurationInputs({
     case "participant_deleted":
     case "manual": {
       return (
-        <p className="my-2 text-sm text-muted-foreground">
+        <p className="text-muted-foreground my-2 text-sm">
           Ten wyzwalacz nie wymaga dodatkowej konfiguracji
         </p>
       );
@@ -192,7 +192,7 @@ function TriggerTypeForm({ goToNextStep }: { goToNextStep: () => void }) {
                     >
                       {EMAIL_TRIGGERS.map((trigger) => (
                         <FormItem
-                          className="flex items-center space-x-3 space-y-0"
+                          className="flex items-center space-y-0 space-x-3"
                           key={trigger.value}
                         >
                           <FormControl>
@@ -216,7 +216,7 @@ function TriggerTypeForm({ goToNextStep }: { goToNextStep: () => void }) {
               <TriggerTypeExplanation trigger={form.getValues("trigger")} />
             )}
           </div>
-          <div className="h-[1px] w-full bg-muted-foreground/25" />
+          <div className="bg-muted-foreground/25 h-[1px] w-full" />
           <div className="flex min-h-[216px] flex-col gap-4">
             <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
             <FormMessage>

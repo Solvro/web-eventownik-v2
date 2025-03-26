@@ -147,7 +147,7 @@ function SendMailForm({
                   Zamierzasz wysłać tą wiadomość do {targetParticipants.length}{" "}
                   uczestników z następującymi adresami:
                 </h2>
-                <pre className="max-h-16 overflow-y-auto whitespace-pre-wrap rounded-md bg-muted/20 p-4">
+                <pre className="bg-muted/20 max-h-16 overflow-y-auto rounded-md p-4 whitespace-pre-wrap">
                   {targetParticipants
                     .map((participant) => participant.email)
                     .join("\n")}
