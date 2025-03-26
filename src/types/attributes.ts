@@ -15,7 +15,6 @@ export interface EventAttribute {
 
 export interface FormAttribute {
   id: number;
-  isIncluded: boolean;
   isRequired: boolean;
   isEditable: boolean;
 }
