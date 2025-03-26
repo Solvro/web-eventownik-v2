@@ -3,86 +3,86 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/attributes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getSchemaObjectForAttribute(attribute: Attribute) {
-  switch (attribute.type) {
-    case "select":
-    case "text":
-    case "time": {
-      return z.string({
+const PHONE_REGEX = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
+const validationRules: Record<
+  FormAttribute["type"],
+  (attribute: FormAttribute) => z.ZodType
+> = {
+  select: (attribute) =>
+    z.string({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+    }),
+  text: (attribute) =>
+    z.string({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+    }),
+  time: (attribute) =>
+    z.string({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+    }),
+  multiselect: (attribute) =>
+    z.coerce.string({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+    }),
+  email: (attribute) =>
+    z
+      .string({
         required_error: `Pole ${attribute.name} nie może być puste.`,
-      });
-    }
-    case "multiselect": {
-      return z.coerce.string();
-    }
-    case "email": {
-      return z
-        .string({
+      })
+      .email({
+        message: `Pole ${attribute.name} musi być adresem email`,
+      }),
+  color: (attribute) =>
+    z.string({ required_error: `Wybierz kolor dla pola ${attribute.name}.` }),
+  textarea: (attribute) =>
+    attribute.slug === "thoughts"
+      ? z.string().optional()
+      : z.string({
           required_error: `Pole ${attribute.name} nie może być puste.`,
-        })
-        .email({
-          message: `Pole ${attribute.name} musi być adresem email`,
-        });
-    }
-    case "color": {
-      return z.string({
-        required_error: `Wybierz kolor dla pola ${attribute.name}.`,
-      });
-    }
-    case "textarea": {
-      if (attribute.slug === "thoughts") {
-        return z.string().optional();
-      }
-      return z.string({
-        required_error: `To pole nie może być puste.`,
-      });
-    }
-    case "number": {
-      return z.coerce.number({
+        }),
+  number: (attribute) =>
+    z.coerce.number({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+      invalid_type_error: `Pole ${attribute.name} musi być liczbą.`,
+    }),
+  date: (attribute) =>
+    z.coerce.date({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+      invalid_type_error: `Pole ${attribute.name} musi być datą.`,
+    }),
+  datetime: (attribute) =>
+    z.coerce.date({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+      invalid_type_error: `Pole ${attribute.name} musi być datą.`,
+    }),
+  checkbox: (attribute) =>
+    z.boolean({
+      required_error: `Pole ${attribute.name} musi być zaznaczone.`,
+    }),
+  tel: (attribute) =>
+    z
+      .string({
         required_error: `Pole ${attribute.name} nie może być puste.`,
-        invalid_type_error: `Pole ${attribute.name} musi być liczbą.`,
-      });
-    }
-    case "date":
-    case "datetime": {
-      return z.coerce.date({
-        required_error: `Pole ${attribute.name} nie może być puste.`,
-        invalid_type_error: `Pole ${attribute.name} musi być datą.`,
-      });
-    }
-    case "checkbox": {
-      return z.boolean({
-        required_error: `Pole ${attribute.name} musi być zaznaczone.`,
-      });
-    }
-    case "tel": {
-      return z
-        .string({
-          required_error: `Pole ${attribute.name} nie może być puste.`,
-        })
-        .regex(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/, {
-          message: `Pole ${attribute.name} musi być numerem telefonu.`,
-        });
-    }
-    case "file":
-    case "block": {
-      return z.unknown();
-    }
-    default: {
-      return z.string({
-        required_error: `Pole ${attribute.name} nie może być puste.`,
-      });
-    }
-  }
+      })
+      .regex(PHONE_REGEX, {
+        message: `Pole ${attribute.name} musi być numerem telefonu.`,
+      }),
+  file: () => z.any(),
+  block: () => z.any(),
+};
+
+export function getSchemaObjectForAttribute(attribute: FormAttribute) {
+  const baseRule = validationRules[attribute.type](attribute);
+  return attribute.isRequired ? baseRule : baseRule.nullish();
 }
 
-export function getSchemaObjectForAttributes(attributes: Attribute[]) {
+export function getSchemaObjectForAttributes(attributes: FormAttribute[]) {
   return Object.fromEntries(
     attributes.map((attribute) => [
       attribute.id.toString(),
