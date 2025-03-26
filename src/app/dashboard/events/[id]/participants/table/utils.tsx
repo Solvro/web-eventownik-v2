@@ -18,7 +18,10 @@ export function SortButton({
   children,
 }: {
   sortingDirection: false | SortDirection;
-  column: Column<FlattenedParticipant, string | number | boolean | Date | null>;
+  column: Column<
+    FlattenedParticipant,
+    string | number | boolean | Date | null | undefined
+  >;
   children: ReactNode;
 }) {
   return (
@@ -54,7 +57,10 @@ export function FilterButton({
 }: {
   attributeType: AttributeType;
   options: string[] | null;
-  column: Column<FlattenedParticipant, string | number | boolean | Date | null>;
+  column: Column<
+    FlattenedParticipant,
+    string | number | boolean | Date | null | undefined
+  >;
 }) {
   if (
     attributeType === "checkbox" ||

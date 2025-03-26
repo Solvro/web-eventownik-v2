@@ -1,5 +1,5 @@
-import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
+import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
@@ -14,12 +14,12 @@ export function getSchemaObjectForAttribute(attribute: Attribute) {
     case "select":
     case "text":
     case "time": {
-      if (attribute.slug === "section") {
-        return z.coerce.string();
-      }
       return z.string({
         required_error: `Pole ${attribute.name} nie może być puste.`,
       });
+    }
+    case "multiselect": {
+      return z.coerce.string();
     }
     case "email": {
       return z
@@ -96,7 +96,7 @@ export async function getBase64FromUrl(url: string) {
     const response = await fetch(url);
     const blob = await response.blob();
 
-    const base64 = await new Promise<string>((resolve, reject) => {
+    return await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         resolve(reader.result as string);
@@ -105,8 +105,6 @@ export async function getBase64FromUrl(url: string) {
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
-
-    return base64;
   } catch (error) {
     console.error(
       `[getBase64FromUrl] Failed to get base64 from url ${url}:`,
@@ -114,4 +112,15 @@ export async function getBase64FromUrl(url: string) {
     );
     return "";
   }
+}
+
+export function downloadFile(blob: Blob, fileName: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }

@@ -60,7 +60,6 @@ function AttributesForm({
         return {
           id: attribute.id,
           name: attribute.name,
-          isIncluded: existingConfig?.isIncluded ?? false,
           isRequired: existingConfig?.isRequired ?? true,
           isEditable: existingConfig?.isEditable ?? true,
         };
@@ -140,7 +139,7 @@ function AttributesForm({
             return (
               <div
                 key={mappedField.id}
-                className="space-y-6 rounded-md bg-muted/10 p-4"
+                className="bg-muted/10 space-y-6 rounded-md p-4"
               >
                 <FormField
                   control={form.control}

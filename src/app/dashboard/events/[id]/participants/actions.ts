@@ -103,13 +103,9 @@ export async function updateParticipant(
   return { success: true };
 }
 
-export async function getEmails(eventId: string) {
-  const session = await verifySession();
-  if (session === null) {
-    redirect("/auth/login");
-  }
 
-  const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
+export async function getEmails(eventId: string) {
+    const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${session.bearerToken}`,
@@ -124,6 +120,44 @@ export async function getEmails(eventId: string) {
   return mails;
 }
 
+export async function exportData(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+  
+    const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/export`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    console.error("Failed to export participants", response);
+
+    if (response.status === 404) {
+      return {
+        success: false,
+        error: "Nie znaleziono wydarzenia lub endpoint nie istnieje.",
+      };
+    }
+    if (response.status === 500) {
+      return {
+        success: false,
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+      };
+    }
+    return { success: false };
+  }
+
+  const fileBlob = await response.blob();
+  return { success: true, file: fileBlob };
+}
+
 export async function sendMail(
   eventId: string,
   emailId: string,
@@ -133,9 +167,8 @@ export async function sendMail(
   if (session === null) {
     redirect("/auth/login");
   }
-
-  const response = await fetch(
-    `${API_URL}/events/${eventId}/emails/send/${emailId}`,
+  
+    const response = await fetch(`${API_URL}/events/${eventId}/emails/send/${emailId}`,
     {
       method: "POST",
       headers: {
@@ -145,22 +178,56 @@ export async function sendMail(
       body: JSON.stringify({
         participants,
       }),
+    });
+  
+    if (!response.ok) {
+      const error = (await response.json()) as unknown;
+      console.error(
+        `[sendMail action] Failed to send mail for event ${eventId}:`,
+        error,
+      );
+    }
+  
+    return { success: true };
+}
+
+export async function downloadAttributeFile(
+  eventId: string,
+  participantId: string,
+  attributeId: string,
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/${participantId}/attributes/${attributeId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
   );
 
   if (!response.ok) {
-    const error = (await response.json()) as unknown;
-    console.error(
-      `[sendMail action] Failed to send mail for event ${eventId}:`,
-      error,
-    );
+    console.error("Failed to download file from attribute", response);
+    if (response.status === 404) {
+      return {
+        success: false,
+        error: "Nie znaleziono pliku.",
+      };
+    }
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
       };
     }
     return { success: false };
   }
-  return { success: true };
+
+  const fileBlob = await response.blob();
+  return { success: true, file: fileBlob };
 }

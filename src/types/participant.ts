@@ -15,6 +15,7 @@ export interface FlattenedParticipant {
   slug: string;
   createdAt: string;
   updatedAt: string;
-  [key: string]: string | number | boolean | Date | null;
+  //key is attribute id
+  [key: string]: string | number | boolean | Date | null | undefined;
   mode: "edit" | "view";
 }

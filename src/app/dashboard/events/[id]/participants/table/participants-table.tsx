@@ -12,6 +12,7 @@ import {
 import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 
+import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/export-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,6 +33,7 @@ import { deleteParticipant as deleteParticipantAction } from "../actions";
 import { DeleteParticipantDialog } from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { DownloadAttributeFileButton } from "./download-file-attribute-button";
 import { EditParticipantForm } from "./edit-participant-form";
 import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";
@@ -76,6 +78,7 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
+      //TODO allow user to define page size
       pagination: { pageSize: 15, pageIndex: 0 },
       columnVisibility: {
         id: false,
@@ -107,6 +110,7 @@ export function ParticipantTable({
       );
     });
   }
+
   return (
     <>
       <div className="my-2 flex items-center gap-x-4">
@@ -146,6 +150,7 @@ export function ParticipantTable({
             .rows.map((row) => row.original)}
           emails={emails}
         />
+        <ExportButton eventId={eventId} />
         <div className="ml-auto">
           <span className="mr-2">{getPaginationInfoText(table)}</span>
           <Button
@@ -172,7 +177,7 @@ export function ParticipantTable({
       </div>
       {/* //TODO prevent resizing width of columns */}
       <Table>
-        <TableHeader className="border-b-2 border-border">
+        <TableHeader className="border-border border-b-2">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -180,7 +185,7 @@ export function ParticipantTable({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      "border-r-2 border-border",
+                      "border-border border-r-2",
                       header.id === "expand" ? "w-16 text-right" : "",
                     )}
                   >
@@ -207,24 +212,44 @@ export function ParticipantTable({
             return (
               <Fragment key={row.id}>
                 <TableRow>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.id === "expand" ? "text-right" : "",
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const attribute = cell.column.columnDef.meta?.attribute;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          cell.column.id === "expand" ? "text-right" : "",
+                        )}
+                      >
+                        {attribute?.type === "file" &&
+                        row.original[attribute.id] !== null &&
+                        row.original[attribute.id] !== undefined &&
+                        row.original[attribute.id] !== "" ? (
+                          <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
                 {row.getIsExpanded() ? (
+                  /*
+                  TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
+                   (attribute.showInList = false)
+                   It will require changes in how the edit form will be handled
+                   Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
+                   */
                   <TableRow
                     key={`${row.id}-edit`}
-                    className="border-l-2 border-l-primary"
+                    className="border-l-primary border-l-2"
                   >
                     <TableCell>{null}</TableCell>
                     <TableCell>
