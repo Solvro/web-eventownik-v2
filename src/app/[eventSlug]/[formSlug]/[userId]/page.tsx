@@ -13,11 +13,11 @@ import type { Form } from "@/types/form";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
-  params: Promise<{ eventSlug: string; formId: string; userId: string }>;
+  params: Promise<{ eventSlug: string; formSlug: string; userId: string }>;
 }
 
 export default async function FormPage({ params }: FormPageProps) {
-  const { eventSlug, formId, userId } = await params;
+  const { eventSlug, formSlug, userId } = await params;
 
   const eventResponse = await fetch(`${API_URL}/events/${eventSlug}`, {
     method: "GET",
@@ -29,18 +29,10 @@ export default async function FormPage({ params }: FormPageProps) {
   }
   const event = (await eventResponse.json()) as Event;
 
-  const session = await verifySession();
-  if (session == null || typeof session.bearerToken !== "string") {
-    notFound();
-  }
-  const { bearerToken } = session;
-
   const formResponse = await fetch(
-    `${API_URL}/events/${event.id.toString()}/forms/${formId}`,
+    `${API_URL}/events/${eventSlug}/forms/${formSlug}`,
     {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
+      method: "GET",
     },
   );
   if (!formResponse.ok) {
@@ -112,8 +104,7 @@ export default async function FormPage({ params }: FormPageProps) {
         <p className="mb-8">{form.description}</p>
         <FormGenerator
           attributes={form.attributes}
-          formId={formId}
-          eventId={event.id.toString()}
+          formId={form.id.toString()}
           eventSlug={eventSlug}
           userId={userId}
         />

@@ -71,6 +71,26 @@ export function FormGenerator({
     }
   }
 
+  if (form.formState.isSubmitSuccessful) {
+    return (
+      <div>
+        <h2 className="text-1xl text-center font-bold text-green-500 md:text-2xl">
+          Twoja odpowiedź została zapisana!
+        </h2>
+        <br />
+        <div className="text-center">
+          <Button
+            onClick={() => {
+              form.reset();
+            }}
+          >
+            Uzupełnij kolejny formularz
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form
