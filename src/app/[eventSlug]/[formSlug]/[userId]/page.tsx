@@ -1,11 +1,9 @@
 import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { AppLogo } from "@/components/app-logo";
 import { API_URL, PHOTO_URL } from "@/lib/api";
-import { verifySession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 import type { Form } from "@/types/form";
@@ -124,7 +122,7 @@ function EventInfoDiv({
     <div
       className={cn(
         className,
-        "flex w-fit items-center gap-x-2 rounded-lg bg-accent/10 px-2 py-1 backdrop-blur-sm",
+        "bg-accent/10 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-sm",
       )}
     >
       {children}
