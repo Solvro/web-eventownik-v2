@@ -6,7 +6,7 @@ import type { NewEventEmailTemplate } from "@/atoms/new-email-template-atom";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 
-async function createEventEmailTemplate(
+export async function createEventEmailTemplate(
   eventId: string,
   emailTemplate: NewEventEmailTemplate,
 ) {
@@ -42,4 +42,34 @@ async function createEventEmailTemplate(
   };
 }
 
-export { createEventEmailTemplate };
+export async function deleteEventMail(eventId: string, mailId: string) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/emails/${mailId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[deleteEventMail action] Failed to delete event form ${mailId} for event ${eventId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
+}

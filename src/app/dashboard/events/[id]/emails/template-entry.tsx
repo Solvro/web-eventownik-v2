@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventEmail } from "@/types/emails";
 
+import { DeleteEmailPopup } from "./delete-email-popup";
+
 function EmailTriggerLabel({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
 
@@ -16,6 +18,7 @@ function EmailTriggerLabel({ trigger }: { trigger: string }) {
 }
 
 function EmailTemplateEntry({
+  eventId,
   emailTemplate,
 }: {
   emailTemplate: EventEmail;
@@ -31,7 +34,11 @@ function EmailTemplateEntry({
             <span className="sr-only">Edytuj szablon maila</span>
           </Link>
         </Button>
-        {/* TODO: Implement mail deletion */}
+        <DeleteEmailPopup
+          eventId={eventId}
+          mailId={emailTemplate.id.toString()}
+          mailName={emailTemplate.name}
+        />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-2 text-center">
         <p className="text-lg font-bold">{emailTemplate.name}</p>
