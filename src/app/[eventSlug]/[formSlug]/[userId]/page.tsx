@@ -89,7 +89,7 @@ export default async function FormPage({ params }: FormPageProps) {
                 ) : null}
               </div>
             </div>
-            <p className="max-h-72 overflow-y-auto whitespace-pre-line leading-relaxed">
+            <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
           </div>
