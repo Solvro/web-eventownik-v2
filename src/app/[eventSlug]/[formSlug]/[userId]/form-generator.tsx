@@ -74,7 +74,7 @@ export function FormGenerator({
   if (form.formState.isSubmitSuccessful) {
     return (
       <div>
-        <h2 className="text-1xl text-center font-bold text-green-500 md:text-2xl">
+        <h2 className="text-center text-xl font-bold text-green-500 md:text-2xl">
           Twoja odpowiedź została zapisana!
         </h2>
         <br />

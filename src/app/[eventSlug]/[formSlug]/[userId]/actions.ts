@@ -20,7 +20,6 @@ export async function submitForm(
   userId: string,
 ) {
   try {
-    // why this thing needs event's slug instead of the event's id?!
     const response = await fetch(
       `${API_URL}/events/${eventSlug}/forms/${formId}/submit`,
       {
