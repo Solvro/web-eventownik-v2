@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 
 import { submitForm } from "./actions";
 
@@ -27,7 +27,7 @@ export function FormGenerator({
   eventSlug,
   userId,
 }: {
-  attributes: FormAttribute[];
+  attributes: Attribute[];
   formId: string;
   eventSlug: string;
   userId: string;
@@ -109,7 +109,6 @@ export function FormGenerator({
                   <AttributeInput attribute={attribute} field={field} />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {/* @ts-expect-error zod schema object are dynamic */}
                   {form.formState.errors[attribute.id.toString()]?.message}
                 </FormMessage>
               </FormItem>
