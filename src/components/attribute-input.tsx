@@ -66,6 +66,7 @@ export function AttributeInput({
             <div key={option} className="mb-2 flex items-center space-x-2">
               <Checkbox
                 id={option}
+                disabled={field.disabled}
                 checked={((field.value ?? []) as string[]).includes(option)}
                 onCheckedChange={(checked) => {
                   if (checked === true) {
