@@ -25,10 +25,10 @@ export function generateColumns(attributes: Attribute[]) {
         <Checkbox
           checked={
             table.getIsAllRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!(value as boolean));
+            table.toggleAllRowsSelected(!!(value as boolean));
           }}
           aria-label="Wybierz wszystkie"
         ></Checkbox>
