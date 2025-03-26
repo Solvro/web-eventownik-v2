@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar1, CalendarX, MapPin } from "lucide-react";
+import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,19 +7,18 @@ import { AppLogo } from "@/components/app-logo";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import { cn } from "@/lib/utils";
-import { Event } from "@/types/event";
+import type { Event } from "@/types/event";
+import type { Form } from "@/types/form";
 
 import { FormGenerator } from "./form-generator";
 
-export default async function FormPage({
-  params,
-}: Promise<{ eventSlug: string; formId: string; userId: string }>) {
+interface FormPageProps {
+  params: Promise<{ eventSlug: string; formId: string; userId: string }>;
+}
+
+export default async function FormPage({ params }: FormPageProps) {
   const { eventSlug, formId, userId } = await params;
-  const session = await verifySession();
-  if (session == null || typeof session.bearerToken !== "string") {
-    notFound();
-  }
-  const { bearerToken } = session;
+
   const eventResponse = await fetch(`${API_URL}/events/${eventSlug}`, {
     method: "GET",
   });
@@ -29,6 +28,13 @@ export default async function FormPage({
     return <div>Nie znaleziono wydarzenia 😪</div>;
   }
   const event = (await eventResponse.json()) as Event;
+
+  const session = await verifySession();
+  if (session == null || typeof session.bearerToken !== "string") {
+    notFound();
+  }
+  const { bearerToken } = session;
+
   const formResponse = await fetch(
     `${API_URL}/events/${event.id.toString()}/forms/${formId}`,
     {
@@ -42,7 +48,7 @@ export default async function FormPage({
     console.error(error);
     return <div>Nie znaleziono formularza 😪</div>;
   }
-  const form = await formResponse.json();
+  const form = (await formResponse.json()) as Form;
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <div
@@ -107,6 +113,7 @@ export default async function FormPage({
         <FormGenerator
           attributes={form.attributes}
           formId={formId}
+          eventId={event.id.toString()}
           eventSlug={eventSlug}
           userId={userId}
         />

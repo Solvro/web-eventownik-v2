@@ -17,31 +17,26 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
+import type { Attribute } from "@/types/attributes";
 
 import { submitForm } from "./actions";
 
 export function FormGenerator({
   attributes,
   formId,
+  eventId,
   eventSlug,
   userId,
 }: {
-  attributes: {
-    id: number;
-    name: string;
-    slug: string;
-    options: string;
-    type: string;
-  }[];
+  attributes: Attribute[];
   formId: string;
+  eventId: string;
   eventSlug: string;
   userId: string;
 }) {
   // generate schema for form based on attributes
   const FormSchema = z.object({
-    ...getSchemaObjectForAttributes(
-      attributes.sort((a, b) => a.id - b.id) ?? [],
-    ), // TODO: change to order after backend changes
+    ...getSchemaObjectForAttributes(attributes.sort((a, b) => a.id - b.id)), // TODO: change to order after backend changes
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -54,9 +49,14 @@ export function FormGenerator({
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
-    console.log(values);
     try {
-      const result = await submitForm(values, formId, eventSlug, userId);
+      const result = await submitForm(
+        values,
+        formId,
+        eventId,
+        eventSlug,
+        userId,
+      );
       if (!result.success) {
         form.setError("root", {
           type: "manual",
@@ -89,17 +89,14 @@ export function FormGenerator({
           <FormField
             key={attribute.id}
             control={form.control}
-            // @ts-expect-error zod schema object are dynamic
             name={attribute.id.toString()}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{attribute.name}</FormLabel>
                 <FormControl>
-                  {/* @ts-expect-error zod schema object are dynamic */}
                   <AttributeInput attribute={attribute} field={field} />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {/* @ts-expect-error zod schema object are dynamic */}
                   {form.formState.errors[attribute.id.toString()]?.message}
                 </FormMessage>
               </FormItem>
