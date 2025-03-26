@@ -103,9 +103,13 @@ export async function updateParticipant(
   return { success: true };
 }
 
-
 export async function getEmails(eventId: string) {
-    const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${session.bearerToken}`,
@@ -125,8 +129,8 @@ export async function exportData(eventId: string) {
   if (session === null) {
     redirect("/auth/login");
   }
-  
-    const response = await fetch(
+
+  const response = await fetch(
     `${API_URL}/events/${eventId}/participants/export`,
     {
       method: "GET",
@@ -167,8 +171,9 @@ export async function sendMail(
   if (session === null) {
     redirect("/auth/login");
   }
-  
-    const response = await fetch(`${API_URL}/events/${eventId}/emails/send/${emailId}`,
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/emails/send/${emailId}`,
     {
       method: "POST",
       headers: {
@@ -178,17 +183,22 @@ export async function sendMail(
       body: JSON.stringify({
         participants,
       }),
-    });
-  
-    if (!response.ok) {
-      const error = (await response.json()) as unknown;
-      console.error(
-        `[sendMail action] Failed to send mail for event ${eventId}:`,
-        error,
-      );
-    }
-  
-    return { success: true };
+    },
+  );
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[sendMail action] Failed to send mail for event ${eventId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
 }
 
 export async function downloadAttributeFile(
