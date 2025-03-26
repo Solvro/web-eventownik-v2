@@ -63,7 +63,7 @@ export function EditParticipantForm({
   }
 
   return (
-    <form className="my-2 flex flex-col items-center gap-y-2 justify-self-center">
+    <form className="my-2 flex items-center gap-x-2 justify-self-center">
       {cells.map((cell) => {
         const attribute = cell.column.columnDef.meta?.attribute;
         return attribute === undefined ? null : (

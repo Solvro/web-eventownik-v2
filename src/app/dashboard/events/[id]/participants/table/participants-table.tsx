@@ -74,6 +74,7 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
+      //TODO allow user to define page size
       pagination: { pageSize: 15, pageIndex: 0 },
       columnVisibility: {
         id: false,
@@ -229,6 +230,12 @@ export function ParticipantTable({
                   })}
                 </TableRow>
                 {row.getIsExpanded() ? (
+                  /*
+                  TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
+                   (attribute.showInList = false)
+                   It will require changes in how the edit form will be handled
+                   Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
+                   */
                   <TableRow
                     key={`${row.id}-edit`}
                     className="border-l-primary border-l-2"
