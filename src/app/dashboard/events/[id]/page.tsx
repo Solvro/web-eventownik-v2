@@ -3,7 +3,6 @@ import {
   Calendar1,
   CalendarX,
   MapPin,
-  Share2Icon,
   SquarePenIcon,
   User,
   Users,
@@ -14,6 +13,7 @@ import { notFound, redirect } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { Button } from "@/components/ui/button";
+import { ShareButton } from "@/components/ui/share-button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
@@ -82,9 +82,7 @@ export default async function DashboardEventPage({
               <SquarePenIcon /> Edytuj wydarzenie
             </Link>
           </Button>
-          <Button variant="outline">
-            <Share2Icon /> Udostępnij
-          </Button>
+          <ShareButton url={`https://eventownik.solvro.pl/${event.slug}`} />
         </div>
       </div>
       <Image
