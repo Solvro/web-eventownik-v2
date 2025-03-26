@@ -24,13 +24,11 @@ import { submitForm } from "./actions";
 export function FormGenerator({
   attributes,
   formId,
-  eventId,
   eventSlug,
   userId,
 }: {
   attributes: Attribute[];
   formId: string;
-  eventId: string;
   eventSlug: string;
   userId: string;
 }) {
@@ -50,22 +48,16 @@ export function FormGenerator({
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-      const result = await submitForm(
-        values,
-        formId,
-        eventId,
-        eventSlug,
-        userId,
-      );
+      const result = await submitForm(values, formId, eventSlug, userId);
       if (!result.success) {
         form.setError("root", {
           type: "manual",
           message:
-            "Rejestracja na wydarzenie nie powiodła się.\nSpróbuj ponownie później",
+            "Zapisanie danych formularza nie powiodło się.\nSpróbuj ponownie później",
         });
         toast({
           variant: "destructive",
-          title: "Rejestracja na wydarzenie nie powiodła się",
+          title: "Zapisanie danych formularza nie powiodło się",
           description: "Spróbuj ponownie później",
         });
       }
