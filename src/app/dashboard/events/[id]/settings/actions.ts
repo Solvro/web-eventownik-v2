@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { EventAttribute } from "@/types/attributes";
+import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 interface ErrorResponse {
@@ -14,6 +16,16 @@ interface ErrorResponse {
 export async function updateEvent(
   unmodifiedEvent: Event,
   event: Event,
+  coOrganizersChanges: {
+    added: CoOrganizer[];
+    updated: CoOrganizer[];
+    deleted: CoOrganizer[];
+  },
+  attributesChanges: {
+    added: EventAttribute[];
+    updated: EventAttribute[];
+    deleted: EventAttribute[];
+  },
 ): Promise<Event | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
@@ -50,6 +62,12 @@ export async function updateEvent(
       continue; // Skip empty links
     }
     formData.append("socialMediaLinks[]", link);
+  }
+  if (
+    event.socialMediaLinks === null ||
+    event.socialMediaLinks.map((link) => link.trim()).length === 0
+  ) {
+    formData.append("socialMediaLinks", "");
   }
 
   // Handle photo upload
@@ -89,6 +107,232 @@ export async function updateEvent(
         error: errorData,
       });
       return { errors: errorData.errors };
+    }
+
+    // Update co-organizers
+    const coOrganizersErrors: { message: string }[] = [];
+
+    try {
+      for (const coOrganizer of coOrganizersChanges.added) {
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: coOrganizer.email,
+              permissionsIds: [1], //coOrganizer.permissions.map((perm) => perm.id), // Temporary only one permission
+            }),
+          },
+        );
+        if (coOrganizerResponse.ok) {
+          // For now backend doesn't return the new co-organizer ID so we can't update it here yet
+          // if (coOrganizer.id == null) {
+          //   const newCoOrganizer =
+          //     (await coOrganizerResponse.json()) as CoOrganizer;
+          //   const existingCoOrganizer = coOrganizersChanges.added.find(
+          //     (co) => co.email === coOrganizer.email && co.id == null,
+          //   );
+          //   if (existingCoOrganizer != null) {
+          //     existingCoOrganizer.id = newCoOrganizer.id;
+          //   }
+          // }
+        } else {
+          console.error(
+            "[updateEvent] Error adding co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Upewnij się że ta osoba ma konto w Eventowniku.
+            
+            Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
+          });
+        }
+      }
+
+      for (const coOrganizer of coOrganizersChanges.updated) {
+        if (coOrganizer.id === null) {
+          continue; // Skip co-organizers without an ID
+        }
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              permissionsIds: coOrganizer.permissions.map((perm) => perm.id),
+            }),
+          },
+        );
+        if (!coOrganizerResponse.ok) {
+          console.error(
+            "[updateEvent] Error updating co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Failed to update co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
+          });
+        }
+      }
+
+      for (const coOrganizer of coOrganizersChanges.deleted) {
+        if (coOrganizer.id == null) {
+          continue; // Skip co-organizers without an ID
+        }
+        const coOrganizerResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${bearerToken}` },
+          },
+        );
+        if (!coOrganizerResponse.ok) {
+          console.error(
+            "[updateEvent] Error deleting co-organizer:",
+            coOrganizer,
+          );
+          coOrganizersErrors.push({
+            message: `Failed to delete co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
+              await coOrganizerResponse.json(),
+            )}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("[updateEvent] Co-organizer update error:", error);
+      coOrganizersErrors.push({
+        message: "Failed to update co-organizers",
+      });
+    }
+
+    if (coOrganizersErrors.length > 0) {
+      return { errors: coOrganizersErrors };
+    }
+
+    // Update attributes
+    const attributesErrors: { message: string }[] = [];
+
+    try {
+      for (const attribute of attributesChanges.added) {
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: attribute.name,
+              type: attribute.type,
+              slug: attribute.slug,
+              showInList: attribute.showInList,
+              options:
+                (attribute.options ?? []).length > 0
+                  ? attribute.options
+                  : undefined,
+            }),
+          },
+        );
+        if (attributeResponse.ok) {
+          // Update the attribute with the new ID
+          const newAttribute =
+            (await attributeResponse.json()) as EventAttribute;
+          attributesChanges.updated = attributesChanges.updated.map(
+            (attribute_) =>
+              attribute_.id === attribute.id
+                ? { ...attribute_, id: newAttribute.id }
+                : attribute_,
+          );
+          attributesChanges.deleted = attributesChanges.deleted.map(
+            (attribute_) =>
+              attribute_.id === attribute.id
+                ? { ...attribute_, id: newAttribute.id }
+                : attribute_,
+          );
+        } else {
+          console.error("[updateEvent] Error adding attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
+          });
+        }
+      }
+
+      for (const attribute of attributesChanges.updated) {
+        if (attribute.id < 0) {
+          continue; // Skip attributes without a valid ID
+        }
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: attribute.name,
+              type: attribute.type,
+              slug: attribute.slug,
+              showInList: attribute.showInList,
+              options:
+                (attribute.options ?? []).length > 0
+                  ? attribute.options
+                  : undefined,
+            }),
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[updateEvent] Error updating attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
+          });
+        }
+      }
+
+      for (const attribute of attributesChanges.deleted) {
+        if (attribute.id < 0) {
+          continue; // Skip attributes without a valid ID
+        }
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${bearerToken}` },
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[updateEvent] Error deleting attribute:", attribute);
+          attributesErrors.push({
+            message: `Failed to delete attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+              await attributeResponse.json(),
+            )}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("[updateEvent] Attribute update error:", error);
+      attributesErrors.push({
+        message: "Failed to update attributes",
+      });
+    }
+
+    if (attributesErrors.length > 0) {
+      return { errors: attributesErrors };
     }
 
     revalidatePath(`/dashboard/events/${event.id.toString()}/settings`);

@@ -64,7 +64,7 @@ export function DashboardSidebar({ id }: { id: string }) {
   ];
 
   return (
-    <nav className="flex min-w-[240px] flex-col gap-6 border-r border-muted pr-8">
+    <nav className="border-muted flex min-w-[240px] flex-col gap-6 border-r pr-8">
       {sections.map((section) => (
         <div key={section.title}>
           <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>

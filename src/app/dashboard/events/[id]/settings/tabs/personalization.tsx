@@ -216,23 +216,18 @@ export function Personalization({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel htmlFor={slugInputId}>Slug</FormLabel>
+                <FormLabel htmlFor={slugInputId}>
+                  Slug{" "}
+                  <span className="text-neutral-500">
+                    (eventownik.solvro.pl/...)
+                  </span>
+                </FormLabel>
                 <FormControl>
-                  <FormLabel
-                    htmlFor={slugInputId}
-                    className="flex h-12 w-full cursor-text items-center rounded-xl border border-input bg-transparent px-4 py-3 text-lg shadow-sm transition-colors focus-within:ring-1 focus-within:ring-ring"
-                  >
-                    <span className="select-none text-neutral-500 md:text-sm">
-                      eventownik.solvro.pl/
-                    </span>
-                    <Input
-                      id={slugInputId}
-                      type="text"
-                      placeholder="twoje-wydarzenie"
-                      className="w-0 flex-1 border-0 p-0 shadow-none focus-visible:ring-0" // w-0 to prevent flex wrap on form
-                      {...field}
-                    />
-                  </FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="twoje-wydarzenie"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.slug?.message}
@@ -273,7 +268,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                       </div>
                       {form.formState.errors.socialMediaLinks?.[index]?.value
                         ?.message != null && (
-                        <p className="text-[0.8rem] text-sm font-medium text-red-500">
+                        <p className="text-sm text-[0.8rem] font-medium text-red-500">
                           {
                             form.formState.errors.socialMediaLinks[index].value
                               .message

@@ -27,7 +27,7 @@ function CreateEventFormForm({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted border-muted p-4 text-muted-foreground">
+        <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
           <SquarePlus className="h-6 w-6" /> Stwórz formularz
         </button>
       </DialogTrigger>

@@ -64,6 +64,11 @@ export async function updateEventForm(
     };
   }
 
+  form.startDate.setHours(Number.parseInt(form.startTime.split(":")[0]));
+  form.startDate.setMinutes(Number.parseInt(form.startTime.split(":")[1]));
+  form.endDate.setHours(Number.parseInt(form.endTime.split(":")[0]));
+  form.endDate.setMinutes(Number.parseInt(form.endTime.split(":")[1]));
+
   const response = await fetch(`${API_URL}/events/${eventId}/forms/${formId}`, {
     method: "PUT",
     headers: {
@@ -74,7 +79,7 @@ export async function updateEventForm(
       name: form.name,
       description: form.description,
       startDate: formatISO9075(form.startDate),
-      attributesIds: form.attributes.map((attribute) => attribute.id),
+      attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
       isOpen: form.isOpen,
     }),

@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { registerParticipant } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
+import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,6 +26,7 @@ import type { Event } from "@/types/event";
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 export function RegisterParticipantForm({ event }: { event: Event }) {
+  const [files, setFiles] = useState<File[]>([]);
   // generate schema for form based on event.firstForm.attributes
   const registerParticipantFormSchema = z.object({
     email: z.string().email("Nieprawidłowy adres email."),
@@ -39,13 +41,14 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       email: "",
     },
   });
+
   const { toast } = useToast();
 
   async function onSubmit(
     values: z.infer<typeof registerParticipantFormSchema>,
   ) {
     try {
-      const result = await registerParticipant(values, event);
+      const result = await registerParticipant(values, event, files);
       if (!result.success) {
         if (
           result.errors?.[0]?.rule === "database.unique" &&
@@ -76,6 +79,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
           });
         }
       }
+      setFiles([]);
     } catch (error) {
       console.error("Participant register failed", error);
       toast({
@@ -115,7 +119,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       </div>
     );
   }
-
   return (
     <Form {...form}>
       <form
@@ -153,8 +156,25 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
               <FormItem>
                 <FormLabel>{attribute.name}</FormLabel>
                 <FormControl>
-                  {/* @ts-expect-error zod schema object are dynamic */}
-                  <AttributeInput attribute={attribute} field={field} />
+                  {attribute.type === "file" ? (
+                    <AttributeInputFile
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      files={files}
+                      setFiles={setFiles}
+                    ></AttributeInputFile>
+                  ) : (
+                    <AttributeInput
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                    />
+                  )}
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {/* @ts-expect-error zod schema object are dynamic */}
@@ -166,7 +186,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         ))}
 
         {form.formState.errors.root?.message != null && (
-          <FormMessage className="whitespace-break-spaces text-center text-sm text-red-500">
+          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
             {form.formState.errors.root.message}
           </FormMessage>
         )}

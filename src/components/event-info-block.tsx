@@ -10,7 +10,7 @@ function EventInfoBlock({
   return (
     <div
       className={cn(
-        "flex w-fit items-center gap-x-2 rounded-lg bg-accent-foreground/60 px-2 py-1 text-background backdrop-blur-sm",
+        "bg-accent-foreground/60 text-background flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-xs",
         className,
       )}
     >

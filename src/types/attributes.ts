@@ -5,9 +5,9 @@ export interface EventAttribute {
   name: string;
   slug: string;
   eventId: number;
-  options: Record<string, unknown>;
+  options: string[] | null;
   type: string;
-  rootBlockId: number;
+  rootBlockId: number | undefined;
   showInList: boolean;
   createdAt: string;
   updatedAt: string;
@@ -15,7 +15,6 @@ export interface EventAttribute {
 
 export interface FormAttribute {
   id: number;
-  isIncluded: boolean;
   isRequired: boolean;
   isEditable: boolean;
 }
