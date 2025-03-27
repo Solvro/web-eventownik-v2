@@ -31,12 +31,14 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
 
 export interface FormAttribute extends Attribute {
   id: number;
+  order: number | null;
   isRequired: boolean;
   isEditable: boolean;
 }
 
 export interface FormAttributeBase {
   id: number;
+  order?: number | null;
   isRequired: boolean;
   isEditable: boolean;
 }

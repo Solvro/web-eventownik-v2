@@ -84,19 +84,19 @@ export async function updateEventForm(
       startDate: formatISO9075(form.startDate),
       attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
-      isOpen: form.isOpen,
+      isFirstForm: form.isFirstForm,
     }),
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as unknown;
+    const error = (await response.json()) as { message: string };
     console.error(
       `[updateEventForm action] Failed to update event form ${formId} for event ${eventId}:`,
       error,
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: `Błąd ${response.status.toString()} ${response.statusText}\n${error.message}`,
     };
   }
 
