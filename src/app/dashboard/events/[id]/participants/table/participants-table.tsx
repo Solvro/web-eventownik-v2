@@ -207,8 +207,9 @@ export function ParticipantTable({
             const attributesCells = allVisibleCells.filter(
               (cell) => cell.column.columnDef.meta?.attribute !== undefined,
             );
-            //headers structure - [select, email, ...attributes, expand]
+            //headers structure - [select, email, createdAt, ...attributes, expand]
             const emailCell = allVisibleCells.at(1);
+            const createdAtCell = allVisibleCells.at(2);
             return (
               <Fragment key={row.id}>
                 <TableRow>
@@ -258,6 +259,14 @@ export function ParticipantTable({
                         : flexRender(
                             emailCell.column.columnDef.cell,
                             emailCell.getContext(),
+                          )}
+                    </TableCell>
+                    <TableCell>
+                      {createdAtCell === undefined
+                        ? null
+                        : flexRender(
+                            createdAtCell.column.columnDef.cell,
+                            createdAtCell.getContext(),
                           )}
                     </TableCell>
                     <TableCell className="p-0" colSpan={attributesCells.length}>
