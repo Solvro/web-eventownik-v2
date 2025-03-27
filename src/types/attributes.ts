@@ -35,4 +35,10 @@ export interface FormAttribute extends Attribute {
   isEditable: boolean;
 }
 
+export interface FormAttributeBase {
+  id: number;
+  isRequired: boolean;
+  isEditable: boolean;
+}
+
 export type AttributeType = (typeof AttributeTypes)[number];
