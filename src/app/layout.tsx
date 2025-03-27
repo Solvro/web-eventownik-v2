@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+import NextTopLoader from "nextjs-toploader";
 
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="pl" suppressHydrationWarning={true}>
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
         <Providers>
+          <NextTopLoader />
           <Toaster />
           {children}
           <Script
