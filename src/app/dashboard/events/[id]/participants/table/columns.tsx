@@ -59,6 +59,20 @@ export function generateColumns(attributes: Attribute[]) {
       },
       cell: (info) => info.getValue(),
     }),
+    columnHelper.accessor("createdAt", {
+      header: ({ column }) => {
+        const sortingDirection = column.getIsSorted();
+        return (
+          <div className="flex items-center">
+            <SortButton sortingDirection={sortingDirection} column={column}>
+              Data registracji
+            </SortButton>
+            <SortIcon sortingDirection={sortingDirection} />
+          </div>
+        );
+      },
+      cell: (info) => info.getValue(),
+    }),
   ];
 
   const attributeColumns = [
