@@ -11,13 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Attribute } from "@/types/attributes";
+import type { Attribute, FormAttribute } from "@/types/attributes";
 
 export function AttributeInput({
   attribute,
   field,
 }: {
-  attribute: Attribute;
+  attribute: Attribute | FormAttribute;
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   //TODO add lacking implementation for block type
@@ -50,6 +50,9 @@ export function AttributeInput({
             <SelectValue {...field}> {field.value as string}</SelectValue>
           </SelectTrigger>
           <SelectContent>
+            {!("isRequired" in attribute ? attribute.isRequired : false) && (
+              <SelectItem value=" ">Wybierz opcję</SelectItem>
+            )}
             {attribute.options?.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}

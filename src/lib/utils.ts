@@ -10,42 +10,39 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const PHONE_REGEX = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
+
+// Helper function for string validation
+const requiredString = (attribute: FormAttribute) =>
+  z
+    .string({
+      required_error: `Pole ${attribute.name} nie może być puste.`,
+    })
+    .min(1, {
+      message: `Pole ${attribute.name} nie może być puste.`,
+    });
+
 const validationRules: Record<
   FormAttribute["type"],
   (attribute: FormAttribute) => z.ZodType
 > = {
-  select: (attribute) =>
-    z.string({
-      required_error: `Pole ${attribute.name} nie może być puste.`,
-    }),
-  text: (attribute) =>
-    z.string({
-      required_error: `Pole ${attribute.name} nie może być puste.`,
-    }),
-  time: (attribute) =>
-    z.string({
-      required_error: `Pole ${attribute.name} nie może być puste.`,
-    }),
+  select: requiredString,
+  text: requiredString,
+  time: requiredString,
   multiselect: (attribute) =>
-    z.coerce.string({
-      required_error: `Pole ${attribute.name} nie może być puste.`,
-    }),
-  email: (attribute) =>
     z
-      .string({
-        required_error: `Pole ${attribute.name} nie może być puste.`,
+      .array(z.string(), {
+        required_error: `Wybierz przynajmniej jedną opcję dla pola ${attribute.name}.`,
       })
-      .email({
-        message: `Pole ${attribute.name} musi być adresem email`,
+      .nonempty({
+        message: `Wybierz przynajmniej jedną opcję dla pola ${attribute.name}.`,
       }),
+  email: (attribute) =>
+    requiredString(attribute).email({
+      message: `Pole ${attribute.name} musi być adresem email`,
+    }),
   color: (attribute) =>
     z.string({ required_error: `Wybierz kolor dla pola ${attribute.name}.` }),
-  textarea: (attribute) =>
-    attribute.slug === "thoughts"
-      ? z.string().optional()
-      : z.string({
-          required_error: `Pole ${attribute.name} nie może być puste.`,
-        }),
+  textarea: requiredString,
   number: (attribute) =>
     z.coerce.number({
       required_error: `Pole ${attribute.name} nie może być puste.`,
@@ -62,24 +59,22 @@ const validationRules: Record<
       invalid_type_error: `Pole ${attribute.name} musi być datą.`,
     }),
   checkbox: (attribute) =>
-    z.boolean({
-      required_error: `Pole ${attribute.name} musi być zaznaczone.`,
+    z.literal<boolean>(true, {
+      errorMap: () => ({
+        message: `Pole ${attribute.name} musi być zaznaczone.`,
+      }),
     }),
   tel: (attribute) =>
-    z
-      .string({
-        required_error: `Pole ${attribute.name} nie może być puste.`,
-      })
-      .regex(PHONE_REGEX, {
-        message: `Pole ${attribute.name} musi być numerem telefonu.`,
-      }),
+    requiredString(attribute).regex(PHONE_REGEX, {
+      message: `Pole ${attribute.name} musi być numerem telefonu.`,
+    }),
   file: () => z.any(),
   block: () => z.any(),
 };
 
 export function getSchemaObjectForAttribute(attribute: FormAttribute) {
   const baseRule = validationRules[attribute.type](attribute);
-  return attribute.isRequired ? baseRule : baseRule.nullish();
+  return attribute.isRequired ? baseRule : baseRule.optional();
 }
 
 export function getSchemaObjectForAttributes(attributes: FormAttribute[]) {

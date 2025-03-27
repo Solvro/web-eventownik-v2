@@ -8,7 +8,7 @@ import type {
 import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
-import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/attributes";
 
 const EXTENSION_TO_MIME_TYPE = {
   png: "image/png",
@@ -46,7 +46,7 @@ export function AttributeInputFile({
   setFiles,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  attribute: Attribute;
+  attribute: FormAttribute;
   setError: UseFormSetError<{
     email: string;
   }>;
@@ -91,5 +91,12 @@ export function AttributeInputFile({
     }
   }
 
-  return <Input type="file" {...field} onChange={handleFileChange} />;
+  return (
+    <Input
+      type="file"
+      required={attribute.isRequired}
+      {...field}
+      onChange={handleFileChange}
+    />
+  );
 }
