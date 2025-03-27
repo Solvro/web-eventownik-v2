@@ -27,9 +27,8 @@ function EmailTemplateEntry({
   return (
     <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
-        {/* TODO: Implement mail edit view */}
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`templates/${emailTemplate.id.toString()}`}>
+          <Link href={`emails/${emailTemplate.id.toString()}`}>
             <SquarePen />
             <span className="sr-only">Edytuj szablon maila</span>
           </Link>
