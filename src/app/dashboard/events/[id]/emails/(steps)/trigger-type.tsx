@@ -217,7 +217,7 @@ function TriggerTypeForm({ goToNextStep }: { goToNextStep: () => void }) {
             )}
           </div>
           <div className="bg-muted-foreground/25 h-[1px] w-full" />
-          <div className="flex min-h-[216px] flex-col gap-4">
+          <div className="flex min-h-40 flex-col gap-4">
             <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
             <FormMessage>
               {Object.keys(form.formState.errors).length > 0
