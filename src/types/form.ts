@@ -1,4 +1,4 @@
-import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/attributes";
 
 export interface Form {
   id: number;
@@ -12,5 +12,5 @@ export interface Form {
   eventId: number;
   createdAt: string;
   updatedAt: string;
-  attributes: Attribute[];
+  attributes: FormAttribute[];
 }

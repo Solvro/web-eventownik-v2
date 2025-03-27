@@ -27,19 +27,31 @@ export function EditParticipantForm({
   const participant = row.original;
   const formDisabled = participant.mode === "view";
 
-  const defaultValues: Record<string, string> = {};
+  const defaultValues: Record<string, string | string[]> = {};
   for (const cell of cells) {
-    defaultValues[cell.column.id] =
-      (cell.getValue() as string | null | undefined) ?? "";
+    if (cell.column.columnDef.meta?.attribute.type === "multiselect") {
+      //cell value is transformed string array (["v1", "v2"] => "v1, v2")
+      const cellValue = cell.getValue() as string | undefined;
+      defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
+    } else {
+      defaultValues[cell.column.id] =
+        (cell.getValue() as string | null | undefined) ?? "";
+    }
   }
 
   const form = useForm({
     defaultValues,
   });
 
-  async function onSubmit(values: Record<string, string>) {
+  async function onSubmit(values: Record<string, string | string[]>) {
+    for (const key in values) {
+      if (typeof values[key] === "object") {
+        values[key] = values[key].join(",");
+      }
+    }
+
     const { success, error } = await updateParticipant(
-      values,
+      values as Record<number, string>,
       eventId,
       participant.id.toString(),
     );

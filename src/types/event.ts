@@ -1,4 +1,4 @@
-import type { Form } from "@/types/form";
+import type { EventForm } from "./forms";
 
 export interface Event {
   id: number;
@@ -17,5 +17,5 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   photoUrl: string | null;
-  firstForm: Form | null;
+  firstForm: EventForm | null;
 }

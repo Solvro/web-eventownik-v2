@@ -13,12 +13,6 @@ export interface EventAttribute {
   updatedAt: string;
 }
 
-export interface FormAttribute {
-  id: number;
-  isRequired: boolean;
-  isEditable: boolean;
-}
-
 export interface AttributeBase {
   id: number;
   name: string;
@@ -33,6 +27,18 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   type: AttributeType;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface FormAttribute extends Attribute {
+  id: number;
+  isRequired: boolean;
+  isEditable: boolean;
+}
+
+export interface FormAttributeBase {
+  id: number;
+  isRequired: boolean;
+  isEditable: boolean;
 }
 
 export type AttributeType = (typeof AttributeTypes)[number];

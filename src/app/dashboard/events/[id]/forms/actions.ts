@@ -4,9 +4,12 @@ import { formatISO9075 } from "date-fns";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
-type Payload = Omit<EventForm, "eventId" | "id" | "slug">;
+type Payload = Omit<EventForm, "eventId" | "id" | "slug" | "attributes"> & {
+  attributes: FormAttributeBase[];
+};
 
 export async function createEventForm(eventId: string, form: Payload) {
   const session = await verifySession();
