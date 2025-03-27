@@ -8,10 +8,29 @@ import { Button } from "@/components/ui/button";
 
 interface ShareButtonProps {
   url: string;
+  variant?: "icon" | "full";
+  buttonVariant?:
+    | "link"
+    | "outline"
+    | "ghost"
+    | "default"
+    | "destructive"
+    | "secondary"
+    | null
+    | undefined;
   className?: string;
+  label?: string;
+  tooltipText?: string;
 }
 
-export function ShareButton({ url, className }: ShareButtonProps) {
+export function ShareButton({
+  url,
+  variant = "full",
+  buttonVariant = "outline",
+  className,
+  label = "Udostępnij",
+  tooltipText = "Skopiowano do schowka!",
+}: ShareButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
@@ -40,9 +59,16 @@ export function ShareButton({ url, className }: ShareButtonProps) {
     <Tooltip.Provider>
       <Tooltip.Root open={isCopied}>
         <Tooltip.Trigger asChild>
-          <Button variant="outline" onClick={handleCopy} className={className}>
-            <Share2Icon className="mr-2 h-4 w-4" />
-            Udostępnij
+          <Button
+            variant={buttonVariant}
+            onClick={handleCopy}
+            className={className}
+            aria-label={variant === "icon" ? label : undefined}
+          >
+            <Share2Icon
+              className={variant === "full" ? "mr-2 h-4 w-4" : "h-4 w-4"}
+            />
+            {variant === "full" && label}
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Portal>
@@ -50,7 +76,7 @@ export function ShareButton({ url, className }: ShareButtonProps) {
             className="rounded bg-gray-900 px-2 py-1 text-sm text-white"
             sideOffset={5}
           >
-            Skopiowano do schowka!
+            {tooltipText}
             <Tooltip.Arrow className="fill-gray-900" />
           </Tooltip.Content>
         </Tooltip.Portal>
