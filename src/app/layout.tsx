@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -43,6 +44,11 @@ export default function RootLayout({
         <Providers>
           <Toaster />
           {children}
+          <Script
+            defer
+            src="https://analytics.solvro.pl/script.js"
+            data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
+          ></Script>
         </Providers>
       </body>
     </html>
