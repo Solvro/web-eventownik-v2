@@ -97,25 +97,27 @@ export function FormGenerator({
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full max-w-sm space-y-4"
       >
-        {attributes.map((attribute) => (
-          <FormField
-            key={attribute.id}
-            control={form.control}
-            name={attribute.id.toString()}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{attribute.name}</FormLabel>
-                <FormControl>
-                  <AttributeInput attribute={attribute} field={field} />
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
-                  {/* @ts-expect-error zod schema object are dynamic */}
-                  {form.formState.errors[attribute.id.toString()]?.message}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-        ))}
+        {attributes
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          .map((attribute) => (
+            <FormField
+              key={attribute.id}
+              control={form.control}
+              name={attribute.id.toString()}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{attribute.name}</FormLabel>
+                  <FormControl>
+                    <AttributeInput attribute={attribute} field={field} />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500">
+                    {/* @ts-expect-error zod schema object are dynamic */}
+                    {form.formState.errors[attribute.id.toString()]?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+          ))}
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
             {form.formState.errors.root.message}
