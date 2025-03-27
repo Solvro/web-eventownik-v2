@@ -1,11 +1,5 @@
 import { format } from "date-fns";
-import {
-  AlertCircle,
-  Calendar1,
-  CircleHelpIcon,
-  Share2Icon,
-  Users,
-} from "lucide-react";
+import { AlertCircle, Calendar1, CircleHelpIcon, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +9,7 @@ import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-for
 import { EventInfoBlock } from "@/components/event-info-block";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ShareButton } from "@/components/ui/share-button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
@@ -91,9 +86,11 @@ export default async function EventListPage() {
                       Wyświetl szczegóły
                     </Link>
                   </Button>
-                  <Button variant="ghost">
-                    <Share2Icon />
-                  </Button>
+                  <ShareButton
+                    url={`https://eventownik.solvro.pl/${event.slug}`}
+                    variant="icon"
+                    buttonVariant="ghost"
+                  />
                 </div>
               </div>
             </div>
