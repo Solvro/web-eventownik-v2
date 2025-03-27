@@ -1,4 +1,4 @@
-import { Eye, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,12 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
           </Link>
         </Button>
         {/* TODO: Implement form preview */}
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/">
-            <Eye />
-            <span className="sr-only">Podgląd formularzu</span>
-          </Link>
-        </Button>
+        {/*<Button variant="ghost" size="icon" asChild>*/}
+        {/*  <Link href="/">*/}
+        {/*    <Eye />*/}
+        {/*    <span className="sr-only">Podgląd formularzu</span>*/}
+        {/*  </Link>*/}
+        {/*</Button>*/}
         <DeleteFormPopup
           eventId={eventId}
           formId={form.id.toString()}

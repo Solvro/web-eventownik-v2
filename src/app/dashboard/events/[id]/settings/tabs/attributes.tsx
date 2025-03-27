@@ -1,3 +1,21 @@
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   ALargeSmall,
   Binary,
@@ -63,10 +81,72 @@ interface AttributeItemProps {
   onRemove: () => void;
 }
 
+const SortableOption = memo(
+  ({ option, onRemove }: { option: string; onRemove: () => void }) => {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+      useSortable({
+        id: option,
+      });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+      >
+        <span className="cursor-move" {...attributes} {...listeners}>
+          ☰
+        </span>
+        {option}
+        <button onClick={onRemove} className="text-destructive">
+          ×
+        </button>
+      </div>
+    );
+  },
+);
+SortableOption.displayName = "SortableOption";
+
 const AttributeItem = memo(
   ({ attribute, onUpdate, onRemove }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
+
+    const sensors = useSensors(
+      useSensor(PointerSensor),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      }),
+    );
+
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (over != null && active.id !== over.id) {
+        const oldIndex = attribute.options?.indexOf(active.id.toString()) ?? -1;
+        const newIndex = attribute.options?.indexOf(over.id.toString()) ?? -1;
+        if (oldIndex !== -1 && newIndex !== -1 && attribute.options != null) {
+          const newOptions = arrayMove(attribute.options, oldIndex, newIndex);
+          onUpdate({ ...attribute, options: newOptions });
+        }
+      }
+    };
+
+    const addOption = () => {
+      const trimmedValue = optionsInput.trim();
+      if (trimmedValue) {
+        const exists = attribute.options?.includes(trimmedValue) ?? false;
+        if (!exists) {
+          const newOptions = [...(attribute.options ?? []), trimmedValue];
+          onUpdate({ ...attribute, options: newOptions });
+          setOptionsInput("");
+        }
+      }
+    };
 
     const handleSlugChange = (value: string) => {
       if (!slugRegex.test(value)) {
@@ -77,14 +157,6 @@ const AttributeItem = memo(
         setSlugError("");
       }
       onUpdate({ ...attribute, slug: value });
-    };
-
-    const addOption = () => {
-      if (optionsInput.trim()) {
-        const newOptions = [...(attribute.options ?? []), optionsInput.trim()];
-        onUpdate({ ...attribute, options: newOptions });
-        setOptionsInput("");
-      }
     };
 
     return (
@@ -174,39 +246,39 @@ const AttributeItem = memo(
                     event_.key === "Enter" && addOption();
                   }}
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="gap-2"
-                  onClick={addOption}
-                >
+                <Button variant="outline" onClick={addOption}>
                   <PlusIcon className="h-4 w-4" />
                   Dodaj opcję
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {attribute.options?.map((option, index) => (
-                  <div
-                    key={`${attribute.id.toString()}-${option}`}
-                    className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToHorizontalAxis]}
+                >
+                  <SortableContext
+                    items={attribute.options ?? []}
+                    strategy={horizontalListSortingStrategy}
                   >
-                    {option}
-                    <button
-                      onClick={() => {
-                        onUpdate({
-                          ...attribute,
-                          options:
-                            attribute.options?.filter(
-                              (_, index_) => index_ !== index,
-                            ) ?? [],
-                        });
-                      }}
-                      className="text-destructive"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+                    {attribute.options?.map((option, index) => (
+                      <SortableOption
+                        key={option}
+                        option={option}
+                        onRemove={() => {
+                          onUpdate({
+                            ...attribute,
+                            options:
+                              attribute.options?.filter(
+                                (_, index_) => index_ !== index,
+                              ) ?? [],
+                          });
+                        }}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
               </div>
             </div>
           )}

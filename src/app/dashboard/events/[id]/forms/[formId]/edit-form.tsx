@@ -1,9 +1,27 @@
 "use client";
 
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Save } from "lucide-react";
+import { CalendarIcon, GripHorizontal, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,6 +37,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -27,7 +46,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import type { EventAttribute } from "@/types/attributes";
+import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
 import { updateEventForm } from "../actions";
@@ -42,25 +61,254 @@ const EventFormSchema = z.object({
     message: "Data zakończenia musi być po dacie rozpoczęcia.",
   }),
   slug: z.string().min(1, { message: "Slug jest wymagany" }),
-  isOpen: z.boolean(),
-  attributes: z.array(
-    z.object({
-      id: z.number(),
-      isRequired: z.boolean(),
-      isEditable: z.boolean(),
-    }),
-  ),
+  isFirstForm: z.boolean(),
 });
+
+interface AttributeItemProps {
+  id: number;
+  attribute: EventAttribute;
+  isIncluded: boolean;
+  isRequired: boolean;
+  handleIncludeToggle: (attribute: EventAttribute) => void;
+  handleRequiredToggle: (attribute: EventAttribute) => void;
+}
+
+function AttributeItem({
+  id,
+  attribute,
+  isIncluded,
+  isRequired,
+  handleIncludeToggle,
+  handleRequiredToggle,
+}: AttributeItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`mb-2 flex items-center rounded-lg bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md ${
+        isDragging ? "z-50 opacity-50 shadow-lg" : ""
+      }`}
+    >
+      <button
+        {...listeners}
+        className="flex cursor-grab touch-none items-center px-2 opacity-50 hover:opacity-100 active:cursor-grabbing"
+        type="button"
+      >
+        <GripHorizontal />
+      </button>
+      <Checkbox
+        className="mr-2"
+        checked={isIncluded}
+        onCheckedChange={() => {
+          handleIncludeToggle(attribute);
+        }}
+      />
+      <div className="flex-1">
+        <h3 className="font-semibold text-gray-800">{attribute.name}</h3>
+      </div>
+      <span className="flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm">
+        <Label htmlFor={`required-${attribute.id.toString()}`}>Wymagane</Label>
+        <Checkbox
+          id={`required-${attribute.id.toString()}`}
+          className="ml-2"
+          checked={isRequired}
+          onCheckedChange={() => {
+            handleRequiredToggle(attribute);
+          }}
+        />
+      </span>
+    </div>
+  );
+}
+
+interface AttributesReorderProps {
+  attributes: EventAttribute[];
+  includedAttributes: FormAttributeBase[];
+  setIncludedAttributes: React.Dispatch<
+    React.SetStateAction<FormAttributeBase[]>
+  >;
+}
+
+function AttributesReorder({
+  attributes,
+  includedAttributes,
+  setIncludedAttributes,
+}: AttributesReorderProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const isIncluded = (attributeId: number) => {
+    return includedAttributes.some((attribute) => attribute.id === attributeId);
+  };
+
+  const handleIncludeToggle = (attribute: EventAttribute) => {
+    if (isIncluded(attribute.id)) {
+      setIncludedAttributes((previous) =>
+        previous.filter((attribute_) => attribute_.id !== attribute.id),
+      );
+    } else {
+      setIncludedAttributes((previous) => [
+        ...previous,
+        { ...attribute, isRequired: true, isEditable: true },
+      ]);
+    }
+  };
+
+  const handleRequiredToggle = (attribute: EventAttribute) => {
+    setIncludedAttributes((previous) =>
+      previous.map((attribute_) =>
+        attribute_.id === attribute.id
+          ? { ...attribute_, isRequired: !attribute_.isRequired }
+          : attribute_,
+      ),
+    );
+  };
+
+  const includedIds = new Set(
+    includedAttributes.map((attribute) => attribute.id),
+  );
+  const nonIncludedAttributes = attributes.filter(
+    (attribute) => !includedIds.has(attribute.id),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over == null || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = includedAttributes.findIndex(
+      (attribute) => attribute.id === active.id,
+    );
+    const newIndex = includedAttributes.findIndex(
+      (attribute) => attribute.id === over.id,
+    );
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    const newOrder = arrayMove(includedAttributes, oldIndex, newIndex).map(
+      (attribute, index) => ({ ...attribute, order: index }),
+    );
+    setIncludedAttributes(newOrder);
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="space-y-4">
+        {isMounted ? ( // Only render SortableContext when mounted
+          <SortableContext items={includedAttributes}>
+            <div className="space-y-2">
+              <h2 className="text-sm text-gray-800">Wybrane atrybuty</h2>
+              {includedAttributes.map((attribute) => {
+                const fullAttribute = attributes.find(
+                  (a) => a.id === attribute.id,
+                );
+                if (fullAttribute == null) {
+                  return null;
+                }
+                return (
+                  <AttributeItem
+                    key={attribute.id}
+                    id={attribute.id}
+                    attribute={fullAttribute}
+                    isIncluded={true}
+                    isRequired={attribute.isRequired}
+                    handleIncludeToggle={handleIncludeToggle}
+                    handleRequiredToggle={handleRequiredToggle}
+                  />
+                );
+              })}
+              {includedAttributes.length === 0 && (
+                <p className="text-center text-sm text-gray-500">
+                  Nie dodano jeszcze żadnych atrybutów
+                </p>
+              )}
+            </div>
+          </SortableContext>
+        ) : (
+          // Server fallback without drag-and-drop features
+          <div className="space-y-2">
+            <p className="text-sm text-gray-800">Ładowanie atrybutów...</p>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <h2 className="text-sm text-gray-800">Pozostałe atrybuty</h2>
+          {nonIncludedAttributes.map((attribute) => (
+            <div
+              key={attribute.id}
+              className="mb-2 flex items-center rounded-lg bg-white p-4 shadow-sm"
+            >
+              <Checkbox
+                className="mr-2"
+                checked={false}
+                onCheckedChange={() => {
+                  handleIncludeToggle(attribute);
+                }}
+              />
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800">
+                  {attribute.name}
+                </h3>
+              </div>
+            </div>
+          ))}
+          {nonIncludedAttributes.length === 0 && (
+            <p className="text-center text-sm text-gray-500">
+              Wszystkie atrybuty są już dodane
+            </p>
+          )}
+        </div>
+      </div>
+    </DndContext>
+  );
+}
+
+interface EventFormEditFormProps {
+  eventId: string;
+  formToEdit: EventForm;
+  eventAttributes: EventAttribute[];
+}
 
 function EventFormEditForm({
   eventId,
   formToEdit,
   eventAttributes,
-}: {
-  eventId: string;
-  formToEdit: EventForm;
-  eventAttributes: EventAttribute[];
-}) {
+}: EventFormEditFormProps) {
+  const [includedAttributes, setIncludedAttributes] = useState<
+    FormAttributeBase[]
+  >(formToEdit.attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
   const form = useForm<z.infer<typeof EventFormSchema>>({
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
@@ -70,9 +318,8 @@ function EventFormEditForm({
       endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
       startDate: new Date(formToEdit.startDate),
       endDate: new Date(formToEdit.endDate),
-      isOpen: formToEdit.isOpen,
+      isFirstForm: formToEdit.isFirstForm,
       slug: formToEdit.slug,
-      attributes: formToEdit.attributes,
     },
   });
 
@@ -83,6 +330,7 @@ function EventFormEditForm({
     const result = await updateEventForm(eventId, formToEdit.id, {
       ...formToEdit,
       ...values,
+      attributes: includedAttributes,
     });
 
     if (result.success) {
@@ -283,7 +531,7 @@ function EventFormEditForm({
             />
             {/* TODO: Not currently handled on the backend */}
             <FormField
-              name="isOpen"
+              name="isFirstForm"
               control={form.control}
               disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
@@ -300,83 +548,10 @@ function EventFormEditForm({
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="attributes"
-            render={() => (
-              <FormItem className="space-y-3">
-                <FormLabel>Wybierz atrybuty</FormLabel>
-                {eventAttributes.map((attribute) => (
-                  <FormField
-                    key={attribute.id}
-                    control={form.control}
-                    name="attributes"
-                    render={({ field }) => (
-                      <FormItem
-                        key={attribute.id}
-                        className="flex flex-row items-start space-y-0 space-x-3"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            id={`select-${attribute.id.toString()}`}
-                            checked={field.value.some(
-                              (value) => value.id === attribute.id,
-                            )}
-                            onCheckedChange={(checked: boolean) => {
-                              checked
-                                ? field.onChange([
-                                    ...field.value,
-                                    { ...attribute, isEditable: true },
-                                  ])
-                                : field.onChange(
-                                    field.value.filter(
-                                      (value) => value.id !== attribute.id,
-                                    ),
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel
-                          htmlFor={`select-${attribute.id.toString()}`}
-                        >
-                          {attribute.name}
-                        </FormLabel>
-
-                        <FormControl>
-                          <Checkbox
-                            id={`required-${attribute.id.toString()}`}
-                            checked={field.value.some(
-                              (value) =>
-                                value.id === attribute.id && value.isRequired,
-                            )}
-                            onCheckedChange={(checked: boolean) => {
-                              field.onChange(
-                                field.value.map((value) =>
-                                  value.id === attribute.id
-                                    ? { ...value, isRequired: checked }
-                                    : value,
-                                ),
-                              );
-                            }}
-                            disabled={
-                              !field.value.some(
-                                (value) => value.id === attribute.id,
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormLabel
-                          htmlFor={`required-${attribute.id.toString()}`}
-                        >
-                          Obowiązkowe
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                ))}
-                <FormMessage />
-              </FormItem>
-            )}
+          <AttributesReorder
+            attributes={eventAttributes}
+            includedAttributes={includedAttributes}
+            setIncludedAttributes={setIncludedAttributes}
           />
         </div>
         <Button type="submit">

@@ -4,9 +4,12 @@ import { formatISO9075 } from "date-fns";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import type { FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
-type Payload = Omit<EventForm, "eventId" | "id" | "slug">;
+type Payload = Omit<EventForm, "eventId" | "id" | "slug" | "attributes"> & {
+  attributes: FormAttributeBase[];
+};
 
 export async function createEventForm(eventId: string, form: Payload) {
   const session = await verifySession();
@@ -81,19 +84,19 @@ export async function updateEventForm(
       startDate: formatISO9075(form.startDate),
       attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
-      isOpen: form.isOpen,
+      isFirstForm: form.isFirstForm,
     }),
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as unknown;
+    const error = (await response.json()) as { message: string };
     console.error(
       `[updateEventForm action] Failed to update event form ${formId} for event ${eventId}:`,
       error,
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: `Błąd ${response.status.toString()} ${response.statusText}\n${error.message}`,
     };
   }
 
