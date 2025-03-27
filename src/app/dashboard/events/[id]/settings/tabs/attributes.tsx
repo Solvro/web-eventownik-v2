@@ -139,8 +139,8 @@ const AttributeItem = memo(
     const addOption = () => {
       const trimmedValue = optionsInput.trim();
       if (trimmedValue) {
-        const exists = attribute.options?.includes(trimmedValue);
-        if (exists === false) {
+        const exists = attribute.options?.includes(trimmedValue) ?? false;
+        if (!exists) {
           const newOptions = [...(attribute.options ?? []), trimmedValue];
           onUpdate({ ...attribute, options: newOptions });
           setOptionsInput("");
