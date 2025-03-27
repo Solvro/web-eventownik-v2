@@ -9,6 +9,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   SortableContext,
   arrayMove,
@@ -18,7 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Save } from "lucide-react";
+import { CalendarIcon, GripHorizontal, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -105,10 +106,10 @@ function AttributeItem({
     >
       <button
         {...listeners}
-        className="flex cursor-grab items-center px-2 opacity-50 hover:opacity-100 active:cursor-grabbing"
+        className="flex cursor-grab touch-none items-center px-2 opacity-50 hover:opacity-100 active:cursor-grabbing"
         type="button"
       >
-        ⋮⋮
+        <GripHorizontal />
       </button>
       <Checkbox
         className="mr-2"
@@ -172,7 +173,7 @@ function AttributesReorder({
     } else {
       setIncludedAttributes((previous) => [
         ...previous,
-        { ...attribute, isRequired: false, isEditable: true },
+        { ...attribute, isRequired: true, isEditable: true },
       ]);
     }
   };
@@ -221,6 +222,7 @@ function AttributesReorder({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-4">
