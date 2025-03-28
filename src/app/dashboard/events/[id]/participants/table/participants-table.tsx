@@ -113,66 +113,70 @@ export function ParticipantTable({
 
   return (
     <>
-      <div className="my-2 flex items-center gap-x-4">
+      <div className="my-2 flex flex-wrap items-center gap-x-4">
         <h1 className="text-3xl font-bold">Lista uczestników</h1>
-        <Input
-          className="h-10 w-32"
-          placeholder="Wyszukaj..."
-          value={globalFilter}
-          onChange={(event) => {
-            table.setGlobalFilter(String(event.target.value));
-          }}
-        ></Input>
-        <Button
-          onClick={() => {
-            table.resetColumnFilters();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj filtry"
-        >
-          <FilterX />
-        </Button>
-        <Button
-          onClick={() => {
-            table.resetSorting();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj sortowanie"
-        >
-          <ArrowUpDown />
-        </Button>
-        <SendMailForm
-          eventId={eventId}
-          targetParticipants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original)}
-          emails={emails}
-        />
-        <ExportButton eventId={eventId} />
-        <div className="ml-auto">
-          <span className="mr-2">{getPaginationInfoText(table)}</span>
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => {
-              table.previousPage();
-            }}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!table.getCanNextPage()}
-            onClick={() => {
-              table.nextPage();
-            }}
-          >
-            <ChevronRight />
-          </Button>
+        <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
+          <div className="flex items-center gap-x-2">
+            <Input
+              className="h-10 w-32"
+              placeholder="Wyszukaj..."
+              value={globalFilter}
+              onChange={(event) => {
+                table.setGlobalFilter(String(event.target.value));
+              }}
+            ></Input>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+              title="Resetuj filtry"
+            >
+              <FilterX />
+            </Button>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+              title="Resetuj sortowanie"
+            >
+              <ArrowUpDown />
+            </Button>
+            <SendMailForm
+              eventId={eventId}
+              targetParticipants={table
+                .getSelectedRowModel()
+                .rows.map((row) => row.original)}
+              emails={emails}
+            />
+            <ExportButton eventId={eventId} />
+          </div>
+          <div className="ml-auto">
+            <span className="mr-2">{getPaginationInfoText(table)}</span>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={!table.getCanPreviousPage()}
+              onClick={() => {
+                table.previousPage();
+              }}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={!table.getCanNextPage()}
+              onClick={() => {
+                table.nextPage();
+              }}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
         </div>
       </div>
       {/* //TODO prevent resizing width of columns */}

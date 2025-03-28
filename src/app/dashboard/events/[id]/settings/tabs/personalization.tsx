@@ -89,7 +89,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
   return (
     <Form {...form}>
       <form className="flex w-full flex-row flex-wrap gap-4">
-        <div className="min-w-80 space-y-4">
+        <div className="w-full space-y-4 sm:min-w-80">
           <FormField
             name="photoUrl"
             control={form.control}
@@ -102,7 +102,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     htmlFor={imageInputId}
                     className={cn(
                       buttonVariants({ variant: "outline" }),
-                      "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
+                      "border-box flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 sm:max-w-xs",
                       lastImageUrl !== "" && "overflow-hidden p-0",
                     )}
                   >
@@ -176,7 +176,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
-        <div className="min-w-80 space-y-4">
+        <div className="w-full space-y-4 sm:min-w-80">
           <FormField
             name="primaryColor"
             control={form.control}

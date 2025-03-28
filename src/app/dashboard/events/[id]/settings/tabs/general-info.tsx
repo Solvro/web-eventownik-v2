@@ -99,7 +99,7 @@ export function General({ event, saveFormRef }: TabProps) {
   return (
     <Form {...form}>
       <form className="flex w-full flex-row flex-wrap gap-4">
-        <div className="min-w-80 space-y-4">
+        <div className="w-full space-y-4 sm:min-w-80">
           <FormField
             name="name"
             control={form.control}
@@ -278,7 +278,7 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
-        <div className="min-w-80 space-y-4">
+        <div className="w-full space-y-4 sm:min-w-80">
           <FormField
             name="description"
             control={form.control}

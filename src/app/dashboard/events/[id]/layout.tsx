@@ -9,9 +9,9 @@ export default async function DashboardEventLayout({
 }) {
   const awaited = await params;
   return (
-    <div className="flex grow gap-14">
+    <div className="flex grow flex-col gap-4 sm:flex-row sm:gap-14">
       <DashboardSidebar id={awaited.id} />
-      <div className="grow">{children}</div>
+      <div className="max-w-full grow overflow-x-auto">{children}</div>
     </div>
   );
 }

@@ -184,7 +184,7 @@ export function EventSettingsTabs({
         onValueChange={handleTabChange}
       >
         {/* Tabs Navigation */}
-        <Tabs.List className="border-gray-250 flex w-fit space-x-2 rounded-xl border p-1 shadow-xs">
+        <Tabs.List className="border-gray-250 flex w-fit flex-wrap justify-center space-x-2 rounded-xl border p-1 shadow-xs">
           {TABS.map((tab) => (
             <Tabs.Trigger
               key={tab.value}
