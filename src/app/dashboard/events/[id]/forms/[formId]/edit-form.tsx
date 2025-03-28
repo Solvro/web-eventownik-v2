@@ -100,7 +100,7 @@ function AttributeItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`mb-2 flex items-center rounded-lg bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md ${
+      className={`bg-accent/50 mb-2 flex items-center rounded-lg p-4 shadow-sm transition-shadow duration-200 hover:shadow-md ${
         isDragging ? "z-50 opacity-50 shadow-lg" : ""
       }`}
     >
@@ -119,9 +119,9 @@ function AttributeItem({
         }}
       />
       <div className="flex-1">
-        <h3 className="font-semibold text-gray-800">{attribute.name}</h3>
+        <h3 className="font-semibold">{attribute.name}</h3>
       </div>
-      <span className="flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm">
+      <span className="bg-popover flex items-center rounded-full px-3 py-1 text-sm">
         <Label htmlFor={`required-${attribute.id.toString()}`}>Wymagane</Label>
         <Checkbox
           id={`required-${attribute.id.toString()}`}
@@ -229,7 +229,7 @@ function AttributesReorder({
         {isMounted ? ( // Only render SortableContext when mounted
           <SortableContext items={includedAttributes}>
             <div className="space-y-2">
-              <h2 className="text-sm text-gray-800">Wybrane atrybuty</h2>
+              <h2 className="text-sm">Wybrane atrybuty</h2>
               {includedAttributes.map((attribute) => {
                 const fullAttribute = attributes.find(
                   (a) => a.id === attribute.id,
@@ -250,7 +250,7 @@ function AttributesReorder({
                 );
               })}
               {includedAttributes.length === 0 && (
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm text-gray-800">
                   Nie dodano jeszcze żadnych atrybutów
                 </p>
               )}
@@ -259,16 +259,16 @@ function AttributesReorder({
         ) : (
           // Server fallback without drag-and-drop features
           <div className="space-y-2">
-            <p className="text-sm text-gray-800">Ładowanie atrybutów...</p>
+            <p className="text-muted text-sm">Ładowanie atrybutów...</p>
           </div>
         )}
 
         <div className="space-y-2">
-          <h2 className="text-sm text-gray-800">Pozostałe atrybuty</h2>
+          <h2 className="text-sm">Pozostałe atrybuty</h2>
           {nonIncludedAttributes.map((attribute) => (
             <div
               key={attribute.id}
-              className="mb-2 flex items-center rounded-lg bg-white p-4 shadow-sm"
+              className="bg-accent/50 mb-2 flex items-center rounded-lg p-4 shadow-sm"
             >
               <Checkbox
                 className="mr-2"
@@ -278,9 +278,7 @@ function AttributesReorder({
                 }}
               />
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800">
-                  {attribute.name}
-                </h3>
+                <h3 className="font-semibold">{attribute.name}</h3>
               </div>
             </div>
           ))}

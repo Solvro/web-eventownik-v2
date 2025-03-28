@@ -342,3 +342,34 @@ export async function updateEvent(
     return { errors: [{ message: "Network error occurred" }] };
   }
 }
+
+export async function deleteEvent(
+  eventId: number,
+): Promise<object | ErrorResponse> {
+  const session = await verifySession();
+  if (session?.bearerToken == null) {
+    throw new Error("Invalid session");
+  }
+  const { bearerToken } = session;
+
+  try {
+    const response = await fetch(`${API_URL}/events/${eventId.toString()}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${bearerToken}` },
+    });
+
+    if (!response.ok) {
+      const errorData = (await response.json()) as ErrorResponse;
+      console.error("[deleteEvent] API Error:", {
+        status: response.status,
+        error: errorData,
+      });
+      return { errors: errorData.errors };
+    }
+  } catch (error) {
+    console.error("[deleteEvent] Network Error:", error);
+    return { errors: [{ message: "Network error occurred" }] };
+  }
+  revalidatePath("/dashboard/events");
+  return {}; // Return an empty object on success
+}
