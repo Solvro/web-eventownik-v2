@@ -31,7 +31,10 @@ export default async function DashboardEventParticipantsPage({
         <div>Nie udało się załadować danych o uczestnikach</div>
       ) : (
         <ParticipantTable
-          participants={participants}
+          participants={participants.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )}
           attributes={attributes}
           emails={emails}
           eventId={id}

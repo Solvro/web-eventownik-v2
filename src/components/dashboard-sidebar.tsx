@@ -1,6 +1,12 @@
 "use client";
 
-import { Mail, Play, Sheet, SlidersHorizontal, Users } from "lucide-react";
+import {
+  ClipboardPenLine,
+  Mail,
+  Play,
+  SlidersHorizontal,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -31,7 +37,7 @@ export function DashboardSidebar({ id }: { id: string }) {
         },
         {
           title: "Formularze",
-          icon: <Sheet />,
+          icon: <ClipboardPenLine />,
           route: "forms",
         },
         {
@@ -64,15 +70,40 @@ export function DashboardSidebar({ id }: { id: string }) {
   ];
 
   return (
-    <nav className="border-muted flex min-w-[240px] flex-col gap-6 border-r pr-8">
-      {sections.map((section) => (
-        <div key={section.title}>
-          <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-          <ul className="flex flex-col gap-2 pl-2">
-            {section.links.map((link) => (
+    <>
+      <nav className="border-muted hidden min-w-[240px] flex-col gap-6 border-r pr-8 sm:flex">
+        {sections.map((section) => (
+          <div key={section.title}>
+            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
+            <ul className="flex flex-col gap-2 pl-2">
+              {section.links.map((link) => (
+                <li key={link.title}>
+                  <Button
+                    className="w-full justify-start"
+                    variant={
+                      pathname.endsWith(link.route) ? "default" : "ghost"
+                    }
+                    asChild
+                  >
+                    <Link
+                      href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
+                    >
+                      {link.icon}
+                      {link.title}
+                    </Link>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+      <nav className="flex gap-6 sm:hidden">
+        <ul className="flex w-full justify-around gap-2">
+          {sections.flatMap((section) =>
+            section.links.map((link) => (
               <li key={link.title}>
                 <Button
-                  className="w-full justify-start"
                   variant={pathname.endsWith(link.route) ? "default" : "ghost"}
                   asChild
                 >
@@ -80,14 +111,13 @@ export function DashboardSidebar({ id }: { id: string }) {
                     href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
                   >
                     {link.icon}
-                    {link.title}
                   </Link>
                 </Button>
               </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </nav>
+            )),
+          )}
+        </ul>
+      </nav>
+    </>
   );
 }

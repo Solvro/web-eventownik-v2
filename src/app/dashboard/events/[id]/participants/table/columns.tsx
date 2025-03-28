@@ -45,6 +45,15 @@ export function generateColumns(attributes: Attribute[]) {
       enableSorting: false,
       enableHiding: false,
     }),
+    columnHelper.display({
+      id: "no",
+      header: "L.p.",
+      cell: ({ row }) => {
+        return row.index + 1;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
     columnHelper.accessor("email", {
       header: ({ column }) => {
         const sortingDirection = column.getIsSorted();
