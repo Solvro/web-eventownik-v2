@@ -74,7 +74,7 @@ export function generateColumns(attributes: Attribute[]) {
         return (
           <div className="flex items-center">
             <SortButton sortingDirection={sortingDirection} column={column}>
-              Data registracji
+              Data rejestracji
             </SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
