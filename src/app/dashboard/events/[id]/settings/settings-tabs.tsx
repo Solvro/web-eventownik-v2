@@ -1,16 +1,20 @@
 "use client";
 
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
+import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
-import { updateEvent } from "./actions";
+import { deleteEvent, updateEvent } from "./actions";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
@@ -68,6 +72,8 @@ export function EventSettingsTabs({
     deleted: [] as EventAttribute[],
   });
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
+  const [isDeleteEventDialogOpen, setIsDeleteEventDialogOpen] = useState(false);
+  const router = useRouter();
   const saveFormRef = useRef<
     () => Promise<{ success: boolean; event: Event | null }>
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -149,6 +155,27 @@ export function EventSettingsTabs({
     }
   };
 
+  const handleDeleteEvent = async () => {
+    const result = await deleteEvent(unmodifiedEvent.id);
+    if ("errors" in result) {
+      toast({
+        variant: "destructive",
+        title: "O nie! Coś poszło nie tak.",
+        description: `Spróbuj usunąć wydarzenie ponownie.\n${result.errors
+          .map((error) => error.message)
+          .join("\n")}`,
+      });
+    } else {
+      toast({
+        variant: "default",
+        title: "Wydarzenie zostało usunięte.",
+        description: "Twoje wydarzenie zostało usunięte.",
+      });
+      router.push("/dashboard/events");
+    }
+    setIsDeleteEventDialogOpen(false);
+  };
+
   return (
     <>
       <Tabs.Root
@@ -185,12 +212,51 @@ export function EventSettingsTabs({
           </Tabs.Content>
         ))}
       </Tabs.Root>
-      <button
-        className="mt-6 rounded-2xl bg-blue-500 px-6 py-3 text-white"
-        onClick={saveForm}
-      >
-        Zapisz
-      </button>
+      <div className="max-w-80/full flex justify-between gap-2 pt-4">
+        <Button onClick={saveForm}>Zapisz</Button>
+        {activeTabValue === "general" && (
+          <AlertDialog.Root
+            open={isDeleteEventDialogOpen}
+            onOpenChange={setIsDeleteEventDialogOpen}
+          >
+            <AlertDialog.Trigger asChild>
+              <Button
+                variant="destructive"
+                className="bg-background hover:bg-destructive/10 border border-red-500 text-red-500"
+              >
+                <Trash />
+                Usuń wydarzenie
+              </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Portal>
+              <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
+              <AlertDialog.Content className="bg-background fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border p-6 shadow-md">
+                <AlertDialog.Title className="text-lg font-semibold">
+                  Czy na pewno chcesz usunąć wydarzenie?
+                </AlertDialog.Title>
+                <AlertDialog.Description className="mt-4 text-sm">
+                  Po usunięciu wydarzenia nie będzie można go przywrócić.
+                </AlertDialog.Description>
+                <div className="mt-6 flex justify-end space-x-2">
+                  <AlertDialog.Cancel asChild>
+                    <Button variant="outline">Anuluj</Button>
+                  </AlertDialog.Cancel>
+                  <AlertDialog.Action
+                    asChild
+                    onClick={(event_) => {
+                      event_.preventDefault();
+                    }}
+                  >
+                    <Button variant="destructive" onClick={handleDeleteEvent}>
+                      Usuń
+                    </Button>
+                  </AlertDialog.Action>
+                </div>
+              </AlertDialog.Content>
+            </AlertDialog.Portal>
+          </AlertDialog.Root>
+        )}
+      </div>
     </>
   );
 }

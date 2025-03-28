@@ -142,13 +142,7 @@ export function GeneralInfoForm({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                                form.getValues("endDate") === undefined
-                                  ? date <= new Date()
-                                  : new Date() >= date ||
-                                    date > form.getValues("endDate")
-                              }
+                              disabled={(date) => date <= new Date()}
                             />
                           </PopoverContent>
                         </Popover>
