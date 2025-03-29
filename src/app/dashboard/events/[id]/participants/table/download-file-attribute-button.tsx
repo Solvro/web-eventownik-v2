@@ -42,7 +42,7 @@ export function DownloadAttributeFileButton({
         const fileExtension = file.type.split("/")[1];
         downloadFile(
           file,
-          `${participant.email}-${attribute.slug}.${fileExtension}`,
+          `${participant.email}-${attribute.slug ?? attribute.name}.${fileExtension}`,
         );
       }
     } catch (error) {
