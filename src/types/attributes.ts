@@ -3,7 +3,7 @@ import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 export interface EventAttribute {
   id: number;
   name: string;
-  slug: string;
+  slug: string | null;
   eventId: number;
   options: string[] | null;
   type: string;
@@ -17,7 +17,7 @@ export interface AttributeBase {
   id: number;
   name: string;
   value: string;
-  slug: string;
+  slug: string | null;
 }
 
 export interface Attribute extends Omit<AttributeBase, "value"> {

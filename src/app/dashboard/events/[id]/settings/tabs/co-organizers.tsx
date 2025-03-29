@@ -88,8 +88,8 @@ const CoOrganizerItem = memo(
   }: CoOrganizerItemProps) => {
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
     return (
-      <div className="flex items-center gap-2">
-        <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full min-w-80 items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-1 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
+      <div className="flex w-full items-center gap-2">
+        <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 grow items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-1 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:w-full sm:min-w-80 md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
           <Image
             src={avatarUrl}
             alt={`${email}'s avatar`}
@@ -258,7 +258,7 @@ export function CoOrganizers({
         <p className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           Współorganizatorzy
         </p>
-        <div className="space-y-2 pt-2">
+        <div className="max-w-full space-y-2 pt-2">
           {coOrganizers.map((coOrganizer) => (
             <CoOrganizerItem
               key={coOrganizer.email}
@@ -278,7 +278,7 @@ export function CoOrganizers({
                 setNewEmail(event_.target.value);
               }}
               placeholder="Wprowadź email współorganizatora"
-              className="h-12 w-full min-w-80 rounded-xl text-lg md:text-sm"
+              className="h-12 rounded-xl text-lg sm:w-full sm:min-w-80 md:text-sm"
             />
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
               <PopoverTrigger asChild>

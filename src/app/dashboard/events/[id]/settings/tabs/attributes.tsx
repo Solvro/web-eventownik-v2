@@ -25,6 +25,7 @@ import {
   Clock,
   CloudUpload,
   Cuboid,
+  GripVertical,
   LetterText,
   ListTodo,
   Mail,
@@ -35,7 +36,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import type { JSX } from "react";
-import { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -81,35 +82,43 @@ interface AttributeItemProps {
   onRemove: () => void;
 }
 
-const SortableOption = memo(
-  ({ option, onRemove }: { option: string; onRemove: () => void }) => {
-    const { attributes, listeners, setNodeRef, transform, transition } =
-      useSortable({
-        id: option,
-      });
+interface SortableOptionProps {
+  option: string;
+  onRemove: (option: string) => void;
+}
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
+const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: option,
+    });
 
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+    >
+      <span className="cursor-move" {...attributes} {...listeners}>
+        <GripVertical size={12} />
+      </span>
+      {option}
+      <button
+        onClick={() => {
+          onRemove(option);
+        }}
+        className="text-destructive"
       >
-        <span className="cursor-move" {...attributes} {...listeners}>
-          ☰
-        </span>
-        {option}
-        <button onClick={onRemove} className="text-destructive">
-          ×
-        </button>
-      </div>
-    );
-  },
-);
+        ×
+      </button>
+    </div>
+  );
+});
 SortableOption.displayName = "SortableOption";
 
 const AttributeItem = memo(
@@ -124,19 +133,23 @@ const AttributeItem = memo(
       }),
     );
 
-    const handleDragEnd = (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (over != null && active.id !== over.id) {
-        const oldIndex = attribute.options?.indexOf(active.id.toString()) ?? -1;
-        const newIndex = attribute.options?.indexOf(over.id.toString()) ?? -1;
-        if (oldIndex !== -1 && newIndex !== -1 && attribute.options != null) {
-          const newOptions = arrayMove(attribute.options, oldIndex, newIndex);
-          onUpdate({ ...attribute, options: newOptions });
+    const handleDragEnd = useCallback(
+      (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (over != null && active.id !== over.id) {
+          const oldIndex =
+            attribute.options?.indexOf(active.id.toString()) ?? -1;
+          const newIndex = attribute.options?.indexOf(over.id.toString()) ?? -1;
+          if (oldIndex !== -1 && newIndex !== -1 && attribute.options != null) {
+            const newOptions = arrayMove(attribute.options, oldIndex, newIndex);
+            onUpdate({ ...attribute, options: newOptions });
+          }
         }
-      }
-    };
+      },
+      [attribute, onUpdate],
+    );
 
-    const addOption = () => {
+    const addOption = useCallback(() => {
       const trimmedValue = optionsInput.trim();
       if (trimmedValue) {
         const exists = attribute.options?.includes(trimmedValue) ?? false;
@@ -146,18 +159,48 @@ const AttributeItem = memo(
           setOptionsInput("");
         }
       }
-    };
+    }, [optionsInput, attribute, onUpdate]);
 
-    const handleSlugChange = (value: string) => {
-      if (!slugRegex.test(value)) {
-        setSlugError("Slug może zawierać tylko małe litery, cyfry i myślniki");
-      } else if (value.length < 3) {
-        setSlugError("Slug musi mieć co najmniej 3 znaki");
-      } else {
-        setSlugError("");
-      }
-      onUpdate({ ...attribute, slug: value });
-    };
+    const handleSlugChange = useCallback(
+      (value: string) => {
+        if (!slugRegex.test(value)) {
+          setSlugError(
+            "Slug może zawierać tylko małe litery, cyfry i myślniki",
+          );
+        } else if (value.length < 3) {
+          setSlugError("Slug musi mieć co najmniej 3 znaki");
+        } else {
+          setSlugError("");
+        }
+        onUpdate({ ...attribute, slug: value });
+      },
+      [attribute, onUpdate],
+    );
+
+    const handleRemoveOption = useCallback(
+      (optionToRemove: string) => {
+        onUpdate({
+          ...attribute,
+          options: attribute.options?.filter((o) => o !== optionToRemove) ?? [],
+        });
+      },
+      [attribute, onUpdate],
+    );
+
+    const attributeTypeOptions = useMemo(
+      () =>
+        ATTRIBUTE_TYPES.map((type) => (
+          <SelectItem key={type.value} value={type.value}>
+            <div className="flex items-center gap-2">
+              {type.icon}
+              <span className="overflow-x-hidden text-ellipsis">
+                {type.title}
+              </span>
+            </div>
+          </SelectItem>
+        )),
+      [],
+    );
 
     return (
       <div className="mb-2 flex gap-2 rounded-lg p-2">
@@ -190,23 +233,18 @@ const AttributeItem = memo(
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent>
-                {ATTRIBUTE_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    <div className="flex items-center gap-2">
-                      {type.icon}
-                      <span className="overflow-x-hidden text-ellipsis">
-                        {type.title}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <SelectContent>{attributeTypeOptions}</SelectContent>
             </Select>
 
             <div className="flex flex-col gap-2">
               <Input
-                value={attribute.slug}
+                value={
+                  attribute.slug ??
+                  attribute.name
+                    .toLowerCase()
+                    .replaceAll(/[^a-z0-9]+/g, "-")
+                    .replaceAll(/^-|-$/g, "")
+                }
                 onChange={(event_) => {
                   handleSlugChange(event_.target.value);
                 }}
@@ -220,13 +258,13 @@ const AttributeItem = memo(
 
             <div className="flex items-center space-x-2">
               <Checkbox
-                id={`showInTable-${attribute.slug}`}
+                id={`showInTable-${attribute.id.toString()}`}
                 checked={attribute.showInList}
                 onCheckedChange={(checked) => {
                   onUpdate({ ...attribute, showInList: checked === true });
                 }}
               />
-              <Label htmlFor={`showInTable-${attribute.slug}`}>
+              <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
                 Pokaż w tabeli
               </Label>
             </div>
@@ -262,19 +300,11 @@ const AttributeItem = memo(
                     items={attribute.options ?? []}
                     strategy={horizontalListSortingStrategy}
                   >
-                    {attribute.options?.map((option, index) => (
+                    {attribute.options?.map((option) => (
                       <SortableOption
                         key={option}
                         option={option}
-                        onRemove={() => {
-                          onUpdate({
-                            ...attribute,
-                            options:
-                              attribute.options?.filter(
-                                (_, index_) => index_ !== index,
-                              ) ?? [],
-                          });
-                        }}
+                        onRemove={handleRemoveOption}
                       />
                     ))}
                   </SortableContext>
@@ -297,7 +327,7 @@ export function Attributes({
 }: TabProps) {
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
 
-  const handleAddAttribute = () => {
+  const handleAddAttribute = useCallback(() => {
     if (!newAttributeLabel.trim()) {
       return;
     }
@@ -311,7 +341,7 @@ export function Attributes({
       id: -Date.now(),
       name: newAttributeLabel.trim(),
       slug: newSlug,
-      eventId: 0, // Will be set by parent component
+      eventId: 0,
       showInList: true,
       options: [],
       type: "text",
@@ -326,7 +356,7 @@ export function Attributes({
       added: [...previous.added, newAttribute],
     }));
     setNewAttributeLabel("");
-  };
+  }, [newAttributeLabel, setAttributes, setAttributesChanges]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
@@ -349,17 +379,18 @@ export function Attributes({
 
   const handleRemoveAttribute = useCallback(
     (attributeId: number) => {
-      setAttributes((previous) => previous.filter((a) => a.id !== attributeId));
-      setAttributesChanges((previous) => ({
-        ...previous,
-        deleted: [
-          ...previous.deleted,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          attributes.find((a) => a.id === attributeId)!,
-        ],
-      }));
+      setAttributes((previous) => {
+        const removedAttribute = previous.find((a) => a.id === attributeId);
+        if (removedAttribute != null) {
+          setAttributesChanges((previousChanges) => ({
+            ...previousChanges,
+            deleted: [...previousChanges.deleted, removedAttribute],
+          }));
+        }
+        return previous.filter((a) => a.id !== attributeId);
+      });
     },
-    [attributes, setAttributes, setAttributesChanges],
+    [setAttributes, setAttributesChanges],
   );
 
   return (
