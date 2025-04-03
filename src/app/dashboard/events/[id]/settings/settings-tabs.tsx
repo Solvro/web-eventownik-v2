@@ -1,13 +1,22 @@
 "use client";
 
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
@@ -215,11 +224,11 @@ export function EventSettingsTabs({
       <div className="max-w-80/full flex justify-between gap-2 pt-4">
         <Button onClick={saveForm}>Zapisz</Button>
         {activeTabValue === "general" && (
-          <AlertDialog.Root
+          <AlertDialog
             open={isDeleteEventDialogOpen}
             onOpenChange={setIsDeleteEventDialogOpen}
           >
-            <AlertDialog.Trigger asChild>
+            <AlertDialogTrigger asChild>
               <Button
                 variant="destructive"
                 className="bg-background hover:bg-destructive/10 border border-red-500 text-red-500"
@@ -227,34 +236,33 @@ export function EventSettingsTabs({
                 <Trash />
                 Usuń wydarzenie
               </Button>
-            </AlertDialog.Trigger>
-            <AlertDialog.Portal>
-              <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
-              <AlertDialog.Content className="bg-background fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border p-6 shadow-md">
-                <AlertDialog.Title className="text-lg font-semibold">
-                  Czy na pewno chcesz usunąć wydarzenie?
-                </AlertDialog.Title>
-                <AlertDialog.Description className="mt-4 text-sm">
-                  Po usunięciu wydarzenia nie będzie można go przywrócić.
-                </AlertDialog.Description>
-                <div className="mt-6 flex justify-end space-x-2">
-                  <AlertDialog.Cancel asChild>
-                    <Button variant="outline">Anuluj</Button>
-                  </AlertDialog.Cancel>
-                  <AlertDialog.Action
-                    asChild
-                    onClick={(event_) => {
-                      event_.preventDefault();
-                    }}
-                  >
-                    <Button variant="destructive" onClick={handleDeleteEvent}>
-                      Usuń
-                    </Button>
-                  </AlertDialog.Action>
-                </div>
-              </AlertDialog.Content>
-            </AlertDialog.Portal>
-          </AlertDialog.Root>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogTitle>
+                Czy na pewno chcesz usunąć to wydarzenie?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-900">
+                Po usunięciu wydarzenia nie będzie można go przywrócić.
+              </AlertDialogDescription>
+              <AlertDialogFooter className="flex gap-x-4">
+                <AlertDialogCancel
+                  className={buttonVariants({
+                    variant: "outline",
+                  })}
+                >
+                  Anuluj
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteEvent}
+                  className={buttonVariants({
+                    variant: "destructive",
+                  })}
+                >
+                  Usuń
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </>
