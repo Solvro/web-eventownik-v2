@@ -78,7 +78,7 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
-      //TODO allow user to define page size
+      // TODO: Allow user to define page size
       pagination: { pageSize: 15, pageIndex: 0 },
       columnVisibility: {
         id: false,
@@ -179,124 +179,129 @@ export function ParticipantTable({
           </div>
         </div>
       </div>
-      {/* //TODO prevent resizing width of columns */}
-      <Table>
-        <TableHeader className="border-border border-b-2">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      "border-border border-r-2",
-                      header.id === "expand" ? "w-16 text-right" : "",
-                    )}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => {
-            const allVisibleCells = row.getVisibleCells();
-            const attributesCells = allVisibleCells.filter(
-              (cell) => cell.column.columnDef.meta?.attribute !== undefined,
-            );
-            //headers structure - [select, email, createdAt, ...attributes, expand]
-            const emailCell = allVisibleCells.at(1);
-            const createdAtCell = allVisibleCells.at(2);
-            return (
-              <Fragment key={row.id}>
-                <TableRow>
-                  {row.getVisibleCells().map((cell) => {
-                    const attribute = cell.column.columnDef.meta?.attribute;
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        className={cn(
-                          cell.column.id === "expand" ? "text-right" : "",
-                        )}
-                      >
-                        {attribute?.type === "file" &&
-                        row.original[attribute.id] !== null &&
-                        row.original[attribute.id] !== undefined &&
-                        row.original[attribute.id] !== "" ? (
-                          <DownloadAttributeFileButton
-                            attribute={attribute}
-                            eventId={eventId}
-                            participant={row.original}
-                          />
-                        ) : (
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-                {row.getIsExpanded() ? (
-                  /*
-                  TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
-                   (attribute.showInList = false)
-                   It will require changes in how the edit form will be handled
-                   Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
-                   */
-                  <TableRow
-                    key={`${row.id}-edit`}
-                    className="border-l-primary border-l-2"
-                  >
-                    <TableCell>{null}</TableCell>
-                    <TableCell>
-                      {emailCell === undefined
+      {/* TODO: Prevent resizing width of columns */}
+      <div className="relative w-full overflow-auto">
+        <Table>
+          <TableHeader className="border-border border-b-2">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "border-border border-r-2",
+                        header.id === "expand" ? "w-16 text-right" : "",
+                      )}
+                    >
+                      {header.isPlaceholder
                         ? null
                         : flexRender(
-                            emailCell.column.columnDef.cell,
-                            emailCell.getContext(),
+                            header.column.columnDef.header,
+                            header.getContext(),
                           )}
-                    </TableCell>
-                    <TableCell>
-                      {createdAtCell === undefined
-                        ? null
-                        : flexRender(
-                            createdAtCell.column.columnDef.cell,
-                            createdAtCell.getContext(),
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => {
+              const allVisibleCells = row.getVisibleCells();
+              const attributesCells = allVisibleCells.filter(
+                (cell) => cell.column.columnDef.meta?.attribute !== undefined,
+              );
+              // headers structure - [select, email, createdAt, ...attributes, expand]
+              const emailCell = allVisibleCells.at(1);
+              const createdAtCell = allVisibleCells.at(2);
+              return (
+                <Fragment key={row.id}>
+                  <TableRow>
+                    {row.getVisibleCells().map((cell) => {
+                      const attribute = cell.column.columnDef.meta?.attribute;
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={cn(
+                            cell.column.id === "expand" ? "text-right" : "",
                           )}
-                    </TableCell>
-                    <TableCell className="p-0" colSpan={attributesCells.length}>
-                      <EditParticipantForm
-                        cells={attributesCells}
-                        eventId={eventId}
-                        row={row}
-                        setData={setData}
-                      ></EditParticipantForm>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex w-fit flex-col">
-                        <DeleteParticipantDialog
-                          isQuerying={isQuerying}
-                          participantId={row.original.id}
-                          deleteParticipant={deleteParticipant}
-                        />
-                      </div>
-                    </TableCell>
+                        >
+                          {attribute?.type === "file" &&
+                          row.original[attribute.id] !== null &&
+                          row.original[attribute.id] !== undefined &&
+                          row.original[attribute.id] !== "" ? (
+                            <DownloadAttributeFileButton
+                              attribute={attribute}
+                              eventId={eventId}
+                              participant={row.original}
+                            />
+                          ) : (
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )
+                          )}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
-                ) : null}
-              </Fragment>
-            );
-          })}
-        </TableBody>
-      </Table>
+                  {row.getIsExpanded() ? (
+                    /*
+                      TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
+                      (attribute.showInList = false)
+                      It will require changes in how the edit form will be handled
+                      Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
+                    */
+                    <TableRow
+                      key={`${row.id}-edit`}
+                      className="border-l-primary border-l-2"
+                    >
+                      <TableCell>{null}</TableCell>
+                      <TableCell>
+                        {emailCell === undefined
+                          ? null
+                          : flexRender(
+                              emailCell.column.columnDef.cell,
+                              emailCell.getContext(),
+                            )}
+                      </TableCell>
+                      <TableCell>
+                        {createdAtCell === undefined
+                          ? null
+                          : flexRender(
+                              createdAtCell.column.columnDef.cell,
+                              createdAtCell.getContext(),
+                            )}
+                      </TableCell>
+                      <TableCell
+                        className="p-0"
+                        colSpan={attributesCells.length}
+                      >
+                        <EditParticipantForm
+                          cells={attributesCells}
+                          eventId={eventId}
+                          row={row}
+                          setData={setData}
+                        ></EditParticipantForm>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex w-fit flex-col">
+                          <DeleteParticipantDialog
+                            isQuerying={isQuerying}
+                            participantId={row.original.id}
+                            deleteParticipant={deleteParticipant}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                </Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
       {table.getRowCount() === 0 ? (
         <div className="text-center">
           Nie znaleziono żadnych pasujących wyników
