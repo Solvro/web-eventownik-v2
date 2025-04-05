@@ -44,7 +44,7 @@ function getTitlePlaceholder(trigger: string) {
       return "Dziękujemy za wypełnienie formularza!";
     }
     case "attribute_changed": {
-      return "Otrzymaliśmy twoją wpłatę";
+      return "Otrzymaliśmy Twoją wpłatę";
     }
     default: {
       return "Nowa wiadomość od organizatorów";
