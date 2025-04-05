@@ -54,7 +54,12 @@ function DeleteEmailPopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-red-700">
+        <Button
+          variant="ghost"
+          size="icon"
+          title="Usuń szablon"
+          className="text-red-700"
+        >
           <Trash2 />
           <span className="sr-only">Usuń szablon</span>
         </Button>
@@ -67,7 +72,8 @@ function DeleteEmailPopup({
           <CircleX className="h-14 w-14 text-red-700" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
-            Czy na pewno chcesz szablon maila <strong>{mailName}</strong>?
+            Czy na pewno chcesz usunąć szablon maila <strong>{mailName}</strong>
+            ?
           </p>
           <div className="flex gap-2">
             <form onSubmit={form.handleSubmit(onSubmit)}>
