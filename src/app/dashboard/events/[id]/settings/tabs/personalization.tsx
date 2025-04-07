@@ -39,12 +39,16 @@ const EventPersonalizationFormSchema = z.object({
     .string()
     .min(3, "Slug musi mieć co najmniej 3 znaki")
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
+  contactEmail: z
+    .string()
+    .email("Nieprawidłowy adres email")
+    .or(z.literal(""))
+    .optional(),
 });
 
 export function Personalization({ event, saveFormRef }: TabProps) {
   const imageInputId = useId();
   const colorInputId = useId();
-  const slugInputId = useId();
   const [lastImageUrl, setLastImageUrl] = useState<string>(
     event.photoUrl ?? "",
   );
@@ -60,6 +64,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
           value: link,
         })) ?? [],
       slug: event.slug,
+      contactEmail: event.contactEmail ?? "",
     },
   });
 
@@ -80,6 +85,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
       participantsCount: values.participantsCount,
       socialMediaLinks: values.socialMediaLinks.map((link) => link.value),
       slug: values.slug,
+      contactEmail: values.contactEmail ?? null,
     };
     return { success: true, event: newEvent };
   }
@@ -216,7 +222,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel htmlFor={slugInputId}>
+                <FormLabel>
                   Slug{" "}
                   <span className="text-neutral-500">
                     (eventownik.solvro.pl/...)
@@ -231,6 +237,25 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.slug?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="contactEmail"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Email do kontaktu</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="example@example.org"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.contactEmail?.message}
                 </FormMessage>
               </FormItem>
             )}

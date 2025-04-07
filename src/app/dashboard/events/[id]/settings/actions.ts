@@ -57,6 +57,7 @@ export async function updateEvent(
     "participantsCount",
     (event.participantsCount ?? 0).toString(),
   );
+  formData.append("contactEmail", event.contactEmail ?? "");
   for (const link of event.socialMediaLinks ?? []) {
     if (link.trim() === "") {
       continue; // Skip empty links
@@ -71,7 +72,11 @@ export async function updateEvent(
   }
 
   // Handle photo upload
-  if (event.photoUrl != null && event.photoUrl !== unmodifiedEvent.photoUrl) {
+  if (
+    event.photoUrl != null &&
+    event.photoUrl !== "" &&
+    event.photoUrl !== unmodifiedEvent.photoUrl
+  ) {
     try {
       const photoResponse = await fetch(event.photoUrl);
       if (!photoResponse.ok) {
