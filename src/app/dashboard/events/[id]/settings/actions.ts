@@ -72,7 +72,11 @@ export async function updateEvent(
   }
 
   // Handle photo upload
-  if (event.photoUrl != null && event.photoUrl !== unmodifiedEvent.photoUrl) {
+  if (
+    event.photoUrl != null &&
+    event.photoUrl !== "" &&
+    event.photoUrl !== unmodifiedEvent.photoUrl
+  ) {
     try {
       const photoResponse = await fetch(event.photoUrl);
       if (!photoResponse.ok) {
