@@ -39,7 +39,7 @@ const EventPersonalizationFormSchema = z.object({
     .string()
     .min(3, "Slug musi mieć co najmniej 3 znaki")
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
-  contactEmail: z.string().email("Nieprawidłowy adres email").optional(),
+  contactEmail: z.string().email("Nieprawidłowy adres email").or(z.literal("")).optional(),
 });
 
 export function Personalization({ event, saveFormRef }: TabProps) {
@@ -245,7 +245,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                 <FormLabel>Email do kontaktu</FormLabel>
                 <FormControl>
                   <Input
-                    type="text"
+                    type="email"
                     placeholder="example@example.org"
                     {...field}
                   />
