@@ -13,6 +13,7 @@ export interface Event {
   primaryColor: string;
   organizer: string | null;
   participantsCount: number | null;
+  contactEmail: string | null;
   socialMediaLinks: string[] | null;
   createdAt: string;
   updatedAt: string;
