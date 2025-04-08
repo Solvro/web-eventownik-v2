@@ -28,7 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-import { isSlugAvailable, isSlugTaken } from "../actions";
+import { isSlugTaken } from "../actions";
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
 
