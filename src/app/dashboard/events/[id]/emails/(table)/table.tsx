@@ -26,7 +26,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
   });
 
   return (
-    <div className="relative max-h-48 overflow-y-auto">
+    <div className="relative max-h-72 overflow-y-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
