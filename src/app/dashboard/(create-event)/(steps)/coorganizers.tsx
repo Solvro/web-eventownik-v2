@@ -39,7 +39,6 @@ export function CoorganizersForm({
   goToNextStep: () => void;
 }) {
   const [event, setEvent] = useAtom(eventAtom);
-  const [coorganizers, setCoorganizers] = useState(event.coorganizers);
   const form = useForm<z.infer<typeof EventCoorganizersFormSchema>>({
     resolver: zodResolver(EventCoorganizersFormSchema),
     defaultValues: {
@@ -48,13 +47,11 @@ export function CoorganizersForm({
   });
 
   function onSubmit(data: z.infer<typeof EventCoorganizersFormSchema>) {
-    setCoorganizers((_coorganizers) => [..._coorganizers, data.coorganizer]);
+    setEvent((_event) => ({
+      ..._event,
+      coorganizers: [..._event.coorganizers, data.coorganizer],
+    }));
     form.reset();
-  }
-
-  function saveCoorganizers() {
-    setEvent((_event) => ({ ..._event, coorganizers }));
-    goToNextStep();
   }
 
   return (
@@ -67,7 +64,7 @@ export function CoorganizersForm({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <p>Współorganizatorzy</p>
-          {coorganizers.map((coorganizer) => (
+          {event.coorganizers.map((coorganizer) => (
             <div
               key={coorganizer}
               className="flex w-full flex-row items-center justify-between gap-2"
@@ -122,7 +119,7 @@ export function CoorganizersForm({
             className="w-min"
             variant="ghost"
             disabled={form.formState.isSubmitting}
-            onClick={saveCoorganizers}
+            onClick={goToNextStep}
           >
             {form.formState.isSubmitting ? (
               <>
