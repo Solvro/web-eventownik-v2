@@ -29,6 +29,29 @@ const EventEmailTemplateContentSchema = z.object({
   content: z.string().nonempty({ message: "Treść nie może być pusta." }),
 });
 
+function getTitlePlaceholder(trigger: string) {
+  switch (trigger) {
+    case "participant_registered": {
+      return "Dziękujemy za rejestrację!";
+    }
+    case "participant_deleted": {
+      return "Usunięto Cię z listy uczestników";
+    }
+    case "manual": {
+      return "Aktualizacja regulaminu wydarzenia";
+    }
+    case "form_filled": {
+      return "Dziękujemy za wypełnienie formularza!";
+    }
+    case "attribute_changed": {
+      return "Otrzymaliśmy Twoją wpłatę";
+    }
+    default: {
+      return "Nowa wiadomość od organizatorów";
+    }
+  }
+}
+
 function MessageContentForm({
   eventId,
   goToPreviousStep,
@@ -112,7 +135,7 @@ function MessageContentForm({
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="Dziękujemy za rejestrację!"
+                    placeholder={getTitlePlaceholder(newEmailTemplate.trigger)}
                     {...field}
                   />
                 </FormControl>
