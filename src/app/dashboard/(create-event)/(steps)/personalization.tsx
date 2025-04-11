@@ -37,7 +37,10 @@ const EventPersonalizationFormSchema = z.object({
   color: z.string().optional(),
   participantsNumber: z.coerce.number().min(1),
   links: z.array(z.string()),
-  slug: z.string(),
+  slug: z
+    .string()
+    .min(3, "Slug musi mieć co najmniej 3 znaki")
+    .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
 });
 
 export function PersonalizationForm({
@@ -59,7 +62,10 @@ export function PersonalizationForm({
       color: event.color,
       participantsNumber: event.participantsNumber,
       links: event.links,
-      slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
+      slug:
+        event.slug === ""
+          ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
+          : event.slug,
     },
   });
 
