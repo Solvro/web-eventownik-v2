@@ -7,6 +7,11 @@ import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
 
+export async function isSlugTaken(slug: string) {
+  const response = await fetch(`${API_URL}/events/${slug}`);
+  return response.ok;
+}
+
 export async function saveEvent(event: Event) {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {

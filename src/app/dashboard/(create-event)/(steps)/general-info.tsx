@@ -118,7 +118,7 @@ export function GeneralInfoForm({
               />
               <div className="space-y-2">
                 <FormLabel>Data i godzina</FormLabel>
-                <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
                     name="startDate"
@@ -146,9 +146,6 @@ export function GeneralInfoForm({
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -164,16 +161,19 @@ export function GeneralInfoForm({
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startTime?.message}
+                </FormMessage>
               </div>
               <div className="space-y-2">
-                <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
                     name="endDate"
@@ -208,9 +208,6 @@ export function GeneralInfoForm({
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -226,13 +223,16 @@ export function GeneralInfoForm({
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endTime?.message}
+                </FormMessage>
               </div>
             </div>
             <div>

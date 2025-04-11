@@ -43,9 +43,6 @@ export function AttributesForm({
 }) {
   const [event, setEvent] = useAtom(eventAtom);
   const [loading, setLoading] = useState(false);
-  const [attributes, setAttributes] = useState<
-    z.infer<typeof EventAttributesFormSchema>[]
-  >(event.attributes);
   const form = useForm<z.infer<typeof EventAttributesFormSchema>>({
     resolver: zodResolver(EventAttributesFormSchema),
     defaultValues: {
@@ -57,14 +54,17 @@ export function AttributesForm({
   const router = useRouter();
 
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
-    setAttributes([...attributes, data]);
+    setEvent((_event) => ({
+      ..._event,
+      attributes: [..._event.attributes, { name: data.name, type: data.type }],
+    }));
     form.reset();
   }
 
   async function createEvent() {
     setLoading(true);
     const base64Image = event.image ? await getBase64FromUrl(event.image) : "";
-    const newEventObject = { ...event, attributes, image: base64Image };
+    const newEventObject = { ...event, image: base64Image };
     try {
       const result = await saveEvent(newEventObject);
       if ("errors" in result) {
@@ -121,10 +121,10 @@ export function AttributesForm({
         <div className="w-full space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              {attributes.length > 0 && (
+              {event.attributes.length > 0 && (
                 <p className="text-sm font-medium">Atrybuty</p>
               )}
-              {attributes.map((attribute) => (
+              {event.attributes.map((attribute) => (
                 <div
                   key={attribute.name}
                   className="flex flex-row items-center gap-2"
@@ -160,7 +160,7 @@ export function AttributesForm({
                     name="type"
                     control={form.control}
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-0">
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}

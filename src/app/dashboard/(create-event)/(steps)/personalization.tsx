@@ -6,14 +6,14 @@ import {
   ArrowLeft,
   ArrowRight,
   Loader2,
-  MinusIcon,
   PlusIcon,
   SettingsIcon,
+  TrashIcon,
   UploadIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { useId, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -23,19 +23,31 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+import { isSlugTaken } from "../actions";
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
+
+// Required for usage of useFieldArray hook
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
   color: z.string().optional(),
   participantsNumber: z.coerce.number().min(1),
-  links: z.array(z.string()),
-  slug: z.string(),
+  links: z.array(
+    z.object({
+      value: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+    }),
+  ),
+  slug: z
+    .string()
+    .min(3, "Slug musi mieć co najmniej 3 znaki")
+    .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
 });
 
 export function PersonalizationForm({
@@ -56,18 +68,44 @@ export function PersonalizationForm({
       image: event.image,
       color: event.color,
       participantsNumber: event.participantsNumber,
-      links: event.links,
-      slug: event.name.toLowerCase().replaceAll(/\s+/g, "-"),
+      links: event.links.map((link) => ({
+        value: link,
+      })),
+      slug:
+        event.slug === ""
+          ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
+          : event.slug,
     },
   });
 
-  function onSubmit(data: z.infer<typeof EventPersonalizationFormSchema>) {
+  const { fields, append, remove } = useFieldArray({
+    name: "links",
+    control: form.control,
+  });
+
+  async function onSubmit(
+    data: z.infer<typeof EventPersonalizationFormSchema>,
+  ) {
+    if (!(await form.trigger())) {
+      return { success: false, event: null };
+    }
+    /**
+     * before going to the next step,
+     * we have to check if submitted slug is not already used
+     */
+    const slugTaken = await isSlugTaken(data.slug);
+    if (slugTaken) {
+      form.setError("slug", {
+        message: "Ten slug jest już zajęty.",
+      });
+      return;
+    }
     setEvent({
       ...event,
       image: event.image,
       color: data.color ?? "#3672fd",
       participantsNumber: data.participantsNumber,
-      links: data.links,
+      links: data.links.map((link) => link.value),
       slug: data.slug,
     });
     goToNextStep();
@@ -196,60 +234,54 @@ export function PersonalizationForm({
               <FormField
                 name="links"
                 control={form.control}
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Linki</FormLabel>
-                    {form.getValues("links").map((link) => {
-                      const linkId = form.getValues("links").indexOf(link);
-                      return (
-                        <div className="flex flex-row gap-2" key={linkId}>
-                          <Input
-                            type="url"
-                            placeholder="https://"
-                            disabled={form.formState.isSubmitting}
-                            value={link}
-                            onChange={(_event) => {
-                              const newLinks = [...form.getValues("links")];
-                              newLinks[linkId] = _event.target.value;
-                              form.setValue("links", newLinks);
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            title="Usuń link"
-                            disabled={form.formState.isSubmitting}
-                            variant="outline"
-                            onClick={() => {
-                              const newLinks = [...form.getValues("links")];
-                              newLinks.splice(linkId, 1);
-                              form.setValue("links", newLinks);
-                            }}
-                          >
-                            <MinusIcon />
-                          </Button>
+                    <div className="space-y-2">
+                      {fields.map((field, index) => (
+                        <div className="flex flex-col gap-2" key={field.id}>
+                          <div className="flex items-center gap-2">
+                            <FormControl>
+                              <Input
+                                type="url"
+                                placeholder=""
+                                {...form.register(
+                                  `links.${index}.value` as const,
+                                )}
+                              />
+                            </FormControl>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              className="hover:bg-red-500/90 hover:text-white"
+                              onClick={() => {
+                                remove(index);
+                              }}
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          {form.formState.errors.links?.[index]?.value
+                            ?.message != null && (
+                            <p className="text-sm text-[0.8rem] font-medium text-red-500">
+                              {form.formState.errors.links[index].value.message}
+                            </p>
+                          )}
                         </div>
-                      );
-                    })}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        form.setValue("links", [
-                          ...form.getValues("links"),
-                          "",
-                        ]);
-                      }}
-                    >
-                      <PlusIcon />
-                      Dodaj link
-                    </Button>
-                    <FormControl>
-                      <Input
-                        type="hidden"
-                        disabled={form.formState.isSubmitting}
-                        {...field}
-                      />
-                    </FormControl>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => {
+                          append({ value: "" });
+                        }}
+                      >
+                        <PlusIcon className="h-4 w-4" />
+                        Dodaj Linka
+                      </Button>
+                    </div>
                   </FormItem>
                 )}
               />
@@ -266,6 +298,9 @@ export function PersonalizationForm({
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.slug?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
