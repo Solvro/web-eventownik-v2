@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Loader2,
-  MinusIcon,
   PlusIcon,
   SettingsIcon,
   TrashIcon,
@@ -32,6 +31,9 @@ import { cn } from "@/lib/utils";
 import { isSlugTaken } from "../actions";
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
+
+// Required for usage of useFieldArray hook
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
