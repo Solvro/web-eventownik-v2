@@ -2,7 +2,11 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getSingleEventEmail } from "../data-access";
+import {
+  getEventAttributes,
+  getEventForms,
+  getSingleEventEmail,
+} from "../data-access";
 import { EventEmailEditForm } from "./edit-form";
 
 export default async function EventMailEditPage({
@@ -13,6 +17,8 @@ export default async function EventMailEditPage({
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
+  const attributes = await getEventAttributes(id);
+  const forms = await getEventForms(id);
 
   if (emailToEdit == null) {
     notFound();
@@ -26,7 +32,12 @@ export default async function EventMailEditPage({
           <ArrowLeft className="h-4 w-4" /> Wróć do szablonów
         </Link>
         <h1 className="text-2xl font-bold">Edytuj szablon maila</h1>
-        <EventEmailEditForm eventId={id} emailToEdit={emailToEdit} />
+        <EventEmailEditForm
+          eventId={id}
+          emailToEdit={emailToEdit}
+          eventAttributes={attributes}
+          eventForms={forms}
+        />
       </div>
     );
   }

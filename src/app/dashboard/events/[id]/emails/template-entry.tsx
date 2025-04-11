@@ -34,10 +34,10 @@ async function EmailTemplateEntry({
   return (
     <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="ghost" size="icon" title="Edytuj szablon" asChild>
           <Link href={`emails/${emailTemplate.id.toString()}`}>
             <SquarePen />
-            <span className="sr-only">Edytuj szablon maila</span>
+            <span className="sr-only">Edytuj szablon</span>
           </Link>
         </Button>
         {targetMail !== null && <MailHistoryPopup email={targetMail} />}
