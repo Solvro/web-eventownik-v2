@@ -48,7 +48,7 @@ export default async function EventListPage() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.map((event) => (
-            <div key={event.id}>
+            <div key={event.id} className="flex h-full flex-col">
               <div className="relative">
                 <Image
                   src={
@@ -76,13 +76,19 @@ export default async function EventListPage() {
                   </div>
                 </div>
               </div>
-              <div className="border-muted-foreground flex flex-col gap-4 rounded-b-xl border-x border-b p-4">
-                <p className="line-clamp-3 text-2xl font-bold">{event.name}</p>
-                <p className="line-clamp-3 text-xs">{event.description}</p>
+              <div className="border-muted-foreground flex flex-1 flex-col rounded-b-xl border-x border-b p-4">
+                <div className="flex-1">
+                  <h3 className="mb-2 line-clamp-2 text-2xl font-bold">
+                    {event.name}
+                  </h3>
+                  <p className="text-muted-foreground mb-4 line-clamp-3 text-xs">
+                    {event.description}
+                  </p>
+                </div>
                 <div className="flex w-full justify-between">
                   <Button asChild variant="ghost">
                     <Link href={`/dashboard/events/${event.id.toString()}`}>
-                      <CircleHelpIcon />
+                      <CircleHelpIcon className="mr-2 size-4" />
                       Wyświetl szczegóły
                     </Link>
                   </Button>
