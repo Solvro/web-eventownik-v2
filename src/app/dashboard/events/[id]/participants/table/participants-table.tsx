@@ -140,7 +140,7 @@ export function ParticipantTable({
 
   return (
     <>
-      <div className="my-2 flex flex-wrap items-center gap-x-4">
+      <div className="my-2 flex flex-wrap items-center gap-4">
         <h1 className="text-3xl font-bold">Lista uczestników</h1>
         <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
           <div className="flex items-center gap-x-2">
