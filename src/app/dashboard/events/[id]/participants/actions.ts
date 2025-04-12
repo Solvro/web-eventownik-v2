@@ -63,7 +63,10 @@ export async function massDeleteParticipants(
         error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
       };
     }
-    return { success: false };
+    return {
+      success: false,
+      error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    };
   }
   return { success: true };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Save, Trash2, XCircle } from "lucide-react";
+import { Loader, Pencil, Save, Trash2, XCircle } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 
 import {
@@ -110,7 +110,7 @@ export function MassDeleteParticipantsDialog({
           disabled={isQuerying}
           size="icon"
         >
-          <Trash2 />
+          {isQuerying ? <Loader className="animate-spin" /> : <Trash2 />}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col items-center">

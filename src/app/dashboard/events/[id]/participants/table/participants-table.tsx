@@ -118,6 +118,8 @@ export function ParticipantTable({
   }
 
   async function massDeleteParticipants(_participants: string[]) {
+    setIsQuerying(true);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const response = await massDeleteParticipantsAction(eventId, _participants);
 
     if (response.success) {
@@ -132,10 +134,11 @@ export function ParticipantTable({
       });
     } else {
       toast({
-        title: "Błąd podczas grupowego usuwania uczestników",
+        title: "Wystąpił błąd podczas grupowego usuwania uczestników",
         description: response.error,
       });
     }
+    setIsQuerying(false);
   }
 
   return (
