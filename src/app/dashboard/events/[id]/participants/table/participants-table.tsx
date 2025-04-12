@@ -119,7 +119,6 @@ export function ParticipantTable({
 
   async function massDeleteParticipants(_participants: string[]) {
     setIsQuerying(true);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     const response = await massDeleteParticipantsAction(eventId, _participants);
 
     if (response.success) {
