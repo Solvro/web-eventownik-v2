@@ -95,49 +95,69 @@ export function ParticipantTable({
 
   async function deleteParticipant(participantId: number) {
     setIsQuerying(true);
-    const { success, error } = await deleteParticipantAction(
-      eventId,
-      participantId.toString(),
-    );
-    setIsQuerying(false);
-
-    if (!success) {
-      toast({
-        variant: "destructive",
-        title: "Usunięcie uczestnika nie powiodło się!",
-        description: error,
-      });
-      return;
-    }
-
-    setData((previousData) => {
-      return previousData.filter(
-        (participant) => participant.id !== participantId,
+    try {
+      const { success, error } = await deleteParticipantAction(
+        eventId,
+        participantId.toString(),
       );
-    });
+      setIsQuerying(false);
+
+      if (!success) {
+        toast({
+          variant: "destructive",
+          title: "Usunięcie uczestnika nie powiodło się!",
+          description: error,
+        });
+        return;
+      }
+
+      setData((previousData) => {
+        return previousData.filter(
+          (participant) => participant.id !== participantId,
+        );
+      });
+    } catch {
+      toast({
+        title: "Usunięcie uczestnika nie powiodło się!",
+        description: "Wystąpił błąd podczas usuwania uczestnika.",
+      });
+    } finally {
+      setIsQuerying(false);
+    }
   }
 
   async function massDeleteParticipants(_participants: string[]) {
     setIsQuerying(true);
-    const response = await massDeleteParticipantsAction(eventId, _participants);
+    try {
+      const response = await massDeleteParticipantsAction(
+        eventId,
+        _participants,
+      );
 
-    if (response.success) {
-      setData((previousData) => {
-        return previousData.filter(
-          (participant) => !_participants.includes(participant.id.toString()),
-        );
-      });
-      toast({
-        title: "Uczestnicy zostali pomyślnie usunięci",
-        description: `Usunięto ${_participants.length.toString()} uczestników`,
-      });
-    } else {
+      if (response.success) {
+        setData((previousData) => {
+          return previousData.filter(
+            (participant) => !_participants.includes(participant.id.toString()),
+          );
+        });
+        toast({
+          title: "Uczestnicy zostali pomyślnie usunięci",
+          description: `Usunięto ${_participants.length.toString()} uczestników`,
+        });
+      } else {
+        toast({
+          title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+          description: response.error,
+        });
+      }
+    } catch {
       toast({
         title: "Wystąpił błąd podczas grupowego usuwania uczestników",
-        description: response.error,
+        description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
       });
+    } finally {
+      setIsQuerying(false);
     }
-    setIsQuerying(false);
   }
 
   return (
