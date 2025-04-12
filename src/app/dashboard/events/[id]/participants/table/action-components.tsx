@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant } from "@/types/participant";
 
 export function DeleteParticipantDialog({
@@ -33,6 +34,7 @@ export function DeleteParticipantDialog({
           variant="outline"
           className="text-red-500"
           disabled={isQuerying}
+          size="icon"
         >
           <Trash2 />
           Usuń
@@ -53,6 +55,80 @@ export function DeleteParticipantDialog({
           <AlertDialogAction
             onClick={async () => {
               await deleteParticipant(participantId);
+            }}
+            className={buttonVariants({
+              variant: "destructive",
+            })}
+          >
+            Usuń
+          </AlertDialogAction>
+          <AlertDialogCancel
+            className={buttonVariants({
+              variant: "outline",
+            })}
+          >
+            Anuluj
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function MassDeleteParticipantsDialog({
+  isQuerying,
+  participants,
+  massDeleteParticipants,
+}: {
+  isQuerying: boolean;
+  participants: string[];
+  massDeleteParticipants: (_participants: string[]) => Promise<void>;
+}) {
+  const { toast } = useToast();
+  return participants.length === 0 ? (
+    <Button
+      variant="outline"
+      title="Grupowe usuwanie uczestników"
+      className="text-red-500"
+      onClick={() =>
+        toast({
+          title: "Błąd podczas grupowego usuwania uczestników",
+          description: "Wybierz przynajmniej jednego uczestnika do usunięcia",
+        })
+      }
+      size="icon"
+    >
+      <Trash2 />
+    </Button>
+  ) : (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="outline"
+          title="Grupowe usuwanie uczestników"
+          className="text-red-500"
+          disabled={isQuerying}
+          size="icon"
+        >
+          <Trash2 />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="flex flex-col items-center">
+        <AlertDialogHeader className="flex flex-col items-center">
+          <AlertDialogTitle className="flex flex-col items-center self-center">
+            <XCircle strokeWidth={1} stroke={"red"} size={64} />
+            Jesteś pewny?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-foreground text-center text-pretty">
+            Zamierzasz jednocześnie usunąć{" "}
+            <strong>{participants.length}</strong> uczestników. Tej operacji nie
+            będzie można cofnąć.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex gap-x-4">
+          <AlertDialogAction
+            onClick={async () => {
+              await massDeleteParticipants(participants);
             }}
             className={buttonVariants({
               variant: "destructive",

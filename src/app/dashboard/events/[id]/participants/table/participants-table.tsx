@@ -29,8 +29,14 @@ import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-import { deleteParticipant as deleteParticipantAction } from "../actions";
-import { DeleteParticipantDialog } from "./action-components";
+import {
+  deleteParticipant as deleteParticipantAction,
+  massDeleteParticipants as massDeleteParticipantsAction,
+} from "../actions";
+import {
+  DeleteParticipantDialog,
+  MassDeleteParticipantsDialog,
+} from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
@@ -111,6 +117,27 @@ export function ParticipantTable({
     });
   }
 
+  async function massDeleteParticipants(_participants: string[]) {
+    const response = await massDeleteParticipantsAction(eventId, _participants);
+
+    if (response.success) {
+      setData((previousData) => {
+        return previousData.filter(
+          (participant) => !_participants.includes(participant.id.toString()),
+        );
+      });
+      toast({
+        title: "Uczestnicy zostali pomyślnie usunięci",
+        description: `Usunięto ${_participants.length.toString()} uczestników`,
+      });
+    } else {
+      toast({
+        title: "Błąd podczas grupowego usuwania uczestników",
+        description: response.error,
+      });
+    }
+  }
+
   return (
     <>
       <div className="my-2 flex flex-wrap items-center gap-x-4">
@@ -153,6 +180,13 @@ export function ParticipantTable({
               emails={emails}
             />
             <ExportButton eventId={eventId} />
+            <MassDeleteParticipantsDialog
+              isQuerying={isQuerying}
+              participants={table
+                .getSelectedRowModel()
+                .rows.map((row) => row.original.id.toString())}
+              massDeleteParticipants={massDeleteParticipants}
+            />
           </div>
           <div className="ml-auto">
             <span className="mr-2">{getPaginationInfoText(table)}</span>
