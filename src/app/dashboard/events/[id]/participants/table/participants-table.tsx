@@ -100,7 +100,6 @@ export function ParticipantTable({
         eventId,
         participantId.toString(),
       );
-      setIsQuerying(false);
 
       if (!success) {
         toast({
@@ -119,6 +118,7 @@ export function ParticipantTable({
     } catch {
       toast({
         title: "Usunięcie uczestnika nie powiodło się!",
+        variant: "destructive",
         description: "Wystąpił błąd podczas usuwania uczestnika.",
       });
     } finally {
@@ -153,6 +153,7 @@ export function ParticipantTable({
     } catch {
       toast({
         title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+        variant: "destructive",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
       });
     } finally {
