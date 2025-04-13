@@ -1,5 +1,6 @@
 "use client";
 
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { Loader, Pencil, Save, Trash2, XCircle } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -15,7 +16,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant } from "@/types/participant";
 
 export function DeleteParticipantDialog({
@@ -84,22 +84,30 @@ export function MassDeleteParticipantsDialog({
   participants: string[];
   massDeleteParticipants: (_participants: string[]) => Promise<void>;
 }) {
-  const { toast } = useToast();
   return participants.length === 0 ? (
-    <Button
-      variant="outline"
-      title="Grupowe usuwanie uczestników"
-      className="text-red-500"
-      onClick={() =>
-        toast({
-          title: "Błąd podczas grupowego usuwania uczestników",
-          description: "Wybierz przynajmniej jednego uczestnika do usunięcia",
-        })
-      }
-      size="icon"
-    >
-      <Trash2 />
-    </Button>
+    <Tooltip.Provider delayDuration={0}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <Button
+            variant="outline"
+            className="text-red-500 hover:cursor-not-allowed hover:text-red-500 disabled:pointer-events-auto"
+            size="icon"
+            disabled={true}
+          >
+            <Trash2 />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            className="text-foreground rounded bg-white px-3 py-2 text-sm dark:bg-gray-900"
+            sideOffset={5}
+          >
+            Najpierw zaznacz uczestników do usunięcia
+            <Tooltip.Arrow className="fill-white dark:fill-gray-900" />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   ) : (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -121,8 +129,9 @@ export function MassDeleteParticipantsDialog({
           </AlertDialogTitle>
           <AlertDialogDescription className="text-foreground text-center text-pretty">
             Zamierzasz jednocześnie usunąć{" "}
-            <strong>{participants.length}</strong> uczestników. Tej operacji nie
-            będzie można cofnąć.
+            <strong>{participants.length}</strong>{" "}
+            {participants.length === 1 ? "uczestnika" : "uczestników"}. Tej
+            operacji nie będzie można cofnąć.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex gap-x-4">

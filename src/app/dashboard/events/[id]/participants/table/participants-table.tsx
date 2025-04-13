@@ -140,9 +140,10 @@ export function ParticipantTable({
             (participant) => !_participants.includes(participant.id.toString()),
           );
         });
+        table.resetRowSelection();
         toast({
           title: "Uczestnicy zostali pomyślnie usunięci",
-          description: `Usunięto ${_participants.length.toString()} uczestników`,
+          description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
         });
       } else {
         toast({
