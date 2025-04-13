@@ -17,9 +17,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
+import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
+import type { EventForm } from "@/types/forms";
 
 import { updateEventEmail } from "../actions";
 
@@ -69,9 +78,13 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
 }
 
 function TriggerConfigurationInputs({
+  eventAttributes,
+  eventForms,
   trigger,
   form,
 }: {
+  eventAttributes: EventAttribute[];
+  eventForms: EventForm[];
   trigger: string;
   form: ReturnType<typeof useForm<z.infer<typeof EventEmailEditFormSchema>>>;
 }) {
@@ -99,14 +112,27 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>ID formularza</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="formularz_rejestracyjny"
-                    {...field}
-                  />
-                </FormControl>
+                <FormLabel>Formularz</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Wybierz formularz" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {eventForms.map((eventForm) => (
+                      <SelectItem
+                        key={eventForm.id}
+                        value={eventForm.id.toString()}
+                      >
+                        {eventForm.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -122,10 +148,27 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>ID atrybutu</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="czy_zaplacil" {...field} />
-                </FormControl>
+                <FormLabel>Atrybut</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Wybierz atrybut" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {eventAttributes.map((attribute) => (
+                      <SelectItem
+                        key={attribute.id}
+                        value={attribute.id.toString()}
+                      >
+                        {attribute.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -151,9 +194,13 @@ function TriggerConfigurationInputs({
 
 function EventEmailEditForm({
   eventId,
+  eventAttributes,
+  eventForms,
   emailToEdit,
 }: {
   eventId: string;
+  eventAttributes: EventAttribute[];
+  eventForms: EventForm[];
   emailToEdit: SingleEventEmail;
 }) {
   const form = useForm<z.infer<typeof EventEmailEditFormSchema>>({
@@ -200,7 +247,7 @@ function EventEmailEditForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="bg-accent flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+        <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
           <div className="border-foreground rounded-full border p-2">
             <Zap />
           </div>
@@ -255,10 +302,12 @@ function EventEmailEditForm({
           <div className="flex flex-col gap-8">
             <TriggerConfigurationInputs
               trigger={form.getValues("trigger")}
+              eventAttributes={eventAttributes}
+              eventForms={eventForms}
               form={form}
             />
           </div>
-          <div className="bg-accent flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+          <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
             <div className="border-foreground rounded-full border p-2">
               <Text />
             </div>

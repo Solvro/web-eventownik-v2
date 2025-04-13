@@ -17,7 +17,7 @@ function MailHistoryPopup({ email }: { email: SingleEventEmail }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" title="Historia wiadomości">
           <History />
           <span className="sr-only">Historia wiadomości</span>
         </Button>
