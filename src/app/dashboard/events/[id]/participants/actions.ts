@@ -34,6 +34,43 @@ export async function getAttributes(eventId: string, bearerToken: string) {
   return attributes;
 }
 
+export async function massDeleteParticipants(
+  eventId: string,
+  participants: string[],
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ participantsToUnregisterIds: participants }),
+  });
+
+  if (!response.ok) {
+    console.error(
+      `[massDeleteParticipants] Failed to mass delete participants for event ${eventId}:`,
+      response,
+    );
+    if (response.status === 500) {
+      return {
+        success: false,
+        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+      };
+    }
+    return {
+      success: false,
+      error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    };
+  }
+  return { success: true };
+}
+
 export async function deleteParticipant(
   eventId: string,
   participantId: string,
