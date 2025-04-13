@@ -2,7 +2,7 @@ export const EMAIL_TRIGGERS = [
   {
     name: "Rejestracja uczestnika",
     description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika po jego rejestracji.",
+      "Ten szablon zostanie automatycznie wysłany do uczestnika po jego rejestracji na wydarzenie.",
     value: "participant_registered",
   },
   {
@@ -14,19 +14,19 @@ export const EMAIL_TRIGGERS = [
   {
     name: "Wypełnienie formularza",
     description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika po wypełnieniu formularza o określonym identyfikatorze.",
+      "Ten szablon zostanie automatycznie wysłany do uczestnika po wypełnieniu określonego formularza.",
     value: "form_filled",
   },
   {
     name: "Zmiana atrybutu",
     description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie.",
+      "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie na daną wartość.",
     value: "attribute_changed",
   },
   {
     name: "Manualny",
     description:
-      "Ten szablon nie jest wysyłany automatycznie i służy do ręcznej wysyłki z poziomu listy uczestników.",
+      "Ten szablon nie jest wysyłany automatycznie i służy do ręcznej wysyłki z poziomu listy uczestników. Szablony z pozostałymi wyzwalaczami również mogą zostać wysłane manualnie.",
     value: "manual",
   },
 ] as const;
