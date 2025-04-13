@@ -125,9 +125,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -143,13 +140,16 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startTime?.message}
+                </FormMessage>
               </div>
               <div className="space-y-2">
                 <div className="flex flex-row items-center gap-4">
@@ -187,9 +187,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -205,13 +202,16 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endTime?.message}
+                </FormMessage>
               </div>
             </div>
             <div className="flex flex-col gap-8">
