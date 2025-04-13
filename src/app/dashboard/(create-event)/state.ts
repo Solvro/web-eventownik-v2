@@ -2,6 +2,8 @@
 
 import { atom } from "jotai";
 
+import type { CoOrganizer } from "@/types/co-organizer";
+
 export const AttributeTypes = [
   "text",
   "number",
@@ -32,7 +34,7 @@ export interface Event {
   participantsNumber: number;
   links: string[];
   slug: string;
-  coorganizers: string[];
+  coorganizers: CoOrganizer[];
   attributes: {
     name: string;
     type: (typeof AttributeTypes)[number];

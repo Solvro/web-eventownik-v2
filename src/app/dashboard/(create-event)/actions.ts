@@ -82,6 +82,23 @@ export async function saveEvent(event: Event) {
         }),
       ),
     );
+    await Promise.all(
+      event.coorganizers.map(async (coorganizer) =>
+        fetch(`${API_URL}/events/${data.id}/organizers`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          body: JSON.stringify({
+            email: coorganizer.email,
+            permissionIds: coorganizer.permissions.map(
+              (permission) => permission.id,
+            ),
+          }),
+        }),
+      ),
+    );
   }
 
   return data;
