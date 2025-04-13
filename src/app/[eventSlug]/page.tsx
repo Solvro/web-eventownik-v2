@@ -1,10 +1,21 @@
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
+import {
+  FaDiscord,
+  FaFacebookF,
+  FaGlobe,
+  FaInstagram,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 import { AppLogo } from "@/components/app-logo";
+import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
@@ -108,6 +119,49 @@ export default async function EventPage({ params }: EventPageProps) {
             <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
+            <div className="mt-7 flex gap-1">
+              {event.socialMediaLinks != null &&
+              event.socialMediaLinks.length > 0
+                ? event.socialMediaLinks.map((link) => (
+                    <Tooltip.Provider key={link} delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <Button
+                            asChild
+                            variant={"ghost"}
+                            className="size-10 !text-white"
+                          >
+                            <Link href={link} target="_blank">
+                              {link.includes("facebook.com") ? (
+                                <FaFacebookF className="!size-6" />
+                              ) : link.includes("instagram.com") ? (
+                                <FaInstagram className="!size-6" />
+                              ) : link.includes("tiktok.com") ? (
+                                <FaTiktok className="!size-6" />
+                              ) : link.includes("discord.com") ? (
+                                <FaDiscord className="!size-6" />
+                              ) : link.includes("youtube.com") ? (
+                                <FaYoutube className="!size-6" />
+                              ) : link.includes("google.com/maps") ? (
+                                <FaLocationDot className="!size-6" />
+                              ) : (
+                                <FaGlobe className="!size-6" />
+                              )}
+                            </Link>
+                          </Button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          className="rounded bg-gray-900 px-2 py-1 text-sm text-white"
+                          sideOffset={5}
+                        >
+                          {link}
+                          <Tooltip.Arrow className="fill-gray-900" />
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  ))
+                : null}
+            </div>
           </div>
         </div>
       </div>
