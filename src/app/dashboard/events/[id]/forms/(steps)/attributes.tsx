@@ -27,7 +27,11 @@ function AttributesForm({
   const { toast } = useToast();
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
-  >(newEventForm.attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+  >(
+    [...newEventForm.attributes].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0),
+    ),
+  );
 
   function saveSelectedAttributes() {
     setNewEventForm((previous) => {

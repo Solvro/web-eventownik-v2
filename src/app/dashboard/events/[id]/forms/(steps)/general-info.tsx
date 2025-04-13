@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { compareAsc, endOfYesterday, format } from "date-fns";
+import { compareAsc, endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -44,7 +44,7 @@ const EventFormGeneralInfoSchema = z
       const startDate = new Date(schema.startDate);
       const endDate = new Date(schema.endDate);
 
-      if (startDate.getDate() === endDate.getDate()) {
+      if (isSameDay(startDate, endDate)) {
         const startTime = Number(schema.startTime.replace(":", "."));
         const endTime = Number(schema.endTime.replace(":", "."));
         return endTime > startTime;
