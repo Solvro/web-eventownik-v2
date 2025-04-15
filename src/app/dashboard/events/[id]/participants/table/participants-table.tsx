@@ -29,8 +29,14 @@ import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-import { deleteParticipant as deleteParticipantAction } from "../actions";
-import { DeleteParticipantDialog } from "./action-components";
+import {
+  deleteParticipant as deleteParticipantAction,
+  massDeleteParticipants as massDeleteParticipantsAction,
+} from "../actions";
+import {
+  DeleteParticipantDialog,
+  MassDeleteParticipantsDialog,
+} from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
@@ -89,31 +95,76 @@ export function ParticipantTable({
 
   async function deleteParticipant(participantId: number) {
     setIsQuerying(true);
-    const { success, error } = await deleteParticipantAction(
-      eventId,
-      participantId.toString(),
-    );
-    setIsQuerying(false);
-
-    if (!success) {
-      toast({
-        variant: "destructive",
-        title: "Usunięcie uczestnika nie powiodło się!",
-        description: error,
-      });
-      return;
-    }
-
-    setData((previousData) => {
-      return previousData.filter(
-        (participant) => participant.id !== participantId,
+    try {
+      const { success, error } = await deleteParticipantAction(
+        eventId,
+        participantId.toString(),
       );
-    });
+
+      if (!success) {
+        toast({
+          variant: "destructive",
+          title: "Usunięcie uczestnika nie powiodło się!",
+          description: error,
+        });
+        return;
+      }
+
+      setData((previousData) => {
+        return previousData.filter(
+          (participant) => participant.id !== participantId,
+        );
+      });
+    } catch {
+      toast({
+        title: "Usunięcie uczestnika nie powiodło się!",
+        variant: "destructive",
+        description: "Wystąpił błąd podczas usuwania uczestnika.",
+      });
+    } finally {
+      setIsQuerying(false);
+    }
+  }
+
+  async function massDeleteParticipants(_participants: string[]) {
+    setIsQuerying(true);
+    try {
+      const response = await massDeleteParticipantsAction(
+        eventId,
+        _participants,
+      );
+
+      if (response.success) {
+        setData((previousData) => {
+          return previousData.filter(
+            (participant) => !_participants.includes(participant.id.toString()),
+          );
+        });
+        table.resetRowSelection();
+        toast({
+          title: "Uczestnicy zostali pomyślnie usunięci",
+          description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
+        });
+      } else {
+        toast({
+          title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+          description: response.error,
+        });
+      }
+    } catch {
+      toast({
+        title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+        variant: "destructive",
+        description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+      });
+    } finally {
+      setIsQuerying(false);
+    }
   }
 
   return (
     <>
-      <div className="my-2 flex flex-wrap items-center gap-x-4">
+      <div className="my-2 flex flex-wrap items-center gap-4">
         <h1 className="text-3xl font-bold">Lista uczestników</h1>
         <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
           <div className="flex items-center gap-x-2">
@@ -153,6 +204,13 @@ export function ParticipantTable({
               emails={emails}
             />
             <ExportButton eventId={eventId} />
+            <MassDeleteParticipantsDialog
+              isQuerying={isQuerying}
+              participants={table
+                .getSelectedRowModel()
+                .rows.map((row) => row.original.id.toString())}
+              massDeleteParticipants={massDeleteParticipants}
+            />
           </div>
           <div className="ml-auto">
             <span className="mr-2">{getPaginationInfoText(table)}</span>
