@@ -1,14 +1,55 @@
 "use client";
 
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { ArrowLeft, Loader2, PlusIcon, TextIcon } from "lucide-react";
+import {
+  ALargeSmall,
+  ArrowLeft,
+  Binary,
+  Calendar,
+  CalendarClock,
+  Check,
+  Clock,
+  CloudUpload,
+  Cuboid,
+  GripVertical,
+  LetterText,
+  ListTodo,
+  Loader2,
+  Mail,
+  Palette,
+  PlusIcon,
+  Smartphone,
+  SquareDashedMousePointer,
+  TextIcon,
+  TrashIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import type { JSX } from "react";
+import { memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -17,6 +58,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,6 +68,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
+import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import { saveEvent } from "../actions";
 import { FormContainer } from "../form-container";
@@ -35,6 +78,268 @@ const EventAttributesFormSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta"),
   type: z.enum(AttributeTypes),
 });
+
+const ATTRIBUTE_TYPES: {
+  value: AttributeType;
+  title: string;
+  icon: JSX.Element;
+}[] = [
+  { value: "text", title: "Tekst", icon: <ALargeSmall /> },
+  { value: "number", title: "Liczba", icon: <Binary /> },
+  { value: "textarea", title: "Pole tekstowe", icon: <LetterText /> },
+  { value: "file", title: "Plik", icon: <CloudUpload /> },
+  { value: "select", title: "Wybór", icon: <SquareDashedMousePointer /> },
+  { value: "multiselect", title: "Wielokrotny wybór", icon: <ListTodo /> },
+  { value: "block", title: "Blok", icon: <Cuboid /> },
+  { value: "date", title: "Data", icon: <Calendar /> },
+  { value: "time", title: "Czas", icon: <Clock /> },
+  { value: "datetime", title: "Data i czas", icon: <CalendarClock /> },
+  { value: "email", title: "Email", icon: <Mail /> },
+  { value: "tel", title: "Telefon", icon: <Smartphone /> },
+  { value: "color", title: "Kolor", icon: <Palette /> },
+  { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
+];
+
+const slugRegex = /^[a-z0-9-]+$/;
+
+interface AttributeItemProps {
+  attribute: EventAttribute;
+  onUpdate: (updatedAttribute: EventAttribute) => void;
+  onRemove: () => void;
+}
+
+interface SortableOptionProps {
+  option: string;
+  onRemove: (option: string) => void;
+}
+
+const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: option,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-1 rounded border-2 px-2 py-1 text-sm"
+    >
+      <span className="cursor-move" {...attributes} {...listeners}>
+        <GripVertical size={12} />
+      </span>
+      {option}
+      <button
+        onClick={() => {
+          onRemove(option);
+        }}
+        className="text-destructive"
+      >
+        ×
+      </button>
+    </div>
+  );
+});
+SortableOption.displayName = "SortableOption";
+
+const attributeTypeOptions = () =>
+  ATTRIBUTE_TYPES.map((type) => (
+    <SelectItem key={type.value} value={type.value}>
+      <div className="flex items-center gap-2">
+        {type.icon}
+        <span className="overflow-x-hidden text-ellipsis">{type.title}</span>
+      </div>
+    </SelectItem>
+  ));
+
+const AttributeItem = memo(
+  ({ attribute, onUpdate, onRemove }: AttributeItemProps) => {
+    const [optionsInput, setOptionsInput] = useState("");
+    const [slugError, setSlugError] = useState("");
+
+    const sensors = useSensors(
+      useSensor(PointerSensor),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      }),
+    );
+
+    const handleDragEnd = useCallback(
+      (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (over != null && active.id !== over.id) {
+          const oldIndex =
+            attribute.options?.indexOf(active.id.toString()) ?? -1;
+          const newIndex = attribute.options?.indexOf(over.id.toString()) ?? -1;
+          if (oldIndex !== -1 && newIndex !== -1 && attribute.options != null) {
+            const newOptions = arrayMove(attribute.options, oldIndex, newIndex);
+            onUpdate({ ...attribute, options: newOptions });
+          }
+        }
+      },
+      [attribute, onUpdate],
+    );
+
+    const addOption = useCallback(() => {
+      const trimmedValue = optionsInput.trim();
+      if (trimmedValue) {
+        const exists = attribute.options?.includes(trimmedValue) ?? false;
+        if (!exists) {
+          const newOptions = [...(attribute.options ?? []), trimmedValue];
+          onUpdate({ ...attribute, options: newOptions });
+          setOptionsInput("");
+        }
+      }
+    }, [optionsInput, attribute, onUpdate]);
+
+    const handleSlugChange = useCallback(
+      (value: string) => {
+        if (!slugRegex.test(value)) {
+          setSlugError(
+            "Slug może zawierać tylko małe litery, cyfry i myślniki",
+          );
+        } else if (value.length < 3) {
+          setSlugError("Slug musi mieć co najmniej 3 znaki");
+        } else {
+          setSlugError("");
+        }
+        onUpdate({ ...attribute, slug: value });
+      },
+      [attribute, onUpdate],
+    );
+
+    const handleRemoveOption = useCallback(
+      (optionToRemove: string) => {
+        onUpdate({
+          ...attribute,
+          options: attribute.options?.filter((o) => o !== optionToRemove) ?? [],
+        });
+      },
+      [attribute, onUpdate],
+    );
+
+    return (
+      <div className="mb-2 flex gap-2 rounded-lg p-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onRemove}
+          className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+
+        <div className="flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={attribute.name}
+              onChange={(event_) => {
+                onUpdate({ ...attribute, name: event_.target.value });
+              }}
+              placeholder="Attribute label"
+              className="flex-1"
+            />
+
+            <Select
+              value={attribute.type}
+              onValueChange={(value: AttributeType) => {
+                onUpdate({ ...attribute, type: value });
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>{attributeTypeOptions()}</SelectContent>
+            </Select>
+
+            <div className="flex flex-col gap-2">
+              <Input
+                value={
+                  attribute.slug ??
+                  attribute.name
+                    .toLowerCase()
+                    .replaceAll(/[^a-z0-9]+/g, "-")
+                    .replaceAll(/^-|-$/g, "")
+                }
+                onChange={(event_) => {
+                  handleSlugChange(event_.target.value);
+                }}
+                placeholder="slug"
+                className={`flex-1 ${slugError ? "border-destructive" : ""}`}
+              />
+              {slugError ? (
+                <span className="text-destructive text-sm">{slugError}</span>
+              ) : null}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={`showInTable-${attribute.id.toString()}`}
+                checked={attribute.showInList}
+                onCheckedChange={(checked) => {
+                  onUpdate({ ...attribute, showInList: checked === true });
+                }}
+              />
+              <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
+                Pokaż w tabeli
+              </Label>
+            </div>
+          </div>
+
+          {(attribute.type === "select" ||
+            attribute.type === "multiselect") && (
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={optionsInput}
+                  onChange={(event_) => {
+                    setOptionsInput(event_.target.value);
+                  }}
+                  placeholder="Nowa opcja"
+                  onKeyDown={(event_) => {
+                    event_.key === "Enter" && addOption();
+                  }}
+                />
+                <Button variant="outline" onClick={addOption}>
+                  <PlusIcon className="h-4 w-4" />
+                  Dodaj opcję
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToHorizontalAxis]}
+                >
+                  <SortableContext
+                    items={attribute.options ?? []}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    {attribute.options?.map((option) => (
+                      <SortableOption
+                        key={option}
+                        option={option}
+                        onRemove={handleRemoveOption}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  },
+);
+
+AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm({
   goToPreviousStep,
@@ -56,10 +361,77 @@ export function AttributesForm({
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
     setEvent((_event) => ({
       ..._event,
-      attributes: [..._event.attributes, { name: data.name, type: data.type }],
+      attributes: [
+        ..._event.attributes,
+        {
+          id: Math.floor(Math.random() * 1_000_000),
+          name: data.name,
+          type: data.type,
+          slug: data.name
+            .toLowerCase()
+            .replaceAll(/[^a-z0-9]+/g, "-")
+            .replaceAll(/^-|-$/g, ""),
+          eventId: -1,
+          options: [],
+          rootBlockId: undefined,
+          showInList: false,
+          createdAt: "", // set it to empty string to avoid type error
+          updatedAt: "", // set it to empty string to avoid type error
+        },
+      ],
     }));
     form.reset();
   }
+
+  const handleUpdateAttribute = useCallback(
+    (updatedAttribute: EventAttribute) => {
+      /*
+      setAttributes((previous) =>
+        previous.map((attribute) =>
+          attribute.id === updatedAttribute.id ? updatedAttribute : attribute,
+        ),
+      );
+      setAttributesChanges((previous) => ({
+        ...previous,
+        updated: previous.updated.some((a) => a.id === updatedAttribute.id)
+          ? previous.updated.map((a) =>
+              a.id === updatedAttribute.id ? updatedAttribute : a,
+            )
+          : [...previous.updated, updatedAttribute],
+      }));
+    },
+    [setAttributes, setAttributesChanges],
+    */
+      setEvent((previous) => ({
+        ...previous,
+        attributes: previous.attributes.map((attribute) =>
+          attribute.id === updatedAttribute.id ? updatedAttribute : attribute,
+        ),
+      }));
+    },
+    [setEvent],
+  );
+
+  const handleRemoveAttribute = useCallback(
+    (attributeId: number) => {
+      /*
+      setAttributes((previous) => {
+        const removedAttribute = previous.find((a) => a.id === attributeId);
+        if (removedAttribute != null) {
+          setAttributesChanges((previousChanges) => ({
+            ...previousChanges,
+            deleted: [...previousChanges.deleted, removedAttribute],
+          }));
+        }
+        return previous.filter((a) => a.id !== attributeId);
+      });*/
+      setEvent((previous) => ({
+        ...previous,
+        attributes: previous.attributes.filter((a) => a.id !== attributeId),
+      }));
+    },
+    [setEvent],
+  );
 
   async function createEvent() {
     setLoading(true);
@@ -125,17 +497,14 @@ export function AttributesForm({
                 <p className="text-sm font-medium">Atrybuty</p>
               )}
               {event.attributes.map((attribute) => (
-                <div
-                  key={attribute.name}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
-                    {attribute.name}
-                  </p>
-                  <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
-                    {attribute.type}
-                  </p>
-                </div>
+                <AttributeItem
+                  key={attribute.id}
+                  attribute={attribute}
+                  onUpdate={handleUpdateAttribute}
+                  onRemove={() => {
+                    handleRemoveAttribute(attribute.id);
+                  }}
+                />
               ))}
             </div>
             <Form {...form}>
@@ -167,22 +536,14 @@ export function AttributesForm({
                         >
                           <FormControl>
                             <SelectTrigger
+                              className="w-[180px]"
                               disabled={form.formState.isSubmitting}
-                              className="h-full capitalize"
                             >
                               <SelectValue placeholder="Wybierz typ atrybutu" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {AttributeTypes.map((value) => (
-                              <SelectItem
-                                className="capitalize"
-                                key={value}
-                                value={value}
-                              >
-                                {value}
-                              </SelectItem>
-                            ))}
+                            {attributeTypeOptions()}
                           </SelectContent>
                         </Select>
                       </FormItem>
