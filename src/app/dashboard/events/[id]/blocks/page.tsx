@@ -1,18 +1,16 @@
+// This page likely won't be used in the future and its here cause i made it for testing
 import { notFound, redirect } from "next/navigation";
 
-import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { BlockTemplateEntry } from "@/app/dashboard/events/[id]/blocks/block-list-entry";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 
-export default async function DashboardEventLayout({
-  children,
+export default async function DashboardEventBlocksPage({
   params,
 }: {
-  children: React.ReactNode;
   params: Promise<{ id: string }>;
 }) {
-  const awaited = await params;
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -32,10 +30,18 @@ export default async function DashboardEventLayout({
 
   const attributes = (await response.json()) as Attribute[];
 
+  const blocks = attributes.filter(
+    (attribute: { type: string }) => attribute.type === "block",
+  );
+
   return (
-    <div className="flex grow flex-col gap-4 sm:flex-row sm:gap-14">
-      <DashboardSidebar id={awaited.id} attributes={attributes} />
-      <div className="max-w-full grow overflow-x-auto">{children}</div>
+    <div className="flex flex-col gap-8">
+      <h1 className="text-3xl font-bold">Bloki</h1>
+      <div className="mt-8 flex flex-wrap gap-8">
+        {blocks.map((block) => (
+          <BlockTemplateEntry key={block.id} block={block} />
+        ))}
+      </div>
     </div>
   );
 }
