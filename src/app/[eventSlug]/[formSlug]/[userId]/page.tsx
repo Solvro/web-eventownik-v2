@@ -1,8 +1,23 @@
 import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import Link from "next/link";
+import React from "react";
+import {
+  FaDiscord,
+  FaFacebookF,
+  FaGlobe,
+  FaInstagram,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 import { AppLogo } from "@/components/app-logo";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
@@ -88,9 +103,40 @@ export default async function FormPage({ params }: FormPageProps) {
                   </EventInfoDiv>
                 ) : null}
               </div>
+              <div className="flex flex-wrap gap-2">
+                {event.socialMediaLinks != null &&
+                event.socialMediaLinks.length > 0
+                  ? event.socialMediaLinks.map((link) => (
+                      <Tooltip key={link} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <Link href={link} target="_blank">
+                            <EventInfoDiv className="px-1">
+                              {link.includes("facebook.com") ? (
+                                <FaFacebookF className="size-6" />
+                              ) : link.includes("instagram.com") ? (
+                                <FaInstagram className="size-6" />
+                              ) : link.includes("tiktok.com") ? (
+                                <FaTiktok className="size-6" />
+                              ) : link.includes("discord.com") ? (
+                                <FaDiscord className="size-6" />
+                              ) : link.includes("youtube.com") ? (
+                                <FaYoutube className="size-6" />
+                              ) : link.includes("google.com/maps") ? (
+                                <FaLocationDot className="size-6" />
+                              ) : (
+                                <FaGlobe className="size-6" />
+                              )}
+                            </EventInfoDiv>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>{link}</TooltipContent>
+                      </Tooltip>
+                    ))
+                  : null}
+              </div>
             </div>
             <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
-              {event.description}
+              {form.description}
             </p>
           </div>
         </div>
@@ -99,7 +145,6 @@ export default async function FormPage({ params }: FormPageProps) {
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           {form.name}
         </h2>
-        <p className="mb-8">{form.description}</p>
         <FormGenerator
           attributes={form.attributes}
           formId={form.id.toString()}
@@ -121,8 +166,8 @@ function EventInfoDiv({
   return (
     <div
       className={cn(
-        className,
         "bg-accent/10 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-sm",
+        className,
       )}
     >
       {children}

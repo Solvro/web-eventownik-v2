@@ -22,8 +22,8 @@ import {
 import { FaLocationDot } from "react-icons/fa6";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
-import { ShareButton } from "@/components/ui/share-button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
