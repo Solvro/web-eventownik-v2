@@ -33,7 +33,7 @@ import { cn } from "@/lib/utils";
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
 const multiSelectVariants = cva(
-  "m-1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300",
+  "m-1 transition ease-in-out delay-50  hover:scale-105 duration-300",
   {
     variants: {
       variant: {
@@ -224,13 +224,17 @@ export const MultiSelect = React.forwardRef<
                           <IconComponent className="mr-2 h-4 w-4" />
                         )}
                         {option?.label}
-                        <XCircle
-                          className="ml-2 h-4 w-4 cursor-pointer"
+                        <span
+                          role="button"
+                          tabIndex={0}
                           onClick={(event) => {
+                            event.preventDefault();
                             event.stopPropagation();
                             toggleOption(value);
                           }}
-                        />
+                        >
+                          <XCircle className="ml-2 max-h-3 max-w-3 cursor-pointer" />
+                        </span>
                       </Badge>
                     );
                   })}
