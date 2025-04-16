@@ -290,7 +290,7 @@ export const MultiSelect = React.forwardRef<
         >
           <Command>
             <CommandInput
-              placeholder="Search..."
+              placeholder="Szukaj..."
               onKeyDown={handleInputKeyDown}
             />
             <CommandList>
@@ -311,7 +311,7 @@ export const MultiSelect = React.forwardRef<
                   >
                     <CheckIcon className="h-4 w-4" />
                   </div>
-                  <span>(Select All)</span>
+                  <span>(Wszystkie)</span>
                 </CommandItem>
                 {options.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
@@ -348,7 +348,7 @@ export const MultiSelect = React.forwardRef<
                         onSelect={handleClear}
                         className="flex-1 cursor-pointer justify-center"
                       >
-                        Clear
+                        Wyczyść
                       </CommandItem>
                       <Separator
                         orientation="vertical"
@@ -360,7 +360,7 @@ export const MultiSelect = React.forwardRef<
                     onSelect={() => setIsPopoverOpen(false)}
                     className="max-w-full flex-1 cursor-pointer justify-center"
                   >
-                    Close
+                    zamknij
                   </CommandItem>
                 </div>
               </CommandGroup>
