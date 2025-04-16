@@ -317,25 +317,27 @@ const AttributeItem = memo(
 
           {attribute.type === "block" && (
             <div className="space-y-2">
-              <Label>Atrybuty pokoju</Label>
+              <Label>Wyświetlane atrybuty dla uczestników</Label>
               <MultiSelect
-                options={allAttributes
-                  .filter((a) => a.id !== attribute.id)
-                  .map((a) => ({
-                    label: a.name,
-                    value:
-                      a.slug ??
-                      a.name
-                        .toLowerCase()
-                        .replaceAll(/[^a-z0-9]+/g, "-")
-                        .replaceAll(/^-|-$/g, ""),
-                  }))}
+                options={[
+                  { label: "Email", value: "email" },
+                  ...allAttributes
+                    .filter((a) => a.id !== attribute.id && a.slug)
+                    .map((a) => ({
+                      label: a.name,
+                      value: a.slug!,
+                    })),
+                ]}
                 onValueChange={(values) => {
                   onUpdate({ ...attribute, options: values });
                 }}
                 defaultValue={attribute.options ?? []}
-                placeholder="Wybierz atrybuty pokoju"
+                placeholder="Wybierz atrybuty do wyświetlenia"
               />
+              <p className="text-muted-foreground text-sm">
+                Jeśli nie wybrano żadnych atrybutów, zapisy będą anonimowe -
+                uczestnicy będą widzieć tylko ilość zajętych miejsc.
+              </p>
             </div>
           )}
         </div>
