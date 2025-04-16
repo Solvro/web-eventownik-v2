@@ -42,6 +42,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -80,6 +81,7 @@ interface AttributeItemProps {
   attribute: EventAttribute;
   onUpdate: (updatedAttribute: EventAttribute) => void;
   onRemove: () => void;
+  allAttributes: EventAttribute[];
 }
 
 interface SortableOptionProps {
@@ -122,7 +124,7 @@ const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
 SortableOption.displayName = "SortableOption";
 
 const AttributeItem = memo(
-  ({ attribute, onUpdate, onRemove }: AttributeItemProps) => {
+  ({ attribute, onUpdate, onRemove, allAttributes }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
 
@@ -312,6 +314,30 @@ const AttributeItem = memo(
               </div>
             </div>
           )}
+
+          {attribute.type === "block" && (
+            <div className="space-y-2">
+              <Label>Atrybuty pokoju</Label>
+              <MultiSelect
+                options={allAttributes
+                  .filter((a) => a.id !== attribute.id)
+                  .map((a) => ({
+                    label: a.name,
+                    value:
+                      a.slug ??
+                      a.name
+                        .toLowerCase()
+                        .replaceAll(/[^a-z0-9]+/g, "-")
+                        .replaceAll(/^-|-$/g, ""),
+                  }))}
+                onValueChange={(values) => {
+                  onUpdate({ ...attribute, options: values });
+                }}
+                defaultValue={attribute.options ?? []}
+                placeholder="Wybierz atrybuty pokoju"
+              />
+            </div>
+          )}
         </div>
       </div>
     );
@@ -406,6 +432,7 @@ export function Attributes({
               onRemove={() => {
                 handleRemoveAttribute(attribute.id);
               }}
+              allAttributes={attributes}
             />
           ))}
           <div className="flex items-center gap-2">
