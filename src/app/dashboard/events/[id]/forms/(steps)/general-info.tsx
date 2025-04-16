@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { compareAsc, endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -28,18 +28,35 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-const EventFormGeneralInfoSchema = z.object({
-  name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
-  description: z.string().nonempty({ message: "Opis jest wymagany" }),
-  startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-  startDate: z.date(),
-  endDate: z.date().refine((date) => date > new Date(), {
-    message: "Data zakończenia musi być po dacie rozpoczęcia.",
-  }),
-  isFirstForm: z.boolean(),
-  isOpen: z.boolean(),
-});
+const EventFormGeneralInfoSchema = z
+  .object({
+    name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
+    description: z.string().nonempty({ message: "Opis jest wymagany" }),
+    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
+    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
+    startDate: z.date(),
+    endDate: z.date(),
+    isFirstForm: z.boolean(),
+    isOpen: z.boolean(),
+  })
+  .refine(
+    (schema) => {
+      const startDate = new Date(schema.startDate);
+      const endDate = new Date(schema.endDate);
+
+      if (isSameDay(startDate, endDate)) {
+        const startTime = Number(schema.startTime.replace(":", "."));
+        const endTime = Number(schema.endTime.replace(":", "."));
+        return endTime > startTime;
+      } else {
+        return endDate > startDate;
+      }
+    },
+    {
+      path: ["endDate"],
+      message: "Data zakończenia musi być po dacie rozpoczęcia.",
+    },
+  );
 
 function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
@@ -49,10 +66,10 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
-      startTime: format(newEventForm.startDate, "HH:mm"),
-      endTime: format(newEventForm.endDate, "HH:mm"),
-      startDate: newEventForm.startDate,
-      endDate: newEventForm.endDate,
+      startTime: newEventForm.startTime,
+      endTime: newEventForm.endTime,
+      startDate: undefined,
+      endDate: undefined,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -110,7 +127,10 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
-                                {format(field.value, "PPP")}
+                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Wybierz datę"}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -121,19 +141,20 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                                form.getValues("endDate") === undefined
-                                  ? date <= new Date()
-                                  : new Date() >= date ||
-                                    date > form.getValues("endDate")
-                              }
+                              disabled={(date) => {
+                                const calendarDate = new Date(date);
+                                const endDate = new Date(
+                                  form.getValues("endDate"),
+                                );
+                                return (
+                                  compareAsc(calendarDate, endDate) === 1 ||
+                                  compareAsc(calendarDate, endOfYesterday()) ===
+                                    -1
+                                );
+                              }}
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -149,13 +170,16 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.startTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.startTime?.message}
+                </FormMessage>
               </div>
               <div className="space-y-2">
                 <div className="flex flex-row items-center gap-4">
@@ -172,7 +196,10 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
-                                {format(field.value, "PPP")}
+                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Wybierz datę"}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -183,19 +210,18 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                date <
-                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                                (form.getValues("startDate") === undefined
-                                  ? new Date()
-                                  : form.getValues("startDate"))
-                              }
+                              disabled={(date) => {
+                                const calendarDate = new Date(date);
+                                const startDate = new Date(
+                                  form.getValues("startDate"),
+                                );
+                                return (
+                                  compareAsc(calendarDate, startDate) === -1
+                                );
+                              }}
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endDate?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
@@ -211,13 +237,16 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-red-500">
-                          {form.formState.errors.endTime?.message}
-                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endDate?.message}
+                </FormMessage>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.endTime?.message}
+                </FormMessage>
               </div>
             </div>
             <div className="flex flex-col gap-8">
