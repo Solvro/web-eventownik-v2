@@ -68,8 +68,8 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       description: newEventForm.description,
       startTime: newEventForm.startTime,
       endTime: newEventForm.endTime,
-      startDate: newEventForm.startDate,
-      endDate: newEventForm.endDate,
+      startDate: undefined,
+      endDate: undefined,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -127,7 +127,10 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
-                                {format(field.value, "PPP")}
+                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Wybierz datę"}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -193,7 +196,10 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
-                                {format(field.value, "PPP")}
+                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Wybierz datę"}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
