@@ -1,5 +1,6 @@
 "use client";
 
+import { cva } from "class-variance-authority";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
 import * as React from "react";
@@ -13,6 +14,23 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+const commandVariants = cva(
+  "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+  {
+    variants: {
+      variant: {
+        default: "border border-input",
+        destructive: "border border-destructive",
+        secondary: "border border-secondary",
+        inverted: "inverted",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
+
 function Command({
   className,
   ...props
@@ -20,10 +38,7 @@ function Command({
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn(
-        "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
-        className,
-      )}
+      className={cn(commandVariants({ variant: "default" }), className)}
       {...props}
     />
   );

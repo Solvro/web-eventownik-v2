@@ -317,15 +317,18 @@ const AttributeItem = memo(
 
           {attribute.type === "block" && (
             <div className="space-y-2">
-              <Label>Wyświetlane atrybuty dla uczestników</Label>
+              <Label htmlFor={`block-attributes-${attribute.id.toString()}`}>
+                Wyświetlane atrybuty dla uczestników
+              </Label>
               <MultiSelect
+                id={`block-attributes-${attribute.id.toString()}`}
                 options={[
                   { label: "Email", value: "email" },
                   ...allAttributes
-                    .filter((a) => a.id !== attribute.id && a.slug)
+                    .filter((a) => a.id !== attribute.id && a.slug != null)
                     .map((a) => ({
                       label: a.name,
-                      value: a.slug!,
+                      value: a.slug ?? "",
                     })),
                 ]}
                 onValueChange={(values) => {

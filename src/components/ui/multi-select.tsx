@@ -1,5 +1,6 @@
 // src/components/multi-select.tsx
-import { type VariantProps, cva } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import {
   CheckIcon,
   ChevronDown,
@@ -132,7 +133,6 @@ export const MultiSelect = React.forwardRef<
       animation = 0,
       maxCount = 3,
       modalPopover = false,
-      asChild = false,
       className,
       ...props
     },
@@ -142,18 +142,38 @@ export const MultiSelect = React.forwardRef<
       React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState("");
+
+    React.useEffect(() => {
+      setSelectedValues(defaultValue);
+    }, [defaultValue]);
+
+    const filteredOptions = React.useMemo(() => {
+      if (!searchQuery) {
+        return options;
+      }
+      return options.filter((option) =>
+        option.label.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }, [options, searchQuery]);
 
     const handleInputKeyDown = (
       event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.key === "Enter") {
         setIsPopoverOpen(true);
-      } else if (event.key === "Backspace" && !event.currentTarget.value) {
-        const newSelectedValues = [...selectedValues];
-        newSelectedValues.pop();
-        setSelectedValues(newSelectedValues);
-        onValueChange(newSelectedValues);
+      } else {
+        if (event.key === "Backspace" && !event.currentTarget.value) {
+          const newSelectedValues = [...selectedValues];
+          newSelectedValues.pop();
+          setSelectedValues(newSelectedValues);
+          onValueChange(newSelectedValues);
+        }
       }
+    };
+
+    const handleSearchChange = (value: string) => {
+      setSearchQuery(value);
     };
 
     const toggleOption = (option: string) => {
@@ -170,7 +190,7 @@ export const MultiSelect = React.forwardRef<
     };
 
     const handleTogglePopover = () => {
-      setIsPopoverOpen((prev) => !prev);
+      setIsPopoverOpen((previous) => !previous);
     };
 
     const clearExtraOptions = () => {
@@ -210,7 +230,6 @@ export const MultiSelect = React.forwardRef<
                 <div className="flex flex-wrap items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
                     const option = options.find((o) => o.value === value);
-                    const IconComponent = option?.icon;
                     return (
                       <Badge
                         key={value}
@@ -220,17 +239,22 @@ export const MultiSelect = React.forwardRef<
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
-                        {IconComponent && (
-                          <IconComponent className="mr-2 h-4 w-4" />
-                        )}
                         {option?.label}
                         <span
                           role="button"
                           tabIndex={0}
+                          aria-label={`Usuń ${option?.label}`}
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
                             toggleOption(value);
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              toggleOption(value);
+                            }
                           }}
                         >
                           <XCircle className="ml-2 max-h-3 max-w-3 cursor-pointer" />
@@ -248,22 +272,43 @@ export const MultiSelect = React.forwardRef<
                       style={{ animationDuration: `${animation}s` }}
                     >
                       {`+ ${selectedValues.length - maxCount} more`}
-                      <XCircle
-                        className="ml-2 h-4 w-4 cursor-pointer"
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Usuń dodatkowe opcje"
                         onClick={(event) => {
+                          event.preventDefault();
                           event.stopPropagation();
                           clearExtraOptions();
                         }}
-                      />
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            clearExtraOptions();
+                          }
+                        }}
+                      >
+                        <XCircle className="ml-2 h-4 w-4 cursor-pointer" />
+                      </span>
                     </Badge>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
                   <XIcon
                     className="text-muted-foreground mx-2 h-4 cursor-pointer"
+                    aria-label="Wyczyść wszystkie opcje"
                     onClick={(event) => {
+                      event.preventDefault();
                       event.stopPropagation();
                       handleClear();
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleClear();
+                      }
                     }}
                   />
                   <Separator
@@ -286,15 +331,18 @@ export const MultiSelect = React.forwardRef<
         <PopoverContent
           className="w-auto p-0"
           align="start"
-          onEscapeKeyDown={() => setIsPopoverOpen(false)}
+          onEscapeKeyDown={() => {
+            setIsPopoverOpen(false);
+          }}
         >
           <Command>
             <CommandInput
               placeholder="Szukaj..."
               onKeyDown={handleInputKeyDown}
+              onValueChange={handleSearchChange}
             />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>Nie znaleziono wyników.</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
@@ -313,12 +361,14 @@ export const MultiSelect = React.forwardRef<
                   </div>
                   <span>(Wszystkie)</span>
                 </CommandItem>
-                {options.map((option) => {
+                {filteredOptions.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
                   return (
                     <CommandItem
                       key={option.value}
-                      onSelect={() => toggleOption(option.value)}
+                      onSelect={() => {
+                        toggleOption(option.value);
+                      }}
                       className="cursor-pointer"
                     >
                       <div
@@ -331,7 +381,7 @@ export const MultiSelect = React.forwardRef<
                       >
                         <CheckIcon className="h-4 w-4" />
                       </div>
-                      {option.icon && (
+                      {option.icon != null && (
                         <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
                       )}
                       <span>{option.label}</span>
@@ -342,10 +392,12 @@ export const MultiSelect = React.forwardRef<
               <CommandSeparator />
               <CommandGroup>
                 <div className="flex items-center justify-between">
-                  {selectedValues.length > 0 && (
+                  {selectedValues.length > 0 ? (
                     <>
                       <CommandItem
-                        onSelect={handleClear}
+                        onSelect={() => {
+                          handleClear();
+                        }}
                         className="flex-1 cursor-pointer justify-center"
                       >
                         Wyczyść
@@ -355,9 +407,11 @@ export const MultiSelect = React.forwardRef<
                         className="flex h-full min-h-6"
                       />
                     </>
-                  )}
+                  ) : null}
                   <CommandItem
-                    onSelect={() => setIsPopoverOpen(false)}
+                    onSelect={() => {
+                      setIsPopoverOpen(false);
+                    }}
                     className="max-w-full flex-1 cursor-pointer justify-center"
                   >
                     zamknij
@@ -373,7 +427,9 @@ export const MultiSelect = React.forwardRef<
               "text-foreground bg-background my-2 h-3 w-3 cursor-pointer",
               isAnimating ? "" : "text-muted-foreground",
             )}
-            onClick={() => setIsAnimating(!isAnimating)}
+            onClick={() => {
+              setIsAnimating(!isAnimating);
+            }}
           />
         )}
       </Popover>
