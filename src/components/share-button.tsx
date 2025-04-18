@@ -1,10 +1,14 @@
 "use client";
 
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { Share2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ShareButtonProps {
   url: string;
@@ -56,31 +60,21 @@ export function ShareButton({
   };
 
   return (
-    <Tooltip.Provider>
-      <Tooltip.Root open={isCopied}>
-        <Tooltip.Trigger asChild>
-          <Button
-            variant={buttonVariant}
-            onClick={handleCopy}
-            className={className}
-            aria-label={variant === "icon" ? label : undefined}
-          >
-            <Share2Icon
-              className={variant === "full" ? "mr-2 h-4 w-4" : "h-4 w-4"}
-            />
-            {variant === "full" && label}
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content
-            className="rounded bg-gray-900 px-2 py-1 text-sm text-white"
-            sideOffset={5}
-          >
-            {tooltipText}
-            <Tooltip.Arrow className="fill-gray-900" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <Tooltip open={isCopied}>
+      <TooltipTrigger asChild>
+        <Button
+          variant={buttonVariant}
+          onClick={handleCopy}
+          className={className}
+          aria-label={variant === "icon" ? label : undefined}
+        >
+          <Share2Icon
+            className={variant === "full" ? "mr-2 h-4 w-4" : "h-4 w-4"}
+          />
+          {variant === "full" && label}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{tooltipText}</TooltipContent>
+    </Tooltip>
   );
 }

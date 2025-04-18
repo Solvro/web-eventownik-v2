@@ -7,9 +7,9 @@ import { notFound } from "next/navigation";
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
 import { EventInfoBlock } from "@/components/event-info-block";
+import { ShareButton } from "@/components/share-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ShareButton } from "@/components/ui/share-button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
@@ -48,7 +48,10 @@ export default async function EventListPage() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.map((event) => (
-            <div key={event.id}>
+            <div
+              key={event.id}
+              className="border-muted-foreground bg-background flex h-full flex-col overflow-hidden rounded-xl border"
+            >
               <div className="relative">
                 <Image
                   src={
@@ -58,7 +61,7 @@ export default async function EventListPage() {
                   }
                   width="500"
                   height="500"
-                  className="border-muted-foreground aspect-square w-full rounded-t-xl border-x border-t object-cover"
+                  className="aspect-square w-full object-cover"
                   alt={`Zdjęcie wydarzenia ${event.name}`}
                 />
                 <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
@@ -76,13 +79,19 @@ export default async function EventListPage() {
                   </div>
                 </div>
               </div>
-              <div className="border-muted-foreground flex flex-col gap-4 rounded-b-xl border-x border-b p-4">
-                <p className="line-clamp-3 text-2xl font-bold">{event.name}</p>
-                <p className="line-clamp-3 text-xs">{event.description}</p>
+              <div className="flex flex-1 flex-col p-4">
+                <div className="flex-1">
+                  <h3 className="mb-2 line-clamp-2 text-2xl font-bold">
+                    {event.name}
+                  </h3>
+                  <p className="dark:text-muted-foreground mb-4 line-clamp-3 text-xs">
+                    {event.description}
+                  </p>
+                </div>
                 <div className="flex w-full justify-between">
                   <Button asChild variant="ghost">
                     <Link href={`/dashboard/events/${event.id.toString()}`}>
-                      <CircleHelpIcon />
+                      <CircleHelpIcon className="mr-2 size-4" />
                       Wyświetl szczegóły
                     </Link>
                   </Button>
