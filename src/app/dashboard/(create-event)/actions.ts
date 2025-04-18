@@ -135,7 +135,6 @@ export async function saveEvent(event: Event) {
         errors: [],
       };
     }
-
-    return data;
   }
+  return data;
 }
