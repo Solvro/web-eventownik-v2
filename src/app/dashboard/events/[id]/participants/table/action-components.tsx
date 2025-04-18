@@ -32,7 +32,7 @@ export function DeleteParticipantDialog({
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          className="text-red-500"
+          className="h-12 w-full text-red-500"
           disabled={isQuerying}
           size="icon"
         >

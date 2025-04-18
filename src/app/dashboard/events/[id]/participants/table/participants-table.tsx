@@ -344,13 +344,11 @@ export function ParticipantTable({
                         ></EditParticipantForm>
                       </TableCell>
                       <TableCell>
-                        <div className="flex w-fit flex-col">
-                          <DeleteParticipantDialog
-                            isQuerying={isQuerying}
-                            participantId={row.original.id}
-                            deleteParticipant={deleteParticipant}
-                          />
-                        </div>
+                        <DeleteParticipantDialog
+                          isQuerying={isQuerying}
+                          participantId={row.original.id}
+                          deleteParticipant={deleteParticipant}
+                        />
                       </TableCell>
                     </TableRow>
                   ) : null}
