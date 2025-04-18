@@ -4,9 +4,16 @@ import { redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 
-export const fetchBlock = async (eventId: string, blockId: string) => {
+export async function createBlock(
+  eventId: string,
+  attributeId: string,
+  parentId: string,
+  name: string,
+  description: string | null,
+  capacity: number | null,
+) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -14,20 +21,27 @@ export const fetchBlock = async (eventId: string, blockId: string) => {
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventId}/attributes/${blockId}`,
+    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks`,
     {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        parentId,
+        name,
+        description: description ?? null,
+        capacity: capacity ?? null,
+      }),
     },
   );
-  const attribute = (await response.json()) as Attribute;
-  if (!response.ok) {
-    console.error(attribute);
-    return null;
+  const block = (await response.json()) as Block;
+
+  if (response.ok) {
+    redirect(`/dashboard/events/${eventId}/blocks/${attributeId}`);
+  } else {
+    console.error(block);
+    redirect(`/dashboard/events/${eventId}`);
   }
-  return attribute;
-  // return attributes.filter(
-  //   (attribute: { type: string }) => attribute.type === "block",
-  // );
-};
+}
