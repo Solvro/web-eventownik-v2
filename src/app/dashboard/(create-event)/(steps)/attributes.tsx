@@ -364,14 +364,14 @@ export function AttributesForm({
       attributes: [
         ..._event.attributes,
         {
-          id: Math.floor(Math.random() * 1_000_000),
+          id: event.attributes.length + 1,
           name: data.name,
           type: data.type,
           slug: data.name
             .toLowerCase()
             .replaceAll(/[^a-z0-9]+/g, "-")
             .replaceAll(/^-|-$/g, ""),
-          eventId: -1,
+          eventId: 0,
           options: [],
           rootBlockId: undefined,
           showInList: false,
@@ -385,23 +385,6 @@ export function AttributesForm({
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
-      /*
-      setAttributes((previous) =>
-        previous.map((attribute) =>
-          attribute.id === updatedAttribute.id ? updatedAttribute : attribute,
-        ),
-      );
-      setAttributesChanges((previous) => ({
-        ...previous,
-        updated: previous.updated.some((a) => a.id === updatedAttribute.id)
-          ? previous.updated.map((a) =>
-              a.id === updatedAttribute.id ? updatedAttribute : a,
-            )
-          : [...previous.updated, updatedAttribute],
-      }));
-    },
-    [setAttributes, setAttributesChanges],
-    */
       setEvent((previous) => ({
         ...previous,
         attributes: previous.attributes.map((attribute) =>
@@ -414,17 +397,6 @@ export function AttributesForm({
 
   const handleRemoveAttribute = useCallback(
     (attributeId: number) => {
-      /*
-      setAttributes((previous) => {
-        const removedAttribute = previous.find((a) => a.id === attributeId);
-        if (removedAttribute != null) {
-          setAttributesChanges((previousChanges) => ({
-            ...previousChanges,
-            deleted: [...previousChanges.deleted, removedAttribute],
-          }));
-        }
-        return previous.filter((a) => a.id !== attributeId);
-      });*/
       setEvent((previous) => ({
         ...previous,
         attributes: previous.attributes.filter((a) => a.id !== attributeId),
