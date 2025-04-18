@@ -12,7 +12,9 @@ import { FilterButton, SortButton, SortIcon } from "./utils";
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    attribute: Attribute;
+    attribute?: Attribute;
+    headerClassName?: string;
+    cellClassName?: string;
   }
 }
 
@@ -44,15 +46,21 @@ export function generateColumns(attributes: Attribute[]) {
       ),
       enableSorting: false,
       enableHiding: false,
+      meta: {
+        headerClassName: "min-w-[32px]",
+      },
     }),
     columnHelper.display({
       id: "no",
-      header: "L.p.",
+      header: "Lp.",
       cell: ({ row }) => {
         return row.index + 1;
       },
       enableSorting: false,
       enableHiding: false,
+      meta: {
+        headerClassName: "max-w-[36px]",
+      },
     }),
     columnHelper.accessor("email", {
       header: ({ column }) => {
@@ -81,6 +89,9 @@ export function generateColumns(attributes: Attribute[]) {
         );
       },
       cell: (info) => info.getValue(),
+      meta: {
+        headerClassName: "w-fit",
+      },
     }),
   ];
 
