@@ -3,6 +3,7 @@ import { Users } from "lucide-react";
 import type { Block } from "@/types/blocks";
 
 import { DeleteBlockPopup } from "./delete-block-popup";
+import { EditBlockEntry } from "./edit-block-entry";
 
 const valueOrZero = (value: number | null | undefined) => {
   return value === null || value === undefined ? "0" : value.toString();
@@ -28,6 +29,12 @@ function BlockEntry({
           blockId={block.id}
           blockName={block.name}
           attributeId={attributeId}
+        />
+        <EditBlockEntry
+          blockToEdit={block}
+          eventId={eventId}
+          attributeId={attributeId}
+          parentId={block.id}
         />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4 text-center">
