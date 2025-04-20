@@ -60,7 +60,12 @@ export default async function EventBlockEditPage({
             parentId={block.id}
           />
           {block.children.map((mappedBlock) => (
-            <BlockEntry key={mappedBlock.id} block={mappedBlock} />
+            <BlockEntry
+              key={mappedBlock.id}
+              block={mappedBlock}
+              attributeId={blockId}
+              eventId={eventId}
+            />
           ))}
         </div>
       </div>

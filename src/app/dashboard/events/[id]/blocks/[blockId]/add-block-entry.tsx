@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SquarePlus } from "lucide-react";
+import { Loader, SquarePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,12 +17,14 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const BlockSchema = z.object({
   name: z.string().min(1, "Nazwa bloku jest wymagana"),
@@ -50,9 +52,10 @@ function AddBlockEntry({
       capacity: "",
     },
   });
+  const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
-    await createBlock(
+    const result = await createBlock(
       eventId,
       attributeId,
       parentId,
@@ -62,6 +65,18 @@ function AddBlockEntry({
         ? null
         : data.capacity,
     );
+    if (result.success) {
+      toast({
+        title: "Pomyślnie utworzono blok",
+      });
+      location.reload();
+    } else {
+      toast({
+        title: "Wystąpił błąd",
+        description: result.error,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -96,6 +111,10 @@ function AddBlockEntry({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maksymalna liczba osób</FormLabel>
+                  <FormDescription>
+                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
+                    miejsc
+                  </FormDescription>
                   <FormControl>
                     <Input
                       type="number"
@@ -107,8 +126,18 @@ function AddBlockEntry({
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Stwórz blok
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader className="animate-spin" /> Tworzenie bloku...
+                </>
+              ) : (
+                "Stwórz blok"
+              )}
             </Button>
           </form>
         </Form>

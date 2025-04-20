@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { Block } from "@/types/blocks";
 
 export async function createBlock(
   eventId: string,
@@ -36,12 +35,56 @@ export async function createBlock(
       }),
     },
   );
-  const block = (await response.json()) as Block;
 
   if (response.ok) {
-    redirect(`/dashboard/events/${eventId}/blocks/${attributeId}`);
+    return {
+      success: true,
+    };
   } else {
-    console.error(block);
-    redirect(`/dashboard/events/${eventId}`);
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[createBlock action] Failed to create a block for event ${eventId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
   }
+}
+
+export async function deleteBlock(
+  eventId: string,
+  blockId: string,
+  attributeId: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks/${blockId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[deleteBlock action] Failed to delete block ${blockId} for event ${eventId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
 }
