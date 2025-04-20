@@ -9,5 +9,7 @@ export interface Block {
   updatedAt: string;
   isRootBlock: boolean;
   children: Block[];
-  meta: object;
+  meta: {
+    participantsInBlockCount: number | undefined;
+  };
 }

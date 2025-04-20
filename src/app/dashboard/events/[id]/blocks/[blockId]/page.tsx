@@ -7,6 +7,8 @@ import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Block } from "@/types/blocks";
 
+import { BlockEntry } from "./block-entry";
+
 export default async function EventBlockEditPage({
   params,
 }: {
@@ -33,7 +35,9 @@ export default async function EventBlockEditPage({
     return (
       <div className="flex grow flex-col gap-8">
         <div className="flex justify-between">
-          <h1 className="text-3xl font-bold">{block.name}</h1>
+          <h1 className="text-3xl font-bold">
+            {block.name.split("-").slice(0, -2).join(" ")}
+          </h1>
           <div className="flex items-center gap-2">
             <Button variant="ghost" className="me-4">
               <FileDown className="h-4 w-4" />
@@ -43,10 +47,9 @@ export default async function EventBlockEditPage({
               Liczba uczestników:
             </span>
             <span className="text-2xl font-bold">
-              {/*{block.children*/}
-              {/*  .map((b) => b.participants.length)*/}
-              {/*  .reduce((a, b) => a + b, 0)}*/}
-              {block.capacity != null && `/${block.capacity.toString()}`}
+              {block.children
+                .map((child) => child.meta.participantsInBlockCount ?? 0)
+                .reduce((a, b) => a + b, 0)}
             </span>
           </div>
         </div>
@@ -56,19 +59,8 @@ export default async function EventBlockEditPage({
             attributeId={blockId}
             parentId={block.id}
           />
-          {block.children.map((b) => (
-            <div
-              key={b.id}
-              className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4"
-            >
-              <div className="flex grow flex-col items-center justify-center gap-2 text-center">
-                <p className="text-lg font-bold">{b.name}</p>
-                <p className="text-lg font-bold">
-                  {/*{b.participants.length}/{b.capacity}*/}?{" "}
-                  {b.capacity != null && `/${b.capacity.toString()}`}
-                </p>
-              </div>
-            </div>
+          {block.children.map((mappedBlock) => (
+            <BlockEntry key={mappedBlock.id} block={mappedBlock} />
           ))}
         </div>
       </div>
