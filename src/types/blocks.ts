@@ -1,5 +1,5 @@
 export interface Block {
-  id: string;
+  id: number;
   name: string;
   description: string | null;
   capacity: number | null;

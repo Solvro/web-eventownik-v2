@@ -1,6 +1,7 @@
 import { Users } from "lucide-react";
 
 import type { Block } from "@/types/blocks";
+import type { Participant } from "@/types/participant";
 
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
@@ -13,10 +14,12 @@ function BlockEntry({
   block,
   eventId,
   attributeId,
+  participantsInBlock,
 }: {
   block: Block;
   eventId: string;
   attributeId: string;
+  participantsInBlock: Participant[];
 }) {
   return (
     <div
@@ -26,7 +29,7 @@ function BlockEntry({
       <div className="flex justify-end gap-2">
         <DeleteBlockPopup
           eventId={eventId}
-          blockId={block.id}
+          blockId={block.id.toString()}
           blockName={block.name}
           attributeId={attributeId}
         />
@@ -34,7 +37,7 @@ function BlockEntry({
           blockToEdit={block}
           eventId={eventId}
           attributeId={attributeId}
-          parentId={block.id}
+          parentId={block.id.toString()}
         />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4 text-center">
@@ -45,6 +48,11 @@ function BlockEntry({
             ? valueOrZero(block.meta.participantsInBlockCount)
             : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
         </div>
+        <p>
+          {participantsInBlock
+            .map((participant) => participant.email)
+            .join(", ")}
+        </p>
       </div>
     </div>
   );
