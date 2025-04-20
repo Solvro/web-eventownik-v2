@@ -21,33 +21,19 @@ import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import {
-  ALargeSmall,
   ArrowLeft,
-  Binary,
-  Calendar,
-  CalendarClock,
-  Check,
-  Clock,
-  CloudUpload,
-  Cuboid,
   GripVertical,
-  LetterText,
-  ListTodo,
   Loader2,
-  Mail,
-  Palette,
   PlusIcon,
-  Smartphone,
-  SquareDashedMousePointer,
   TextIcon,
   TrashIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { JSX } from "react";
 import { memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ATTRIBUTE_TYPES } from "@/app/dashboard/events/[id]/settings/tabs/attributes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -67,7 +53,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { getBase64FromUrl } from "@/lib/utils";
+import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import { saveEvent } from "../actions";
@@ -78,29 +64,6 @@ const EventAttributesFormSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta"),
   type: z.enum(AttributeTypes),
 });
-
-const ATTRIBUTE_TYPES: {
-  value: AttributeType;
-  title: string;
-  icon: JSX.Element;
-}[] = [
-  { value: "text", title: "Tekst", icon: <ALargeSmall /> },
-  { value: "number", title: "Liczba", icon: <Binary /> },
-  { value: "textarea", title: "Pole tekstowe", icon: <LetterText /> },
-  { value: "file", title: "Plik", icon: <CloudUpload /> },
-  { value: "select", title: "Wybór", icon: <SquareDashedMousePointer /> },
-  { value: "multiselect", title: "Wielokrotny wybór", icon: <ListTodo /> },
-  { value: "block", title: "Blok", icon: <Cuboid /> },
-  { value: "date", title: "Data", icon: <Calendar /> },
-  { value: "time", title: "Czas", icon: <Clock /> },
-  { value: "datetime", title: "Data i czas", icon: <CalendarClock /> },
-  { value: "email", title: "Email", icon: <Mail /> },
-  { value: "tel", title: "Telefon", icon: <Smartphone /> },
-  { value: "color", title: "Kolor", icon: <Palette /> },
-  { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
-];
-
-const slugRegex = /^[a-z0-9-]+$/;
 
 interface AttributeItemProps {
   attribute: EventAttribute;
@@ -199,7 +162,7 @@ const AttributeItem = memo(
 
     const handleSlugChange = useCallback(
       (value: string) => {
-        if (!slugRegex.test(value)) {
+        if (!SLUG_REGEX.test(value)) {
           setSlugError(
             "Slug może zawierać tylko małe litery, cyfry i myślniki",
           );
