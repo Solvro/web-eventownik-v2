@@ -3,6 +3,7 @@ import { Users } from "lucide-react";
 import type { Block } from "@/types/blocks";
 import type { Participant } from "@/types/participant";
 
+import { BlockParticipantsPopup } from "./block-participants-popup";
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
 
@@ -39,6 +40,7 @@ function BlockEntry({
           attributeId={attributeId}
           parentId={block.id.toString()}
         />
+        <BlockParticipantsPopup participants={participantsInBlock} />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4 text-center">
         <p className="text-lg font-bold">{block.name}</p>
@@ -48,11 +50,6 @@ function BlockEntry({
             ? valueOrZero(block.meta.participantsInBlockCount)
             : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
         </div>
-        <p>
-          {participantsInBlock
-            .map((participant) => participant.email)
-            .join(", ")}
-        </p>
       </div>
     </div>
   );
