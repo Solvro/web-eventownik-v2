@@ -9,21 +9,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/export-button";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -41,12 +28,10 @@ import {
   deleteParticipant as deleteParticipantAction,
   massDeleteParticipants as massDeleteParticipantsAction,
 } from "../actions";
-import { MassDeleteParticipantsDialog } from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
-import { SendMailForm } from "./send-mail-form";
+import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
-import { getPaginationInfoText } from "./utils";
 
 /**
  * To seamlessly navigate during working on this component
@@ -170,97 +155,14 @@ export function ParticipantTable({
     <>
       <div className="my-2 flex flex-wrap items-center gap-4">
         <h1 className="text-3xl font-bold">Lista uczestników</h1>
-        <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
-          <div className="flex items-center gap-x-2">
-            <Input
-              className="h-10 w-32"
-              placeholder="Wyszukaj..."
-              value={globalFilter}
-              onChange={(event) => {
-                table.setGlobalFilter(String(event.target.value));
-              }}
-            ></Input>
-            <Button
-              onClick={() => {
-                table.resetColumnFilters();
-              }}
-              size="icon"
-              variant="outline"
-              title="Resetuj filtry"
-            >
-              <FilterX />
-            </Button>
-            <Button
-              onClick={() => {
-                table.resetSorting();
-              }}
-              size="icon"
-              variant="outline"
-              title="Resetuj sortowanie"
-            >
-              <ArrowUpDown />
-            </Button>
-            <SendMailForm
-              eventId={eventId}
-              targetParticipants={table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original)}
-              emails={emails}
-            />
-            <ExportButton eventId={eventId} />
-            <MassDeleteParticipantsDialog
-              isQuerying={isQuerying}
-              participants={table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original.id.toString())}
-              massDeleteParticipants={massDeleteParticipants}
-            />
-          </div>
-          <div className="ml-auto flex items-center gap-x-2">
-            <Select
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-              defaultValue={table.getState().pagination.pageSize.toString()}
-            >
-              <SelectTrigger className="h-10 w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Wierszy na stronę</SelectLabel>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <span className="mr-2">{getPaginationInfoText(table)}</span>
-            <div className="flex gap-x-0">
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={!table.getCanPreviousPage()}
-                onClick={() => {
-                  table.previousPage();
-                }}
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={!table.getCanNextPage()}
-                onClick={() => {
-                  table.nextPage();
-                }}
-              >
-                <ChevronRight />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <TableMenu
+          table={table}
+          eventId={eventId}
+          globalFilter={globalFilter}
+          isQuerying={isQuerying}
+          emails={emails}
+          massDeleteParticipants={massDeleteParticipants}
+        />
       </div>
       {/* TODO: Prevent resizing width of columns */}
       <div className="relative w-full overflow-auto">
