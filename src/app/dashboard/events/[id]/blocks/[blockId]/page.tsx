@@ -1,8 +1,6 @@
-import { FileDown } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 
 import { AddBlockEntry } from "@/app/dashboard/events/[id]/blocks/[blockId]/add-block-entry";
-import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
