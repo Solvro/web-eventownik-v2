@@ -215,7 +215,15 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 const startDate = new Date(
                                   form.getValues("startDate"),
                                 );
+                                // If start date has not been selected yet, disable days in the past
+                                if (Number.isNaN(startDate)) {
+                                  return (
+                                    compareAsc(calendarDate, startDate) === -1
+                                  );
+                                }
                                 return (
+                                  compareAsc(calendarDate, endOfYesterday()) ===
+                                    -1 ||
                                   compareAsc(calendarDate, startDate) === -1
                                 );
                               }}
