@@ -60,7 +60,6 @@ export function TableRowForm({
   });
 
   async function onSubmit(values: Record<string, string | string[]>) {
-    console.log(`Values = ${JSON.stringify(values)}`);
     for (const key in values) {
       //Handling multiselect
       if (typeof values[key] === "object") {
@@ -120,7 +119,6 @@ export function TableRowForm({
                   className={cn(
                     cell.column.id === "expand" ? "text-right" : "",
                     cell.column.columnDef.meta?.cellClassName,
-                    "max-w-[40ch] wrap-break-word",
                   )}
                 >
                   {isEditableCell ? (
@@ -145,6 +143,14 @@ export function TableRowForm({
                       eventId={eventId}
                       participant={row.original}
                     />
+                  ) : attribute?.type === "textarea" ? (
+                    // TODO: Maybe find a better solution for this
+                    <div className="w-xs">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </div>
                   ) : (
                     flexRender(cell.column.columnDef.cell, cell.getContext())
                   )}
