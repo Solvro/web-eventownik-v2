@@ -7,6 +7,11 @@ import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
 
+export async function isSlugTaken(slug: string) {
+  const response = await fetch(`${API_URL}/events/${slug}`);
+  return response.ok;
+}
+
 export async function saveEvent(event: Event) {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {
@@ -62,22 +67,74 @@ export async function saveEvent(event: Event) {
   const data = (await response.json()) as Record<"id", string>;
 
   if ("id" in data) {
-    await Promise.all(
-      event.attributes.map(async (attribute) =>
-        fetch(`${API_URL}/events/${data.id}/attributes`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${bearerToken}`,
+    try {
+      for (const coorganizer of event.coorganizers) {
+        const coorganizerResponse = await fetch(
+          `${API_URL}/events/${data.id}/organizers`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: coorganizer.email,
+              permissionsIds: [1], //coOrganizer.permissions.map((perm) => perm.id), // Temporary only one permission
+            }),
           },
-          body: JSON.stringify({
-            name: attribute.name,
-            type: attribute.type,
-          }),
-        }),
-      ),
-    );
-  }
+        );
+        if (!coorganizerResponse.ok) {
+          console.error(
+            "[saveEvent action] Error when adding coorganizer:",
+            coorganizer,
+          );
+          return {
+            errors: [],
+          };
+        }
+      }
+    } catch (error) {
+      console.error("[saveEvent] Error when adding coorganizers:", error);
+      return {
+        errors: [],
+      };
+    }
 
+    try {
+      for (const attribute of event.attributes) {
+        const attributeResponse = await fetch(
+          `${API_URL}/events/${data.id}/attributes`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: attribute.name,
+              type: attribute.type,
+              slug: attribute.slug,
+              showInList: attribute.showInList,
+              options:
+                (attribute.options ?? []).length > 0
+                  ? attribute.options
+                  : undefined,
+            }),
+          },
+        );
+        if (!attributeResponse.ok) {
+          console.error("[saveEvent] Error when adding attribute:", attribute);
+          return {
+            errors: [],
+          };
+        }
+      }
+    } catch (error) {
+      console.error("[saveEvent] Error when adding attributes:", error);
+      return {
+        errors: [],
+      };
+    }
+  }
   return data;
 }
