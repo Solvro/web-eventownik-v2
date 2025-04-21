@@ -11,6 +11,8 @@ export function cn(...inputs: ClassValue[]) {
 
 const PHONE_REGEX = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
 
+export const SLUG_REGEX = /^[a-z0-9-]+$/;
+
 // Helper function for string validation
 const requiredString = (attribute: FormAttribute) =>
   z
