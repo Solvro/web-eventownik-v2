@@ -216,7 +216,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                   form.getValues("startDate"),
                                 );
                                 // If start date has not been selected yet, disable days in the past
-                                if (Number.isNaN(startDate)) {
+                                if (Number.isNaN(startDate.getTime())) {
                                   return (
                                     compareAsc(calendarDate, startDate) === -1
                                   );
