@@ -123,7 +123,7 @@ export function generateColumns(attributes: Attribute[]) {
                 column={column}
               />
               <SortButton sortingDirection={sortingDirection} column={column}>
-                {attribute.name}
+                <span className="max-w-sm truncate">{attribute.name}</span>
               </SortButton>
               <SortIcon sortingDirection={sortingDirection} />
             </div>

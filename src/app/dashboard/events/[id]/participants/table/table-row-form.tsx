@@ -103,7 +103,12 @@ export function TableRowForm({
   return (
     <FormProvider {...form}>
       <Fragment key={row.id}>
-        <TableRow className={cn(isEditMode && "bg-accent/30")}>
+        <TableRow
+          className={cn(
+            "[&>td:last-of-type]:sticky [&>td:last-of-type]:right-[-1px] [&>td:last-of-type>button]:backdrop-blur-lg",
+            isEditMode && "bg-accent/30",
+          )}
+        >
           {row.getVisibleCells().map((cell) => {
             const attribute = cell.column.columnDef.meta?.attribute;
             const isEditableCell = attribute !== undefined && isEditMode;

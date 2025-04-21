@@ -169,13 +169,16 @@ export function ParticipantTable({
         <Table>
           <TableHeader className="border-border border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                key={headerGroup.id}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "border-border border-r-2",
+                        "border-border bg-background border-r-2",
                         header.id === "expand" ? "w-16 text-right" : "",
                         header.column.columnDef.meta?.headerClassName,
                       )}
