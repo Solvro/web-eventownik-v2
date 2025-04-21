@@ -115,6 +115,7 @@ export function TableRowForm({
                   className={cn(
                     cell.column.id === "expand" ? "text-right" : "",
                     cell.column.columnDef.meta?.cellClassName,
+                    "max-w-[40ch] wrap-break-word",
                   )}
                 >
                   {isEditableCell ? (

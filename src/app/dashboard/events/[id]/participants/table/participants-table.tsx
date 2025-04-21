@@ -16,6 +16,15 @@ import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/exp
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableHead,
@@ -80,7 +89,7 @@ export function ParticipantTable({
     },
     initialState: {
       // TODO: Allow user to define page size
-      pagination: { pageSize: 15, pageIndex: 0 },
+      pagination: { pageSize: 25, pageIndex: 0 },
       columnVisibility: {
         id: false,
       },
@@ -207,28 +216,49 @@ export function ParticipantTable({
               massDeleteParticipants={massDeleteParticipants}
             />
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-x-2">
+            <Select
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+              defaultValue={table.getState().pagination.pageSize.toString()}
+            >
+              <SelectTrigger className="h-10 w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Wierszy na stronę</SelectLabel>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <span className="mr-2">{getPaginationInfoText(table)}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => {
-                table.previousPage();
-              }}
-            >
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!table.getCanNextPage()}
-              onClick={() => {
-                table.nextPage();
-              }}
-            >
-              <ChevronRight />
-            </Button>
+            <div className="flex gap-x-0">
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => {
+                  table.previousPage();
+                }}
+              >
+                <ChevronLeft />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={!table.getCanNextPage()}
+                onClick={() => {
+                  table.nextPage();
+                }}
+              >
+                <ChevronRight />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
