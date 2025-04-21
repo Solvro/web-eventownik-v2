@@ -64,6 +64,32 @@ async function getParticipantsInRootBlock(
   });
 }
 
+async function getRootBlockAttributeName(
+  eventId: string,
+  rootBlockAttributeId: string,
+  bearerToken: string,
+) {
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/attributes/${rootBlockAttributeId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    },
+  );
+  if (response.ok) {
+    const attribute = (await response.json()) as AttributeBase;
+    return attribute.name;
+  } else {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[getRootBlockAttributeName] Failed to fetch attribute name for block ${rootBlockAttributeId} in event ${eventId}:`,
+      error,
+    );
+  }
+}
+
 function getParticipantsInChildBlock(
   participantsInRootBlock: Participant[],
   rootBlockId: string,
@@ -98,6 +124,11 @@ export default async function EventBlockEditPage({
     rootBlockId,
     bearerToken,
   );
+  const rootBlockName = await getRootBlockAttributeName(
+    eventId,
+    rootBlockId,
+    bearerToken,
+  );
 
   if (rootBlock == null) {
     notFound();
@@ -105,7 +136,7 @@ export default async function EventBlockEditPage({
     return (
       <div className="flex grow flex-col gap-8">
         <div className="flex justify-between">
-          <h1 className="text-3xl font-bold">{rootBlock.name}</h1>
+          <h1 className="text-3xl font-bold">{rootBlockName}</h1>
           <div className="flex items-center gap-2">
             <Button variant="ghost" className="me-4">
               <FileDown className="h-4 w-4" />
