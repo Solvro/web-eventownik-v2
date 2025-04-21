@@ -28,12 +28,6 @@ function BlockEntry({
       className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4"
     >
       <div className="flex justify-end gap-2">
-        <DeleteBlockPopup
-          eventId={eventId}
-          blockId={block.id.toString()}
-          blockName={block.name}
-          attributeId={attributeId}
-        />
         <EditBlockEntry
           blockToEdit={block}
           eventId={eventId}
@@ -41,6 +35,12 @@ function BlockEntry({
           parentId={block.id.toString()}
         />
         <BlockParticipantsPopup participants={participantsInBlock} />
+        <DeleteBlockPopup
+          eventId={eventId}
+          blockId={block.id.toString()}
+          blockName={block.name}
+          attributeId={attributeId}
+        />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4 text-center">
         <p className="text-lg font-bold">{block.name}</p>
