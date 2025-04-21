@@ -34,7 +34,7 @@ export async function getAttributes(eventId: string, bearerToken: string) {
   return attributes;
 }
 
-export async function massDeleteParticipants(
+export async function deleteManyParticipants(
   eventId: string,
   participants: string[],
 ) {
@@ -54,7 +54,7 @@ export async function massDeleteParticipants(
 
   if (!response.ok) {
     console.error(
-      `[massDeleteParticipants] Failed to mass delete participants for event ${eventId}:`,
+      `[deleteManyParticipants] Failed to delete many participants for event ${eventId}:`,
       response,
     );
     if (response.status === 500) {

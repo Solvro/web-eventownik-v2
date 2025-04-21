@@ -15,7 +15,7 @@ import {
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { MassDeleteParticipantsDialog } from "./action-components";
+import { DeleteManyParticipantsDialog } from "./action-components";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";
@@ -26,14 +26,14 @@ export function TableMenu({
   eventId,
   emails,
   isQuerying,
-  massDeleteParticipants,
+  deleteManyParticipants,
 }: {
   table: Table<FlattenedParticipant>;
   globalFilter: string;
   eventId: string;
   emails: EventEmail[] | null;
   isQuerying: boolean;
-  massDeleteParticipants: (_participants: string[]) => Promise<void>;
+  deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
@@ -74,12 +74,12 @@ export function TableMenu({
           emails={emails}
         />
         <ExportButton eventId={eventId} />
-        <MassDeleteParticipantsDialog
+        <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
           participants={table
             .getSelectedRowModel()
             .rows.map((row) => row.original.id.toString())}
-          massDeleteParticipants={massDeleteParticipants}
+          deleteManyParticipants={deleteManyParticipants}
         />
       </div>
       <div className="ml-auto flex items-center gap-x-2">

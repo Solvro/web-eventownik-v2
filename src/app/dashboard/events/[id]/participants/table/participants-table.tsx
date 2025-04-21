@@ -25,8 +25,8 @@ import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 import {
+  deleteManyParticipants as deleteManyParticipantsAction,
   deleteParticipant as deleteParticipantAction,
-  massDeleteParticipants as massDeleteParticipantsAction,
 } from "../actions";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
@@ -115,10 +115,10 @@ export function ParticipantTable({
     }
   }
 
-  async function massDeleteParticipants(_participants: string[]) {
+  async function deleteManyParticipants(_participants: string[]) {
     setIsQuerying(true);
     try {
-      const response = await massDeleteParticipantsAction(
+      const response = await deleteManyParticipantsAction(
         eventId,
         _participants,
       );
@@ -161,7 +161,7 @@ export function ParticipantTable({
           globalFilter={globalFilter}
           isQuerying={isQuerying}
           emails={emails}
-          massDeleteParticipants={massDeleteParticipants}
+          deleteManyParticipants={deleteManyParticipants}
         />
       </div>
       {/* TODO: Prevent resizing width of columns */}
