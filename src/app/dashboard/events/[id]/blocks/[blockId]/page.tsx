@@ -138,10 +138,6 @@ export default async function EventBlockEditPage({
         <div className="flex justify-between">
           <h1 className="text-3xl font-bold">{rootBlockName}</h1>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" className="me-4">
-              <FileDown className="h-4 w-4" />
-              Eksportuj
-            </Button>
             <span className="hidden text-2xl font-bold sm:inline-block">
               Liczba uczestników:
             </span>
