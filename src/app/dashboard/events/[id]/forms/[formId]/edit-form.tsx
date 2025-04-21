@@ -39,9 +39,7 @@ const EventFormSchema = z.object({
   startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   startDate: z.date(),
-  endDate: z.date().refine((date) => date > new Date(), {
-    message: "Data zakończenia musi być po dacie rozpoczęcia.",
-  }),
+  endDate: z.date(),
   slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isFirstForm: z.boolean(),
 });
