@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/export-button";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,15 +32,11 @@ import {
   deleteParticipant as deleteParticipantAction,
   massDeleteParticipants as massDeleteParticipantsAction,
 } from "../actions";
-import {
-  DeleteParticipantDialog,
-  MassDeleteParticipantsDialog,
-} from "./action-components";
+import { MassDeleteParticipantsDialog } from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
-import { DownloadAttributeFileButton } from "./download-file-attribute-button";
-import { EditParticipantForm } from "./edit-participant-form";
 import { SendMailForm } from "./send-mail-form";
+import { TableRowForm } from "./table-row-form";
 import { getPaginationInfoText } from "./utils";
 
 /**
@@ -250,6 +245,7 @@ export function ParticipantTable({
                       className={cn(
                         "border-border border-r-2",
                         header.id === "expand" ? "w-16 text-right" : "",
+                        header.column.columnDef.meta?.headerClassName,
                       )}
                     >
                       {header.isPlaceholder
@@ -266,93 +262,16 @@ export function ParticipantTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.map((row) => {
-              const allVisibleCells = row.getVisibleCells();
-              const attributesCells = allVisibleCells.filter(
-                (cell) => cell.column.columnDef.meta?.attribute !== undefined,
-              );
-              // headers structure - [select, email, createdAt, ...attributes, expand]
-              const emailCell = allVisibleCells.at(1);
-              const createdAtCell = allVisibleCells.at(2);
               return (
-                <Fragment key={row.id}>
-                  <TableRow>
-                    {row.getVisibleCells().map((cell) => {
-                      const attribute = cell.column.columnDef.meta?.attribute;
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={cn(
-                            cell.column.id === "expand" ? "text-right" : "",
-                          )}
-                        >
-                          {attribute?.type === "file" &&
-                          row.original[attribute.id] !== null &&
-                          row.original[attribute.id] !== undefined &&
-                          row.original[attribute.id] !== "" ? (
-                            <DownloadAttributeFileButton
-                              attribute={attribute}
-                              eventId={eventId}
-                              participant={row.original}
-                            />
-                          ) : (
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                  {row.getIsExpanded() ? (
-                    /*
-                      TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
-                      (attribute.showInList = false)
-                      It will require changes in how the edit form will be handled
-                      Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
-                    */
-                    <TableRow
-                      key={`${row.id}-edit`}
-                      className="border-l-primary border-l-2"
-                    >
-                      <TableCell>{null}</TableCell>
-                      <TableCell>
-                        {emailCell === undefined
-                          ? null
-                          : flexRender(
-                              emailCell.column.columnDef.cell,
-                              emailCell.getContext(),
-                            )}
-                      </TableCell>
-                      <TableCell>
-                        {createdAtCell === undefined
-                          ? null
-                          : flexRender(
-                              createdAtCell.column.columnDef.cell,
-                              createdAtCell.getContext(),
-                            )}
-                      </TableCell>
-                      <TableCell
-                        className="p-0"
-                        colSpan={attributesCells.length}
-                      >
-                        <EditParticipantForm
-                          cells={attributesCells}
-                          eventId={eventId}
-                          row={row}
-                          setData={setData}
-                        ></EditParticipantForm>
-                      </TableCell>
-                      <TableCell>
-                        <DeleteParticipantDialog
-                          isQuerying={isQuerying}
-                          participantId={row.original.id}
-                          deleteParticipant={deleteParticipant}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                </Fragment>
+                <TableRowForm
+                  key={row.id}
+                  cells={row.getAllCells()}
+                  eventId={eventId}
+                  row={row}
+                  setData={setData}
+                  deleteParticipant={deleteParticipant}
+                  isQuerying={isQuerying}
+                ></TableRowForm>
               );
             })}
           </TableBody>

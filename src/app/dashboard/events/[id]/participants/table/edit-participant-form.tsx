@@ -25,11 +25,12 @@ export function EditParticipantForm({
 }) {
   const { toast } = useToast();
   const participant = row.original;
+  // TODO wait for backend to implement returning all attributes (also these with showInList == false)
   const formDisabled = participant.mode === "view";
 
   const defaultValues: Record<string, string | string[]> = {};
   for (const cell of cells) {
-    if (cell.column.columnDef.meta?.attribute.type === "multiselect") {
+    if (cell.column.columnDef.meta?.attribute?.type === "multiselect") {
       //cell value is transformed string array (["v1", "v2"] => "v1, v2")
       const cellValue = cell.getValue() as string | undefined;
       defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
@@ -45,6 +46,7 @@ export function EditParticipantForm({
 
   async function onSubmit(values: Record<string, string | string[]>) {
     for (const key in values) {
+      //Handling multiselect
       if (typeof values[key] === "object") {
         values[key] = values[key].join(",");
       }

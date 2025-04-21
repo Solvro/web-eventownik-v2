@@ -15,6 +15,7 @@ declare module "@tanstack/react-table" {
     attribute?: Attribute;
     headerClassName?: string;
     cellClassName?: string;
+    showInTable: boolean;
   }
 }
 
@@ -48,6 +49,7 @@ export function generateColumns(attributes: Attribute[]) {
       enableHiding: false,
       meta: {
         headerClassName: "min-w-[32px]",
+        showInTable: true,
       },
     }),
     columnHelper.display({
@@ -60,6 +62,7 @@ export function generateColumns(attributes: Attribute[]) {
       enableHiding: false,
       meta: {
         headerClassName: "max-w-[36px]",
+        showInTable: true,
       },
     }),
     columnHelper.accessor("email", {
@@ -73,6 +76,9 @@ export function generateColumns(attributes: Attribute[]) {
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
+      },
+      meta: {
+        showInTable: true,
       },
       cell: (info) => info.getValue(),
     }),
@@ -91,37 +97,42 @@ export function generateColumns(attributes: Attribute[]) {
       cell: (info) => info.getValue(),
       meta: {
         headerClassName: "w-fit",
+        showInTable: true,
       },
     }),
   ];
 
   const attributeColumns = [
-    ...attributes
-      .filter((attribute) => attribute.showInList)
-      .map((attribute) => {
-        //accessor must match keys in flatParticipant (check ./data.ts)
-        return columnHelper.accessor(attribute.id.toString(), {
-          meta: { attribute },
-          header: ({ column }) => {
-            const sortingDirection = column.getIsSorted();
-            return (
-              <div className="flex items-center">
-                <FilterButton
-                  attributeType={attribute.type}
-                  options={attribute.options}
-                  column={column}
-                />
-                <SortButton sortingDirection={sortingDirection} column={column}>
-                  {attribute.name}
-                </SortButton>
-                <SortIcon sortingDirection={sortingDirection} />
-              </div>
-            );
-          },
-          cell: (info) => info.getValue(),
-          filterFn: "arrIncludesSome",
-        });
-      }),
+    ...attributes.map((attribute) => {
+      //accessor must match keys in flatParticipant (check ./data.ts)
+      const showInTable = attribute.showInList;
+      return columnHelper.accessor(attribute.id.toString(), {
+        meta: {
+          attribute,
+          showInTable,
+          headerClassName: showInTable ? "" : "hidden",
+          cellClassName: showInTable ? "" : "hidden",
+        },
+        header: ({ column }) => {
+          const sortingDirection = column.getIsSorted();
+          return (
+            <div className="flex items-center">
+              <FilterButton
+                attributeType={attribute.type}
+                options={attribute.options}
+                column={column}
+              />
+              <SortButton sortingDirection={sortingDirection} column={column}>
+                {attribute.name}
+              </SortButton>
+              <SortIcon sortingDirection={sortingDirection} />
+            </div>
+          );
+        },
+        cell: (info) => info.getValue(),
+        filterFn: "arrIncludesSome",
+      });
+    }),
     columnHelper.display({
       id: "expand",
       header: ({ table }) => {
@@ -151,6 +162,9 @@ export function generateColumns(attributes: Attribute[]) {
             {row.getIsExpanded() ? <ChevronLeft /> : <ChevronDown />}
           </Button>
         ) : null;
+      },
+      meta: {
+        showInTable: true,
       },
     }),
   ];

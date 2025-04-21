@@ -15,6 +15,7 @@ export default async function DashboardEventParticipantsPage({
     redirect("/auth/login");
   }
   const { id } = await params;
+  // TODO wait for backend to implement returning all attributes (also these with showInList == false) when calling index of participants
   const participantsData = getParticipants(id, session.bearerToken);
   const attributesData = getAttributes(id, session.bearerToken);
   const emailsData = getEmails(id);

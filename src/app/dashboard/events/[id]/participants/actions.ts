@@ -111,6 +111,8 @@ export async function updateParticipant(
     redirect("/auth/login");
   }
 
+  console.log(`UpdateParticipant\n\tValues=${JSON.stringify(values)}`);
+
   const response = await fetch(
     `${API_URL}/events/${eventId}/participants/${participantId}`,
     {
