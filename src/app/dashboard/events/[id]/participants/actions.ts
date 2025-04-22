@@ -45,10 +45,14 @@ export async function getParticipant(eventId: string, participantId: string) {
   return participant;
 }
 
-export async function getAttributes(eventId: string, bearerToken: string) {
+export async function getAttributes(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
   const response = await fetch(`${API_URL}/events/${eventId}/attributes`, {
     method: "GET",
-    headers: { Authorization: `Bearer ${bearerToken}` },
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
   });
   if (!response.ok) {
     console.error("Failed to fetch attributes", response);
