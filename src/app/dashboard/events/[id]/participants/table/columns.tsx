@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
 
+import { getParticipant } from "../actions";
+import { flattenParticipant } from "./data";
 import { FilterButton, SortButton, SortIcon } from "./utils";
 
 declare module "@tanstack/react-table" {
@@ -19,7 +21,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function generateColumns(attributes: Attribute[]) {
+export function generateColumns(attributes: Attribute[], eventId: string) {
   const columnHelper = createColumnHelper<FlattenedParticipant>();
   const baseColumns = [
     columnHelper.display({
@@ -135,6 +137,7 @@ export function generateColumns(attributes: Attribute[]) {
     }),
     columnHelper.display({
       id: "expand",
+      //TODO fetch data for all participants after clicking on the expand button
       header: ({ table }) => {
         const isAnyExpanded = table.getIsSomeRowsExpanded();
         return (
@@ -150,12 +153,24 @@ export function generateColumns(attributes: Attribute[]) {
           </Button>
         );
       },
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         return row.getCanExpand() ? (
           <Button
             size="icon"
             variant={row.getIsExpanded() ? "outline" : "ghost"}
-            onClick={() => {
+            onClick={async () => {
+              if (!row.getIsExpanded()) {
+                const newParticipant = await getParticipant(
+                  eventId,
+                  row.original.id.toString(),
+                );
+                if (newParticipant !== null) {
+                  table.options.meta?.updateData(
+                    row.index,
+                    flattenParticipant(newParticipant),
+                  );
+                }
+              }
               row.toggleExpanded();
             }}
           >

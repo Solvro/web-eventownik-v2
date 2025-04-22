@@ -1,5 +1,6 @@
 "use client";
 
+import type { RowData } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -33,6 +34,12 @@ import { flattenParticipants } from "./data";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
 
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, value: TData) => void;
+  }
+}
+
 /**
  * To seamlessly navigate during working on this component
  * get familiar with [Tanstack Table V8 docs](https://tanstack.com/table/latest/docs/introduction)
@@ -54,7 +61,10 @@ export function ParticipantTable({
   const [isQuerying, setIsQuerying] = useState(false);
 
   const [data, setData] = useState(() => flattenParticipants(participants));
-  const columns = useMemo(() => generateColumns(attributes), [attributes]);
+  const columns = useMemo(
+    () => generateColumns(attributes, eventId),
+    [attributes, eventId],
+  );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
@@ -80,6 +90,19 @@ export function ParticipantTable({
       },
     },
     autoResetPageIndex: false,
+
+    meta: {
+      updateData: (rowIndex, value) => {
+        setData((previousData) => {
+          return previousData.map((row, index) => {
+            if (index === rowIndex) {
+              return value;
+            }
+            return row;
+          });
+        });
+      },
+    },
   });
 
   async function deleteParticipant(participantId: number) {

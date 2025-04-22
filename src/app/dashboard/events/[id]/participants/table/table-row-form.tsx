@@ -1,10 +1,13 @@
+"use client";
+
 import { flexRender } from "@tanstack/react-table";
 import type { Cell, Row } from "@tanstack/react-table";
 import type { Dispatch, SetStateAction } from "react";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { AttributeInput } from "@/components/attribute-input";
+import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -40,24 +43,15 @@ export function TableRowForm({
 
   const formDisabled = participant.mode === "view";
 
-  const defaultValues: Record<string, string | string[]> = {};
-  for (const cell of cells) {
-    const columnAttribute = cell.column.columnDef.meta?.attribute;
-    if (columnAttribute !== undefined) {
-      if (columnAttribute.type === "multiselect") {
-        //cell value is transformed string array (["v1", "v2"] => "v1, v2")
-        const cellValue = cell.getValue() as string | undefined;
-        defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
-      } else {
-        defaultValues[cell.column.id] =
-          (cell.getValue() as string | null | undefined) ?? "";
-      }
-    }
-  }
+  const defaultValues = getDefaultValues(cells);
 
   const form = useForm({
     defaultValues,
   });
+
+  useEffect(() => {
+    form.reset({ ...getDefaultValues(cells) });
+  }, [cells, form]);
 
   async function onSubmit(values: Record<string, string | string[]>) {
     for (const key in values) {
@@ -168,7 +162,6 @@ export function TableRowForm({
                 <div className={cn("grid gap-4", `grid-cols-3`)}>
                   {expandedRowCells.map((cell) => {
                     const attribute = cell.column.columnDef.meta?.attribute;
-
                     return attribute === undefined ? null : (
                       <div key={cell.id} className="space-y-1">
                         <div className="text-muted-foreground text-sm font-medium">
@@ -190,12 +183,10 @@ export function TableRowForm({
                             ></Controller>
                           ) : (
                             <div className="py-2">
-                              {/* TODO uncomment lines below after backend changes */}
-                              {/* {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                )} */}
-                              asd
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
                             </div>
                           )}
                         </div>
@@ -209,12 +200,30 @@ export function TableRowForm({
                       setData={setData}
                       handleSubmit={form.handleSubmit(onSubmit)}
                     />
-
-                    <DeleteParticipantDialog
-                      isQuerying={isQuerying}
-                      participantId={row.original.id}
-                      deleteParticipant={deleteParticipant}
-                    />
+                    {participant.mode === "view" ? (
+                      <DeleteParticipantDialog
+                        isQuerying={isQuerying}
+                        participantId={row.original.id}
+                        deleteParticipant={deleteParticipant}
+                      />
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="text-red-500"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setData((previousData) => {
+                            return previousData.map((_participant) =>
+                              _participant.id === participant.id
+                                ? { ..._participant, mode: "view" }
+                                : _participant,
+                            );
+                          });
+                        }}
+                      >
+                        Anuluj
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -228,4 +237,22 @@ export function TableRowForm({
       </Fragment>
     </FormProvider>
   );
+}
+
+function getDefaultValues(cells: Cell<FlattenedParticipant, unknown>[]) {
+  const _defaultValues: Record<string, string | string[]> = {};
+  for (const cell of cells) {
+    const columnAttribute = cell.column.columnDef.meta?.attribute;
+    if (columnAttribute !== undefined) {
+      if (columnAttribute.type === "multiselect") {
+        //cell value is transformed string array (["v1", "v2"] => "v1, v2")
+        const cellValue = cell.getValue() as string | undefined;
+        _defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
+      } else {
+        _defaultValues[cell.column.id] =
+          (cell.getValue() as string | null | undefined) ?? "";
+      }
+    }
+  }
+  return _defaultValues;
 }

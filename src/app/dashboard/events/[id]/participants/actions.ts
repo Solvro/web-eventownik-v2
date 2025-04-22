@@ -8,10 +8,14 @@ import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-export async function getParticipants(eventId: string, bearerToken: string) {
+export async function getParticipants(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
   const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
     method: "GET",
-    headers: { Authorization: `Bearer ${bearerToken}` },
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
   });
   if (!response.ok) {
     console.error("Failed to fetch participants", response);
@@ -19,6 +23,26 @@ export async function getParticipants(eventId: string, bearerToken: string) {
   }
   const participants = (await response.json()) as Participant[];
   return participants;
+}
+
+export async function getParticipant(eventId: string, participantId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/${participantId}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    },
+  );
+  if (!response.ok) {
+    console.error("Failed to fetch participant", response);
+    return null;
+  }
+  const participant = (await response.json()) as Participant;
+  return participant;
 }
 
 export async function getAttributes(eventId: string, bearerToken: string) {
@@ -110,8 +134,6 @@ export async function updateParticipant(
   if (session === null) {
     redirect("/auth/login");
   }
-
-  console.log(`UpdateParticipant\n\tValues=${JSON.stringify(values)}`);
 
   const response = await fetch(
     `${API_URL}/events/${eventId}/participants/${participantId}`,
