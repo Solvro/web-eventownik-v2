@@ -323,22 +323,31 @@ function EventFormEditForm({
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
-    const result = await updateEventForm(eventId, formToEdit.id, {
-      ...formToEdit,
-      ...values,
-      attributes: includedAttributes,
-    });
-
-    if (result.success) {
-      toast({
-        title: "Formularz został zaktualizowany",
+    try {
+      const result = await updateEventForm(eventId, formToEdit.id, {
+        ...formToEdit,
+        ...values,
+        attributes: includedAttributes,
       });
 
-      router.refresh();
-    } else {
+      if (result.success) {
+        toast({
+          title: "Formularz został zaktualizowany",
+        });
+
+        router.refresh();
+      } else {
+        toast({
+          title: "Nie udało się zaktualizować formularza",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating event form:", error);
       toast({
         title: "Nie udało się zaktualizować formularza",
-        description: result.error,
+        description: "Wystąpił błąd podczas aktualizacji formularza.",
         variant: "destructive",
       });
     }
@@ -352,8 +361,6 @@ function EventFormEditForm({
             <FormField
               name="name"
               control={form.control}
-              // https://github.com/orgs/react-hook-form/discussions/10964?sort=new#discussioncomment-8481087
-              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nazwa formularza</FormLabel>
@@ -361,6 +368,7 @@ function EventFormEditForm({
                     <Input
                       type="text"
                       placeholder="Podaj nazwę formularza"
+                      // https://github.com/orgs/react-hook-form/discussions/10964?sort=new#discussioncomment-8481087
                       disabled={form.formState.isSubmitting ? true : undefined}
                       {...field}
                     />
@@ -377,7 +385,6 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="startDate"
-                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <Popover>
@@ -386,6 +393,9 @@ function EventFormEditForm({
                             <Button
                               variant={"outline"}
                               className="w-[240px] pl-3 text-left font-normal"
+                              disabled={
+                                form.formState.isSubmitting ? true : undefined
+                              }
                             >
                               {format(field.value, "PPP")}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -414,11 +424,16 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="startTime"
-                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          {...field}
+                          disabled={
+                            form.formState.isSubmitting ? true : undefined
+                          }
+                        />
                       </FormControl>
                       <FormMessage className="text-sm text-red-500">
                         {form.formState.errors.startTime?.message}
@@ -433,7 +448,6 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="endDate"
-                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <Popover>
@@ -442,6 +456,9 @@ function EventFormEditForm({
                             <Button
                               variant={"outline"}
                               className="w-[240px] pl-3 text-left font-normal"
+                              disabled={
+                                form.formState.isSubmitting ? true : undefined
+                              }
                             >
                               {format(field.value, "PPP")}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -470,11 +487,16 @@ function EventFormEditForm({
                 <FormField
                   control={form.control}
                   name="endTime"
-                  disabled={form.formState.isSubmitting ? true : undefined}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          {...field}
+                          disabled={
+                            form.formState.isSubmitting ? true : undefined
+                          }
+                        />
                       </FormControl>
                       <FormMessage className="text-sm text-red-500">
                         {form.formState.errors.endTime?.message}
@@ -488,7 +510,6 @@ function EventFormEditForm({
             <FormField
               name="slug"
               control={form.control}
-              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Slug</FormLabel>
@@ -512,12 +533,15 @@ function EventFormEditForm({
             <FormField
               name="description"
               control={form.control}
-              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem className="grow">
                   <FormLabel>Dodaj tekst wstępny</FormLabel>
                   <FormControl>
-                    <Textarea {...field} className="h-5/6 resize-none" />
+                    <Textarea
+                      {...field}
+                      className="h-5/6 resize-none"
+                      disabled={form.formState.isSubmitting ? true : undefined}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.description?.message}
@@ -525,11 +549,9 @@ function EventFormEditForm({
                 </FormItem>
               )}
             />
-            {/* TODO: Not currently handled on the backend */}
             <FormField
               name="isFirstForm"
               control={form.control}
-              disabled={form.formState.isSubmitting ? true : undefined}
               render={({ field }) => (
                 <FormItem className="flex w-fit flex-col">
                   <FormLabel>Formularz rejestracyjny?</FormLabel>
@@ -538,6 +560,7 @@ function EventFormEditForm({
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       className="m-0"
+                      disabled={form.formState.isSubmitting ? true : undefined}
                     />
                   </FormControl>
                 </FormItem>
