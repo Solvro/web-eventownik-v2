@@ -1,5 +1,6 @@
 "use client";
 
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
   DndContext,
   KeyboardSensor,
@@ -8,7 +9,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   SortableContext,
@@ -133,7 +133,12 @@ function AttributesReorder({
     } else {
       setIncludedAttributes((previous) => [
         ...previous,
-        { ...attribute, isRequired: true, isEditable: true },
+        {
+          ...attribute,
+          isRequired: true,
+          isEditable: true,
+          order: previous.length,
+        },
       ]);
     }
   };
