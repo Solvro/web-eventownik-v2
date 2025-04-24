@@ -231,7 +231,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     <FormControl>
                       <Textarea
                         {...field}
-                        className="h-62 resize-none"
+                        className="h-55 resize-none"
                         disabled={form.formState.isSubmitting}
                       />
                     </FormControl>
