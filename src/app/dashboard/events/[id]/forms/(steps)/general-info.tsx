@@ -36,8 +36,8 @@ const EventFormGeneralInfoSchema = z
     endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
     startDate: z.date(),
     endDate: z.date(),
-    isFirstForm: z.boolean(),
-    isOpen: z.boolean(),
+    isFirstForm: z.boolean().optional(),
+    isOpen: z.boolean().optional(),
   })
   .refine(
     (schema) => {
@@ -47,6 +47,7 @@ const EventFormGeneralInfoSchema = z
       if (isSameDay(startDate, endDate)) {
         const startTime = Number(schema.startTime.replace(":", "."));
         const endTime = Number(schema.endTime.replace(":", "."));
+        // TODO: Should probably check and throw if either of them are already in the past
         return endTime > startTime;
       } else {
         return endDate > startDate;
@@ -68,8 +69,8 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       description: newEventForm.description,
       startTime: newEventForm.startTime,
       endTime: newEventForm.endTime,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: newEventForm.startDate,
+      endDate: newEventForm.endDate,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -281,7 +282,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
               <FormField
                 name="isFirstForm"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex w-fit flex-col">
                     <FormLabel>Formularz rejestracyjny?</FormLabel>
@@ -289,6 +289,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={form.formState.isSubmitting}
                         className="m-0"
                       />
                     </FormControl>
@@ -298,7 +299,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
               <FormField
                 name="isOpen"
                 control={form.control}
-                disabled={form.formState.isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex w-fit flex-col">
                     <FormLabel>Włączony?</FormLabel>
@@ -306,6 +306,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={form.formState.isSubmitting}
                         className="m-0"
                       />
                     </FormControl>
