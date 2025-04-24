@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, isSameDay } from "date-fns";
+import { endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -142,6 +142,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
+                              disabled={(date) => endOfYesterday() > date}
                             />
                           </PopoverContent>
                         </Popover>
@@ -200,6 +201,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
+                              disabled={(date) => endOfYesterday() > date}
                             />
                           </PopoverContent>
                         </Popover>
