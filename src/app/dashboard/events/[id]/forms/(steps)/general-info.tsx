@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { compareAsc, endOfYesterday, format, isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -36,8 +36,8 @@ const EventFormGeneralInfoSchema = z
     endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
     startDate: z.date(),
     endDate: z.date(),
-    isFirstForm: z.boolean().optional(),
-    isOpen: z.boolean().optional(),
+    isFirstForm: z.boolean().default(false),
+    isOpen: z.boolean().default(true),
   })
   .refine(
     (schema) => {
@@ -142,17 +142,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => {
-                                const calendarDate = new Date(date);
-                                const endDate = new Date(
-                                  form.getValues("endDate"),
-                                );
-                                return (
-                                  compareAsc(calendarDate, endDate) === 1 ||
-                                  compareAsc(calendarDate, endOfYesterday()) ===
-                                    -1
-                                );
-                              }}
                             />
                           </PopoverContent>
                         </Popover>
@@ -211,23 +200,6 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => {
-                                const calendarDate = new Date(date);
-                                const startDate = new Date(
-                                  form.getValues("startDate"),
-                                );
-                                // If start date has not been selected yet, disable days in the past
-                                if (Number.isNaN(startDate.getTime())) {
-                                  return (
-                                    compareAsc(calendarDate, startDate) === -1
-                                  );
-                                }
-                                return (
-                                  compareAsc(calendarDate, endOfYesterday()) ===
-                                    -1 ||
-                                  compareAsc(calendarDate, startDate) === -1
-                                );
-                              }}
                             />
                           </PopoverContent>
                         </Popover>
