@@ -2,10 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AttributeInput } from "@/components/attribute-input";
+import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -32,6 +34,7 @@ export function FormGenerator({
   eventSlug: string;
   userId: string;
 }) {
+  const [files, setFiles] = useState<File[]>([]);
   // generate schema for form based on attributes
   const FormSchema = z.object({
     ...getSchemaObjectForAttributes(attributes.sort((a, b) => a.id - b.id)), // TODO: change to order after backend changes
@@ -48,8 +51,10 @@ export function FormGenerator({
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-      const result = await submitForm(values, formId, eventSlug, userId);
-      if (!result.success) {
+      const result = await submitForm(values, formId, eventSlug, userId, files);
+      if (result.success) {
+        setFiles([]);
+      } else {
         form.setError("root", {
           type: "manual",
           message:
@@ -108,7 +113,17 @@ export function FormGenerator({
                 <FormItem>
                   <FormLabel>{attribute.name}</FormLabel>
                   <FormControl>
-                    <AttributeInput attribute={attribute} field={field} />
+                    {attribute.type === "file" ? (
+                      <AttributeInputFile
+                        attribute={attribute}
+                        field={field}
+                        setError={form.control.setError}
+                        resetField={form.resetField}
+                        setFiles={setFiles}
+                      ></AttributeInputFile>
+                    ) : (
+                      <AttributeInput attribute={attribute} field={field} />
+                    )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
                     {/* @ts-expect-error zod schema object are dynamic */}
