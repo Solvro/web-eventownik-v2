@@ -37,6 +37,8 @@ import { TableRowForm } from "./table-row-form";
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, value: TData) => void;
+    isRowLoading: (rowIndex: number) => boolean;
+    setRowLoading: (rowIndex: number, isLoading: boolean) => void;
   }
 }
 
@@ -67,6 +69,8 @@ export function ParticipantTable({
   );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  // Then in your component where the table is defined
+  const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const table = useReactTable({
     columns,
@@ -83,7 +87,6 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
-      // TODO: Allow user to define page size
       pagination: { pageSize: 25, pageIndex: 0 },
       columnVisibility: {
         id: false,
@@ -101,6 +104,15 @@ export function ParticipantTable({
             return row;
           });
         });
+      },
+      setRowLoading: (rowIndex, isLoading) => {
+        setLoadingRows((previous) => ({
+          ...previous,
+          [rowIndex]: isLoading,
+        }));
+      },
+      isRowLoading: (rowIndex) => {
+        return loadingRows[rowIndex];
       },
     },
   });
@@ -187,7 +199,6 @@ export function ParticipantTable({
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>
-      {/* TODO: Prevent resizing width of columns */}
       <div className="relative w-full overflow-auto">
         <Table>
           <TableHeader className="border-border border-b-2">

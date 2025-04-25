@@ -1,6 +1,6 @@
 import type { RowData } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -154,12 +154,15 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
         );
       },
       cell: ({ row, table }) => {
+        const isLoading = table.options.meta?.isRowLoading(row.index) ?? false;
         return row.getCanExpand() ? (
           <Button
             size="icon"
             variant={row.getIsExpanded() ? "outline" : "ghost"}
+            disabled={isLoading}
             onClick={async () => {
-              if (!row.getIsExpanded()) {
+              if (!row.getIsExpanded() && !row.original.wasExpanded) {
+                table.options.meta?.setRowLoading(row.index, true);
                 const newParticipant = await getParticipant(
                   eventId,
                   row.original.id.toString(),
@@ -167,14 +170,21 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
                 if (newParticipant !== null) {
                   table.options.meta?.updateData(
                     row.index,
-                    flattenParticipant(newParticipant),
+                    flattenParticipant(newParticipant, true),
                   );
                 }
               }
+              table.options.meta?.setRowLoading(row.index, false);
               row.toggleExpanded();
             }}
           >
-            {row.getIsExpanded() ? <ChevronLeft /> : <ChevronDown />}
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : row.getIsExpanded() ? (
+              <ChevronDown />
+            ) : (
+              <ChevronLeft />
+            )}
           </Button>
         ) : null;
       },
