@@ -171,12 +171,20 @@ const AttributeItem = memo(
           );
         } else if (value.length < 3) {
           setSlugError("Slug musi mieć co najmniej 3 znaki");
+        } else if (
+          allAttributes.some(
+            (attr) => attr.id !== attribute.id && attr.slug === value,
+          )
+        ) {
+          setSlugError(
+            `Slug jest już używany (pole: "${allAttributes.find((attr) => attr.slug === value)?.name ?? "?"}")`,
+          );
         } else {
           setSlugError("");
         }
         onUpdate({ ...attribute, slug: value });
       },
-      [attribute, onUpdate],
+      [attribute, onUpdate, allAttributes],
     );
 
     const handleRemoveOption = useCallback(
