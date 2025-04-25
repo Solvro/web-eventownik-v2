@@ -129,16 +129,20 @@ const AttributeItem = memo(
     const [slugError, setSlugError] = useState("");
 
     useEffect(() => {
-      if (attribute.type === "block" && attribute.options) {
-        const validOptions = [
+      if (attribute.type === "block" && Array.isArray(attribute.options)) {
+        const validOptions = new Set([
           "email",
           ...allAttributes
-            .filter((a) => a.id !== attribute.id && a.slug != null)
-            .map((a) => a.slug!),
-        ];
+            .filter(
+              (attribute_) =>
+                attribute_.id !== attribute.id &&
+                typeof attribute_.slug === "string",
+            )
+            .map((attribute_) => attribute_.slug),
+        ]);
 
         const validSelectedOptions = attribute.options.filter((option) =>
-          validOptions.includes(option),
+          validOptions.has(option),
         );
 
         if (validSelectedOptions.length !== attribute.options.length) {
@@ -195,11 +199,12 @@ const AttributeItem = memo(
           setSlugError("Slug musi mieć co najmniej 3 znaki");
         } else if (
           allAttributes.some(
-            (attr) => attr.id !== attribute.id && attr.slug === value,
+            (attribute_) =>
+              attribute_.id !== attribute.id && attribute_.slug === value,
           )
         ) {
           setSlugError(
-            `Slug jest już używany (pole: "${allAttributes.find((attr) => attr.slug === value)?.name ?? "?"}")`,
+            `Slug jest już używany (pole: "${allAttributes.find((attribute_) => attribute_.slug === value)?.name ?? "?"}")`,
           );
         } else {
           setSlugError("");
