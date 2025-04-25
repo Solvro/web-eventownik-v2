@@ -30,7 +30,7 @@ export async function submitForm(
 
     formData.append("participantSlug", userId);
     for (const [key, value] of Object.entries(values)) {
-      formData.append(key, value as string);
+      formData.append(key, String(value));
     }
 
     const response = await fetch(
