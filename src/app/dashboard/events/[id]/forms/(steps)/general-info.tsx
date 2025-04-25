@@ -206,6 +206,11 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       <FormItem>
                         <FormControl>
                           <Input
+                            className={
+                              form.formState.errors.endDate?.message
+                                ? "absolute !z-10 -mt-10 -ml-23 w-[125px]"
+                                : ""
+                            }
                             type="time"
                             disabled={form.formState.isSubmitting}
                             {...field}
