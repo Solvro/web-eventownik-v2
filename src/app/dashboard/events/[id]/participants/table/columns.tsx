@@ -1,4 +1,4 @@
-import type { RowData } from "@tanstack/react-table";
+import type { Row, RowData, Table } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 
@@ -140,10 +140,18 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
       //TODO fetch data for all participants after clicking on the expand button
       header: ({ table }) => {
         const isAnyExpanded = table.getIsSomeRowsExpanded();
+        const notExpandedRows = table
+          .getCoreRowModel()
+          .rows.filter((row) => !row.original.wasExpanded);
         return (
           <Button
             variant="ghost"
-            onClick={() => {
+            onClick={async () => {
+              await Promise.all(
+                notExpandedRows.map(async (row) => {
+                  return fetchAdditionalParticipantData(row, table, eventId);
+                }),
+              );
               isAnyExpanded
                 ? table.resetExpanded(isAnyExpanded)
                 : table.toggleAllRowsExpanded();
@@ -161,20 +169,7 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
             variant={row.getIsExpanded() ? "outline" : "ghost"}
             disabled={isLoading}
             onClick={async () => {
-              if (!row.getIsExpanded() && !row.original.wasExpanded) {
-                table.options.meta?.setRowLoading(row.index, true);
-                const newParticipant = await getParticipant(
-                  eventId,
-                  row.original.id.toString(),
-                );
-                if (newParticipant !== null) {
-                  table.options.meta?.updateData(
-                    row.index,
-                    flattenParticipant(newParticipant, true),
-                  );
-                }
-              }
-              table.options.meta?.setRowLoading(row.index, false);
+              await fetchAdditionalParticipantData(row, table, eventId);
               row.toggleExpanded();
             }}
           >
@@ -195,4 +190,25 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
   ];
 
   return [...baseColumns, ...attributeColumns];
+}
+
+async function fetchAdditionalParticipantData(
+  row: Row<FlattenedParticipant>,
+  table: Table<FlattenedParticipant>,
+  eventId: string,
+) {
+  if (!row.getIsExpanded() && !row.original.wasExpanded) {
+    table.options.meta?.setRowLoading(row.index, true);
+    const newParticipant = await getParticipant(
+      eventId,
+      row.original.id.toString(),
+    );
+    if (newParticipant !== null) {
+      table.options.meta?.updateData(
+        row.index,
+        flattenParticipant(newParticipant, true),
+      );
+    }
+    table.options.meta?.setRowLoading(row.index, false);
+  }
 }
