@@ -36,7 +36,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import type { JSX } from "react";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -127,6 +127,28 @@ const AttributeItem = memo(
   ({ attribute, onUpdate, onRemove, allAttributes }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
+
+    useEffect(() => {
+      if (attribute.type === "block" && attribute.options) {
+        const validOptions = [
+          "email",
+          ...allAttributes
+            .filter((a) => a.id !== attribute.id && a.slug != null)
+            .map((a) => a.slug!),
+        ];
+
+        const validSelectedOptions = attribute.options.filter((option) =>
+          validOptions.includes(option),
+        );
+
+        if (validSelectedOptions.length !== attribute.options.length) {
+          onUpdate({
+            ...attribute,
+            options: validSelectedOptions,
+          });
+        }
+      }
+    }, [attribute, allAttributes, onUpdate]);
 
     const sensors = useSensors(
       useSensor(PointerSensor),
