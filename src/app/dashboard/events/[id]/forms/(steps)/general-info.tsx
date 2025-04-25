@@ -207,6 +207,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                         <FormControl>
                           <Input
                             className={
+                              // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                               form.formState.errors.endDate?.message
                                 ? "absolute !z-10 -mt-10 -ml-23 w-[125px]"
                                 : ""
