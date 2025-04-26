@@ -170,6 +170,9 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);
+              if (row.original.wasExpanded) {
+                row.original.mode = "view";
+              }
               row.toggleExpanded();
             }}
           >
