@@ -1,16 +1,25 @@
 "use client";
 
-import { flexRender } from "@tanstack/react-table";
 import type { Cell, Row } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import type { Dispatch, SetStateAction } from "react";
 import { Fragment, useEffect } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { AttributeInput } from "@/components/attribute-input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../actions";
@@ -27,6 +36,39 @@ interface TableRowFormProps {
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   isQuerying: boolean;
   deleteParticipant: (participantId: number) => Promise<void>;
+  blocks: (Block | null)[];
+}
+
+function BlockSelect({
+  rootBlock,
+  field,
+}: {
+  rootBlock: Block | null;
+  field: ControllerRenderProps<FieldValues, string>;
+}) {
+  const childBlocks = rootBlock?.children;
+  return (
+    <Select
+      onValueChange={field.onChange}
+      defaultValue={field.value as string}
+      {...field}
+    >
+      <SelectTrigger>
+        <SelectValue {...field}>
+          {" "}
+          {childBlocks?.find((b) => b.id === Number(field.value))?.name}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value=" ">Żaden</SelectItem>
+        {childBlocks?.map((block) => (
+          <SelectItem key={block.id} value={block.id.toString()}>
+            {block.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 }
 
 // Component for each row that handles its own form context
@@ -37,6 +79,7 @@ export function TableRowForm({
   setData,
   isQuerying,
   deleteParticipant,
+  blocks,
 }: TableRowFormProps) {
   const { toast } = useToast();
   const participant = row.original;
@@ -116,17 +159,32 @@ export function TableRowForm({
                   )}
                 >
                   {isEditableCell ? (
+                    // TODO extract the controller to seperate component to avoid code duplication
                     <Controller
                       disabled={formDisabled}
                       control={form.control}
                       key={cell.id}
                       name={attribute.id.toString()}
-                      render={({ field }) => (
-                        <AttributeInput
-                          field={field}
-                          attribute={attribute}
-                        ></AttributeInput>
-                      )}
+                      render={({ field }) => {
+                        if (attribute.type === "block") {
+                          return (
+                            <BlockSelect
+                              rootBlock={
+                                blocks.find(
+                                  (b) => b?.attributeId === attribute.id,
+                                ) ?? null
+                              }
+                              field={field}
+                            />
+                          );
+                        }
+                        return (
+                          <AttributeInput
+                            field={field}
+                            attribute={attribute}
+                          ></AttributeInput>
+                        );
+                      }}
                     ></Controller>
                   ) : attribute?.type === "file" &&
                     row.original[attribute.id] !== null &&
@@ -155,82 +213,107 @@ export function TableRowForm({
         </TableRow>
 
         {row.getIsExpanded() && (
-          <TableRow className="border-l-primary bg-accent/10 border-l-2">
+          <TableRow className="border-l-primary bg-accent/10 hover:bg-accent/10 border-l-2">
             <TableCell colSpan={allVisibleCells.length} className="p-4">
-              {expandedRowCells.length > 0 ? (
-                // Should it be fixed columns number or dependent on number of expanded attributes?
-                <div className={cn("grid gap-4", `grid-cols-3`)}>
-                  {expandedRowCells.map((cell) => {
-                    const attribute = cell.column.columnDef.meta?.attribute;
-                    return attribute === undefined ? null : (
-                      <div key={cell.id} className="space-y-1">
-                        <div className="text-muted-foreground text-sm font-medium">
-                          {attribute.name || attribute.id}
-                        </div>
-                        <div className="min-h-10">
-                          {isEditMode ? (
-                            <Controller
-                              disabled={formDisabled}
-                              control={form.control}
-                              key={cell.id}
-                              name={attribute.id.toString()}
-                              render={({ field }) => (
+              <div className={cn("grid gap-4", `grid-cols-3`)}>
+                {expandedRowCells.map((cell) => {
+                  const attribute = cell.column.columnDef.meta?.attribute;
+                  return attribute === undefined ? null : (
+                    <div key={cell.id} className="space-y-1">
+                      <div className="text-muted-foreground text-sm font-medium">
+                        {attribute.name || attribute.id}
+                      </div>
+                      <div className="min-h-10">
+                        {isEditMode ? (
+                          // TODO extract the controller to seperate component to avoid code duplication
+                          <Controller
+                            disabled={formDisabled}
+                            control={form.control}
+                            key={cell.id}
+                            name={attribute.id.toString()}
+                            render={({ field }) => {
+                              if (attribute.type === "block") {
+                                return (
+                                  <BlockSelect
+                                    rootBlock={
+                                      blocks.find(
+                                        (b) => b?.attributeId === attribute.id,
+                                      ) ?? null
+                                    }
+                                    field={field}
+                                  />
+                                );
+                              }
+                              return (
                                 <AttributeInput
                                   field={field}
                                   attribute={attribute}
                                 ></AttributeInput>
-                              )}
-                            ></Controller>
-                          ) : (
-                            <div className="py-2">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
-                            </div>
-                          )}
-                        </div>
+                              );
+                            }}
+                          ></Controller>
+                        ) : attribute.type === "file" &&
+                          row.original[attribute.id] !== null &&
+                          row.original[attribute.id] !== undefined &&
+                          row.original[attribute.id] !== "" ? (
+                          <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : attribute.type === "textarea" ? (
+                          // TODO: Maybe find a better solution for this
+                          <div className="w-xs">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
+                        ) : (
+                          <div className="py-2">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
+                        )}
                       </div>
-                    );
-                  })}
-                  <div className="right-0 flex gap-x-2">
-                    <EditParticipantButton
-                      disabled={form.formState.isSubmitting}
-                      participant={participant}
-                      setData={setData}
-                      handleSubmit={form.handleSubmit(onSubmit)}
-                    />
-                    {participant.mode === "view" ? (
-                      <DeleteParticipantDialog
-                        isQuerying={isQuerying}
-                        participantId={row.original.id}
-                        deleteParticipant={deleteParticipant}
-                      />
-                    ) : (
-                      <Button
-                        variant="outline"
-                        className="text-red-500"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setData((previousData) => {
-                            return previousData.map((_participant) =>
-                              _participant.id === participant.id
-                                ? { ..._participant, mode: "view" }
-                                : _participant,
-                            );
-                          });
-                        }}
-                      >
-                        Anuluj
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-muted-foreground text-sm">
-                  Brak dodatkowych informacji do wyświetlenia.
-                </div>
-              )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="right-0 col-end-4 flex gap-x-2">
+                <EditParticipantButton
+                  disabled={form.formState.isSubmitting}
+                  participant={participant}
+                  setData={setData}
+                  handleSubmit={form.handleSubmit(onSubmit)}
+                />
+                {participant.mode === "view" ? (
+                  <DeleteParticipantDialog
+                    isQuerying={isQuerying}
+                    participantId={row.original.id}
+                    deleteParticipant={deleteParticipant}
+                  />
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="text-red-500"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setData((previousData) => {
+                        return previousData.map((_participant) =>
+                          _participant.id === participant.id
+                            ? { ..._participant, mode: "view" }
+                            : _participant,
+                        );
+                      });
+                    }}
+                  >
+                    Anuluj
+                  </Button>
+                )}
+              </div>
             </TableCell>
           </TableRow>
         )}
