@@ -157,80 +157,73 @@ export function TableRowForm({
         {row.getIsExpanded() && (
           <TableRow className="border-l-primary bg-accent/10 border-l-2">
             <TableCell colSpan={allVisibleCells.length} className="p-4">
-              {expandedRowCells.length > 0 ? (
-                // Should it be fixed columns number or dependent on number of expanded attributes?
-                <div className={cn("grid gap-4", `grid-cols-3`)}>
-                  {expandedRowCells.map((cell) => {
-                    const attribute = cell.column.columnDef.meta?.attribute;
-                    return attribute === undefined ? null : (
-                      <div key={cell.id} className="space-y-1">
-                        <div className="text-muted-foreground text-sm font-medium">
-                          {attribute.name || attribute.id}
-                        </div>
-                        <div className="min-h-10">
-                          {isEditMode ? (
-                            <Controller
-                              disabled={formDisabled}
-                              control={form.control}
-                              key={cell.id}
-                              name={attribute.id.toString()}
-                              render={({ field }) => (
-                                <AttributeInput
-                                  field={field}
-                                  attribute={attribute}
-                                ></AttributeInput>
-                              )}
-                            ></Controller>
-                          ) : (
-                            <div className="py-2">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
-                            </div>
-                          )}
-                        </div>
+              <div className={cn("grid gap-4", `grid-cols-3`)}>
+                {expandedRowCells.map((cell) => {
+                  const attribute = cell.column.columnDef.meta?.attribute;
+                  return attribute === undefined ? null : (
+                    <div key={cell.id} className="space-y-1">
+                      <div className="text-muted-foreground text-sm font-medium">
+                        {attribute.name || attribute.id}
                       </div>
-                    );
-                  })}
-                  <div className="right-0 flex gap-x-2">
-                    <EditParticipantButton
-                      disabled={form.formState.isSubmitting}
-                      participant={participant}
-                      setData={setData}
-                      handleSubmit={form.handleSubmit(onSubmit)}
+                      <div className="min-h-10">
+                        {isEditMode ? (
+                          <Controller
+                            disabled={formDisabled}
+                            control={form.control}
+                            key={cell.id}
+                            name={attribute.id.toString()}
+                            render={({ field }) => (
+                              <AttributeInput
+                                field={field}
+                                attribute={attribute}
+                              ></AttributeInput>
+                            )}
+                          ></Controller>
+                        ) : (
+                          <div className="py-2">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="right-0 col-end-4 flex gap-x-2">
+                  <EditParticipantButton
+                    disabled={form.formState.isSubmitting}
+                    participant={participant}
+                    setData={setData}
+                    handleSubmit={form.handleSubmit(onSubmit)}
+                  />
+                  {participant.mode === "view" ? (
+                    <DeleteParticipantDialog
+                      isQuerying={isQuerying}
+                      participantId={row.original.id}
+                      deleteParticipant={deleteParticipant}
                     />
-                    {participant.mode === "view" ? (
-                      <DeleteParticipantDialog
-                        isQuerying={isQuerying}
-                        participantId={row.original.id}
-                        deleteParticipant={deleteParticipant}
-                      />
-                    ) : (
-                      <Button
-                        variant="outline"
-                        className="text-red-500"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setData((previousData) => {
-                            return previousData.map((_participant) =>
-                              _participant.id === participant.id
-                                ? { ..._participant, mode: "view" }
-                                : _participant,
-                            );
-                          });
-                        }}
-                      >
-                        Anuluj
-                      </Button>
-                    )}
-                  </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="text-red-500"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setData((previousData) => {
+                          return previousData.map((_participant) =>
+                            _participant.id === participant.id
+                              ? { ..._participant, mode: "view" }
+                              : _participant,
+                          );
+                        });
+                      }}
+                    >
+                      Anuluj
+                    </Button>
+                  )}
                 </div>
-              ) : (
-                <div className="text-muted-foreground text-sm">
-                  Brak dodatkowych informacji do wyświetlenia.
-                </div>
-              )}
+              </div>
             </TableCell>
           </TableRow>
         )}
