@@ -4,13 +4,22 @@ import { flexRender } from "@tanstack/react-table";
 import type { Cell, Row } from "@tanstack/react-table";
 import type { Dispatch, SetStateAction } from "react";
 import { Fragment, useEffect } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { AttributeInput } from "@/components/attribute-input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../actions";
@@ -27,6 +36,39 @@ interface TableRowFormProps {
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   isQuerying: boolean;
   deleteParticipant: (participantId: number) => Promise<void>;
+  blocks: (Block | null)[];
+}
+
+function BlockSelect({
+  rootBlock,
+  field,
+}: {
+  rootBlock: Block | null;
+  field: ControllerRenderProps<FieldValues, string>;
+}) {
+  const childBlocks = rootBlock?.children;
+  return (
+    <Select
+      onValueChange={field.onChange}
+      defaultValue={field.value as string}
+      {...field}
+    >
+      <SelectTrigger>
+        <SelectValue {...field}>
+          {" "}
+          {childBlocks?.find((b) => b.id === Number(field.value))?.name}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value=" ">Żaden</SelectItem>
+        {childBlocks?.map((block) => (
+          <SelectItem key={block.id} value={block.id.toString()}>
+            {block.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 }
 
 // Component for each row that handles its own form context
@@ -37,6 +79,7 @@ export function TableRowForm({
   setData,
   isQuerying,
   deleteParticipant,
+  blocks,
 }: TableRowFormProps) {
   const { toast } = useToast();
   const participant = row.original;
@@ -116,17 +159,32 @@ export function TableRowForm({
                   )}
                 >
                   {isEditableCell ? (
+                    // TODO extract the controller to seperate component to avoid code duplication
                     <Controller
                       disabled={formDisabled}
                       control={form.control}
                       key={cell.id}
                       name={attribute.id.toString()}
-                      render={({ field }) => (
-                        <AttributeInput
-                          field={field}
-                          attribute={attribute}
-                        ></AttributeInput>
-                      )}
+                      render={({ field }) => {
+                        if (attribute.type === "block") {
+                          return (
+                            <BlockSelect
+                              rootBlock={
+                                blocks.find(
+                                  (b) => b?.attributeId === attribute.id,
+                                ) ?? null
+                              }
+                              field={field}
+                            />
+                          );
+                        }
+                        return (
+                          <AttributeInput
+                            field={field}
+                            attribute={attribute}
+                          ></AttributeInput>
+                        );
+                      }}
                     ></Controller>
                   ) : attribute?.type === "file" &&
                     row.original[attribute.id] !== null &&
@@ -167,17 +225,32 @@ export function TableRowForm({
                       </div>
                       <div className="min-h-10">
                         {isEditMode ? (
+                          // TODO extract the controller to seperate component to avoid code duplication
                           <Controller
                             disabled={formDisabled}
                             control={form.control}
                             key={cell.id}
                             name={attribute.id.toString()}
-                            render={({ field }) => (
-                              <AttributeInput
-                                field={field}
-                                attribute={attribute}
-                              ></AttributeInput>
-                            )}
+                            render={({ field }) => {
+                              if (attribute.type === "block") {
+                                return (
+                                  <BlockSelect
+                                    rootBlock={
+                                      blocks.find(
+                                        (b) => b?.attributeId === attribute.id,
+                                      ) ?? null
+                                    }
+                                    field={field}
+                                  />
+                                );
+                              }
+                              return (
+                                <AttributeInput
+                                  field={field}
+                                  attribute={attribute}
+                                ></AttributeInput>
+                              );
+                            }}
                           ></Controller>
                         ) : attribute.type === "file" &&
                           row.original[attribute.id] !== null &&

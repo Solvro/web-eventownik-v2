@@ -6,6 +6,7 @@ import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { getParticipant } from "../actions";
@@ -22,7 +23,11 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function generateColumns(attributes: Attribute[], eventId: string) {
+export function generateColumns(
+  attributes: Attribute[],
+  blocks: (Block | null)[],
+  eventId: string,
+) {
   const columnHelper = createColumnHelper<FlattenedParticipant>();
   const baseColumns = [
     columnHelper.display({
@@ -148,6 +153,16 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
               }
               return value;
             }
+            case "block": {
+              const rootBlock = blocks.find(
+                (b) => b?.attributeId === attribute.id,
+              );
+              const childBlockId = Number(info.getValue());
+              const childBlock = rootBlock?.children.find(
+                (b) => b.id === childBlockId,
+              );
+              return childBlock?.name;
+            }
             case "time":
             case "number":
             case "text":
@@ -159,7 +174,6 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
             case "tel":
             case "file":
             case "multiselect":
-            case "block":
             default: {
               return info.getValue();
             }
@@ -170,7 +184,6 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
     }),
     columnHelper.display({
       id: "expand",
-      //TODO fetch data for all participants after clicking on the expand button
       header: ({ table }) => {
         const isAnyExpanded = table.getIsSomeRowsExpanded();
         const notExpandedRows = table

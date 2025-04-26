@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
@@ -60,6 +61,54 @@ export async function getAttributes(eventId: string) {
   }
   const attributes = (await response.json()) as Attribute[];
   return attributes;
+}
+
+async function getBlockData(
+  eventId: string,
+  attributeId: string,
+  bearerToken: string,
+) {
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    },
+  );
+  if (!response.ok) {
+    console.error(
+      `Failed to fetch blocks of attribute ID = ${attributeId}`,
+      response,
+    );
+    return null;
+  }
+  return response.json() as Promise<Block>;
+}
+
+export async function getBlocks(eventId: string, attributes: Attribute[]) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+  try {
+    const rootBlocksPromises = attributes
+      .filter((attribute) => attribute.type === "block")
+      .map(async (attribute) => {
+        return getBlockData(
+          eventId,
+          attribute.id.toString(),
+          session.bearerToken,
+        );
+      });
+
+    const responses = await Promise.all(rootBlocksPromises);
+    return responses;
+  } catch (error) {
+    console.error("Error fetching blocks:", error);
+    return null;
+  }
 }
 
 export async function deleteManyParticipants(
