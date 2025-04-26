@@ -179,6 +179,23 @@ export function TableRowForm({
                               ></AttributeInput>
                             )}
                           ></Controller>
+                        ) : attribute.type === "file" &&
+                          row.original[attribute.id] !== null &&
+                          row.original[attribute.id] !== undefined &&
+                          row.original[attribute.id] !== "" ? (
+                          <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : attribute.type === "textarea" ? (
+                          // TODO: Maybe find a better solution for this
+                          <div className="w-xs">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </div>
                         ) : (
                           <div className="py-2">
                             {flexRender(
