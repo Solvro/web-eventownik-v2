@@ -8,10 +8,14 @@ import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-export async function getParticipants(eventId: string, bearerToken: string) {
+export async function getParticipants(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
   const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
     method: "GET",
-    headers: { Authorization: `Bearer ${bearerToken}` },
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
   });
   if (!response.ok) {
     console.error("Failed to fetch participants", response);
@@ -21,10 +25,34 @@ export async function getParticipants(eventId: string, bearerToken: string) {
   return participants;
 }
 
-export async function getAttributes(eventId: string, bearerToken: string) {
+export async function getParticipant(eventId: string, participantId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/participants/${participantId}`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    },
+  );
+  if (!response.ok) {
+    console.error("Failed to fetch participant", response);
+    return null;
+  }
+  const participant = (await response.json()) as Participant;
+  return participant;
+}
+
+export async function getAttributes(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
   const response = await fetch(`${API_URL}/events/${eventId}/attributes`, {
     method: "GET",
-    headers: { Authorization: `Bearer ${bearerToken}` },
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
   });
   if (!response.ok) {
     console.error("Failed to fetch attributes", response);
@@ -34,7 +62,7 @@ export async function getAttributes(eventId: string, bearerToken: string) {
   return attributes;
 }
 
-export async function massDeleteParticipants(
+export async function deleteManyParticipants(
   eventId: string,
   participants: string[],
 ) {
@@ -54,7 +82,7 @@ export async function massDeleteParticipants(
 
   if (!response.ok) {
     console.error(
-      `[massDeleteParticipants] Failed to mass delete participants for event ${eventId}:`,
+      `[deleteManyParticipants] Failed to delete many participants for event ${eventId}:`,
       response,
     );
     if (response.status === 500) {
