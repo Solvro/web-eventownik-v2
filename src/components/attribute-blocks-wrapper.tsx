@@ -7,7 +7,8 @@ import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Accordion } from "./ui/accordion";
-import { RadioGroup } from "./ui/radio-group";
+import { FormControl, FormItem, FormLabel } from "./ui/form";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 /**
  * This component wraps all block entries for a block type attribute.
@@ -26,6 +27,16 @@ export function AttributeBlocksWrapper({
   return (
     <Accordion type="multiple">
       <RadioGroup onValueChange={field.onChange} className="my-4 space-y-2">
+        <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+          <div className="flex items-center gap-4">
+            <FormControl>
+              <RadioGroupItem value={"null"} />
+            </FormControl>
+            <FormLabel>
+              <p>Żaden (zrezygnuj lub wypisz się)</p>
+            </FormLabel>
+          </div>
+        </FormItem>
         {eventBlocks.map((childBlock) => (
           <AttributeInputBlock
             userData={userData}
