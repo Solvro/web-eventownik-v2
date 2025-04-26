@@ -39,14 +39,26 @@ export async function createEventForm(eventId: string, form: Payload) {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as unknown;
+    const error = (await response.json()) as {
+      message: string | undefined;
+      errors: [{ message: string }] | undefined;
+    };
     console.error(
       `[createEventForm action] Failed to create event form for event ${eventId}:`,
       error,
     );
+    const errorMessages = [
+      error.message,
+      ...(error.errors?.map((error_) => error_.message) ?? []),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error:
+        errorMessages ||
+        `Błąd ${response.status.toString()} ${response.statusText}`,
     };
   }
 
@@ -89,14 +101,26 @@ export async function updateEventForm(
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as { message: string };
+    const error = (await response.json()) as {
+      message: string | undefined;
+      errors: [{ message: string }] | undefined;
+    };
     console.error(
       `[updateEventForm action] Failed to update event form ${formId} for event ${eventId}:`,
       error,
     );
+    const errorMessages = [
+      error.message,
+      ...(error.errors?.map((error_) => error_.message) ?? []),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}\n${error.message}`,
+      error:
+        errorMessages ||
+        `Błąd ${response.status.toString()} ${response.statusText}`,
     };
   }
 

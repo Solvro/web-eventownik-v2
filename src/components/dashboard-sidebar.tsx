@@ -2,6 +2,7 @@
 
 import {
   ClipboardPenLine,
+  Cuboid,
   Mail,
   Play,
   SlidersHorizontal,
@@ -9,8 +10,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
+import type { Attribute } from "@/types/attributes";
 
 interface SidebarSection {
   title: string;
@@ -23,8 +26,25 @@ interface SidebarLink {
   route: string;
 }
 
-export function DashboardSidebar({ id }: { id: string }) {
+export function DashboardSidebar({
+  id,
+  attributes,
+}: {
+  id: string;
+  attributes: Attribute[];
+}) {
   const pathname = usePathname();
+
+  const blocks = attributes
+    .filter(({ type }) => type === "block")
+    .map(
+      (block) =>
+        ({
+          title: block.name,
+          icon: <Cuboid />,
+          route: `blocks/${block.id.toString()}`,
+        }) as SidebarLink,
+    );
 
   const sections: SidebarSection[] = [
     {
@@ -72,7 +92,10 @@ export function DashboardSidebar({ id }: { id: string }) {
   return (
     <>
       <nav className="border-muted hidden min-w-[240px] flex-col gap-6 border-r pr-8 sm:flex">
-        {sections.map((section) => (
+        {[
+          ...sections,
+          ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
+        ].map((section) => (
           <div key={section.title}>
             <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
             <ul className="flex flex-col gap-2 pl-2">
@@ -100,8 +123,12 @@ export function DashboardSidebar({ id }: { id: string }) {
       </nav>
       <nav className="flex gap-6 sm:hidden">
         <ul className="flex w-full justify-around gap-2">
-          {sections.flatMap((section) =>
-            section.links.map((link) => (
+          {[
+            ...sections,
+            ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
+          ]
+            .flatMap((section) => section.links)
+            .map((link) => (
               <li key={link.title}>
                 <Button
                   variant={pathname.endsWith(link.route) ? "default" : "ghost"}
@@ -114,8 +141,7 @@ export function DashboardSidebar({ id }: { id: string }) {
                   </Link>
                 </Button>
               </li>
-            )),
-          )}
+            ))}
         </ul>
       </nav>
     </>

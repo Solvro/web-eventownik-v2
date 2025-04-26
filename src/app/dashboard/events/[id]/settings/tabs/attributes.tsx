@@ -50,11 +50,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import type { TabProps } from "./tab-props";
 
-const ATTRIBUTE_TYPES: {
+export const ATTRIBUTE_TYPES: {
   value: AttributeType;
   title: string;
   icon: JSX.Element;
@@ -74,8 +75,6 @@ const ATTRIBUTE_TYPES: {
   { value: "color", title: "Kolor", icon: <Palette /> },
   { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
 ];
-
-const slugRegex = /^[a-z0-9-]+$/;
 
 interface AttributeItemProps {
   attribute: EventAttribute;
@@ -191,7 +190,7 @@ const AttributeItem = memo(
 
     const handleSlugChange = useCallback(
       (value: string) => {
-        if (!slugRegex.test(value)) {
+        if (!SLUG_REGEX.test(value)) {
           setSlugError(
             "Slug może zawierać tylko małe litery, cyfry i myślniki",
           );
