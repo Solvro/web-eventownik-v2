@@ -44,7 +44,7 @@ export async function submitForm(
     if (!response.ok) {
       console.error("Error when saving form", response);
       const errorData = (await response.json()) as ErrorResponse;
-      console.error("Error when saving form", errorData.errors);
+      console.error("Error when saving form", errorData);
       return { success: false, errors: errorData.errors };
     }
   } catch (error) {
