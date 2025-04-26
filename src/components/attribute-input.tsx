@@ -139,7 +139,7 @@ export function AttributeInput({
       break;
     }
     case "block": {
-      return <AttributeBlocksWrapper />;
+      return <AttributeBlocksWrapper field={field} />;
     }
   }
 }
