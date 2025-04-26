@@ -101,8 +101,8 @@ export function AttributeBlocksWrapper({
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   return (
-    <Accordion type="multiple" className="my-4 space-y-6">
-      <RadioGroup onValueChange={field.onChange}>
+    <Accordion type="multiple">
+      <RadioGroup onValueChange={field.onChange} className="my-4 space-y-2">
         {MOCK_DATA.map((block) => (
           <AttributeInputBlock block={block} key={block.name} />
         ))}

@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -159,12 +158,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{attribute.name}</FormLabel>
-                  {attribute.type === "block" && (
-                    <FormDescription>
-                      Zapisy do bloków są natychmiastowe i nie dzieją się w
-                      momencie zapisania formularza
-                    </FormDescription>
-                  )}
                   <FormControl>
                     {attribute.type === "file" ? (
                       <AttributeInputFile
