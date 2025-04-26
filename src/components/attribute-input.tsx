@@ -25,8 +25,8 @@ export function AttributeInput({
   field,
 }: {
   attribute: Attribute | FormAttribute;
-  userData: PublicParticipant;
-  eventBlocks: PublicBlock[];
+  userData?: PublicParticipant;
+  eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   //TODO add lacking implementation for block type
@@ -153,6 +153,13 @@ export function AttributeInput({
       break;
     }
     case "block": {
+      if (eventBlocks === undefined || userData === undefined) {
+        return (
+          <div>
+            Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪
+          </div>
+        );
+      }
       return (
         <>
           {eventBlocks.map((rootBlock) => (
