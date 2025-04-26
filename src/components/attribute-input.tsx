@@ -45,9 +45,6 @@ export function AttributeInput({
         />
       );
     }
-    case "datetime": {
-      return <Input type="datetime-local" {...field} />;
-    }
     case "select": {
       return (
         <Select
@@ -104,6 +101,27 @@ export function AttributeInput({
     case "email": {
       return <Input type="email" {...field} />;
     }
+    case "date": {
+      if (
+        field.value !== undefined &&
+        field.value !== null &&
+        field.value !== ""
+      ) {
+        // It may break some features
+        field.value = format(field.value as Date, "yyyy-MM-dd");
+      }
+      return <Input type="date" {...field} />;
+    }
+    case "datetime": {
+      if (
+        field.value !== undefined &&
+        field.value !== null &&
+        field.value !== ""
+      ) {
+        field.value = format(field.value as Date, "yyyy-MM-dd HH:mm");
+      }
+      return <Input type="datetime-local" {...field} />;
+    }
     case "time": {
       return <Input type="time" {...field} />;
     }
@@ -130,18 +148,8 @@ export function AttributeInput({
     case "tel": {
       return <Input type="tel" {...field} />;
     }
-    case "date": {
-      if (
-        field.value !== undefined &&
-        field.value !== null &&
-        field.value !== ""
-      ) {
-        // It may break some features
-        field.value = format(field.value as Date, "yyyy-MM-dd");
-      }
-      return <Input type="date" {...field} />;
-    }
     case "file": {
+      // Handled in ./attribute-input-file.tsx
       break;
     }
     case "block": {

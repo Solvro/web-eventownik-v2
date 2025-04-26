@@ -22,6 +22,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
@@ -52,11 +53,13 @@ export function ParticipantTable({
   participants,
   attributes,
   emails,
+  blocks,
   eventId,
 }: {
   participants: Participant[];
   attributes: Attribute[];
   emails: EventEmail[] | null;
+  blocks: (Block | null)[] | null;
   eventId: string;
 }) {
   const { toast } = useToast();
@@ -64,8 +67,8 @@ export function ParticipantTable({
 
   const [data, setData] = useState(() => flattenParticipants(participants));
   const columns = useMemo(
-    () => generateColumns(attributes, eventId),
-    [attributes, eventId],
+    () => generateColumns(attributes, blocks ?? [], eventId),
+    [attributes, eventId, blocks],
   );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
@@ -240,6 +243,7 @@ export function ParticipantTable({
                   setData={setData}
                   deleteParticipant={deleteParticipant}
                   isQuerying={isQuerying}
+                  blocks={blocks ?? []}
                 ></TableRowForm>
               );
             })}

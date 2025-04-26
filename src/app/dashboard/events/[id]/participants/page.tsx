@@ -3,7 +3,12 @@ import { redirect } from "next/navigation";
 import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
 import { verifySession } from "@/lib/session";
 
-import { getAttributes, getEmails, getParticipants } from "./actions";
+import {
+  getAttributes,
+  getBlocks,
+  getEmails,
+  getParticipants,
+} from "./actions";
 
 export default async function DashboardEventParticipantsPage({
   params,
@@ -25,6 +30,7 @@ export default async function DashboardEventParticipantsPage({
     attributesData,
     emailsData,
   ]);
+  const blocks = await getBlocks(id, attributes ?? []);
 
   return (
     <div>
@@ -38,6 +44,7 @@ export default async function DashboardEventParticipantsPage({
           )}
           attributes={attributes}
           emails={emails}
+          blocks={blocks}
           eventId={id}
         />
       )}
