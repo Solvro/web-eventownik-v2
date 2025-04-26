@@ -13,6 +13,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { Attribute, FormAttribute } from "@/types/attributes";
 
+import { AttributeBlocksWrapper } from "./attribute-blocks-wrapper";
+
 export function AttributeInput({
   attribute,
   field,
@@ -128,7 +130,7 @@ export function AttributeInput({
       break;
     }
     case "block": {
-      throw new Error('Not implemented yet: "block" case');
+      return <AttributeBlocksWrapper />;
     }
   }
 }
