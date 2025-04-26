@@ -13,3 +13,13 @@ export interface Block {
     participantsInBlockCount: number | undefined;
   };
 }
+
+export type BlockParticipant = Record<string, string | number>;
+
+export interface PublicBlock extends Block {
+  children: PublicBlock[];
+  meta: {
+    participantsInBlockCount: number | undefined;
+    participants: BlockParticipant[];
+  };
+}

@@ -13,14 +13,20 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { Attribute, FormAttribute } from "@/types/attributes";
+import type { PublicBlock } from "@/types/blocks";
+import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeBlocksWrapper } from "./attribute-blocks-wrapper";
 
 export function AttributeInput({
   attribute,
+  userData,
+  eventBlocks,
   field,
 }: {
   attribute: Attribute | FormAttribute;
+  userData: PublicParticipant;
+  eventBlocks: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   //TODO add lacking implementation for block type
@@ -139,7 +145,18 @@ export function AttributeInput({
       break;
     }
     case "block": {
-      return <AttributeBlocksWrapper field={field} />;
+      return (
+        <>
+          {eventBlocks.map((rootBlock) => (
+            <AttributeBlocksWrapper
+              key={rootBlock.id}
+              field={field}
+              userData={userData}
+              eventBlocks={rootBlock.children}
+            />
+          ))}
+        </>
+      );
     }
   }
 }

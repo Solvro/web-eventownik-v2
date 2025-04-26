@@ -1,4 +1,4 @@
-import type { AttributeBase } from "./attributes";
+import type { AttributeBase, PublicParticipantAttribute } from "./attributes";
 
 export interface Participant {
   id: number;
@@ -7,6 +7,11 @@ export interface Participant {
   createdAt: string;
   updatedAt: string;
   attributes: AttributeBase[];
+}
+
+export interface PublicParticipant extends Omit<Participant, "attributes"> {
+  eventId: number;
+  attributes: PublicParticipantAttribute[];
 }
 
 export interface FlattenedParticipant {

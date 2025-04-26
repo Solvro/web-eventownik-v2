@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/tooltip";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import type { FormAttribute } from "@/types/attributes";
+import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 import type { Form } from "@/types/form";
+import type { PublicParticipant } from "@/types/participant";
 
 import { FormGenerator } from "./form-generator";
 
@@ -29,19 +32,20 @@ interface FormPageProps {
   params: Promise<{ eventSlug: string; formSlug: string; userId: string }>;
 }
 
-export default async function FormPage({ params }: FormPageProps) {
-  const { eventSlug, formSlug, userId } = await params;
-
+async function getEvent(eventSlug: string) {
   const eventResponse = await fetch(`${API_URL}/events/${eventSlug}`, {
     method: "GET",
   });
   if (!eventResponse.ok) {
     const error = (await eventResponse.json()) as unknown;
     console.error(error);
-    return <div>Nie znaleziono wydarzenia 😪</div>;
+    return null;
   }
   const event = (await eventResponse.json()) as Event;
+  return event;
+}
 
+async function getForm(eventSlug: string, formSlug: string) {
   const formResponse = await fetch(
     `${API_URL}/events/${eventSlug}/forms/${formSlug}`,
     {
@@ -51,9 +55,92 @@ export default async function FormPage({ params }: FormPageProps) {
   if (!formResponse.ok) {
     const error = (await formResponse.json()) as unknown;
     console.error(error);
-    return <div>Nie znaleziono formularza 😪</div>;
+    return null;
   }
   const form = (await formResponse.json()) as Form;
+  return form;
+}
+
+async function getUserData(
+  formAttributes: FormAttribute[],
+  eventSlug: string,
+  userId: string,
+) {
+  const attributesUrl = new URL(
+    `${API_URL}/events/${eventSlug}/participants/${userId}`,
+  );
+
+  for (const attribute of formAttributes) {
+    attributesUrl.searchParams.append("attributes[]", attribute.id.toString());
+  }
+
+  const userDataResponse = await fetch(attributesUrl, {
+    method: "GET",
+  });
+
+  if (!userDataResponse.ok) {
+    const error = (await userDataResponse.json()) as unknown;
+    console.error(error);
+    return null;
+  }
+  return (await userDataResponse.json()) as PublicParticipant;
+}
+
+async function getEventBlockAttributeBlocks(
+  eventSlug: string,
+  attributeId: string,
+) {
+  const blocksResponse = await fetch(
+    `${API_URL}/events/${eventSlug}/attributes/${attributeId}/blocks`,
+    {
+      method: "GET",
+    },
+  );
+  if (!blocksResponse.ok) {
+    const error = (await blocksResponse.json()) as unknown;
+    console.error(error);
+    return null;
+  }
+  return (await blocksResponse.json()) as PublicBlock[];
+}
+
+export default async function FormPage({ params }: FormPageProps) {
+  const { eventSlug, formSlug, userId } = await params;
+
+  const event = await getEvent(eventSlug);
+  if (event === null) {
+    return <div>Nie znaleziono wydarzenia 😪</div>;
+  }
+
+  const form = await getForm(eventSlug, formSlug);
+  if (form === null) {
+    return <div>Nie znaleziono formularza 😪</div>;
+  }
+
+  const userData = await getUserData(form.attributes, event.slug, userId);
+  if (userData === null) {
+    return <div>Nie udało się pobrać twoich danych 😪</div>;
+  }
+
+  const blockAttributesInForm = form.attributes.filter(
+    (attribute) => attribute.type === "block",
+  );
+
+  const eventBlocks = await Promise.all(
+    blockAttributesInForm.map(async (attribute) =>
+      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+    ),
+  );
+
+  if (eventBlocks.includes(null)) {
+    return (
+      <div>
+        Nie udało się pobrać informacji dla przynajmniej jednego z bloków w tym
+        formularzu 😪
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <div
@@ -147,6 +234,8 @@ export default async function FormPage({ params }: FormPageProps) {
         </h2>
         <FormGenerator
           attributes={form.attributes}
+          userData={userData}
+          eventBlocks={eventBlocks as unknown as PublicBlock[]}
           formId={form.id.toString()}
           eventSlug={eventSlug}
           userId={userId}

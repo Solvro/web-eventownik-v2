@@ -3,6 +3,8 @@
 import { Users } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import type { PublicBlock } from "@/types/blocks";
+import type { PublicParticipant } from "@/types/participant";
 
 // import { cn } from "@/lib/utils";
 import {
@@ -14,27 +16,26 @@ import {
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { RadioGroupItem } from "./ui/radio-group";
 
-/**
- * A temporary interface meant to represent block data returned from upcoming API endpoint.
- */
-interface PublicBlock {
-  id: number;
-  name: string;
-  description: string;
-  capacity: number;
-  occupants: Record<"identity" | "participantSlug", string>[];
-}
-
-// Temporary participant slug. Used for registering to a given block. Adjust according to testing needs.
-const PARTICIPANT_SLUG = "e6f6dde2-8692-4872-a620-016b5b9a0037";
+const valueOrZero = (value: number | null | undefined) => {
+  return value === null || value === undefined ? "0" : value.toString();
+};
 
 /**
  * A single block entry card, being a radio group item.
  */
-export function AttributeInputBlock({ block }: { block: PublicBlock }) {
-  const isFull = block.occupants.length >= block.capacity;
-  const isRegistered = block.occupants.some(
-    (occupant) => occupant.participantSlug === PARTICIPANT_SLUG,
+export function AttributeInputBlock({
+  block,
+  userData,
+}: {
+  block: PublicBlock;
+  userData: PublicParticipant;
+}) {
+  const isFull =
+    block.capacity !== null && block.meta.participants.length >= block.capacity;
+  const isRegistered = userData.attributes.some(
+    (attribute) =>
+      attribute.type === "block" &&
+      attribute.meta.pivot_value === block.id.toString(),
   );
 
   return (
@@ -59,23 +60,29 @@ export function AttributeInputBlock({ block }: { block: PublicBlock }) {
                 isRegistered && "text-primary",
               )}
             >
-              <Users className="size-4" /> {block.occupants.length} /{" "}
-              {block.capacity}
+              <Users className="size-4" />
+              {block.capacity === null
+                ? valueOrZero(block.meta.participantsInBlockCount)
+                : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
             </div>
           </div>
         </FormLabel>
       </div>
       <AccordionItem value={block.name} className="w-full">
-        <AccordionTrigger className="text-primary [&>svg]:text-primary flex items-center gap-2 pb-2">
+        <AccordionTrigger
+          className="text-primary [&>svg]:text-primary flex items-center gap-2 pb-2"
+          disabled={block.meta.participants.length === 0}
+        >
           Uczestnicy
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-2">
-          {block.occupants.map((occupant) => (
+          {block.meta.participants.map((occupant) => (
             <div
               className="border-muted rounded-md border p-4"
-              key={occupant.participantSlug}
+              key={occupant.id}
             >
-              <p>{occupant.identity}</p>
+              {/* TODO: Implement other kinds of identifiers */}
+              <p>{occupant.email}</p>
             </div>
           ))}
         </AccordionContent>

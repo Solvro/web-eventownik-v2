@@ -20,16 +20,22 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
+import type { PublicBlock } from "@/types/blocks";
+import type { PublicParticipant } from "@/types/participant";
 
 import { submitForm } from "./actions";
 
 export function FormGenerator({
   attributes,
+  userData,
+  eventBlocks,
   formId,
   eventSlug,
   userId,
 }: {
   attributes: FormAttribute[];
+  userData: PublicParticipant;
+  eventBlocks: PublicBlock[];
   formId: string;
   eventSlug: string;
   userId: string;
@@ -122,7 +128,12 @@ export function FormGenerator({
                         setFiles={setFiles}
                       ></AttributeInputFile>
                     ) : (
-                      <AttributeInput attribute={attribute} field={field} />
+                      <AttributeInput
+                        attribute={attribute}
+                        userData={userData}
+                        eventBlocks={eventBlocks}
+                        field={field}
+                      />
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">

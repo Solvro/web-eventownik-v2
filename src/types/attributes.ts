@@ -43,4 +43,17 @@ export interface FormAttributeBase {
   isEditable: boolean;
 }
 
+/**
+ * The attribute type that is returned by the API in the public participant endpoint
+ */
+export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
+  meta: {
+    pivot_value: string;
+    pivot_created_at: string;
+    pivot_participant_id: number;
+    pivot_attribute_id: number;
+    pivot_updated_at: string;
+  };
+}
+
 export type AttributeType = (typeof AttributeTypes)[number];
