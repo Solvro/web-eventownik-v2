@@ -67,7 +67,8 @@ export function FilterButton({
 }) {
   if (
     attributeType === "checkbox" ||
-    (attributeType === "select" && options !== null)
+    attributeType === "select" ||
+    (attributeType === "multiselect" && options !== null)
   ) {
     const filterValues =
       (column.getFilterValue() as string[] | undefined) ?? [];
