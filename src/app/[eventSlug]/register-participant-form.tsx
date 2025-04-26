@@ -50,7 +50,9 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   ) {
     try {
       const result = await registerParticipant(values, event, files);
-      if (!result.success) {
+      if (result.success) {
+        setFiles([]);
+      } else {
         if (
           result.errors?.[0]?.rule === "database.unique" &&
           result.errors[0]?.field === "email"
@@ -80,7 +82,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
           });
         }
       }
-      setFiles([]);
     } catch (error) {
       console.error("Participant register failed", error);
       toast({
@@ -172,7 +173,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
                         field={field}
                         setError={form.control.setError}
                         resetField={form.resetField}
-                        files={files}
                         setFiles={setFiles}
                       ></AttributeInputFile>
                     ) : (
@@ -180,8 +180,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
                         attribute={attribute}
                         /* @ts-expect-error zod schema object are dynamic */
                         field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
                       />
                     )}
                   </FormControl>

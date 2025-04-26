@@ -1,5 +1,6 @@
 "use client";
 
+import type { RowData } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -9,16 +10,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { ExportButton } from "@/app/dashboard/events/[id]/participants/table/export-button";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -30,19 +26,21 @@ import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 import {
+  deleteManyParticipants as deleteManyParticipantsAction,
   deleteParticipant as deleteParticipantAction,
-  massDeleteParticipants as massDeleteParticipantsAction,
 } from "../actions";
-import {
-  DeleteParticipantDialog,
-  MassDeleteParticipantsDialog,
-} from "./action-components";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
-import { DownloadAttributeFileButton } from "./download-file-attribute-button";
-import { EditParticipantForm } from "./edit-participant-form";
-import { SendMailForm } from "./send-mail-form";
-import { getPaginationInfoText } from "./utils";
+import { TableMenu } from "./table-menu";
+import { TableRowForm } from "./table-row-form";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, value: TData) => void;
+    isRowLoading: (rowIndex: number) => boolean;
+    setRowLoading: (rowIndex: number, isLoading: boolean) => void;
+  }
+}
 
 /**
  * To seamlessly navigate during working on this component
@@ -65,9 +63,14 @@ export function ParticipantTable({
   const [isQuerying, setIsQuerying] = useState(false);
 
   const [data, setData] = useState(() => flattenParticipants(participants));
-  const columns = useMemo(() => generateColumns(attributes), [attributes]);
+  const columns = useMemo(
+    () => generateColumns(attributes, eventId),
+    [attributes, eventId],
+  );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  // Then in your component where the table is defined
+  const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const table = useReactTable({
     columns,
@@ -84,13 +87,34 @@ export function ParticipantTable({
       globalFilter,
     },
     initialState: {
-      // TODO: Allow user to define page size
-      pagination: { pageSize: 15, pageIndex: 0 },
+      pagination: { pageSize: 25, pageIndex: 0 },
       columnVisibility: {
         id: false,
       },
     },
     autoResetPageIndex: false,
+
+    meta: {
+      updateData: (rowIndex, value) => {
+        setData((previousData) => {
+          return previousData.map((row, index) => {
+            if (index === rowIndex) {
+              return value;
+            }
+            return row;
+          });
+        });
+      },
+      setRowLoading: (rowIndex, isLoading) => {
+        setLoadingRows((previous) => ({
+          ...previous,
+          [rowIndex]: isLoading,
+        }));
+      },
+      isRowLoading: (rowIndex) => {
+        return loadingRows[rowIndex];
+      },
+    },
   });
 
   async function deleteParticipant(participantId: number) {
@@ -126,10 +150,10 @@ export function ParticipantTable({
     }
   }
 
-  async function massDeleteParticipants(_participants: string[]) {
+  async function deleteManyParticipants(_participants: string[]) {
     setIsQuerying(true);
     try {
-      const response = await massDeleteParticipantsAction(
+      const response = await deleteManyParticipantsAction(
         eventId,
         _participants,
       );
@@ -166,90 +190,31 @@ export function ParticipantTable({
     <>
       <div className="my-2 flex flex-wrap items-center gap-4">
         <h1 className="text-3xl font-bold">Lista uczestników</h1>
-        <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
-          <div className="flex items-center gap-x-2">
-            <Input
-              className="h-10 w-32"
-              placeholder="Wyszukaj..."
-              value={globalFilter}
-              onChange={(event) => {
-                table.setGlobalFilter(String(event.target.value));
-              }}
-            ></Input>
-            <Button
-              onClick={() => {
-                table.resetColumnFilters();
-              }}
-              size="icon"
-              variant="outline"
-              title="Resetuj filtry"
-            >
-              <FilterX />
-            </Button>
-            <Button
-              onClick={() => {
-                table.resetSorting();
-              }}
-              size="icon"
-              variant="outline"
-              title="Resetuj sortowanie"
-            >
-              <ArrowUpDown />
-            </Button>
-            <SendMailForm
-              eventId={eventId}
-              targetParticipants={table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original)}
-              emails={emails}
-            />
-            <ExportButton eventId={eventId} />
-            <MassDeleteParticipantsDialog
-              isQuerying={isQuerying}
-              participants={table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original.id.toString())}
-              massDeleteParticipants={massDeleteParticipants}
-            />
-          </div>
-          <div className="ml-auto">
-            <span className="mr-2">{getPaginationInfoText(table)}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => {
-                table.previousPage();
-              }}
-            >
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!table.getCanNextPage()}
-              onClick={() => {
-                table.nextPage();
-              }}
-            >
-              <ChevronRight />
-            </Button>
-          </div>
-        </div>
+        <TableMenu
+          table={table}
+          eventId={eventId}
+          globalFilter={globalFilter}
+          isQuerying={isQuerying}
+          emails={emails}
+          deleteManyParticipants={deleteManyParticipants}
+        />
       </div>
-      {/* TODO: Prevent resizing width of columns */}
       <div className="relative w-full overflow-auto">
         <Table>
           <TableHeader className="border-border border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                key={headerGroup.id}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "border-border border-r-2",
+                        "border-border bg-background border-r-2",
                         header.id === "expand" ? "w-16 text-right" : "",
+                        header.column.columnDef.meta?.headerClassName,
                       )}
                     >
                       {header.isPlaceholder
@@ -266,95 +231,16 @@ export function ParticipantTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.map((row) => {
-              const allVisibleCells = row.getVisibleCells();
-              const attributesCells = allVisibleCells.filter(
-                (cell) => cell.column.columnDef.meta?.attribute !== undefined,
-              );
-              // headers structure - [select, email, createdAt, ...attributes, expand]
-              const emailCell = allVisibleCells.at(1);
-              const createdAtCell = allVisibleCells.at(2);
               return (
-                <Fragment key={row.id}>
-                  <TableRow>
-                    {row.getVisibleCells().map((cell) => {
-                      const attribute = cell.column.columnDef.meta?.attribute;
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={cn(
-                            cell.column.id === "expand" ? "text-right" : "",
-                          )}
-                        >
-                          {attribute?.type === "file" &&
-                          row.original[attribute.id] !== null &&
-                          row.original[attribute.id] !== undefined &&
-                          row.original[attribute.id] !== "" ? (
-                            <DownloadAttributeFileButton
-                              attribute={attribute}
-                              eventId={eventId}
-                              participant={row.original}
-                            />
-                          ) : (
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                  {row.getIsExpanded() ? (
-                    /*
-                      TODO Refactor expanded row so it shows only attributes which weren't visible before expanding 
-                      (attribute.showInList = false)
-                      It will require changes in how the edit form will be handled
-                      Use FlattenedParticipant.mode property to render proper UI (editForm/cells)
-                    */
-                    <TableRow
-                      key={`${row.id}-edit`}
-                      className="border-l-primary border-l-2"
-                    >
-                      <TableCell>{null}</TableCell>
-                      <TableCell>
-                        {emailCell === undefined
-                          ? null
-                          : flexRender(
-                              emailCell.column.columnDef.cell,
-                              emailCell.getContext(),
-                            )}
-                      </TableCell>
-                      <TableCell>
-                        {createdAtCell === undefined
-                          ? null
-                          : flexRender(
-                              createdAtCell.column.columnDef.cell,
-                              createdAtCell.getContext(),
-                            )}
-                      </TableCell>
-                      <TableCell
-                        className="p-0"
-                        colSpan={attributesCells.length}
-                      >
-                        <EditParticipantForm
-                          cells={attributesCells}
-                          eventId={eventId}
-                          row={row}
-                          setData={setData}
-                        ></EditParticipantForm>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex w-fit flex-col">
-                          <DeleteParticipantDialog
-                            isQuerying={isQuerying}
-                            participantId={row.original.id}
-                            deleteParticipant={deleteParticipant}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                </Fragment>
+                <TableRowForm
+                  key={row.id}
+                  cells={row.getAllCells()}
+                  eventId={eventId}
+                  row={row}
+                  setData={setData}
+                  deleteParticipant={deleteParticipant}
+                  isQuerying={isQuerying}
+                ></TableRowForm>
               );
             })}
           </TableBody>

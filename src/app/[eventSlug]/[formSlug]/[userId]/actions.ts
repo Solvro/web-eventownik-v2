@@ -18,21 +18,29 @@ export async function submitForm(
   formId: string,
   eventSlug: string,
   userId: string,
+  files: File[],
 ) {
   try {
+    const formData = new FormData();
+
+    for (const file of files) {
+      //Filename of file is corresponding attribute id
+      formData.append(file.name, file);
+    }
+
+    formData.append("participantSlug", userId);
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, String(value));
+    }
+
     const response = await fetch(
       `${API_URL}/events/${eventSlug}/forms/${formId}/submit`,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
         method: "POST",
-        body: JSON.stringify({
-          participantSlug: userId,
-          ...values,
-        }),
+        body: formData,
       },
     );
+
     if (!response.ok) {
       console.error("Error when saving form", response);
       const errorData = (await response.json()) as ErrorResponse;

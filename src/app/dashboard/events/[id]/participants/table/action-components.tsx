@@ -32,7 +32,7 @@ export function DeleteParticipantDialog({
       <AlertDialogTrigger asChild>
         <Button
           variant="outline"
-          className="text-red-500"
+          className="h-12 w-fit px-3 text-red-500"
           disabled={isQuerying}
           size="icon"
         >
@@ -75,14 +75,14 @@ export function DeleteParticipantDialog({
   );
 }
 
-export function MassDeleteParticipantsDialog({
+export function DeleteManyParticipantsDialog({
   isQuerying,
   participants,
-  massDeleteParticipants,
+  deleteManyParticipants,
 }: {
   isQuerying: boolean;
   participants: string[];
-  massDeleteParticipants: (_participants: string[]) => Promise<void>;
+  deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
   return participants.length === 0 ? (
     <Tooltip.Provider delayDuration={0}>
@@ -137,7 +137,7 @@ export function MassDeleteParticipantsDialog({
         <AlertDialogFooter className="flex gap-x-4">
           <AlertDialogAction
             onClick={async () => {
-              await massDeleteParticipants(participants);
+              await deleteManyParticipants(participants);
             }}
             className={buttonVariants({
               variant: "destructive",

@@ -16,6 +16,7 @@ export function SortButton({
   sortingDirection,
   column,
   children,
+  className,
 }: {
   sortingDirection: false | SortDirection;
   column: Column<
@@ -23,10 +24,12 @@ export function SortButton({
     string | number | boolean | Date | null | undefined
   >;
   children: ReactNode;
+  className?: string;
 }) {
   return (
     <Button
       variant="ghost"
+      className={className}
       onClick={() => {
         column.toggleSorting(sortingDirection === "asc");
       }}

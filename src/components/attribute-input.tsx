@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -124,6 +125,14 @@ export function AttributeInput({
       return <Input type="tel" {...field} />;
     }
     case "date": {
+      if (
+        field.value !== undefined &&
+        field.value !== null &&
+        field.value !== ""
+      ) {
+        // It may break some features
+        field.value = format(field.value as Date, "yyyy-MM-dd");
+      }
       return <Input type="date" {...field} />;
     }
     case "file": {

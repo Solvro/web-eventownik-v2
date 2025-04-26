@@ -36,12 +36,13 @@ import {
   TrashIcon,
 } from "lucide-react";
 import type { JSX } from "react";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -79,6 +80,7 @@ interface AttributeItemProps {
   attribute: EventAttribute;
   onUpdate: (updatedAttribute: EventAttribute) => void;
   onRemove: () => void;
+  allAttributes: EventAttribute[];
 }
 
 interface SortableOptionProps {
@@ -121,9 +123,35 @@ const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
 SortableOption.displayName = "SortableOption";
 
 const AttributeItem = memo(
-  ({ attribute, onUpdate, onRemove }: AttributeItemProps) => {
+  ({ attribute, onUpdate, onRemove, allAttributes }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
+
+    useEffect(() => {
+      if (attribute.type === "block" && Array.isArray(attribute.options)) {
+        const validOptions = new Set([
+          "email",
+          ...allAttributes
+            .filter(
+              (attribute_) =>
+                attribute_.id !== attribute.id &&
+                typeof attribute_.slug === "string",
+            )
+            .map((attribute_) => attribute_.slug),
+        ]);
+
+        const validSelectedOptions = attribute.options.filter((option) =>
+          validOptions.has(option),
+        );
+
+        if (validSelectedOptions.length !== attribute.options.length) {
+          onUpdate({
+            ...attribute,
+            options: validSelectedOptions,
+          });
+        }
+      }
+    }, [attribute, allAttributes, onUpdate]);
 
     const sensors = useSensors(
       useSensor(PointerSensor),
@@ -168,12 +196,21 @@ const AttributeItem = memo(
           );
         } else if (value.length < 3) {
           setSlugError("Slug musi mieć co najmniej 3 znaki");
+        } else if (
+          allAttributes.some(
+            (attribute_) =>
+              attribute_.id !== attribute.id && attribute_.slug === value,
+          )
+        ) {
+          setSlugError(
+            `Slug jest już używany (pole: "${allAttributes.find((attribute_) => attribute_.slug === value)?.name ?? "?"}")`,
+          );
         } else {
           setSlugError("");
         }
         onUpdate({ ...attribute, slug: value });
       },
-      [attribute, onUpdate],
+      [attribute, onUpdate, allAttributes],
     );
 
     const handleRemoveOption = useCallback(
@@ -311,6 +348,35 @@ const AttributeItem = memo(
               </div>
             </div>
           )}
+
+          {attribute.type === "block" && (
+            <div className="space-y-2">
+              <Label htmlFor={`block-attributes-${attribute.id.toString()}`}>
+                Wyświetlane atrybuty dla uczestników
+              </Label>
+              <MultiSelect
+                id={`block-attributes-${attribute.id.toString()}`}
+                options={[
+                  { label: "Email", value: "email" },
+                  ...allAttributes
+                    .filter((a) => a.id !== attribute.id && a.slug != null)
+                    .map((a) => ({
+                      label: a.name,
+                      value: a.slug ?? "",
+                    })),
+                ]}
+                onValueChange={(values) => {
+                  onUpdate({ ...attribute, options: values });
+                }}
+                defaultValue={attribute.options ?? []}
+                placeholder="Wybierz atrybuty do wyświetlenia"
+              />
+              <p className="text-muted-foreground text-sm">
+                Jeśli nie wybrano żadnych atrybutów, zapisy będą anonimowe -
+                uczestnicy będą widzieć tylko ilość zajętych miejsc.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -405,6 +471,7 @@ export function Attributes({
               onRemove={() => {
                 handleRemoveAttribute(attribute.id);
               }}
+              allAttributes={attributes}
             />
           ))}
           <div className="flex items-center gap-2">
