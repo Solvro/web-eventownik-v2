@@ -1,7 +1,7 @@
 "use client";
 
-import { flexRender } from "@tanstack/react-table";
 import type { Cell, Row } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import type { Dispatch, SetStateAction } from "react";
 import { Fragment, useEffect } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
@@ -213,7 +213,7 @@ export function TableRowForm({
         </TableRow>
 
         {row.getIsExpanded() && (
-          <TableRow className="border-l-primary bg-accent/10 border-l-2">
+          <TableRow className="border-l-primary bg-accent/10 hover:bg-accent/10 border-l-2">
             <TableCell colSpan={allVisibleCells.length} className="p-4">
               <div className={cn("grid gap-4", `grid-cols-3`)}>
                 {expandedRowCells.map((cell) => {
@@ -281,38 +281,38 @@ export function TableRowForm({
                     </div>
                   );
                 })}
-                <div className="right-0 col-end-4 flex gap-x-2">
-                  <EditParticipantButton
-                    disabled={form.formState.isSubmitting}
-                    participant={participant}
-                    setData={setData}
-                    handleSubmit={form.handleSubmit(onSubmit)}
+              </div>
+              <div className="right-0 col-end-4 flex gap-x-2">
+                <EditParticipantButton
+                  disabled={form.formState.isSubmitting}
+                  participant={participant}
+                  setData={setData}
+                  handleSubmit={form.handleSubmit(onSubmit)}
+                />
+                {participant.mode === "view" ? (
+                  <DeleteParticipantDialog
+                    isQuerying={isQuerying}
+                    participantId={row.original.id}
+                    deleteParticipant={deleteParticipant}
                   />
-                  {participant.mode === "view" ? (
-                    <DeleteParticipantDialog
-                      isQuerying={isQuerying}
-                      participantId={row.original.id}
-                      deleteParticipant={deleteParticipant}
-                    />
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="text-red-500"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setData((previousData) => {
-                          return previousData.map((_participant) =>
-                            _participant.id === participant.id
-                              ? { ..._participant, mode: "view" }
-                              : _participant,
-                          );
-                        });
-                      }}
-                    >
-                      Anuluj
-                    </Button>
-                  )}
-                </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="text-red-500"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setData((previousData) => {
+                        return previousData.map((_participant) =>
+                          _participant.id === participant.id
+                            ? { ..._participant, mode: "view" }
+                            : _participant,
+                        );
+                      });
+                    }}
+                  >
+                    Anuluj
+                  </Button>
+                )}
               </div>
             </TableCell>
           </TableRow>
