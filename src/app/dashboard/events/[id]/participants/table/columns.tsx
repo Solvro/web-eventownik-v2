@@ -1,5 +1,6 @@
 import type { Row, RowData, Table } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -131,7 +132,39 @@ export function generateColumns(attributes: Attribute[], eventId: string) {
             </div>
           );
         },
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          switch (attribute.type) {
+            case "date": {
+              const value = info.getValue();
+              if (value !== undefined && value !== null && value !== "") {
+                return format(value as Date, "dd-MM-yyyy");
+              }
+              return value;
+            }
+            case "datetime": {
+              const value = info.getValue();
+              if (value !== undefined && value !== null && value !== "") {
+                return format(value as Date, "dd-MM-yyyy HH:mm:ss");
+              }
+              return value;
+            }
+            case "time":
+            case "number":
+            case "text":
+            case "select":
+            case "email":
+            case "textarea":
+            case "color":
+            case "checkbox":
+            case "tel":
+            case "file":
+            case "multiselect":
+            case "block":
+            default: {
+              return info.getValue();
+            }
+          }
+        },
         filterFn: "arrIncludesSome",
       });
     }),
