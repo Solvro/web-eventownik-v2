@@ -15,8 +15,9 @@ export default async function DashboardEventParticipantsPage({
     redirect("/auth/login");
   }
   const { id } = await params;
-  const participantsData = getParticipants(id, session.bearerToken);
-  const attributesData = getAttributes(id, session.bearerToken);
+
+  const participantsData = getParticipants(id);
+  const attributesData = getAttributes(id);
   const emailsData = getEmails(id);
 
   const [participants, attributes, emails] = await Promise.all([
