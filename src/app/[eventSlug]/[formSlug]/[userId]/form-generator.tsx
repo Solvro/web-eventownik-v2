@@ -112,7 +112,7 @@ export function FormGenerator({
     return () => {
       clearInterval(interval);
     };
-  });
+  }, [eventSlug, attributes]);
 
   if (form.formState.isSubmitSuccessful) {
     return (
