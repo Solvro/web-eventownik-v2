@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,33 +23,43 @@ import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
-import { submitForm } from "./actions";
+import { getEventBlockAttributeBlocks, submitForm } from "./actions";
 
 export function FormGenerator({
   attributes,
   userData,
-  eventBlocks,
+  originalEventBlocks,
   formId,
   eventSlug,
   userId,
 }: {
   attributes: FormAttribute[];
   userData: PublicParticipant;
-  eventBlocks: PublicBlock[];
+  originalEventBlocks: PublicBlock[];
   formId: string;
   eventSlug: string;
   userId: string;
 }) {
   const [files, setFiles] = useState<File[]>([]);
+  const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
   // generate schema for form based on attributes
   const FormSchema = z.object({
-    ...getSchemaObjectForAttributes(attributes.sort((a, b) => a.id - b.id)), // TODO: change to order after backend changes
+    ...getSchemaObjectForAttributes(
+      attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
+      ...userData.attributes.reduce<Record<string, string>>(
+        (accumulator, attribute) => {
+          accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+          return accumulator;
+        },
+        {},
+      ),
     },
   });
 
@@ -82,6 +92,28 @@ export function FormGenerator({
     }
   }
 
+  useEffect(() => {
+    async function updateBlocksData() {
+      setEventBlocks(
+        (await Promise.all(
+          attributes
+            .filter((attribute) => attribute.type === "block")
+            .map(async (attribute) =>
+              getEventBlockAttributeBlocks(eventSlug, attribute.id.toString()),
+            ),
+        )) as unknown as PublicBlock[],
+      );
+    }
+
+    const interval = setInterval(async () => {
+      await updateBlocksData();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
+
   if (form.formState.isSubmitSuccessful) {
     return (
       <div>
@@ -93,9 +125,10 @@ export function FormGenerator({
           <Button
             onClick={() => {
               form.reset();
+              location.reload();
             }}
           >
-            Uzupełnij kolejny formularz
+            Edytuj swoją odpowiedź
           </Button>
         </div>
       </div>
@@ -108,42 +141,42 @@ export function FormGenerator({
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full max-w-sm space-y-4"
       >
-        {attributes
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map((attribute) => (
-            <FormField
-              key={attribute.id}
-              control={form.control}
-              name={attribute.id.toString()}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{attribute.name}</FormLabel>
-                  <FormControl>
-                    {attribute.type === "file" ? (
-                      <AttributeInputFile
-                        attribute={attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                      ></AttributeInputFile>
-                    ) : (
-                      <AttributeInput
-                        attribute={attribute}
-                        userData={userData}
-                        eventBlocks={eventBlocks}
-                        field={field}
-                      />
-                    )}
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {/* @ts-expect-error zod schema object are dynamic */}
-                    {form.formState.errors[attribute.id.toString()]?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-          ))}
+        {attributes.map((attribute) => (
+          <FormField
+            key={attribute.id}
+            control={form.control}
+            name={attribute.id.toString()}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{attribute.name}</FormLabel>
+                <FormControl>
+                  {attribute.type === "file" ? (
+                    <AttributeInputFile
+                      attribute={attribute}
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      setFiles={setFiles}
+                    ></AttributeInputFile>
+                  ) : (
+                    <AttributeInput
+                      attribute={attribute}
+                      userData={userData}
+                      eventBlocks={eventBlocks.filter(
+                        (block) => block.attributeId === attribute.id,
+                      )}
+                      field={field}
+                    />
+                  )}
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {/* @ts-expect-error zod schema object are dynamic */}
+                  {form.formState.errors[attribute.id.toString()]?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ))}
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
             {form.formState.errors.root.message}

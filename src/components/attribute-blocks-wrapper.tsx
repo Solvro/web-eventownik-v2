@@ -2,6 +2,7 @@
 
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
+import type { Attribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
@@ -19,14 +20,20 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
+  attribute,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   userData: PublicParticipant;
   eventBlocks: PublicBlock[];
+  attribute: Attribute;
 }) {
   return (
     <Accordion type="multiple">
-      <RadioGroup onValueChange={field.onChange} className="my-4 space-y-2">
+      <RadioGroup
+        onValueChange={field.onChange}
+        defaultValue={String(field.value)}
+        className="my-4 space-y-2"
+      >
         <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
           <div className="flex items-center gap-4">
             <FormControl>
@@ -42,6 +49,7 @@ export function AttributeBlocksWrapper({
             userData={userData}
             block={childBlock}
             key={childBlock.name}
+            displayedAttributes={attribute.options ?? []}
           />
         ))}
       </RadioGroup>

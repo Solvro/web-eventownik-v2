@@ -31,8 +31,10 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
   const registerParticipantFormSchema = z.object({
     email: z.string().email("Nieprawidłowy adres email."),
     ...getSchemaObjectForAttributes(
-      event.firstForm?.attributes.sort((a, b) => a.id - b.id) ?? [],
-    ), // TODO: change to order after backend changes
+      event.firstForm?.attributes.sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0),
+      ) ?? [],
+    ),
   });
 
   const form = useForm<z.infer<typeof registerParticipantFormSchema>>({
@@ -147,43 +149,41 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
           )}
         />
 
-        {event.firstForm.attributes
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map((attribute) => (
-            <FormField
-              key={attribute.id}
-              control={form.control}
-              // @ts-expect-error zod schema object are dynamic
-              name={attribute.id.toString()}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{attribute.name}</FormLabel>
-                  <FormControl>
-                    {attribute.type === "file" ? (
-                      <AttributeInputFile
-                        attribute={attribute}
-                        /* @ts-expect-error zod schema object are dynamic */
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                      ></AttributeInputFile>
-                    ) : (
-                      <AttributeInput
-                        attribute={attribute}
-                        /* @ts-expect-error zod schema object are dynamic */
-                        field={field}
-                      />
-                    )}
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {/* @ts-expect-error zod schema object are dynamic */}
-                    {form.formState.errors[attribute.id.toString()]?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-          ))}
+        {event.firstForm.attributes.map((attribute) => (
+          <FormField
+            key={attribute.id}
+            control={form.control}
+            // @ts-expect-error zod schema object are dynamic
+            name={attribute.id.toString()}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{attribute.name}</FormLabel>
+                <FormControl>
+                  {attribute.type === "file" ? (
+                    <AttributeInputFile
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      setFiles={setFiles}
+                    ></AttributeInputFile>
+                  ) : (
+                    <AttributeInput
+                      attribute={attribute}
+                      /* @ts-expect-error zod schema object are dynamic */
+                      field={field}
+                    />
+                  )}
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {/* @ts-expect-error zod schema object are dynamic */}
+                  {form.formState.errors[attribute.id.toString()]?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ))}
 
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
