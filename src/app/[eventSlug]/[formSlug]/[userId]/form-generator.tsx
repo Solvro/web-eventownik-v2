@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -42,6 +42,8 @@ export function FormGenerator({
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
+  const currentBlocksRef = useRef<PublicBlock[]>(originalEventBlocks); // used to prevent unnecessary re-renders
+  const isMounted = useRef(true);
   // generate schema for form based on attributes
   const FormSchema = z.object({
     ...getSchemaObjectForAttributes(
@@ -53,13 +55,12 @@ export function FormGenerator({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
-      ...userData.attributes.reduce<Record<string, string>>(
-        (accumulator, attribute) => {
+      ...userData.attributes
+        .filter((attribute) => attribute.type !== "file")
+        .reduce<Record<string, string>>((accumulator, attribute) => {
           accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
           return accumulator;
-        },
-        {},
-      ),
+        }, {}),
     },
   });
 
@@ -93,24 +94,42 @@ export function FormGenerator({
   }
 
   useEffect(() => {
+    isMounted.current = true;
+
     async function updateBlocksData() {
-      setEventBlocks(
-        (await Promise.all(
-          attributes
-            .filter((attribute) => attribute.type === "block")
-            .map(async (attribute) =>
-              getEventBlockAttributeBlocks(eventSlug, attribute.id.toString()),
-            ),
-        )) as unknown as PublicBlock[],
+      const blockAttributes = attributes.filter(
+        (attribute) => attribute.type === "block",
       );
+      if (blockAttributes.length === 0) {
+        return;
+      }
+
+      try {
+        const updatedBlocks = (await Promise.all(
+          blockAttributes.map(async (attribute) =>
+            getEventBlockAttributeBlocks(eventSlug, attribute.id.toString()),
+          ),
+        )) as unknown as PublicBlock[];
+
+        if (
+          isMounted.current &&
+          JSON.stringify(currentBlocksRef.current) !==
+            JSON.stringify(updatedBlocks)
+        ) {
+          currentBlocksRef.current = updatedBlocks;
+          setEventBlocks(updatedBlocks);
+        }
+      } finally {
+        if (isMounted.current) {
+          setTimeout(updateBlocksData, 1000);
+        }
+      }
     }
 
-    const interval = setInterval(async () => {
-      await updateBlocksData();
-    }, 1000);
+    void updateBlocksData();
 
     return () => {
-      clearInterval(interval);
+      isMounted.current = false;
     };
   }, [eventSlug, attributes]);
 
@@ -157,6 +176,11 @@ export function FormGenerator({
                       setError={form.control.setError}
                       resetField={form.resetField}
                       setFiles={setFiles}
+                      lastUpdate={
+                        userData.attributes.find(
+                          (attribute_) => attribute_.id === attribute.id,
+                        )?.meta.pivot_updated_at ?? null
+                      }
                     ></AttributeInputFile>
                   ) : (
                     <AttributeInput

@@ -44,6 +44,7 @@ export function AttributeInputFile({
   setError,
   resetField,
   setFiles,
+  lastUpdate = null,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   attribute: FormAttribute;
@@ -54,6 +55,7 @@ export function AttributeInputFile({
     email: string;
   }>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  lastUpdate: string | null;
 }) {
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -92,11 +94,20 @@ export function AttributeInputFile({
   }
 
   return (
-    <Input
-      type="file"
-      required={attribute.isRequired}
-      {...field}
-      onChange={handleFileChange}
-    />
+    <>
+      {lastUpdate != null && (
+        <div className="mb-2">
+          <span className="text-sm text-gray-500">
+            Ostatnio wgrany plik: {new Date(lastUpdate).toLocaleString()}
+          </span>
+        </div>
+      )}
+      <Input
+        type="file"
+        required={attribute.isRequired ? lastUpdate == null : false}
+        {...field}
+        onChange={handleFileChange}
+      />
+    </>
   );
 }
