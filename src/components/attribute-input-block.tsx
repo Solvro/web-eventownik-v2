@@ -26,9 +26,11 @@ const valueOrZero = (value: number | null | undefined) => {
 export function AttributeInputBlock({
   block,
   userData,
+  displayedAttributes,
 }: {
   block: PublicBlock;
   userData: PublicParticipant;
+  displayedAttributes: string[];
 }) {
   const isFull =
     block.capacity !== null && block.meta.participants.length >= block.capacity;
@@ -82,7 +84,17 @@ export function AttributeInputBlock({
               key={occupant.id}
             >
               {/* TODO: Implement other kinds of identifiers */}
-              <p>{occupant.email}</p>
+              <p>
+                {occupant.name.toString().trim()
+                  ? `${occupant.name.toString()}${
+                      displayedAttributes.includes("email")
+                        ? ` (${occupant.email.toString()})`
+                        : ""
+                    }`
+                  : displayedAttributes.includes("email")
+                    ? occupant.email
+                    : "Anonimowy uczestnik"}
+              </p>
             </div>
           ))}
         </AccordionContent>
@@ -90,6 +102,7 @@ export function AttributeInputBlock({
     </FormItem>
   );
 }
+
 //   WERSJA KAFELKOWA
 //   return (
 //     <div className="flex flex-col items-center gap-6 rounded-md border border-slate-500 p-4">

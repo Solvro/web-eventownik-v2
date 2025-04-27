@@ -235,7 +235,7 @@ export default async function FormPage({ params }: FormPageProps) {
         <FormGenerator
           attributes={form.attributes}
           userData={userData}
-          eventBlocks={eventBlocks as unknown as PublicBlock[]}
+          originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
           formId={form.id.toString()}
           eventSlug={eventSlug}
           userId={userId}
