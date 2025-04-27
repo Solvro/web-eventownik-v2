@@ -80,7 +80,7 @@ export function FormGenerator({
         toast({
           variant: "destructive",
           title: "Zapisanie danych formularza nie powiodło się",
-          description: "Spróbuj ponownie później",
+          description: result.error,
         });
       }
     } catch (error) {

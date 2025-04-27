@@ -6,10 +6,12 @@ import type { PublicBlock } from "@/types/blocks";
 interface ErrorObject {
   rule: string;
   field: string;
+  message: string;
 }
 
 interface ErrorResponse {
-  errors: ErrorObject[];
+  errors: ErrorObject[] | undefined;
+  message: string | undefined;
 }
 
 type Values = Record<string, unknown>;
@@ -46,7 +48,19 @@ export async function submitForm(
       console.error("Error when saving form", response);
       const errorData = (await response.json()) as ErrorResponse;
       console.error("Error when saving form", errorData);
-      return { success: false, errors: errorData.errors };
+      const errorMessages = [
+        errorData.message,
+        ...(errorData.errors?.map((error_) => error_.message) ?? []),
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      return {
+        success: false,
+        error:
+          errorMessages ||
+          `Błąd ${response.status.toString()} ${response.statusText}`,
+      };
     }
   } catch (error) {
     console.error("Error when saving form", error);

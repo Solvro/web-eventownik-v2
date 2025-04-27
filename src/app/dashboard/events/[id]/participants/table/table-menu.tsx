@@ -85,7 +85,11 @@ export function TableMenu({
       <div className="ml-auto flex items-center gap-x-2">
         <Select
           onValueChange={(value) => {
-            table.setPageSize(Number(value));
+            table.setPageSize(
+              value === "all"
+                ? table.getFilteredRowModel().rows.length
+                : +value,
+            );
           }}
           defaultValue={table.getState().pagination.pageSize.toString()}
         >
@@ -99,6 +103,7 @@ export function TableMenu({
               <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>
               <SelectItem value="100">100</SelectItem>
+              <SelectItem value="all">Wszystkie</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
