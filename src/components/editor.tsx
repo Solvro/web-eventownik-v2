@@ -35,8 +35,7 @@ function WysiwygEditor({
       }),
       ...extensions,
     ],
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    editable: disabled === undefined ? true : disabled,
+    editable: disabled === undefined ? true : !disabled,
     content,
     onUpdate: ({ editor: onUpdateEditor }) => {
       onChange(onUpdateEditor.getHTML());
