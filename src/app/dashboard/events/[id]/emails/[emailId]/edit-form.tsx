@@ -5,7 +5,7 @@ import { Lightbulb, Save, Text, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Editor } from "@/components/editor";
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -336,7 +336,7 @@ function EventEmailEditForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Treść wiadomości</FormLabel>
-                <Editor
+                <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
                 />
