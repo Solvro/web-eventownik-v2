@@ -3,24 +3,12 @@ import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
-import {
-  FaDiscord,
-  FaFacebookF,
-  FaGlobe,
-  FaInstagram,
-  FaTiktok,
-  FaYoutube,
-} from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
 
+import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { EventInfoDiv } from "@/components/event-info-div";
+import { SocialMediaLink } from "@/components/social-media-link";
 import { API_URL, PHOTO_URL } from "@/lib/api";
-import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import { RegisterParticipantForm } from "./register-participant-form";
@@ -94,6 +82,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   {format(event.startDate, "dd.MM.yyyy")}
                 </EventInfoDiv>
                 <EventInfoDiv>{format(event.startDate, "HH:mm")}</EventInfoDiv>
+                <AddToCalendarButton event={event} />
               </div>
               <div className="flex gap-x-2">
                 <EventInfoDiv>
@@ -122,30 +111,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 {event.socialMediaLinks != null &&
                 event.socialMediaLinks.length > 0
                   ? event.socialMediaLinks.map((link) => (
-                      <Tooltip key={link} delayDuration={0}>
-                        <TooltipTrigger asChild>
-                          <Link href={link} target="_blank">
-                            <EventInfoDiv className="px-1">
-                              {link.includes("facebook.com") ? (
-                                <FaFacebookF className="size-6" />
-                              ) : link.includes("instagram.com") ? (
-                                <FaInstagram className="size-6" />
-                              ) : link.includes("tiktok.com") ? (
-                                <FaTiktok className="size-6" />
-                              ) : link.includes("discord.com") ? (
-                                <FaDiscord className="size-6" />
-                              ) : link.includes("youtube.com") ? (
-                                <FaYoutube className="size-6" />
-                              ) : link.includes("google.com/maps") ? (
-                                <FaLocationDot className="size-6" />
-                              ) : (
-                                <FaGlobe className="size-6" />
-                              )}
-                            </EventInfoDiv>
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent>{link}</TooltipContent>
-                      </Tooltip>
+                      <SocialMediaLink link={link} key={link} />
                     ))
                   : null}
               </div>
@@ -163,25 +129,6 @@ export default async function EventPage({ params }: EventPageProps) {
         <p className="mb-8">Wypełnij formularz, aby się zarejestrować</p>
         <RegisterParticipantForm event={event} />
       </div>
-    </div>
-  );
-}
-
-function EventInfoDiv({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "bg-accent/10 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-xs",
-        className,
-      )}
-    >
-      {children}
     </div>
   );
 }
