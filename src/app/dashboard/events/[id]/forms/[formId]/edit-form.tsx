@@ -9,11 +9,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AttributesReorder } from "@/components/attributes-manager";
+import { Editor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +28,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
@@ -282,20 +283,20 @@ function EventFormEditForm({
             />
           </div>
           <div className="flex flex-col gap-8">
-            {/* TODO: Replace with a WYSIWYG editor */}
             <FormField
-              name="description"
               control={form.control}
+              name="description"
               render={({ field }) => (
-                <FormItem className="grow">
-                  <FormLabel>Dodaj tekst wstępny</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      className="h-5/6 resize-none"
-                      disabled={form.formState.isSubmitting ? true : undefined}
-                    />
-                  </FormControl>
+                <FormItem>
+                  <FormLabel>Opis formularza</FormLabel>
+                  <FormDescription>
+                    Poniższa zawartość pojawi się w miejscu opisu wydarzenia na
+                    stronie tego formularza
+                  </FormDescription>
+                  <Editor
+                    content={form.getValues("description")}
+                    onChange={field.onChange}
+                  />
                   <FormMessage>
                     {form.formState.errors.description?.message}
                   </FormMessage>
