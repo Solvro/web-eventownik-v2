@@ -3,9 +3,10 @@
 import { Image } from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextAlign } from "@tiptap/extension-text-align";
-import { EditorContent, useEditor } from "@tiptap/react";
 import type { Extension } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
+import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -52,6 +53,12 @@ function WysiwygEditor({
       },
     },
   });
+
+  useEffect(() => {
+    if (editor != null) {
+      editor.setEditable(disabled === undefined ? true : !disabled);
+    }
+  }, [disabled, editor]);
 
   return (
     <div
