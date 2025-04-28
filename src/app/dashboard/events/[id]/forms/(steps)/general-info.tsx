@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventFormAtom } from "@/atoms/new-event-form-atom";
-import { Editor } from "@/components/editor";
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -244,8 +244,8 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       Poniższa zawartość pojawi się w miejscu opisu wydarzenia
                       na stronie tego formularza
                     </FormDescription>
-                    <Editor
-                      content={form.getValues("description")}
+                    <WysiwygEditor
+                      content={field.value}
                       onChange={field.onChange}
                     />
                     <FormMessage>

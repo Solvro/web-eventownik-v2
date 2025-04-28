@@ -4,16 +4,20 @@ import { Image } from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { EditorContent, useEditor } from "@tiptap/react";
+import type { Extension } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 
 import { EditorMenuBar } from "./editor-menu-bar";
 
-function Editor({
+function WysiwygEditor({
   content,
   onChange,
+  extensions = [],
 }: {
   content: string;
   onChange: (value: string) => void;
+  // TODO: This is for implementing a custom extension for tag hints (as in e.g. '/participant_slug')
+  extensions?: Extension<unknown, unknown>[];
 }) {
   const editor = useEditor({
     extensions: [
@@ -25,6 +29,7 @@ function Editor({
       Image.configure({
         allowBase64: true,
       }),
+      ...extensions,
     ],
     content,
     onUpdate: ({ editor: onUpdateEditor }) => {
@@ -51,4 +56,4 @@ function Editor({
   );
 }
 
-export { Editor };
+export { WysiwygEditor };

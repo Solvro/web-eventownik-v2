@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AttributesReorder } from "@/components/attributes-manager";
-import { Editor } from "@/components/editor";
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -293,8 +293,8 @@ function EventFormEditForm({
                     Poniższa zawartość pojawi się w miejscu opisu wydarzenia na
                     stronie tego formularza
                   </FormDescription>
-                  <Editor
-                    content={form.getValues("description")}
+                  <WysiwygEditor
+                    content={field.value}
                     onChange={field.onChange}
                   />
                   <FormMessage>

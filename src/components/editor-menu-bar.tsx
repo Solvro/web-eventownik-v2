@@ -32,7 +32,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         variant={editor?.isActive("bold") ? "default" : "ghost"}
         type="button"
         onClick={() => editor?.chain().focus().toggleBold().run()}
-        title="Tekst pogrubiony"
+        title="Pogrubienie"
       >
         <Bold />
       </Button>
@@ -41,7 +41,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         variant={editor?.isActive("italic") ? "default" : "ghost"}
         type="button"
         onClick={() => editor?.chain().focus().toggleItalic().run()}
-        title="Tekst pochyły"
+        title="Kursywa"
       >
         <Italic />
       </Button>
@@ -105,7 +105,13 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         type="button"
-        onClick={() => editor?.chain().focus().setTextAlign("center").run()}
+        onClick={() => {
+          if (editor?.isActive({ textAlign: "center" })) {
+            editor.chain().focus().setTextAlign("left").run();
+          } else {
+            editor?.chain().focus().setTextAlign("center").run();
+          }
+        }}
         variant={
           editor?.isActive({ textAlign: "center" }) ? "default" : "ghost"
         }
@@ -116,7 +122,13 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         type="button"
-        onClick={() => editor?.chain().focus().setTextAlign("right").run()}
+        onClick={() => {
+          if (editor?.isActive({ textAlign: "right" })) {
+            editor.chain().focus().setTextAlign("left").run();
+          } else {
+            editor?.chain().focus().setTextAlign("right").run();
+          }
+        }}
         variant={editor?.isActive({ textAlign: "right" }) ? "default" : "ghost"}
         title="Wyrównanie w prawo"
       >
@@ -125,11 +137,17 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         type="button"
-        onClick={() => editor?.chain().focus().setTextAlign("justify").run()}
+        onClick={() => {
+          if (editor?.isActive({ textAlign: "justify" })) {
+            editor.chain().focus().setTextAlign("left").run();
+          } else {
+            editor?.chain().focus().setTextAlign("justify").run();
+          }
+        }}
         variant={
           editor?.isActive({ textAlign: "justify" }) ? "default" : "ghost"
         }
-        title="Justuj"
+        title="Justowanie"
       >
         <AlignJustify />
       </Button>

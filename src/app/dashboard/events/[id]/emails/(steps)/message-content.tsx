@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
-import { Editor } from "@/components/editor";
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -149,7 +149,7 @@ function MessageContentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Treść wiadomości</FormLabel>
-                <Editor
+                <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
                 />
