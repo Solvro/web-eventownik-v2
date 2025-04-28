@@ -7,15 +7,19 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import type { Extension } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 
+import { cn } from "@/lib/utils";
+
 import { EditorMenuBar } from "./editor-menu-bar";
 
 function WysiwygEditor({
   content,
   onChange,
+  disabled,
   extensions = [],
 }: {
   content: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   // TODO: This is for implementing a custom extension for tag hints (as in e.g. '/participant_slug')
   extensions?: Extension<unknown, unknown>[];
 }) {
@@ -31,6 +35,8 @@ function WysiwygEditor({
       }),
       ...extensions,
     ],
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    editable: disabled === undefined ? true : disabled,
     content,
     onUpdate: ({ editor: onUpdateEditor }) => {
       onChange(onUpdateEditor.getHTML());
@@ -49,7 +55,14 @@ function WysiwygEditor({
   });
 
   return (
-    <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+    <div
+      className={cn(
+        "border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        disabled === undefined || !disabled
+          ? ""
+          : "pointer-events-none cursor-not-allowed opacity-50",
+      )}
+    >
       <EditorMenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>

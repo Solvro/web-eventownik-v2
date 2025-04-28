@@ -290,12 +290,13 @@ function EventFormEditForm({
                 <FormItem>
                   <FormLabel>Opis formularza</FormLabel>
                   <FormDescription>
-                    Poniższa zawartość pojawi się w miejscu opisu wydarzenia na
-                    stronie tego formularza
+                    W przypadku formularza rejestracyjnego, zamiast poniższej
+                    zawartości wyświetli się opis wydarzenia
                   </FormDescription>
                   <WysiwygEditor
                     content={field.value}
                     onChange={field.onChange}
+                    disabled={form.getValues("isFirstForm")}
                   />
                   <FormMessage>
                     {form.formState.errors.description?.message}
