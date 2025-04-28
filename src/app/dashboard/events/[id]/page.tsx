@@ -1,4 +1,3 @@
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { format } from "date-fns";
 import {
   Calendar1,
@@ -11,15 +10,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import {
-  FaDiscord,
-  FaFacebookF,
-  FaGlobe,
-  FaInstagram,
-  FaTiktok,
-  FaYoutube,
-} from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { ShareButton } from "@/components/share-button";
