@@ -247,7 +247,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     <WysiwygEditor
                       content={field.value}
                       onChange={field.onChange}
-                      disabled={form.getValues("isFirstForm")}
+                      disabled={form.watch("isFirstForm")}
                     />
                     <FormMessage>
                       {form.formState.errors.description?.message}
