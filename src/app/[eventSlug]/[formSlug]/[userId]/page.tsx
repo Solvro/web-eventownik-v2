@@ -11,6 +11,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
+import sanitizeHtml from "sanitize-html";
 
 import { AppLogo } from "@/components/app-logo";
 import {
@@ -141,6 +142,27 @@ export default async function FormPage({ params }: FormPageProps) {
     );
   }
 
+  const sanitizedDescription = sanitizeHtml(form.description, {
+    allowedAttributes: {
+      p: ["style"],
+      a: ["href", "name", "target"],
+      img: ["src", "srcset", "alt", "title", "width", "height", "loading"],
+    },
+    allowedTags: [
+      "h1",
+      "h2",
+      "h3",
+      "p",
+      "br",
+      "pre",
+      "strong",
+      "em",
+      "a",
+      "img",
+    ],
+    allowedSchemes: ["data", "https"],
+  });
+
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <div
@@ -222,9 +244,11 @@ export default async function FormPage({ params }: FormPageProps) {
                   : null}
               </div>
             </div>
-            <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
-              {form.description}
-            </p>
+            <div
+              className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+            />
           </div>
         </div>
       </div>
