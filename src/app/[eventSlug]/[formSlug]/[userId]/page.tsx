@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
+import { Building2, Calendar1, CalendarX, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import {
@@ -232,6 +232,10 @@ export default async function FormPage({ params }: FormPageProps) {
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           {form.name}
         </h2>
+        <EventInfoDiv className="bg-accent mt-2 font-medium shadow">
+          <User className="size-4" strokeWidth={2.5} />
+          {userData.email}
+        </EventInfoDiv>
         <FormGenerator
           attributes={form.attributes}
           userData={userData}
