@@ -28,21 +28,25 @@ export function AttributeBlocksWrapper({
   attribute: Attribute;
 }) {
   return (
-    <Accordion type="multiple">
+    <Accordion
+      type="multiple"
+      className={`mt-4 ${eventBlocks.length >= 3 ? "flex justify-center" : ""}`}
+    >
       <RadioGroup
         onValueChange={field.onChange}
         defaultValue={String(field.value)}
-        className="my-4 space-y-2"
+        className={`mt-4 ${eventBlocks.length >= 3 ? "xl:min-w-xl xl:grid-cols-2" : ""}`}
       >
-        <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+        <FormItem className="flex h-fit flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
           <div className="flex items-center gap-4">
             <FormControl>
               <RadioGroupItem value={"null"} />
             </FormControl>
             <FormLabel>
-              <p>Żaden (zrezygnuj lub wypisz się)</p>
+              <p>Żaden</p>
             </FormLabel>
           </div>
+          <span className="h-14">(zrezygnuj lub wypisz się)</span>
         </FormItem>
         {eventBlocks.map((childBlock) => (
           <AttributeInputBlock

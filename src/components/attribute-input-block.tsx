@@ -41,7 +41,7 @@ export function AttributeInputBlock({
   );
 
   return (
-    <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+    <FormItem className="flex h-fit flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
       <div className="flex items-center gap-4">
         <FormControl>
           <RadioGroupItem
