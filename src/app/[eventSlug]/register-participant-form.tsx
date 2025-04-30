@@ -126,7 +126,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full max-w-sm space-y-4 pb-24"
       >
         <FormField
           control={form.control}
@@ -194,7 +194,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="w-full"
+          className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >
           {form.formState.isSubmitting ? (
             <>

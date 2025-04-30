@@ -158,7 +158,7 @@ export function FormGenerator({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full max-w-sm space-y-4 pb-24"
       >
         {attributes.map((attribute) => (
           <FormField
@@ -209,7 +209,7 @@ export function FormGenerator({
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="w-full"
+          className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >
           {form.formState.isSubmitting ? (
             <>
