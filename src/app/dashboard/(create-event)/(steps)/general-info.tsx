@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, getHours, getMinutes } from "date-fns";
+import { format, getHours, getMinutes, subDays } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -31,11 +31,11 @@ import { eventAtom } from "../state";
 const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
   description: z.string().optional(),
-  startDate: z.date().min(new Date(), {
-    message: "Data musi być w przyszłości.",
+  startDate: z.date().min(subDays(new Date(), 1), {
+    message: "Data rozpoczęcia nie może być w przeszłości.",
   }),
   startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endDate: z.date().refine((date) => date > new Date(), {
+  endDate: z.date().refine((date) => date >= subDays(new Date(), 1), {
     message: "Data zakończenia musi być po dacie rozpoczęcia.",
   }),
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
@@ -70,6 +70,18 @@ export function GeneralInfoForm({
     );
     values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
     values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+    if (values.startDate < new Date()) {
+      form.setError("startDate", {
+        message: "Data rozpoczęcia nie może być w przeszłości.",
+      });
+      return;
+    }
+    if (values.endDate < values.startDate) {
+      form.setError("endDate", {
+        message: "Data zakończenia musi być po dacie rozpoczęcia.",
+      });
+      return;
+    }
     setEvent({
       ...event,
       name: values.name,
