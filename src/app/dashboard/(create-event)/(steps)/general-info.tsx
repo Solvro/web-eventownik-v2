@@ -31,13 +31,9 @@ import { eventAtom } from "../state";
 const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
   description: z.string().optional(),
-  startDate: z.date().min(subDays(new Date(), 1), {
-    message: "Data rozpoczęcia nie może być w przeszłości.",
-  }),
+  startDate: z.date(),
   startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endDate: z.date().refine((date) => date >= subDays(new Date(), 1), {
-    message: "Data zakończenia musi być po dacie rozpoczęcia.",
-  }),
+  endDate: z.date(),
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   location: z.string().optional(),
   organizer: z.string().optional(),
@@ -154,7 +150,9 @@ export function GeneralInfoForm({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date <= new Date()}
+                              disabled={(date) =>
+                                date <= subDays(new Date(), 1)
+                              }
                             />
                           </PopoverContent>
                         </Popover>
@@ -214,7 +212,7 @@ export function GeneralInfoForm({
                                 date <
                                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                                 (form.getValues("startDate") === undefined
-                                  ? new Date()
+                                  ? subDays(new Date(), 1)
                                   : form.getValues("startDate"))
                               }
                             />
