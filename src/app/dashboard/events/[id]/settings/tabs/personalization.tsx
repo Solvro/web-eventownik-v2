@@ -273,7 +273,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                         <FormControl>
                           <Input
                             type="url"
-                            placeholder="https://tiktok.com/@antonio_._banderas"
+                            placeholder="https://facebook.com/knsolvro"
                             {...form.register(
                               `socialMediaLinks.${index}.value` as const,
                             )}
