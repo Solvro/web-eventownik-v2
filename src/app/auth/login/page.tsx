@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -22,10 +23,23 @@ import { loginFormSchema } from "@/types/schemas";
 
 import { login } from "../actions";
 
+// This component uses useSearchParams and must be wrapped in Suspense
+function LoginMessage() {
+  const searchParameters = useSearchParams();
+  const from = searchParameters.get("from");
+  if (typeof from === "string" && from.startsWith("/dashboard")) {
+    return (
+      <p className="font-black text-red-500">
+        Żeby zarządzać wydarzeniami najpierw musisz się zalogować!
+      </p>
+    );
+  }
+  return null;
+}
+
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
-
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -54,6 +68,9 @@ export default function LoginPage() {
       <div className="space-y-2 text-center">
         <p className="text-3xl font-black">Logowanie organizatora</p>
         <p>Podaj swój email by się zalogować.</p>
+        <Suspense>
+          <LoginMessage />
+        </Suspense>
       </div>
       <Form {...form}>
         <form
