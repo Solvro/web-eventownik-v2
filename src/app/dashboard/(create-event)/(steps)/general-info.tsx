@@ -108,7 +108,7 @@ export function GeneralInfoForm({
                 name="name"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col gap-1">
                     <FormLabel>Nazwa</FormLabel>
                     <FormControl>
                       <Input
@@ -124,14 +124,14 @@ export function GeneralInfoForm({
                   </FormItem>
                 )}
               />
-              <div className="space-y-2">
-                <FormLabel>Data i godzina</FormLabel>
-                <div className="flex flex-row gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-end gap-4">
                   <FormField
                     control={form.control}
                     name="startDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
+                        <FormLabel>Data i godzina</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -163,7 +163,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -188,7 +188,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-2">
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -225,7 +225,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -250,7 +250,7 @@ export function GeneralInfoForm({
                 name="description"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex h-full flex-col gap-2">
+                  <FormItem className="flex h-full flex-col gap-1">
                     <FormLabel>Opis</FormLabel>
                     <FormControl>
                       <Textarea
@@ -273,7 +273,7 @@ export function GeneralInfoForm({
               name="location"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel>Miejsce (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
@@ -293,7 +293,7 @@ export function GeneralInfoForm({
               name="organizer"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel>Organizator (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
