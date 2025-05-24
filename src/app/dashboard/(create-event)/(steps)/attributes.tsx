@@ -425,6 +425,7 @@ export function AttributesForm({
         name: "",
         type: "text",
       });
+      form.setFocus("name");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.formState.isSubmitSuccessful]);
