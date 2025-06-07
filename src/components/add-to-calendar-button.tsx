@@ -11,7 +11,7 @@ import type { Event } from "@/types/event";
 function downloadICSFile(event: Event) {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
-  const { error, value }: { error?: Error; value?: string } = createEvent({
+  const { error, value } = createEvent({
     title: event.name,
     description: event.description ?? undefined,
     start: [
