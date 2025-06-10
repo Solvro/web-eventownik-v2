@@ -6,11 +6,18 @@ import { verifySession } from "@/lib/session";
 export async function middleware(request: NextRequest) {
   const session = await verifySession();
 
-  if (session?.bearerToken == null) {
-    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
+  if (
+    typeof session?.bearerToken !== "string" ||
+    session.bearerToken.length === 0
+  ) {
+    const loginUrl = new URL("/auth/login", request.nextUrl);
+    loginUrl.searchParams.set("from", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard"],
+  matcher: ["/dashboard/:path*"],
 };
