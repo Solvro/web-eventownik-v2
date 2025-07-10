@@ -22,7 +22,7 @@ interface FormPageProps {
 }
 
 async function getEvent(eventSlug: string) {
-  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}`, {
+  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {
     method: "GET",
   });
   if (!eventResponse.ok) {

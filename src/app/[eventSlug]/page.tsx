@@ -22,7 +22,7 @@ export async function generateMetadata({
 }: EventPageProps): Promise<Metadata> {
   const { eventSlug } = await params;
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}`, {
+  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
     method: "GET",
   });
   if (!response.ok) {
@@ -46,7 +46,7 @@ export async function generateMetadata({
 
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
-  const response = await fetch(`${API_URL}/events/${eventSlug}`, {
+  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
     method: "GET",
   });
   if (!response.ok) {

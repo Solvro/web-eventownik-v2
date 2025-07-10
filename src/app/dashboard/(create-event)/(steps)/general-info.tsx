@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, getHours, getMinutes } from "date-fns";
+import { format, getHours, getMinutes, subDays } from "date-fns";
 import { useAtom } from "jotai";
 import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -31,13 +31,9 @@ import { eventAtom } from "../state";
 const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
   description: z.string().optional(),
-  startDate: z.date().min(new Date(), {
-    message: "Data musi być w przyszłości.",
-  }),
+  startDate: z.date(),
   startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endDate: z.date().refine((date) => date > new Date(), {
-    message: "Data zakończenia musi być po dacie rozpoczęcia.",
-  }),
+  endDate: z.date(),
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   location: z.string().optional(),
   organizer: z.string().optional(),
@@ -70,6 +66,18 @@ export function GeneralInfoForm({
     );
     values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
     values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+    if (values.startDate < new Date()) {
+      form.setError("startDate", {
+        message: "Data rozpoczęcia nie może być w przeszłości.",
+      });
+      return;
+    }
+    if (values.endDate < values.startDate) {
+      form.setError("endDate", {
+        message: "Data zakończenia musi być po dacie rozpoczęcia.",
+      });
+      return;
+    }
     setEvent({
       ...event,
       name: values.name,
@@ -100,7 +108,7 @@ export function GeneralInfoForm({
                 name="name"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col gap-1">
                     <FormLabel>Nazwa</FormLabel>
                     <FormControl>
                       <Input
@@ -116,14 +124,14 @@ export function GeneralInfoForm({
                   </FormItem>
                 )}
               />
-              <div className="space-y-2">
-                <FormLabel>Data i godzina</FormLabel>
-                <div className="flex flex-row gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-end gap-4">
                   <FormField
                     control={form.control}
                     name="startDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
+                        <FormLabel>Data i godzina</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -142,7 +150,9 @@ export function GeneralInfoForm({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date <= new Date()}
+                              disabled={(date) =>
+                                date <= subDays(new Date(), 1)
+                              }
                             />
                           </PopoverContent>
                         </Popover>
@@ -153,7 +163,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -178,7 +188,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-2">
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -202,7 +212,7 @@ export function GeneralInfoForm({
                                 date <
                                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                                 (form.getValues("startDate") === undefined
-                                  ? new Date()
+                                  ? subDays(new Date(), 1)
                                   : form.getValues("startDate"))
                               }
                             />
@@ -215,7 +225,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem className="flex flex-col gap-1">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -240,7 +250,7 @@ export function GeneralInfoForm({
                 name="description"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex h-full flex-col gap-2">
+                  <FormItem className="flex h-full flex-col gap-1">
                     <FormLabel>Opis</FormLabel>
                     <FormControl>
                       <Textarea
@@ -263,7 +273,7 @@ export function GeneralInfoForm({
               name="location"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel>Miejsce (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
@@ -283,7 +293,7 @@ export function GeneralInfoForm({
               name="organizer"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel>Organizator (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
