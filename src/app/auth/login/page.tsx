@@ -1,15 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -25,7 +24,7 @@ import { loginFormSchema } from "@/types/schemas";
 
 import { login } from "../actions";
 
-export default function LoginPage() {
+function LoginForm() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParameters = useSearchParams();
@@ -38,6 +37,7 @@ export default function LoginPage() {
       password: "",
     },
   });
+
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     const result = await login(values);
     if (result.success) {
@@ -45,8 +45,7 @@ export default function LoginPage() {
         title: "Logowanie zakończone sukcesem!",
         duration: 2000,
       });
-      // Redirect to the previous URL or dashboard as fallback
-      const redirectUrl = from || "/dashboard";
+      const redirectUrl = from ?? "/dashboard";
       router.replace(redirectUrl);
     } else {
       toast({
@@ -56,6 +55,80 @@ export default function LoginPage() {
       });
     }
   }
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full max-w-sm space-y-4"
+      >
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">E-mail</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  disabled={form.formState.isSubmitting}
+                  placeholder="E-mail"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm text-red-500">
+                {form.formState.errors.email?.message}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Hasło</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Hasło"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm text-red-500">
+                {form.formState.errors.password?.message}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="w-full"
+        >
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin" /> Logowanie...
+            </>
+          ) : (
+            "Kontynuuj"
+          )}
+        </Button>
+        <Link
+          href="/auth/register"
+          className={`w-full text-neutral-600 ${buttonVariants({
+            variant: "link",
+          })}`}
+        >
+          Nie masz jeszcze konta? Zarejestruj się
+        </Link>
+      </form>
+    </Form>
+  );
+}
+
+export default function LoginPage() {
   return (
     <>
       <div className="space-y-2 text-center">
@@ -72,74 +145,9 @@ export default function LoginPage() {
           </Alert>
         </Suspense>
       </div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-sm space-y-4"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="sr-only">E-mail</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    disabled={form.formState.isSubmitting}
-                    placeholder="E-mail"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.email?.message}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="sr-only">Hasło</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    disabled={form.formState.isSubmitting}
-                    placeholder="Hasło"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.password?.message}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            className="w-full"
-          >
-            {form.formState.isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin" /> Logowanie...
-              </>
-            ) : (
-              "Kontynuuj"
-            )}
-          </Button>
-          <Link
-            href="/auth/register"
-            className={`w-full text-neutral-600 ${buttonVariants({
-              variant: "link",
-            })}`}
-          >
-            Nie masz jeszcze konta? Zarejestruj się
-          </Link>
-        </form>
-      </Form>
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </>
   );
 }
