@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -23,23 +25,12 @@ import { loginFormSchema } from "@/types/schemas";
 
 import { login } from "../actions";
 
-// This component uses useSearchParams and must be wrapped in Suspense
-function LoginMessage() {
-  const searchParameters = useSearchParams();
-  const from = searchParameters.get("from");
-  if (typeof from === "string" && from.startsWith("/dashboard")) {
-    return (
-      <p className="font-black text-red-500">
-        Żeby zarządzać wydarzeniami najpierw musisz się zalogować!
-      </p>
-    );
-  }
-  return null;
-}
-
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParameters = useSearchParams();
+  const from = searchParameters.get("from");
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -54,7 +45,9 @@ export default function LoginPage() {
         title: "Logowanie zakończone sukcesem!",
         duration: 2000,
       });
-      router.replace("/dashboard");
+      // Redirect to the previous URL or dashboard as fallback
+      const redirectUrl = from || "/dashboard";
+      router.replace(redirectUrl);
     } else {
       toast({
         variant: "destructive",
@@ -69,7 +62,14 @@ export default function LoginPage() {
         <p className="text-3xl font-black">Logowanie organizatora</p>
         <p>Podaj swój email by się zalogować.</p>
         <Suspense>
-          <LoginMessage />
+          <Alert variant="destructive" className="mt-5">
+            <AlertCircleIcon className="!text-red-500" />
+            <AlertTitle>
+              <p className="font-black text-red-500">
+                Żeby zarządzać wydarzeniami najpierw musisz się zalogować!
+              </p>
+            </AlertTitle>
+          </Alert>
         </Suspense>
       </div>
       <Form {...form}>
@@ -132,7 +132,9 @@ export default function LoginPage() {
           </Button>
           <Link
             href="/auth/register"
-            className={`w-full text-neutral-600 ${buttonVariants({ variant: "link" })}`}
+            className={`w-full text-neutral-600 ${buttonVariants({
+              variant: "link",
+            })}`}
           >
             Nie masz jeszcze konta? Zarejestruj się
           </Link>
