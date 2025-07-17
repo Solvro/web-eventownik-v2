@@ -12,13 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { DeleteManyParticipantsDialog } from "./action-components";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
-import { TooltipWrapper } from "./tooltip-wrapper";
 import { getPaginationInfoText } from "./utils";
 
 export function TableMenu({
@@ -48,49 +52,59 @@ export function TableMenu({
             table.setGlobalFilter(String(event.target.value));
           }}
         ></Input>
-        <TooltipWrapper title="Resetuj wszystkie filtry">
-          <Button
-            onClick={() => {
-              table.resetColumnFilters();
-            }}
-            size="icon"
-            variant="outline"
-          >
-            <FilterX />
-          </Button>
-        </TooltipWrapper>
-        <TooltipWrapper title="Resetuj sortowanie">
-          <Button
-            onClick={() => {
-              table.resetSorting();
-            }}
-            size="icon"
-            variant="outline"
-          >
-            <ArrowUpDown />
-          </Button>
-        </TooltipWrapper>
-        <TooltipWrapper title="Wyślij maila">
-          <SendMailForm
-            eventId={eventId}
-            targetParticipants={table
-              .getSelectedRowModel()
-              .rows.map((row) => row.original)}
-            emails={emails}
-          />
-        </TooltipWrapper>
-        <TooltipWrapper title="Eksportuj do Excela">
-          <ExportButton eventId={eventId} />
-        </TooltipWrapper>
-        <TooltipWrapper title="Usuń wielu uczestników">
-          <DeleteManyParticipantsDialog
-            isQuerying={isQuerying}
-            participants={table
-              .getSelectedRowModel()
-              .rows.map((row) => row.original.id.toString())}
-            deleteManyParticipants={deleteManyParticipants}
-          />
-        </TooltipWrapper>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+            >
+              <FilterX />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj całe filtrowanie</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+            >
+              <ArrowUpDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj sortowanie</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <SendMailForm
+              eventId={eventId}
+              targetParticipants={table
+                .getSelectedRowModel()
+                .rows.map((row) => row.original)}
+              emails={emails}
+            />
+          </TooltipTrigger>
+          <TooltipContent>Wyślij maila</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ExportButton eventId={eventId} />
+          </TooltipTrigger>
+          <TooltipContent>Eksportuj do Excela</TooltipContent>
+        </Tooltip>
+        <DeleteManyParticipantsDialog
+          isQuerying={isQuerying}
+          participants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original.id.toString())}
+          deleteManyParticipants={deleteManyParticipants}
+        />
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <Select
@@ -109,6 +123,7 @@ export function TableMenu({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Wierszy na stronę</SelectLabel>
+              <SelectItem value="2">2</SelectItem>
               <SelectItem value="10">10</SelectItem>
               <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>
