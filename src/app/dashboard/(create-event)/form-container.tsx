@@ -23,7 +23,7 @@ export function FormContainer({
           <p className="text-lg font-medium">{description}</p>
         </div>
       </div>
-      <div className="overflow-y-auto">{children}</div>
+      <div className="overflow-y-auto p-px">{children}</div>
     </div>
   );
 }

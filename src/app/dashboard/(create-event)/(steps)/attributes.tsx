@@ -29,7 +29,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -110,7 +110,7 @@ const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
 });
 SortableOption.displayName = "SortableOption";
 
-const attributeTypeOptions = () =>
+const AttributeTypeOptions = () =>
   ATTRIBUTE_TYPES.map((type) => (
     <SelectItem key={type.value} value={type.value}>
       <div className="flex items-center gap-2">
@@ -217,7 +217,9 @@ const AttributeItem = memo(
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent>{attributeTypeOptions()}</SelectContent>
+              <SelectContent>
+                <AttributeTypeOptions />
+              </SelectContent>
             </Select>
 
             <div className="flex flex-col gap-2">
@@ -247,6 +249,7 @@ const AttributeItem = memo(
                 onCheckedChange={(checked) => {
                   onUpdate({ ...attribute, showInList: checked === true });
                 }}
+                defaultChecked={true}
               />
               <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
                 Pokaż w tabeli
@@ -337,13 +340,12 @@ export function AttributesForm({
           eventId: 0,
           options: [],
           rootBlockId: undefined,
-          showInList: false,
+          showInList: true,
           createdAt: "", // set it to empty string to avoid type error
           updatedAt: "", // set it to empty string to avoid type error
         },
       ],
     }));
-    form.reset();
   }
 
   const handleUpdateAttribute = useCallback(
@@ -417,6 +419,17 @@ export function AttributesForm({
     setLoading(false);
   }
 
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      form.reset({
+        name: "",
+        type: "text",
+      });
+      form.setFocus("name");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.formState.isSubmitSuccessful]);
+
   return (
     <FormContainer
       step="4/4"
@@ -467,7 +480,7 @@ export function AttributesForm({
                       <FormItem className="space-y-0">
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger
@@ -478,7 +491,7 @@ export function AttributesForm({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {attributeTypeOptions()}
+                            <AttributeTypeOptions />
                           </SelectContent>
                         </Select>
                       </FormItem>
