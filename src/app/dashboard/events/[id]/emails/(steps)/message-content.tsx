@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Mention } from "@tiptap/extension-mention";
+import { mergeAttributes } from "@tiptap/react";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
 import { useRef } from "react";
@@ -21,8 +23,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { MESSAGE_TAGS, getSuggestionOptions } from "@/lib/extensions/tags";
+import type { EventAttribute } from "@/types/attributes";
 
 import { createEventEmailTemplate } from "../actions";
+
+// TODO: Following disable statements are not needed in TipTap V3, but we're using V2 for now
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 
 const EventEmailTemplateContentSchema = z.object({
   name: z.string().nonempty({ message: "Tytuł nie może być pusty." }),
@@ -54,9 +64,11 @@ function getTitlePlaceholder(trigger: string) {
 
 function MessageContentForm({
   eventId,
+  eventAttributes,
   goToPreviousStep,
 }: {
   eventId: string;
+  eventAttributes: EventAttribute[];
   goToPreviousStep: () => void;
 }) {
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
@@ -113,6 +125,23 @@ function MessageContentForm({
     }
   }
 
+  const availableTags = [
+    ...MESSAGE_TAGS,
+    ...eventAttributes.map((attribute) => {
+      return {
+        title: attribute.name,
+        description: `Pokazuje wartość atrybutu '${attribute.name}'`,
+        // NOTE: Why 'attribute.slug' can be null?
+        value: `/participant_${attribute.slug ?? ""}`,
+        color: "#FFFFFF",
+      };
+    }),
+  ] satisfies typeof MESSAGE_TAGS;
+
+  const getTagColor = (tagValue: string) => {
+    return availableTags.find((tag) => tag.value === tagValue)?.color;
+  };
+
   return (
     <FormContainer
       description="Zawartość wiadomości"
@@ -152,6 +181,28 @@ function MessageContentForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={[
+                    Mention.configure({
+                      suggestion: {
+                        ...getSuggestionOptions(availableTags),
+                      },
+                      HTMLAttributes: {
+                        class: "text-foreground px-2 py-[1px] rounded-md",
+                      },
+                      renderHTML({ options, node }) {
+                        return [
+                          "span",
+                          mergeAttributes(
+                            {
+                              style: `background-color: ${getTagColor(node.attrs.id as string) ?? "var(--accent)"}`,
+                            },
+                            options.HTMLAttributes,
+                          ),
+                          node.attrs.label,
+                        ];
+                      },
+                    }),
+                  ]}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

@@ -13,6 +13,7 @@ import {
   Heading3,
   ImageIcon,
   Italic,
+  SlashSquare,
 } from "lucide-react";
 import { useRef } from "react";
 
@@ -173,6 +174,15 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         title="Wstaw zdjęcie"
       >
         <ImageIcon />
+      </Button>
+      <Button
+        size="icon"
+        type="button"
+        onClick={() => editor?.chain().focus().insertContent("/").run()}
+        variant={editor?.isActive("mention") ? "default" : "ghost"}
+        title="Wstaw znacznik"
+      >
+        <SlashSquare />
       </Button>
     </div>
   );

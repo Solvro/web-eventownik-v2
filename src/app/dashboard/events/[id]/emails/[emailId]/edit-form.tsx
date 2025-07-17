@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Mention } from "@tiptap/extension-mention";
+import { mergeAttributes } from "@tiptap/react";
 import { Lightbulb, Save, Text, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
+import { MESSAGE_TAGS, getSuggestionOptions } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
@@ -244,6 +247,23 @@ function EventEmailEditForm({
     }
   }
 
+  const availableTags = [
+    ...MESSAGE_TAGS,
+    ...eventAttributes.map((attribute) => {
+      return {
+        title: attribute.name,
+        description: `Pokazuje wartość atrybutu '${attribute.name}'`,
+        // NOTE: Why 'attribute.slug' can be null?
+        value: `/participant_${attribute.slug ?? ""}`,
+        color: "#FFFFFF",
+      };
+    }),
+  ] satisfies typeof MESSAGE_TAGS;
+
+  const getTagColor = (tagValue: string) => {
+    return availableTags.find((tag) => tag.value === tagValue)?.color;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -339,6 +359,28 @@ function EventEmailEditForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={[
+                    Mention.configure({
+                      suggestion: {
+                        ...getSuggestionOptions(availableTags),
+                      },
+                      HTMLAttributes: {
+                        class: "text-foreground px-2 py-[1px] rounded-md",
+                      },
+                      renderHTML({ options, node }) {
+                        return [
+                          "span",
+                          mergeAttributes(
+                            {
+                              style: `background-color: ${getTagColor(node.attrs.id as string) ?? "var(--accent)"}`,
+                            },
+                            options.HTMLAttributes,
+                          ),
+                          node.attrs.label,
+                        ];
+                      },
+                    }),
+                  ]}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

@@ -3,7 +3,7 @@
 import { Image } from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextAlign } from "@tiptap/extension-text-align";
-import type { Extension } from "@tiptap/react";
+import type { Extensions } from "@tiptap/react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { useEffect } from "react";
@@ -21,10 +21,10 @@ function WysiwygEditor({
   content: string;
   onChange: (value: string) => void;
   disabled?: boolean;
-  // TODO: This is for implementing a custom extension for tag hints (as in e.g. '/participant_slug')
-  extensions?: Extension<unknown, unknown>[];
+  extensions?: Extensions;
 }) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder: "Napisz wiadomość" }),

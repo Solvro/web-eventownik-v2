@@ -50,6 +50,7 @@ function CreateEmailTemplateForm({
           )}
           {currentStep === 1 && (
             <MessageContentForm
+              eventAttributes={eventAttributes}
               eventId={eventId}
               goToPreviousStep={() => {
                 setCurrentStep(0);
