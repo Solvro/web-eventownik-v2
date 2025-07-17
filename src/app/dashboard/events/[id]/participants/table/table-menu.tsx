@@ -1,5 +1,6 @@
 import type { Table } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,11 @@ export function TableMenu({
   isQuerying: boolean;
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
+  // allows for coming back to the page where user started typing in searchbox
+  const [pageBeforeSearch, setPageBeforeSearch] = useState(
+    table.getState().pagination.pageIndex,
+  );
+
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
       <div className="flex items-center gap-x-2">
@@ -43,7 +49,17 @@ export function TableMenu({
           placeholder="Wyszukaj..."
           value={globalFilter}
           onChange={(event) => {
-            table.setGlobalFilter(String(event.target.value));
+            const searchValue = event.target.value;
+            table.setGlobalFilter(searchValue);
+
+            if (
+              pageBeforeSearch > 0 &&
+              table.getState().pagination.pageIndex > 0
+            ) {
+              table.firstPage();
+            } else if (searchValue === "") {
+              table.setPageIndex(pageBeforeSearch);
+            }
           }}
         ></Input>
         <Button
@@ -115,6 +131,9 @@ export function TableMenu({
             disabled={!table.getCanPreviousPage()}
             onClick={() => {
               table.previousPage();
+              setPageBeforeSearch((previous) => {
+                return previous - 1;
+              });
             }}
           >
             <ChevronLeft />
@@ -125,6 +144,9 @@ export function TableMenu({
             disabled={!table.getCanNextPage()}
             onClick={() => {
               table.nextPage();
+              setPageBeforeSearch((previous) => {
+                return previous + 1;
+              });
             }}
           >
             <ChevronRight />
