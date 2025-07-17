@@ -18,6 +18,7 @@ import type { FlattenedParticipant } from "@/types/participant";
 import { DeleteManyParticipantsDialog } from "./action-components";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
+import { TooltipWrapper } from "./tooltip-wrapper";
 import { getPaginationInfoText } from "./utils";
 
 export function TableMenu({
@@ -43,44 +44,53 @@ export function TableMenu({
           placeholder="Wyszukaj..."
           value={globalFilter}
           onChange={(event) => {
+            //TODO fix filtering - filtering not working properly with all types of attributes and multiple pages
             table.setGlobalFilter(String(event.target.value));
           }}
         ></Input>
-        <Button
-          onClick={() => {
-            table.resetColumnFilters();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj filtry"
-        >
-          <FilterX />
-        </Button>
-        <Button
-          onClick={() => {
-            table.resetSorting();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj sortowanie"
-        >
-          <ArrowUpDown />
-        </Button>
-        <SendMailForm
-          eventId={eventId}
-          targetParticipants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original)}
-          emails={emails}
-        />
-        <ExportButton eventId={eventId} />
-        <DeleteManyParticipantsDialog
-          isQuerying={isQuerying}
-          participants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original.id.toString())}
-          deleteManyParticipants={deleteManyParticipants}
-        />
+        <TooltipWrapper title="Resetuj wszystkie filtry">
+          <Button
+            onClick={() => {
+              table.resetColumnFilters();
+            }}
+            size="icon"
+            variant="outline"
+          >
+            <FilterX />
+          </Button>
+        </TooltipWrapper>
+        <TooltipWrapper title="Resetuj sortowanie">
+          <Button
+            onClick={() => {
+              table.resetSorting();
+            }}
+            size="icon"
+            variant="outline"
+          >
+            <ArrowUpDown />
+          </Button>
+        </TooltipWrapper>
+        <TooltipWrapper title="Wyślij maila">
+          <SendMailForm
+            eventId={eventId}
+            targetParticipants={table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original)}
+            emails={emails}
+          />
+        </TooltipWrapper>
+        <TooltipWrapper title="Eksportuj do Excela">
+          <ExportButton eventId={eventId} />
+        </TooltipWrapper>
+        <TooltipWrapper title="Usuń wielu uczestników">
+          <DeleteManyParticipantsDialog
+            isQuerying={isQuerying}
+            participants={table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.id.toString())}
+            deleteManyParticipants={deleteManyParticipants}
+          />
+        </TooltipWrapper>
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <Select

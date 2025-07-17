@@ -46,7 +46,6 @@ export function ExportButton({ eventId }: { eventId: string }) {
       onClick={handleExportClick}
       size="icon"
       variant="outline"
-      title="Eksportuj do Excela"
       disabled={isQuerying}
     >
       {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download />}
