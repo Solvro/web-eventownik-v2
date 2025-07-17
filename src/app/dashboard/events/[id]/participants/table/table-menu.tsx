@@ -40,6 +40,7 @@ export function TableMenu({
   const [pageBeforeSearch, setPageBeforeSearch] = useState(
     table.getState().pagination.pageIndex,
   );
+  const [isUserSearching, setIsUserSearching] = useState(false);
 
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
@@ -49,6 +50,7 @@ export function TableMenu({
           placeholder="Wyszukaj..."
           value={globalFilter}
           onChange={(event) => {
+            setIsUserSearching(true);
             const searchValue = event.target.value;
             table.setGlobalFilter(searchValue);
 
@@ -59,6 +61,7 @@ export function TableMenu({
               table.firstPage();
             } else if (searchValue === "") {
               table.setPageIndex(pageBeforeSearch);
+              setIsUserSearching(false);
             }
           }}
         ></Input>
@@ -131,9 +134,11 @@ export function TableMenu({
             disabled={!table.getCanPreviousPage()}
             onClick={() => {
               table.previousPage();
-              setPageBeforeSearch((previous) => {
-                return previous - 1;
-              });
+              if (!isUserSearching) {
+                setPageBeforeSearch((previous) => {
+                  return previous - 1;
+                });
+              }
             }}
           >
             <ChevronLeft />
@@ -144,9 +149,11 @@ export function TableMenu({
             disabled={!table.getCanNextPage()}
             onClick={() => {
               table.nextPage();
-              setPageBeforeSearch((previous) => {
-                return previous + 1;
-              });
+              if (!isUserSearching) {
+                setPageBeforeSearch((previous) => {
+                  return previous + 1;
+                });
+              }
             }}
           >
             <ChevronRight />
