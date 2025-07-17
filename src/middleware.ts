@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     session.bearerToken.length === 0
   ) {
     const loginUrl = new URL("/auth/login", request.nextUrl);
-    loginUrl.searchParams.set("from", request.nextUrl.pathname);
+    loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 

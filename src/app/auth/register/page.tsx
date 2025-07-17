@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -24,6 +24,8 @@ import { register } from "../actions";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParameters = useSearchParams();
+  const redirectTo = searchParameters.get("redirectTo");
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -33,6 +35,7 @@ export default function RegisterPage() {
       lastName: "",
     },
   });
+
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
     try {
       const result = await register(values);
@@ -43,7 +46,8 @@ export default function RegisterPage() {
           description: "Spróbuj zarejestrować się ponownie.",
         });
       } else {
-        router.replace("/dashboard");
+        const redirectUrl = redirectTo ?? "/dashboard";
+        router.replace(redirectUrl);
       }
     } catch {
       toast({
@@ -53,6 +57,7 @@ export default function RegisterPage() {
       });
     }
   }
+
   return (
     <>
       <div className="space-y-2 text-center">
