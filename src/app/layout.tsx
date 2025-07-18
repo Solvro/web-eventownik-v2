@@ -50,6 +50,7 @@ export default function RootLayout({
             defer
             src="https://analytics.solvro.pl/script.js"
             data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
+            data-domains="eventownik.solvro.pl"
           ></Script>
         </Providers>
       </body>
