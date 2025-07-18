@@ -32,6 +32,7 @@ import {
 } from "../actions";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
 
@@ -192,7 +193,10 @@ export function ParticipantTable({
   return (
     <>
       <div className="my-2 flex flex-wrap items-center gap-4">
-        <h1 className="text-3xl font-bold">Lista uczestników</h1>
+        <div className="flex grow justify-between">
+          <h1 className="text-3xl font-bold">Lista uczestników</h1>
+          <HelpDialog />
+        </div>
         <TableMenu
           table={table}
           eventId={eventId}

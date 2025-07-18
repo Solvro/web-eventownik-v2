@@ -89,7 +89,7 @@ function SendMailForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="icon" variant="outline" title="Wyślij maila">
+            <Button size="icon" variant="outline">
               <Mail />
             </Button>
           </DialogTrigger>
