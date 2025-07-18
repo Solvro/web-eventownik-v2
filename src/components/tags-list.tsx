@@ -70,6 +70,7 @@ export function TagsList({ items, command, ref }: TagsListProps) {
             onClick={() => {
               selectItem(index);
             }}
+            title={item.description}
           >
             <span className="max-w-3xs truncate">{item.title}</span>
           </button>

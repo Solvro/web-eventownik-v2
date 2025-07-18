@@ -255,13 +255,16 @@ function EventEmailEditForm({
         description: `Pokazuje wartość atrybutu '${attribute.name}'`,
         // NOTE: Why 'attribute.slug' can be null?
         value: `/participant_${attribute.slug ?? ""}`,
-        color: "#FFFFFF",
+        color: "brown",
       };
     }),
   ] satisfies typeof MESSAGE_TAGS;
 
-  const getTagColor = (tagValue: string) => {
-    return availableTags.find((tag) => tag.value === tagValue)?.color;
+  const getTagStyles = (tagValue: string) => {
+    const color = availableTags.find((tag) => tag.value === tagValue)?.color;
+    return color === undefined
+      ? "color: var(--accent-foreground); background-color: var(--accent)"
+      : `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
   };
 
   return (
@@ -372,7 +375,7 @@ function EventEmailEditForm({
                           "span",
                           mergeAttributes(
                             {
-                              style: `background-color: ${getTagColor(node.attrs.id as string) ?? "var(--accent)"}`,
+                              style: getTagStyles(node.attrs.id as string),
                             },
                             options.HTMLAttributes,
                           ),
