@@ -80,24 +80,14 @@ export function TableMenu({
           </TooltipTrigger>
           <TooltipContent>Resetuj sortowanie</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <SendMailForm
-              eventId={eventId}
-              targetParticipants={table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original)}
-              emails={emails}
-            />
-          </TooltipTrigger>
-          <TooltipContent>Wyślij maila</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ExportButton eventId={eventId} />
-          </TooltipTrigger>
-          <TooltipContent>Eksportuj do Excela</TooltipContent>
-        </Tooltip>
+        <SendMailForm
+          eventId={eventId}
+          targetParticipants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original)}
+          emails={emails}
+        />
+        <ExportButton eventId={eventId} />
         <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
           participants={table

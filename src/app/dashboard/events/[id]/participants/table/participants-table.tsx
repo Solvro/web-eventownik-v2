@@ -72,7 +72,6 @@ export function ParticipantTable({
   );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  // Then in your component where the table is defined
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const table = useReactTable({
@@ -96,6 +95,7 @@ export function ParticipantTable({
       },
     },
     autoResetPageIndex: false,
+    enableMultiSort: true,
 
     meta: {
       updateData: (rowIndex, value) => {
