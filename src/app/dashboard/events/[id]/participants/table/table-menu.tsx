@@ -13,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
@@ -50,6 +55,7 @@ export function TableMenu({
           placeholder="Wyszukaj..."
           value={globalFilter}
           onChange={(event) => {
+            // TODO maybe some debouncing?
             setIsUserSearching(true);
             const searchValue = event.target.value;
             table.setGlobalFilter(searchValue);
@@ -65,26 +71,34 @@ export function TableMenu({
             }
           }}
         ></Input>
-        <Button
-          onClick={() => {
-            table.resetColumnFilters();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj filtry"
-        >
-          <FilterX />
-        </Button>
-        <Button
-          onClick={() => {
-            table.resetSorting();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj sortowanie"
-        >
-          <ArrowUpDown />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+            >
+              <FilterX />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj całe filtrowanie</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+            >
+              <ArrowUpDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj sortowanie</TooltipContent>
+        </Tooltip>
         <SendMailForm
           eventId={eventId}
           targetParticipants={table
@@ -118,6 +132,7 @@ export function TableMenu({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Wierszy na stronę</SelectLabel>
+              <SelectItem value="2">2</SelectItem>
               <SelectItem value="10">10</SelectItem>
               <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>
