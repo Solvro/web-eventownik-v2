@@ -74,6 +74,7 @@ function DeleteFormPopup({
               <Button
                 type="submit"
                 variant="destructive"
+                className="bg-red-700"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
                 {form.formState.isSubmitting || shouldDisableButtons ? (
