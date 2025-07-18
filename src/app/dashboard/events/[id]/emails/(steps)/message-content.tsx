@@ -28,12 +28,6 @@ import type { EventAttribute } from "@/types/attributes";
 
 import { createEventEmailTemplate } from "../actions";
 
-// TODO: Following disable statements are not needed in TipTap V3, but we're using V2 for now
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 const EventEmailTemplateContentSchema = z.object({
   name: z.string().nonempty({ message: "Tytuł nie może być pusty." }),
   content: z.string().nonempty({ message: "Treść nie może być pusta." }),
