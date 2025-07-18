@@ -1,8 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mention } from "@tiptap/extension-mention";
-import { mergeAttributes } from "@tiptap/react";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
 import { useRef } from "react";
@@ -23,7 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { MESSAGE_TAGS, getSuggestionOptions } from "@/lib/extensions/tags";
+import { setupSuggestions } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 
 import { createEventEmailTemplate } from "../actions";
@@ -119,25 +118,15 @@ function MessageContentForm({
     }
   }
 
-  const availableTags = [
-    ...MESSAGE_TAGS,
-    ...eventAttributes.map((attribute) => {
-      return {
-        title: attribute.name,
-        description: `Pokazuje wartość atrybutu '${attribute.name}'`,
-        // NOTE: Why 'attribute.slug' can be null?
-        value: `/participant_${attribute.slug ?? ""}`,
-        color: "brown",
-      };
-    }),
-  ] satisfies typeof MESSAGE_TAGS;
-
-  const getTagStyles = (tagValue: string) => {
-    const color = availableTags.find((tag) => tag.value === tagValue)?.color;
-    return color === undefined
-      ? "color: var(--accent-foreground); background-color: var(--accent)"
-      : `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
-  };
+  const attributeTags = eventAttributes.map((attribute): MessageTag => {
+    return {
+      title: attribute.name,
+      description: `Pokazuje wartość atrybutu '${attribute.name}'`,
+      // NOTE: Why 'attribute.slug' can be null?
+      value: `/participant_${attribute.slug ?? ""}`,
+      color: "brown",
+    };
+  }) satisfies MessageTag[];
 
   return (
     <FormContainer
@@ -178,28 +167,7 @@ function MessageContentForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
-                  extensions={[
-                    Mention.configure({
-                      suggestion: {
-                        ...getSuggestionOptions(availableTags),
-                      },
-                      HTMLAttributes: {
-                        class: "text-foreground px-2 py-[1px] rounded-md",
-                      },
-                      renderHTML({ options, node }) {
-                        return [
-                          "span",
-                          mergeAttributes(
-                            {
-                              style: getTagStyles(node.attrs.id as string),
-                            },
-                            options.HTMLAttributes,
-                          ),
-                          node.attrs.label,
-                        ];
-                      },
-                    }),
-                  ]}
+                  extensions={setupSuggestions(attributeTags)}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

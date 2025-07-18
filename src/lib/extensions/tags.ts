@@ -1,6 +1,7 @@
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import type { Editor } from "@tiptap/core";
-import { ReactRenderer, posToDOMRect } from "@tiptap/react";
+import { Mention } from "@tiptap/extension-mention";
+import { ReactRenderer, mergeAttributes, posToDOMRect } from "@tiptap/react";
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
@@ -9,60 +10,81 @@ import type {
 
 import { TagsList } from "@/components/tags-list";
 
-const MESSAGE_TAGS = [
+type LooseAutocomplete<T extends string> = T | (string & {});
+type MessageTagColor = LooseAutocomplete<
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "teal"
+  | "blue"
+  | "indigo"
+  | "purple"
+  | "pink"
+  | "brown"
+>;
+
+export interface MessageTag {
+  title: string;
+  description: string;
+  value: string;
+  color: MessageTagColor;
+}
+
+const MESSAGE_TAGS: MessageTag[] = [
   {
     title: "Nazwa wydarzenia",
     description: "Pokazuje prawdziwą nazwę wydarzenia",
     value: "/event_name",
-    color: "#FFCDD2",
+    color: "red",
   },
   {
     title: "Data rozpoczęcia",
     description: "Pokazuje datę wydarzenia",
     value: "/event_start_date",
-    color: "#FFE0B2",
+    color: "orange",
   },
   {
     title: "Data zakończenia",
     description: "Pokazuje datę zakończenia",
     value: "/event_end_date",
-    color: "#FFF9C4",
+    color: "yellow",
   },
   {
     title: "Slug wydarzenia",
     description: "Pokazuje slug wydarzenia",
     value: "/event_slug",
-    color: "#C8E6C9",
+    color: "green",
   },
   {
     title: "Kolor wydarzenia",
     description: "Pokazuje wybrany kolor",
     value: "/event_primary_color",
-    color: "#B3E5FC",
+    color: "teal",
   },
   {
     title: "E-mail uczestnika",
     description: "Pokazuje e-mail uczestnika",
     value: "/participant_email",
-    color: "#B3E5FC",
+    color: "blue",
   },
   {
     title: "ID uczestnika",
     description: "Pokazuje ID uczestnika",
     value: "/participant_id",
-    color: "#D1C4E9",
+    color: "indigo",
   },
   {
     title: "Slug uczestnika",
     description: "Pokazuje slug uczestnika",
     value: "/participant_slug",
-    color: "#F8BBD0",
+    color: "purple",
   },
   {
     title: "Data rejestracji",
     description: "Pokazuje datę zarejestrowania",
     value: "/participant_created_at",
-    color: "#D7CCC8",
+    color: "pink",
   },
 ];
 
@@ -89,14 +111,7 @@ const updatePosition = async (editor: Editor, element: HTMLElement) => {
   });
 };
 
-/**
- * This function returns an object defining complete settings for the 'Suggestion' TipTap utility
- *
- * Used in configuration of the 'Mention' plugin
- *
- * @see https://tiptap.dev/docs/editor/api/utilities/suggestion#settings
- */
-const getSuggestionOptions = (suggestionList: typeof MESSAGE_TAGS) => {
+const getSuggestionOptions = (suggestionList: MessageTag[]) => {
   return {
     char: "/",
     items: ({ query }: { query: string }) => {
@@ -160,4 +175,37 @@ const getSuggestionOptions = (suggestionList: typeof MESSAGE_TAGS) => {
   } satisfies Omit<SuggestionOptions, "editor">;
 };
 
-export { getSuggestionOptions, MESSAGE_TAGS };
+const getTagStyle = (allTags: MessageTag[], tagValue: string) => {
+  const color = allTags.find((tag) => tag.value === tagValue)?.color;
+  return color === undefined
+    ? "color: var(--accent-foreground); background-color: var(--accent)"
+    : `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
+};
+
+const setupSuggestions = (additionalTags: MessageTag[]) => {
+  const allTags = [...MESSAGE_TAGS, ...additionalTags];
+  return [
+    Mention.configure({
+      suggestion: {
+        ...getSuggestionOptions(allTags),
+      },
+      HTMLAttributes: {
+        class: "px-2 py-[1px] rounded-md",
+      },
+      renderHTML({ options, node }) {
+        return [
+          "span",
+          mergeAttributes(
+            {
+              style: getTagStyle(allTags, node.attrs.id as string),
+            },
+            options.HTMLAttributes,
+          ),
+          node.attrs.label,
+        ];
+      },
+    }),
+  ];
+};
+
+export { setupSuggestions, MESSAGE_TAGS };

@@ -3,10 +3,10 @@
 import type { SuggestionProps } from "@tiptap/suggestion";
 import { useEffect, useImperativeHandle, useState } from "react";
 
-import type { MESSAGE_TAGS } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
 import { cn } from "@/lib/utils";
 
-interface TagsListProps extends SuggestionProps<(typeof MESSAGE_TAGS)[number]> {
+interface TagsListProps extends SuggestionProps<MessageTag> {
   ref: React.RefObject<unknown>;
 }
 
