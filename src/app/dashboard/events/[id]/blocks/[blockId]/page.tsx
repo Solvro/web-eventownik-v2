@@ -146,7 +146,7 @@ export default async function EventBlockEditPage({
             </span>
           </div>
         </div>
-        <div className="mt-8 flex flex-wrap gap-8">
+        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <AddBlockEntry
             eventId={eventId}
             attributeId={rootBlockId}
