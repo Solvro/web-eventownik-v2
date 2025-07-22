@@ -83,7 +83,7 @@ export function TableMenu({
               <FilterX />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Resetuj całe filtrowanie</TooltipContent>
+          <TooltipContent>Resetuj wszystkie filtry</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -132,7 +132,6 @@ export function TableMenu({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Wierszy na stronę</SelectLabel>
-              <SelectItem value="2">2</SelectItem>
               <SelectItem value="10">10</SelectItem>
               <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>

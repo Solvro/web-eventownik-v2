@@ -192,7 +192,7 @@ export function ParticipantTable({
 
   return (
     <>
-      <div className="my-2 flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <div className="flex grow justify-between">
           <h1 className="text-3xl font-bold">Lista uczestników</h1>
           <HelpDialog />
@@ -206,7 +206,7 @@ export function ParticipantTable({
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>
-      <div className="relative w-full overflow-auto">
+      <div className="relative mt-4 w-full overflow-auto">
         <Table>
           <TableHeader className="border-border border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (

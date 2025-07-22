@@ -32,20 +32,20 @@ export function HelpDialog() {
           <DialogTitle className="text-2xl">
             Jak korzystać z tabeli?
           </DialogTitle>
-          <div>
+          <div className="[&>p]:my-2">
             <h2 className="text-lg font-bold">Wielokrotne sortowanie</h2>
-            <p className="px-2 py-1">
-              Chcąc posortować po wielu kolumnach naraz, trzymaj przycisk{" "}
-              <b>
-                <code>Shift</code>
-              </b>{" "}
-              i kliknij nagłówki kolumn, po których chcesz posortować dane.
+            <p>
+              Chcąc posortować po wielu kolumnach naraz, przytrzymaj przycisk{" "}
+              <strong className="font-mono">Shift</strong> i kliknij nagłówki
+              kolumn, po których chcesz posortować dane.
+            </p>
+            <p>
+              Priorytet sortowania będzie odpowiadał kolejności klikania w
+              kolejne kolumny, np.:
               <br />
-              Priorytet sortowania będzie odpowiadał kolejności klikania
-              kolejnych kolumn, np.:
-              <br />
-              Klikając najpierw kolumnę <i>Imię</i>, a potem ( z wciśniętym{" "}
-              <code>Shiftem</code>! ) kolumnę <i>Wiek</i>,
+              Klikając najpierw kolumnę <i>Imię</i>, a potem (z wciśniętym{" "}
+              <strong className="font-mono">Shift</strong>
+              -em !) kolumnę <i>Wiek</i>,
               <br />
               dane zostaną posortowane najpierw według imion, a potem według
               wieku.
