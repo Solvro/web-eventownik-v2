@@ -189,6 +189,7 @@ export function generateColumns(
           <Button
             variant="ghost"
             onClick={async () => {
+              // TODO stop DDOSing backend server 😭
               await Promise.all(
                 notExpandedRows.map(async (row) => {
                   return fetchAdditionalParticipantData(row, table, eventId);
