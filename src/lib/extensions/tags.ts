@@ -190,7 +190,8 @@ const setupSuggestions = (additionalTags: MessageTag[]) => {
         ...getSuggestionOptions(allTags),
       },
       HTMLAttributes: {
-        class: "px-2 py-[1px] rounded-md",
+        class:
+          "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.45em]",
       },
       renderHTML({ options, node }) {
         return [
