@@ -12,13 +12,16 @@ import {
 import type { AttributeType } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
 
+/**
+ * Default sorting state cycle - 'none' -> 'desc' -> 'asc' -> 'none' [Sorting removal](https://tanstack.com/table/v8/docs/guide/sorting#sorting-removal)
+ *
+ * When user clicks on a header column while pressing `Shift` key, the multisort will be applied [Multisort](https://tanstack.com/table/v8/docs/guide/sorting#multi-sorting)
+ */
 export function SortButton({
-  sortingDirection,
   column,
   children,
   className,
 }: {
-  sortingDirection: false | SortDirection;
   column: Column<
     FlattenedParticipant,
     string | number | boolean | Date | null | undefined
@@ -30,8 +33,11 @@ export function SortButton({
     <Button
       variant="ghost"
       className={className}
-      onClick={() => {
-        column.toggleSorting(sortingDirection === "asc");
+      onClick={(event) => {
+        const toggleSorting = column.getToggleSortingHandler();
+        if (toggleSorting !== undefined) {
+          toggleSorting(event);
+        }
       }}
     >
       {children}

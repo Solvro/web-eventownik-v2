@@ -78,9 +78,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Email
-            </SortButton>
+            <SortButton column={column}>Email</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -95,9 +93,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Data rejestracji
-            </SortButton>
+            <SortButton column={column}>Data rejestracji</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -130,7 +126,7 @@ export function generateColumns(
                 options={attribute.options}
                 column={column}
               />
-              <SortButton sortingDirection={sortingDirection} column={column}>
+              <SortButton column={column}>
                 <span className="max-w-sm truncate">{attribute.name}</span>
               </SortButton>
               <SortIcon sortingDirection={sortingDirection} />
