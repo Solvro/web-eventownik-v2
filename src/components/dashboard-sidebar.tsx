@@ -125,13 +125,27 @@ export function DashboardSidebar({
         <ul className="flex w-full justify-around gap-2">
           {[
             ...sections,
-            ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
+            ...(blocks.length > 0
+              ? [
+                  {
+                    title: "Bloki",
+                    links: [
+                      { title: "Bloki", icon: <Cuboid />, route: "blocks" },
+                    ],
+                  },
+                ]
+              : []),
           ]
             .flatMap((section) => section.links)
             .map((link) => (
               <li key={link.title}>
                 <Button
-                  variant={pathname.endsWith(link.route) ? "default" : "ghost"}
+                  variant={
+                    pathname.endsWith(link.route) ||
+                    (link.route !== id && pathname.includes(link.route))
+                      ? "default"
+                      : "ghost"
+                  }
                   asChild
                 >
                   <Link
