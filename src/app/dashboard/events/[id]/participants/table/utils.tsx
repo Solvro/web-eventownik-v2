@@ -12,8 +12,17 @@ import {
 import type { AttributeType } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
 
+interface SortButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  column: Column<
+    FlattenedParticipant,
+    string | number | boolean | Date | null | undefined
+  >;
+  children: ReactNode;
+}
+
 /**
- * Default sorting state cycle - 'none' -> 'desc' -> 'asc' -> 'none' [Sorting removal](https://tanstack.com/table/v8/docs/guide/sorting#sorting-removal)
+ * Default sorting state cycle - 'none' -> 'asc' -> 'desc' -> 'none' [Sorting direction](return <ArrowUp />;)
  *
  * When user clicks on a header column while pressing `Shift` key, the multisort will be applied [Multisort](https://tanstack.com/table/v8/docs/guide/sorting#multi-sorting)
  */
@@ -21,14 +30,9 @@ export function SortButton({
   column,
   children,
   className,
-}: {
-  column: Column<
-    FlattenedParticipant,
-    string | number | boolean | Date | null | undefined
-  >;
-  children: ReactNode;
-  className?: string;
-}) {
+  onClick,
+  ...buttonProps
+}: SortButtonProps) {
   return (
     <Button
       variant="ghost"
@@ -39,6 +43,7 @@ export function SortButton({
           toggleSorting(event);
         }
       }}
+      {...buttonProps}
     >
       {children}
     </Button>
@@ -115,6 +120,7 @@ export function FilterButton({
               </DropdownMenuCheckboxItem>
             );
           })}
+          {/* TODO Maybe add 'Empty' option which will filter empty values ("")  */}
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -129,4 +135,16 @@ export function getPaginationInfoText(table: Table<FlattenedParticipant>) {
       ? "0"
       : (pageIndex * pageSize + 1).toString()
   }-${Math.min(pageSize * pageIndex + pageSize, table.getRowCount()).toString()} z ${table.getRowCount().toString()}`;
+}
+
+export function getAriaSort(
+  sortDirection: SortDirection | false,
+): "none" | "ascending" | "descending" | "other" | undefined {
+  if (sortDirection === false) {
+    return "none";
+  }
+  if (sortDirection === "asc") {
+    return "ascending";
+  }
+  return "descending";
 }

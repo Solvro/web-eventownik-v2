@@ -175,7 +175,9 @@ export function generateColumns(
             }
           }
         },
+        //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
         filterFn: "arrIncludesSome",
+        sortDescFirst: false,
       });
     }),
     columnHelper.display({

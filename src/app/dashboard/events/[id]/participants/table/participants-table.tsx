@@ -35,6 +35,7 @@ import { flattenParticipants } from "./data";
 import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
+import { getAriaSort } from "./utils";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -48,7 +49,7 @@ declare module "@tanstack/react-table" {
  * To seamlessly navigate during working on this component
  * get familiar with [Tanstack Table V8 docs](https://tanstack.com/table/latest/docs/introduction)
  *
- * There is a lot of space to improve since the first version of the component was made in a hurry 😭.
+ * In current implementation sorting is based on alphanumeric (punctuation and symbols < numbers < uppercase letters < lowercase letters) order because every value used for table is a string [SortingFns Docs](https://tanstack.com/table/v8/docs/guide/sorting#sorting-fns)
  */
 export function ParticipantTable({
   participants,
@@ -223,6 +224,7 @@ export function ParticipantTable({
                         header.id === "expand" ? "w-16 text-right" : "",
                         header.column.columnDef.meta?.headerClassName,
                       )}
+                      aria-sort={getAriaSort(header.column.getIsSorted())}
                     >
                       {header.isPlaceholder
                         ? null
