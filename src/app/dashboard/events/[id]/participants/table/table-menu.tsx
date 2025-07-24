@@ -93,6 +93,7 @@ export function TableMenu({
               }}
               size="icon"
               variant="outline"
+              aria-label="Resetuj sortowanie"
             >
               <ArrowUpDown />
             </Button>
