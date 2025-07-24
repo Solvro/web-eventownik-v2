@@ -103,6 +103,26 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --tag-red-bg: #ffe5e5;
+    --tag-red-text: #b30000;
+    --tag-orange-bg: #fff1e0;
+    --tag-orange-text: #b34700;
+    --tag-yellow-bg: #fffbe0;
+    --tag-yellow-text: #8c7000;
+    --tag-green-bg: #e5fff1;
+    --tag-green-text: #007a3d;
+    --tag-teal-bg: #e0f7f7;
+    --tag-teal-text: #007f80;
+    --tag-blue-bg: #e0f0ff;
+    --tag-blue-text: #005cb3;
+    --tag-indigo-bg: #e8eaff;
+    --tag-indigo-text: #4b50c9;
+    --tag-purple-bg: #f3e0ff;
+    --tag-purple-text: #6c00b3;
+    --tag-pink-bg: #ffe0f0;
+    --tag-pink-text: #b3006b;
+    --tag-brown-bg: #f2e6e0;
+    --tag-brown-text: #5c3d2e;
   }
 
   .dark {
@@ -130,6 +150,26 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --tag-red-bg: #330000;
+    --tag-red-text: #ff6666;
+    --tag-orange-bg: #331a00;
+    --tag-orange-text: #ff9933;
+    --tag-yellow-bg: #332b00;
+    --tag-yellow-text: #ffe066;
+    --tag-green-bg: #002d1a;
+    --tag-green-text: #66ffb2;
+    --tag-teal-bg: #003333;
+    --tag-teal-text: #66ffff;
+    --tag-blue-bg: #001933;
+    --tag-blue-text: #66aaff;
+    --tag-indigo-bg: #1a1a40;
+    --tag-indigo-text: #9999ff;
+    --tag-purple-bg: #2b004d;
+    --tag-purple-text: #d580ff;
+    --tag-pink-bg: #33001a;
+    --tag-pink-text: #ff66b2;
+    --tag-brown-bg: #2b1a14;
+    --tag-brown-text: #d2a679;
   }
 }
 
