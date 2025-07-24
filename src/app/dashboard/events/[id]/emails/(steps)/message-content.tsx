@@ -121,7 +121,7 @@ function MessageContentForm({
   const attributeTags = eventAttributes.map((attribute): MessageTag => {
     return {
       title: attribute.name,
-      description: `Pokazuje wartość atrybutu '${attribute.name}'`,
+      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
