@@ -71,7 +71,7 @@ describe("Wysiwyg Editor", () => {
     };
   };
 
-  describe.skip("General", () => {
+  describe("General", () => {
     it("should render the component", () => {
       const { getFirstParagraph } = renderComponent({ onChange: vi.fn() });
       expect(getFirstParagraph()).toBeInTheDocument();
@@ -136,7 +136,7 @@ describe("Wysiwyg Editor", () => {
     });
   });
 
-  describe.skip("Formatting (Markup)", () => {
+  describe("Formatting (Markup)", () => {
     interface TextFormattingTestCase {
       effect: string;
       characters: string;
