@@ -32,6 +32,7 @@ import {
 } from "../actions";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
 
@@ -72,7 +73,6 @@ export function ParticipantTable({
   );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  // Then in your component where the table is defined
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const table = useReactTable({
@@ -96,6 +96,7 @@ export function ParticipantTable({
       },
     },
     autoResetPageIndex: false,
+    enableMultiSort: true,
 
     meta: {
       updateData: (rowIndex, value) => {
@@ -191,8 +192,11 @@ export function ParticipantTable({
 
   return (
     <>
-      <div className="my-2 flex flex-wrap items-center gap-4">
-        <h1 className="text-3xl font-bold">Lista uczestników</h1>
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex grow justify-between">
+          <h1 className="text-3xl font-bold">Lista uczestników</h1>
+          <HelpDialog />
+        </div>
         <TableMenu
           table={table}
           eventId={eventId}
@@ -202,7 +206,7 @@ export function ParticipantTable({
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>
-      <div className="relative w-full overflow-auto">
+      <div className="relative mt-4 w-full overflow-auto">
         <Table>
           <TableHeader className="border-border border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
