@@ -297,8 +297,15 @@ describe("Wysiwyg Editor", () => {
           "text-align": "right",
         },
       },
+      {
+        alignment: "justify",
+        button: "justify",
+        style: {
+          "text-align": "justify",
+        },
+      },
     ] satisfies TextAlignmentTestCase[])(
-      "should align text to the $alignment",
+      "should set 'text-align' to $alignment",
       async ({ button, style }) => {
         const { menu, user, insertText, getFirstParagraph } = renderComponent();
 
