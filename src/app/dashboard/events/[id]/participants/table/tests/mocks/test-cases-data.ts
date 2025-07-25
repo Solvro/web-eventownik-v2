@@ -4,7 +4,7 @@ import type { Participant } from "@/types/participant";
 interface TestCaseData {
   participants: Participant[];
   attributes: Attribute[];
-  attributeType: AttributeType;
+  attributeType?: AttributeType;
 }
 
 // There are no test cases for blocks and files
@@ -879,7 +879,76 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:09:00Z",
     },
   ],
-  attributeType: "select", // Changed to reflect multiple attribute types
+};
+
+export const editParticipantTestCaseData: TestCaseData = {
+  participants: [
+    {
+      id: 4,
+      email: "dan@example.com",
+      slug: "dan",
+      createdAt: "2025-07-01T10:03:00Z",
+      updatedAt: "2025-07-01T10:03:00Z",
+      attributes: [
+        {
+          id: 10,
+          name: "Nickname",
+          slug: "nickname",
+          value: "chewmanji",
+        },
+      ],
+    },
+  ],
+  attributes: [
+    {
+      id: 6,
+      name: "Age",
+      slug: "age",
+      eventId: 100,
+      showInList: false,
+      options: null,
+      type: "number",
+      createdAt: "2025-07-01T10:05:00Z",
+      updatedAt: "2025-07-01T10:05:00Z",
+    },
+    {
+      id: 10,
+      name: "Nickname",
+      slug: "nickname",
+      eventId: 100,
+      showInList: true,
+      options: null,
+      type: "text",
+      createdAt: "2025-07-01T10:09:00Z",
+      updatedAt: "2025-07-01T10:09:00Z",
+    },
+  ],
+};
+
+export const editParticipantDetailsTestCaseData = {
+  participants: [
+    {
+      id: 4,
+      email: "dan@example.com",
+      slug: "dan",
+      createdAt: "2025-07-01T10:03:00Z",
+      updatedAt: "2025-07-01T10:03:00Z",
+      attributes: [
+        {
+          id: 10,
+          name: "Nickname",
+          slug: "nickname",
+          value: "chewmanji",
+        },
+        {
+          id: 6,
+          name: "Age",
+          slug: "age",
+          value: "42",
+        },
+      ],
+    },
+  ],
 };
 
 export const stringLikeDataTestCases = [

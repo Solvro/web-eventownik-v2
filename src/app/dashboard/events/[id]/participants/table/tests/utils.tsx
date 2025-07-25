@@ -5,6 +5,8 @@ import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table
 import type { Attribute } from "@/types/attributes";
 import type { Participant } from "@/types/participant";
 
+import { Providers } from "./providers";
+
 export function renderTable(
   participants: Participant[],
   attributes: Attribute[],
@@ -19,6 +21,7 @@ export function renderTable(
       emails={null}
       blocks={null}
     />,
+    { wrapper: Providers },
   );
 
   return { user };

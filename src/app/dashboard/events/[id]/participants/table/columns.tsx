@@ -220,6 +220,7 @@ export function generateColumns(
               }
               row.toggleExpanded();
             }}
+            aria-label={row.getIsExpanded() ? "Zwiń wiersz" : "Rozwiń wiersz"}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

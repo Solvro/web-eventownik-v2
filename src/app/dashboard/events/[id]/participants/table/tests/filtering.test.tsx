@@ -1,4 +1,4 @@
-import { cleanup, prettyDOM, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { describe, it } from "vitest";
 
 import {
