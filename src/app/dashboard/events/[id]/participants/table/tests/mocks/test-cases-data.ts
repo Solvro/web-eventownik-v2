@@ -14,7 +14,7 @@ export const textCaseData: TestCaseData = {
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
       id: 2,
-      email: "bob@example.com",
+      email: "bob@domain.com", // email domain changed for filtering tests
       slug: "bob",
       createdAt: "2025-07-01T10:01:00Z",
       updatedAt: "2025-07-01T10:01:00Z",
@@ -29,7 +29,7 @@ export const textCaseData: TestCaseData = {
     },
     {
       id: 1,
-      email: "anna@example.com",
+      email: "anna@domain.com", // email domain changed for filtering tests
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
       updatedAt: "2025-07-01T10:00:00Z",
@@ -787,6 +787,99 @@ export const datetimeCaseData: TestCaseData = {
     },
   ],
   attributeType: "datetime",
+};
+
+export const selectAndMultiselectTestCaseData: TestCaseData = {
+  participants: [
+    {
+      id: 4,
+      email: "dan@example.com",
+      slug: "dan",
+      createdAt: "2025-07-01T10:03:00Z",
+      updatedAt: "2025-07-01T10:03:00Z",
+      attributes: [
+        {
+          id: 6,
+          name: "Gender",
+          slug: "gender",
+          value: "Male",
+        },
+        {
+          id: 10,
+          name: "Skills",
+          slug: "skills",
+          value: "Rust,Go",
+        },
+      ],
+    },
+    {
+      id: 3,
+      email: "carol@example.com",
+      slug: "carol",
+      createdAt: "2025-07-01T10:02:00Z",
+      updatedAt: "2025-07-01T10:02:00Z",
+      attributes: [
+        {
+          id: 6,
+          name: "Gender",
+          slug: "gender",
+          value: "Female",
+        },
+        {
+          id: 10,
+          name: "Skills",
+          slug: "skills",
+          value: "JavaScript,Python",
+        },
+      ],
+    },
+    {
+      id: 5,
+      email: "eli@example.com",
+      slug: "eli",
+      createdAt: "2025-07-01T10:04:00Z",
+      updatedAt: "2025-07-01T10:04:00Z",
+      attributes: [
+        {
+          id: 6,
+          name: "Gender",
+          slug: "gender",
+          value: "Other",
+        },
+        {
+          id: 10,
+          name: "Skills",
+          slug: "skills",
+          value: "Go,Rust",
+        },
+      ],
+    },
+  ],
+  attributes: [
+    {
+      id: 6,
+      name: "Gender",
+      slug: "gender",
+      eventId: 100,
+      showInList: true,
+      options: ["Male", "Female", "Other"],
+      type: "select",
+      createdAt: "2025-07-01T10:05:00Z",
+      updatedAt: "2025-07-01T10:05:00Z",
+    },
+    {
+      id: 10,
+      name: "Skills",
+      slug: "skills",
+      eventId: 100,
+      showInList: true,
+      options: ["JavaScript", "Python", "Rust", "Go"],
+      type: "multiselect",
+      createdAt: "2025-07-01T10:09:00Z",
+      updatedAt: "2025-07-01T10:09:00Z",
+    },
+  ],
+  attributeType: "select", // Changed to reflect multiple attribute types
 };
 
 export const stringLikeDataTestCases = [

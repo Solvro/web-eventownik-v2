@@ -94,6 +94,7 @@ export function FilterButton({
           <Button
             variant={filterValues.length === 0 ? "ghost" : "outline"}
             size="icon"
+            aria-label="Otwórz menu filtrów"
           >
             <Filter strokeWidth={filterValues.length === 0 ? 2 : 3} />
           </Button>

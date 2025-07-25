@@ -1,12 +1,8 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { cleanup, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
-import type { Attribute } from "@/types/attributes";
-import type { Participant } from "@/types/participant";
-
 import { stringLikeDataTestCases, textCaseData } from "./mocks/test-cases-data";
+import { getDataRows, renderTable } from "./utils";
 
 /**
  * For now every value is treated as string and the order used for comparison is alphanumeric (punctuation and symbols < numbers < uppercase letters < lowercase letters)
@@ -22,24 +18,8 @@ describe("Sorting", () => {
     cleanup();
   });
 
-  function renderTable(participants: Participant[], attributes: Attribute[]) {
-    const user = userEvent.setup();
-
-    render(
-      <ParticipantTable
-        eventId="100"
-        participants={participants}
-        attributes={attributes}
-        emails={null}
-        blocks={null}
-      />,
-    );
-
-    return { user };
-  }
-
   const getDisplayedValues = (columnIndex: number = TESTED_COLUMN_INDEX) => {
-    const rows = screen.getAllByRole("row").slice(1); // Skip header
+    const rows = getDataRows();
     return rows.map((row) => {
       const cells = within(row).getAllByRole("cell");
       return cells[columnIndex].textContent;
