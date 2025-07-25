@@ -10,7 +10,7 @@ import {
   editParticipantDetailsTestCaseData,
   editParticipantTestCaseData,
 } from "./mocks/test-cases-data";
-import { getDataRows, renderTable } from "./utils";
+import { getDataRows, getRow, getSubRow, renderTable } from "./utils";
 
 beforeAll(() => {
   server.listen();
@@ -28,14 +28,6 @@ vi.mock("@/lib/session", () => ({
     return { bearerToken: "BEARERTOKEN" } as SessionPayload;
   }),
 }));
-
-function getRow(rowIndex: number) {
-  return getDataRows()[rowIndex];
-}
-
-function getSubRow(parentRowIndex: number) {
-  return getDataRows()[parentRowIndex + 1]; // +1 from 'parent' row
-}
 
 describe("Editing participant", () => {
   const rowIndexForEditing = 0;

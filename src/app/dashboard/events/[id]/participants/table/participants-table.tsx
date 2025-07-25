@@ -138,11 +138,16 @@ export function ParticipantTable({
         });
         return;
       }
-
+      table.resetExpanded();
       setData((previousData) => {
         return previousData.filter(
           (participant) => participant.id !== participantId,
         );
+      });
+      toast({
+        variant: "default",
+        title: "Pomyślnie usunięto uczestnika",
+        description: error,
       });
     } catch {
       toast({

@@ -30,3 +30,11 @@ export function renderTable(
 export function getDataRows() {
   return screen.getAllByRole("row").slice(1); //Skip header row
 }
+
+export function getRow(rowIndex: number) {
+  return getDataRows()[rowIndex];
+}
+
+export function getSubRow(parentRowIndex: number) {
+  return getDataRows()[parentRowIndex + 1]; // +1 from 'parent' row
+}

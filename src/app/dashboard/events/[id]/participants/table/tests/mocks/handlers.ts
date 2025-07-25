@@ -3,7 +3,12 @@ import { HttpResponse, http } from "msw";
 import { API_URL } from "@/lib/api";
 import type { Participant } from "@/types/participant";
 
-import { editParticipantDetailsTestCaseData } from "./test-cases-data";
+import {
+  deleteParticipantCaseData,
+  editParticipantDetailsTestCaseData,
+} from "./test-cases-data";
+
+let DELETE_PARTICIPANTS_MOCK = { ...deleteParticipantCaseData };
 
 export const handlers = [
   http.put<{ eventId: string; participantId: string }>(
@@ -26,6 +31,35 @@ export const handlers = [
         );
       }
       return HttpResponse.json(participant);
+    },
+  ),
+  http.delete<{ eventId: string; participantId: string }>(
+    `${API_URL}/events/:eventId/participants/:participantId`,
+    ({ params }) => {
+      const { participantId } = params;
+      DELETE_PARTICIPANTS_MOCK = {
+        ...DELETE_PARTICIPANTS_MOCK,
+        participants: DELETE_PARTICIPANTS_MOCK.participants.filter(
+          (p) => p.id !== +participantId,
+        ),
+      };
+      return HttpResponse.json();
+    },
+  ),
+  http.delete<{ eventId: string }>(
+    `${API_URL}/events/:eventId/participants`,
+    async ({ request }) => {
+      const { participantsToUnregisterIds } = (await request.json()) as {
+        participantsToUnregisterIds: string[];
+      };
+
+      DELETE_PARTICIPANTS_MOCK = {
+        ...DELETE_PARTICIPANTS_MOCK,
+        participants: DELETE_PARTICIPANTS_MOCK.participants.filter(
+          (p) => !participantsToUnregisterIds.includes(p.id.toString()),
+        ),
+      };
+      return HttpResponse.json();
     },
   ),
 ];
