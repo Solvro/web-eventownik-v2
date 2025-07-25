@@ -6,6 +6,9 @@ const authFile = path.join(
   "../../../playwright/.auth/user.json",
 );
 
+// TODO: Refactor this, it's pretty obvious those credentials shouldn't be
+// here publicly, but we'll bother with handling auth later when we merge both
+// e2e suites to main
 setup("authenticate", async ({ page }) => {
   // Perform authentication steps.
   await page.goto("/auth/login");
