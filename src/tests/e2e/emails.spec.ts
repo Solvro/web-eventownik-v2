@@ -1,10 +1,37 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
 
+import type { EventAttribute } from "@/types/attributes";
+import type { Event } from "@/types/event";
+import type { EventForm } from "@/types/forms";
+
 test.describe.configure({ mode: "serial" });
 
-// NOTE: Probably should be in an .env file
-const EVENT_ID = "126";
+interface EventData {
+  id: Event["id"];
+  attributes: Partial<EventAttribute>[];
+  forms: Partial<EventForm>[];
+}
+
+const EVENT_DATA: EventData = {
+  id: 126,
+  attributes: [
+    {
+      name: "Numer telefonu",
+      type: "tel",
+    },
+    {
+      name: "Rozmiar koszulki",
+      type: "select",
+      options: ["XS", "S", "M", "L", "XL", "XXL"],
+    },
+  ],
+  forms: [
+    {
+      name: "Nazwa formularza",
+    },
+  ],
+};
 
 interface Editor {
   editor: Locator;
@@ -33,12 +60,16 @@ class TemplatesPage {
   constructor(private page: Page) {}
 
   async navigateToTemplates() {
-    await this.page.goto(`/dashboard/events/${EVENT_ID}/emails`);
-    await this.page.waitForURL(`/dashboard/events/${EVENT_ID}/emails`);
+    await this.page.goto(
+      `/dashboard/events/${EVENT_DATA.id.toString()}/emails`,
+    );
+    await this.page.waitForURL(
+      `/dashboard/events/${EVENT_DATA.id.toString()}/emails`,
+    );
   }
 
   async launchDialog() {
-    await this.page.getByRole("button", { name: /szablon/i }).click();
+    await this.page.getByRole("button", { name: /stwórz/i }).click();
   }
 
   getEditor(): Editor {
@@ -98,18 +129,119 @@ class TemplatesPage {
   }
 }
 
-test.describe("Demo suite", () => {
-  let templatesPage: TemplatesPage;
+let templatesPage: TemplatesPage;
 
-  test.beforeEach(async ({ page }) => {
-    templatesPage = new TemplatesPage(page);
-    await templatesPage.navigateToTemplates();
-  });
+test.beforeEach(async ({ page }) => {
+  templatesPage = new TemplatesPage(page);
+  await templatesPage.navigateToTemplates();
+});
 
+test.describe("General", () => {
   test("should render the page", async ({ page }) => {
-    await expect(page).toHaveURL(`/dashboard/events/${EVENT_ID}/emails`);
+    await expect(page).toHaveURL(
+      `/dashboard/events/${EVENT_DATA.id.toString()}/emails`,
+    );
     await expect(
       page.getByRole("heading", { name: /szablony/i }),
     ).toBeVisible();
+  });
+
+  test("should render add template button", async ({ page }) => {
+    await expect(page.getByRole("button", { name: /stwórz/i })).toBeVisible();
+  });
+});
+
+test.describe("Creating templates - 1st step", () => {
+  test.beforeEach(async () => {
+    await templatesPage.launchDialog();
+  });
+
+  test("should show the first step", async ({ page }) => {
+    await expect(
+      page.getByRole("heading", { name: /rodzaj/i, level: 2 }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: /konfiguruj/i, level: 2 }),
+    ).toBeVisible();
+
+    await expect(page.getByRole("radiogroup")).toBeVisible();
+
+    await expect(page.getByRole("button", { name: /dalej/i })).toBeVisible();
+  });
+
+  const noConfigTriggers = ["rejestracja", "usunięcie", "manual"];
+
+  for (const trigger of noConfigTriggers) {
+    test(`should not show configuration for '${trigger}'`, async ({ page }) => {
+      await page.getByRole("radio", { name: new RegExp(trigger, "i") }).click();
+
+      await expect(page.getByText(/nie wymaga/i)).toBeVisible();
+    });
+  }
+
+  test("should show configuration for 'formularz'", async ({ page }) => {
+    await page.getByRole("radio", { name: /formularz/i }).click();
+    await page.getByRole("combobox", { name: /formularz/i }).click();
+
+    // The dropdown with options
+    await expect(page.getByRole("listbox")).toBeVisible();
+    // The option itself
+    await expect(
+      page.getByRole("option", {
+        name: EVENT_DATA.forms[0].name ?? "",
+      }),
+    ).toBeVisible();
+  });
+
+  test("should force configuration for 'formularz'", async ({ page }) => {
+    await page.getByRole("radio", { name: /formularz/i }).click();
+    await page.getByRole("button", { name: /dalej/i }).click();
+
+    await expect(page.getByText(/pola/i)).toBeVisible();
+  });
+
+  test("should show configuration for 'atrybut'", async ({ page }) => {
+    await page.getByRole("radio", { name: /atrybut/i }).click();
+    await page.getByRole("combobox", { name: /atrybut/i }).click();
+
+    // The dropdown with options
+    await expect(page.getByRole("listbox")).toBeVisible();
+    // The options themselves
+    const options = await page.getByRole("option").all();
+    for (const [index, option] of options.entries()) {
+      await expect(option).toBeVisible();
+      await expect(option).toHaveText(EVENT_DATA.attributes[index].name ?? "");
+    }
+  });
+
+  test("should force configuration for 'atrybut'", async ({ page }) => {
+    await page.getByRole("radio", { name: /atrybut/i }).click();
+    await page.getByRole("button", { name: /dalej/i }).click();
+
+    await expect(page.getByText(/pola/i)).toBeVisible();
+  });
+});
+
+test.describe("Creating templates - 2nd step", () => {
+  test.beforeEach(async ({ page }) => {
+    await templatesPage.launchDialog();
+    await page.getByRole("radio", { name: /manual/i }).click();
+    await page.getByRole("button", { name: /dalej/i }).click();
+  });
+
+  test("should show the second step", async ({ page }) => {
+    const textBoxes = await page.getByRole("textbox").all();
+
+    await expect(page.getByLabel(/tytuł/i)).toBeVisible();
+    expect(textBoxes).toHaveLength(2); // NOTE: Title and editor - should it be done differently?
+    await expect(page.getByRole("button", { name: /wróć/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /zapisz/i })).toBeVisible();
+  });
+
+  test("should force entering in a title", async ({ page }) => {
+    await page.getByRole("button", { name: /zapisz/i }).click();
+
+    await expect(page.getByText(/pusty/i)).toBeVisible();
   });
 });
