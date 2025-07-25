@@ -33,13 +33,42 @@ const EVENT_DATA: EventData = {
   ],
 };
 
+interface TextFormattingTestCase {
+  effect: string;
+  characters: string;
+  role: string;
+  level?: number;
+}
+
 interface Editor {
-  editor: Locator;
+  /**
+   * The ProseMirror root element within the DOM
+   */
+  element: Locator;
+  /**
+   * Inserts text into the editor
+   */
   insertText: (text: string) => Promise<void>;
+  /**
+   * Pastes text from the clipboard into the editor
+   * @see https://www.adebayosegun.com/snippets/copy-paste-playwright
+   */
   pasteText: (text: string) => Promise<void>;
+  /**
+   * Selects all text in the editor using Ctrl+A shortcut
+   */
   selectAll: () => Promise<void>;
+  /**
+   * Gets the first paragraph within the editor
+   */
   getFirstParagraph: () => Locator;
+  /**
+   * Gets all paragraphs within the editor
+   */
   getAllParagraphs: () => Locator;
+  /**
+   * The menu bar within the editor
+   */
   menu: {
     bold: Locator;
     italics: Locator;
@@ -73,44 +102,35 @@ class TemplatesPage {
   }
 
   getEditor(): Editor {
-    const editor = this.page.getByRole("textbox");
+    // Getting by testid here to get around multiple textboxes error
+    const element = this.page.getByTestId("editor");
     const context = this.page.context();
 
     return {
-      editor,
-      /**
-       * Inserts text into the editor
-       */
+      element,
       insertText: async (text: string) => {
-        await editor.click();
+        await element.click();
         await this.page.keyboard.type(text);
       },
-      /**
-       * Pastes text from the clipboard into the editor
-       * @see https://www.adebayosegun.com/snippets/copy-paste-playwright
-       */
       pasteText: async (text: string) => {
         await context.grantPermissions(["clipboard-read", "clipboard-write"]);
         // Focus the editor
-        await editor.click();
+        await element.click();
         // Copy text to clipboard
         await this.page.evaluate(async () =>
           navigator.clipboard.writeText(text),
         );
         // Paste text from clipboard
-        await editor.press("Meta+v");
+        await element.press("Meta+v");
       },
-      /**
-       * Selects all text in the editor with Ctrl+A shortcut
-       */
       selectAll: async () => {
-        await editor.click();
+        await element.click();
         await this.page.keyboard.down("Control");
         await this.page.keyboard.press("KeyA");
         await this.page.keyboard.up("Control");
       },
-      getFirstParagraph: () => this.page.getByRole("paragraph").first(),
-      getAllParagraphs: () => this.page.getByRole("paragraph"),
+      getFirstParagraph: () => element.getByRole("paragraph").first(),
+      getAllParagraphs: () => element.getByRole("paragraph"),
       menu: {
         bold: this.page.getByRole("button", { name: /pogrubienie/i }),
         italics: this.page.getByRole("button", { name: /kursywa/i }),
@@ -243,5 +263,200 @@ test.describe("Creating templates - 2nd step", () => {
     await page.getByRole("button", { name: /zapisz/i }).click();
 
     await expect(page.getByText(/pusty/i)).toBeVisible();
+  });
+
+  test.describe("Editor", () => {
+    let editor: Editor;
+
+    test.beforeEach(() => {
+      editor = templatesPage.getEditor();
+    });
+
+    test("should allow entering text", async () => {
+      await editor.insertText("Lorem ipsum");
+      await expect(editor.getFirstParagraph()).toHaveText("Lorem ipsum");
+    });
+
+    test("should allow deleting text", async () => {
+      await editor.insertText("A");
+      await editor.element.press("Backspace");
+      await expect(editor.getFirstParagraph()).toBeEmpty();
+    });
+
+    test("should create new paragraph pressing 'Enter'", async () => {
+      const phrases = ["Lorem ipsum", "Dolor sit amet"];
+
+      await editor.insertText(phrases[0]);
+      await editor.element.press("Enter");
+      await editor.insertText(phrases[1]);
+
+      const paragraphs = editor.getAllParagraphs();
+      await expect(paragraphs).toHaveCount(2);
+
+      await expect(paragraphs.nth(0)).toHaveText(phrases[0]);
+      await expect(paragraphs.nth(1)).toHaveText(phrases[1]);
+    });
+
+    test("should not create new paragraph pressing 'Shift+Enter'", async () => {
+      const phrases = ["Lorem ipsum", "Dolor sit amet"];
+
+      await editor.insertText(phrases[0]);
+      await editor.element.press("Shift+Enter");
+      await editor.insertText(phrases[1]);
+
+      const paragraphs = editor.getAllParagraphs();
+      await expect(paragraphs).toHaveCount(1);
+
+      await expect(paragraphs.nth(0)).toHaveText(`${phrases[0]}${phrases[1]}`);
+    });
+
+    test.describe("Formatting with Markdown", () => {
+      const marks = [
+        {
+          effect: "bold",
+          characters: "**",
+          role: "strong",
+        },
+        {
+          effect: "italic",
+          characters: "*",
+          role: "emphasis",
+        },
+        {
+          effect: "monospace",
+          characters: "`",
+          role: "code",
+        },
+      ] as const;
+
+      const nodes = [
+        {
+          characters: "#",
+          role: "heading",
+          level: 1,
+        },
+        {
+          characters: "##",
+          level: 2,
+        },
+        {
+          characters: "###",
+          level: 3,
+        },
+      ] as const;
+
+      for (const { effect, characters, role } of marks) {
+        test(`should make '${effect}' text with '${characters}'`, async ({
+          page,
+        }) => {
+          const phrase = "Lorem ipsum";
+          await editor.insertText(`${characters}${phrase}${characters}`);
+
+          await expect(page.getByRole(role)).toHaveText(phrase);
+        });
+      }
+
+      for (const { characters, level } of nodes) {
+        test(`should make level '${level.toString()}' heading with '${characters}'`, async ({
+          page,
+        }) => {
+          const phrase = "Lorem ipsum";
+          await editor.insertText(`${characters} ${phrase}`);
+
+          await expect(page.getByRole("heading", { level }).last()).toHaveText(
+            phrase,
+          );
+        });
+      }
+    });
+
+    test.describe("Formatting with Menu", () => {
+      const marks = [
+        {
+          effect: "bold",
+          button: "bold",
+          role: "strong",
+        },
+        {
+          effect: "italic",
+          button: "italics",
+          role: "emphasis",
+        },
+        {
+          effect: "monospace",
+          button: "mono",
+          role: "code",
+        },
+      ] as const;
+
+      const nodes = [
+        {
+          effect: "heading1",
+          button: "headingOne",
+          role: "heading",
+          level: 1,
+        },
+        {
+          effect: "heading2",
+          button: "headingTwo",
+          role: "heading",
+          level: 2,
+        },
+        {
+          effect: "heading3",
+          button: "headingThree",
+          role: "heading",
+          level: 3,
+        },
+      ] as const;
+
+      for (const { effect, button, role } of marks) {
+        test(`should make '${effect}' text with when pressing '${button}'`, async ({
+          page,
+        }) => {
+          const phrase = "Lorem ipsum";
+          await editor.insertText(phrase);
+          await editor.selectAll();
+          await editor.menu[button].click();
+
+          await expect(page.getByRole(role)).toHaveText(phrase);
+        });
+      }
+
+      for (const { button, level } of nodes) {
+        test(`should make level '${level.toString()}' heading with '${button}'`, async ({
+          page,
+        }) => {
+          const phrase = "Lorem ipsum";
+          await editor.insertText(phrase);
+          await editor.menu[button].click();
+
+          await expect(page.getByRole("heading", { level }).last()).toHaveText(
+            phrase,
+          );
+        });
+      }
+    });
+
+    test.describe("Text Alignment", () => {
+      const alignmentTestCases = [
+        { alignment: "left", button: "alignLeft" },
+        { alignment: "center", button: "alignCenter" },
+        { alignment: "right", button: "alignRight" },
+        { alignment: "justify", button: "justify" },
+      ] as const;
+
+      for (const { alignment, button } of alignmentTestCases) {
+        test(`should set 'text-align' to '${alignment}' with '${button}'`, async () => {
+          await editor.insertText("Lorem ipsum");
+          await editor.menu[button].click();
+
+          await expect(editor.getFirstParagraph()).toHaveCSS(
+            "text-align",
+            alignment,
+          );
+        });
+      }
+    });
   });
 });
