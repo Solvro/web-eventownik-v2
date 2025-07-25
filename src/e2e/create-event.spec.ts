@@ -162,7 +162,8 @@ test.describe.serial("Testowanie głównych funkcji", () => {
     await page.goto(`${BASE_URL}${uniqueSlug}`);
     await page.getByRole("textbox", { name: /email/i }).waitFor();
     await page.getByRole("textbox", { name: /email/i }).fill(user.email);
-    await page.locator('input[type="text"]').fill(user.firstName);
+    // await page.locator('input[type="text"]').fill(user.firstName);
+    await page.locator('label:has-text("imie") + input').fill(user.firstName);
     await page.locator('button:has-text("Zapisz się")').click();
     await page.waitForSelector("text=Twoja rejestracja przebiegła pomyślnie", {
       timeout: 5000,
@@ -212,6 +213,19 @@ test.describe.serial("Testowanie głównych funkcji", () => {
     await page.waitForURL("**/settings**");
 
     await page.getByRole("button", { name: /Usuń wydarzenie/i }).click();
+
     await page.getByRole("button", { name: /Usuń/i }).click();
+
+    await page.waitForLoadState("networkidle");
+
+    await page.waitForURL("**/dashboard/events**");
+
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+
+    const eventStillVisible = await page
+      .locator(`text=${eventName}`)
+      .isVisible();
+    expect(eventStillVisible).toBe(false);
   });
 });
