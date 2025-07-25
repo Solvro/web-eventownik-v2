@@ -33,13 +33,6 @@ const EVENT_DATA: EventData = {
   ],
 };
 
-interface TextFormattingTestCase {
-  effect: string;
-  characters: string;
-  role: string;
-  level?: number;
-}
-
 interface Editor {
   /**
    * The ProseMirror root element within the DOM
