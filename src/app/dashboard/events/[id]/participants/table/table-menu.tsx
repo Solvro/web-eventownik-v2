@@ -79,6 +79,7 @@ export function TableMenu({
               }}
               size="icon"
               variant="outline"
+              aria-label="Resetuj wszystkie filtry"
             >
               <FilterX />
             </Button>
@@ -93,6 +94,7 @@ export function TableMenu({
               }}
               size="icon"
               variant="outline"
+              aria-label="Resetuj sortowanie"
             >
               <ArrowUpDown />
             </Button>

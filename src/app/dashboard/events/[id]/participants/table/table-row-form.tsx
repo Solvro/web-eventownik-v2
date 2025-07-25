@@ -118,6 +118,10 @@ export function TableRowForm({
       });
       return;
     }
+    toast({
+      variant: "default",
+      title: "Udana aktualizacja uczestnika",
+    });
     row.toggleExpanded();
     setData((previousData) => {
       return previousData.map((_participant) =>

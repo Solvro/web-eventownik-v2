@@ -175,7 +175,9 @@ export function generateColumns(
             }
           }
         },
+        //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
         filterFn: "arrIncludesSome",
+        sortDescFirst: false,
       });
     }),
     columnHelper.display({
@@ -189,6 +191,7 @@ export function generateColumns(
           <Button
             variant="ghost"
             onClick={async () => {
+              // TODO stop DDOSing backend server 😭
               await Promise.all(
                 notExpandedRows.map(async (row) => {
                   return fetchAdditionalParticipantData(row, table, eventId);
@@ -217,6 +220,7 @@ export function generateColumns(
               }
               row.toggleExpanded();
             }}
+            aria-label={row.getIsExpanded() ? "Zwiń wiersz" : "Rozwiń wiersz"}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

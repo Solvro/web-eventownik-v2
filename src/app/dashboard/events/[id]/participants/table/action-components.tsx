@@ -117,6 +117,7 @@ export function DeleteManyParticipantsDialog({
           className="text-red-500"
           disabled={isQuerying}
           size="icon"
+          aria-label="Usuń zaznaczone wiersze"
         >
           {isQuerying ? <Loader className="animate-spin" /> : <Trash2 />}
         </Button>

@@ -24,6 +24,7 @@ export function flattenParticipant(
     //New key in flatParticipant must match in definition of columns,
     //so if you use id there than in columns also use id in accessor
     //(not slug for example)
+    // TODO there we can add converting value from string to whatever we want
     flattenedParticipant[attribute.id] = attribute.value;
   }
   return flattenedParticipant;
