@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -65,22 +63,11 @@ const fillAndSubmitForm = async ({
   lastName?: string;
 }) => {
   const user = userEvent.setup();
-  await user.type(screen.getByPlaceholderText(/e-mail/i) as HTMLElement, email);
-  await user.type(
-    screen.getByPlaceholderText(/hasło/i) as HTMLElement,
-    password,
-  );
-  await user.type(
-    screen.getByPlaceholderText(/imię/i) as HTMLElement,
-    firstName,
-  );
-  await user.type(
-    screen.getByPlaceholderText(/nazwisko/i) as HTMLElement,
-    lastName,
-  );
-  await user.click(
-    screen.getByRole("button", { name: /kontynuuj/i }) as HTMLElement,
-  );
+  await user.type(screen.getByPlaceholderText(/e-mail/i), email);
+  await user.type(screen.getByPlaceholderText(/hasło/i), password);
+  await user.type(screen.getByPlaceholderText(/imię/i), firstName);
+  await user.type(screen.getByPlaceholderText(/nazwisko/i), lastName);
+  await user.click(screen.getByRole("button", { name: /kontynuuj/i }));
 };
 describe("RegisterPage", () => {
   beforeEach(() => {

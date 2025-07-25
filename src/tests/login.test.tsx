@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -43,13 +41,11 @@ const fillAndSubmitLoginForm = async ({
   password?: string;
 }) => {
   const user = userEvent.setup();
-  const emailInput = screen.getByPlaceholderText(/e-mail/i) as HTMLInputElement;
-  const passwordInput = screen.getByPlaceholderText(
-    /hasło/i,
-  ) as HTMLInputElement;
+  const emailInput = screen.getByPlaceholderText(/e-mail/i);
+  const passwordInput = screen.getByPlaceholderText(/hasło/i);
   const submitButton = screen.getByRole("button", {
     name: /kontynuuj/i,
-  }) as HTMLButtonElement;
+  });
 
   await user.type(emailInput, email);
   await user.type(passwordInput, password);

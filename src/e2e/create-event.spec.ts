@@ -79,22 +79,18 @@ test.describe.serial("Testowanie głównych funkcji", () => {
     await page
       .getByRole("textbox", { name: /opis/i })
       .fill(TEST_EVENT.description);
-    await page
-      .locator('[name="startTime"]')
-      .fill(
-        startTime.toLocaleTimeString("pl-PL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
-    await page
-      .locator('[name="endTime"]')
-      .fill(
-        endTime.toLocaleTimeString("pl-PL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
+    await page.locator('[name="startTime"]').fill(
+      startTime.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
+    await page.locator('[name="endTime"]').fill(
+      endTime.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
     await page.getByRole("button", { name: /dalej/i }).click();
     await page
       .locator('[name="participantsNumber"]')
@@ -135,22 +131,18 @@ test.describe.serial("Testowanie głównych funkcji", () => {
     await page.waitForSelector('input[name="name"]');
 
     await page.fill('input[name="name"]', eventName);
-    await page
-      .locator('[name="startTime"]')
-      .fill(
-        startTime.toLocaleTimeString("pl-PL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
-    await page
-      .locator('[name="endTime"]')
-      .fill(
-        endTime.toLocaleTimeString("pl-PL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
+    await page.locator('[name="startTime"]').fill(
+      startTime.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
+    await page.locator('[name="endTime"]').fill(
+      endTime.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
 
     await page.getByLabel("Formularz rejestracyjny?").click();
 
