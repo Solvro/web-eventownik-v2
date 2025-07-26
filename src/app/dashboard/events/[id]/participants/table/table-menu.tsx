@@ -21,7 +21,7 @@ import {
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./action-components";
+import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";

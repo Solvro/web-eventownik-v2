@@ -11,7 +11,8 @@ import type { FlattenedParticipant } from "@/types/participant";
 
 import { getParticipant } from "../actions";
 import { flattenParticipant } from "./data";
-import { FilterButton, SortButton, SortIcon } from "./utils";
+import { FilterButton } from "./filter-button";
+import { SortButton, SortIcon } from "./sort-button";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
