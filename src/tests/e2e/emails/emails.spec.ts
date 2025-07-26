@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import path from "node:path";
 
 import type { EventAttribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
@@ -73,8 +74,9 @@ interface Editor {
     alignCenter: Locator;
     alignRight: Locator;
     justify: Locator;
+    imageInput: Locator;
     imageButton: Locator;
-    insertTag: Locator;
+    tag: Locator;
   };
 }
 
@@ -135,8 +137,9 @@ class TemplatesPage {
         alignCenter: this.page.getByRole("button", { name: /środka/i }),
         alignRight: this.page.getByRole("button", { name: /prawo/i }),
         justify: this.page.getByRole("button", { name: /just/i }),
-        imageButton: this.page.getByRole("button", { name: /zdjęcie/i }),
-        insertTag: this.page.getByRole("button", { name: /znacznik/i }),
+        imageInput: this.page.getByRole("button", { name: /zdjęcie/i }).first(),
+        imageButton: this.page.getByRole("button", { name: /zdjęcie/i }).last(),
+        tag: this.page.getByRole("button", { name: /znacznik/i }),
       },
     };
   }
@@ -268,8 +271,8 @@ test.describe("Creating templates - 2nd step", () => {
 
     await expect(saveButton).toBeDisabled();
     // TODO: I can't seem to verify that the confirmation toast is showing up
-    // Tried page.getByRole("status") but it doesn't work
-    // await expect(page.getByText("dodano")).toBeVisible();
+    // Exact method works in editor's "images" suite but doesn't work here
+    // await expect(page.getByRole("status")).toHaveText(/dodano/i);
     await expect(page.getByText(templateTitle)).toBeVisible();
     await expect(page.getByRole("dialog")).not.toBeVisible();
   });
@@ -295,12 +298,12 @@ test.describe("Editor", () => {
     editor = templatesPage.getEditor();
   });
 
-  test("should allow entering text", async () => {
+  test("should enter text", async () => {
     await editor.insertText("Lorem ipsum");
     await expect(editor.getFirstParagraph()).toHaveText("Lorem ipsum");
   });
 
-  test("should allow deleting text", async () => {
+  test("should delete text", async () => {
     await editor.insertText("A");
     await editor.element.press("Backspace");
     await expect(editor.getFirstParagraph()).toBeEmpty();
@@ -491,7 +494,7 @@ test.describe("Editor", () => {
     test("should show tags list after clicking on tags button", async ({
       page,
     }) => {
-      await editor.menu.insertTag.click();
+      await editor.menu.tag.click();
       await expect(editor.getFirstParagraph()).toHaveText("/");
       const menu = page.getByRole("menu");
       await expect(menu).toBeVisible();
@@ -563,6 +566,41 @@ test.describe("Editor", () => {
     test("should not show tags list with space after '/'", async ({ page }) => {
       await editor.insertText("/ ");
       await expect(page.getByRole("menu")).not.toBeVisible();
+    });
+  });
+
+  test.describe("Images", () => {
+    test("should insert image", async () => {
+      await editor.menu.imageButton.click();
+      await editor.menu.imageInput.setInputFiles(
+        path.join("./src/tests/e2e/emails/image.jpg"),
+      );
+      await expect(editor.element.getByRole("img")).toBeVisible();
+    });
+
+    test("should remove image", async ({ page }) => {
+      await editor.menu.imageButton.click();
+      await editor.menu.imageInput.setInputFiles(
+        path.join("./src/tests/e2e/emails/image.jpg"),
+      );
+      await expect(editor.element.getByRole("img")).toBeVisible();
+      await editor.element.click();
+      // Get back to the line with the image
+      await page.keyboard.press("Backspace");
+      // Backspace with caret next to the image
+      await page.keyboard.press("Backspace");
+      await expect(editor.element.getByRole("img")).not.toBeVisible();
+    });
+
+    test("should not allow inserting non-image files", async ({ page }) => {
+      await editor.menu.imageButton.click();
+      await editor.menu.imageInput.setInputFiles({
+        name: "file.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("This is a test"),
+      });
+      await expect(editor.element.getByRole("img")).not.toBeVisible();
+      await expect(page.getByRole("status")).toHaveText(/nieobsługiwany/i);
     });
   });
 });
