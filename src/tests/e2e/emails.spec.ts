@@ -481,4 +481,88 @@ test.describe("Editor", () => {
       });
     }
   });
+
+  test.describe("Tags", () => {
+    test("should show tags list when typing '/'", async ({ page }) => {
+      await editor.insertText("/");
+      await expect(page.getByRole("menu")).toBeVisible();
+    });
+
+    test("should show tags list after clicking on tags button", async ({
+      page,
+    }) => {
+      await editor.menu.insertTag.click();
+      await expect(editor.getFirstParagraph()).toHaveText("/");
+      const menu = page.getByRole("menu");
+      await expect(menu).toBeVisible();
+      const buttons = await menu.getByRole("button").all();
+      expect(buttons.length).toBeGreaterThan(0);
+    });
+
+    test("should show attribute tags", async ({ page }) => {
+      await editor.insertText("/");
+      await expect(page.getByRole("menu")).toBeVisible();
+      for (const attribute of EVENT_DATA.attributes) {
+        await expect(
+          page.getByRole("button", { name: attribute.name }),
+        ).toBeVisible();
+      }
+    });
+
+    test("should filter tags - multiple results", async ({ page }) => {
+      await editor.insertText("/data");
+      await expect(page.getByRole("menu")).toBeVisible();
+      for (const tag of [/zakończenia/i, /rozpoczęcia/i, /rejestracji/i]) {
+        await expect(page.getByRole("button", { name: tag })).toBeVisible();
+      }
+    });
+
+    test("should filter tags - single result", async ({ page }) => {
+      await editor.insertText("/nazwa");
+      await expect(page.getByRole("menu")).toBeVisible();
+      await expect(page.getByRole("button", { name: /nazwa/i })).toBeVisible();
+    });
+
+    test("should filter tags - no results", async ({ page }) => {
+      await editor.insertText("/loremipsum");
+      const menu = page.getByRole("menu");
+      await expect(menu).toBeVisible();
+      await expect(menu).toHaveText(/brak/i);
+    });
+
+    test("should insert a tag by clicking on one", async ({ page }) => {
+      await editor.insertText("/nazwa");
+      const menu = page.getByRole("menu");
+      const button = menu.getByRole("button", { name: /nazwa/i });
+      await button.click();
+      await expect(editor.getFirstParagraph()).toHaveText(/nazwa/i);
+    });
+
+    test("should insert a tag by pressing enter", async ({ page }) => {
+      await editor.insertText("/nazwa");
+      await page.keyboard.press("Enter");
+      await expect(editor.getFirstParagraph()).toHaveText(/nazwa/i);
+    });
+
+    test("should allow navigation by keyboard", async ({ page }) => {
+      await editor.insertText("/data");
+      const buttons = await page.getByRole("menu").getByRole("button").all();
+      const tags = await Promise.all(
+        buttons.map(async (button) => {
+          return button.textContent();
+        }),
+      );
+      // Go one option down
+      await page.keyboard.press("ArrowDown");
+      // Press enter
+      await page.keyboard.press("Enter");
+      // Expect the second tag to have been inserted
+      await expect(editor.getFirstParagraph()).toHaveText(tags[1] ?? "");
+    });
+
+    test("should not show tags list with space after '/'", async ({ page }) => {
+      await editor.insertText("/ ");
+      await expect(page.getByRole("menu")).not.toBeVisible();
+    });
+  });
 });
