@@ -17,12 +17,16 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 
+import { useToast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
 
 import { Button } from "./ui/button";
 
+const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+
 function EditorMenuBar({ editor }: { editor: Editor | null }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { toast } = useToast();
 
   if (editor === null) {
     return <div className="h-8">Ładowanie menu...</div>;
@@ -144,13 +148,22 @@ function EditorMenuBar({ editor }: { editor: Editor | null }) {
         type="file"
         className="sr-only"
         ref={fileInputRef}
+        accept={ALLOWED_IMAGE_TYPES.join(",")}
+        aria-label="Wstaw zdjęcie"
         onChangeCapture={async (event) => {
           const input = event.target as HTMLInputElement;
           if (input.files?.[0] != null) {
-            const newBlobUrl = URL.createObjectURL(input.files[0]);
-            const base64 = await getBase64FromUrl(newBlobUrl);
-            editor.chain().focus().setImage({ src: base64 }).run();
-            URL.revokeObjectURL(newBlobUrl);
+            if (ALLOWED_IMAGE_TYPES.includes(input.files[0].type)) {
+              const newBlobUrl = URL.createObjectURL(input.files[0]);
+              const base64 = await getBase64FromUrl(newBlobUrl);
+              editor.chain().focus().setImage({ src: base64 }).run();
+              URL.revokeObjectURL(newBlobUrl);
+            } else {
+              toast({
+                title: "Nieobsługiwany format pliku",
+                description: "Wybierz plik typu JPEG, PNG lub WEBP",
+              });
+            }
           }
         }}
       />
