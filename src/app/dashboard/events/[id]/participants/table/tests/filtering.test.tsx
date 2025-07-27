@@ -8,7 +8,7 @@ import {
   selectCaseData,
   textCaseData,
 } from "./mocks/test-cases-data";
-import { getDataRows, renderTable } from "./utils";
+import { renderTable } from "./utils";
 
 function getMenuOptions(menu: HTMLElement) {
   return within(menu).getAllByRole("menuitemcheckbox");
@@ -27,7 +27,7 @@ describe("Filtering", () => {
 
   it("should correctly filter rows using global filter", async () => {
     const { participants, attributes } = textCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRows } = renderTable(participants, attributes);
 
     const globalFilterInput = screen.getByPlaceholderText(/wyszukaj/i);
 
@@ -50,7 +50,7 @@ describe("Filtering", () => {
   it.each([selectCaseData, multiselectCaseData, checkboxCaseData])(
     "should correctly filter rows using header filter for $attributeType attribute",
     async ({ participants, attributes }) => {
-      const { user } = renderTable(participants, attributes);
+      const { user, getDataRows } = renderTable(participants, attributes);
 
       // Step 1: All rows should be visisble at the beginning
       expect(getDataRows().length).toBe(participants.length);
@@ -106,7 +106,10 @@ describe("Filtering", () => {
 
   it("should reset all column filters", async () => {
     const { participants, attributes } = selectAndMultiselectTestCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, resetFiltersButton, getDataRows } = renderTable(
+      participants,
+      attributes,
+    );
 
     const filterButtonPopups = attributes.map((attribute) => {
       const header = screen.getByRole("columnheader", {
@@ -127,10 +130,7 @@ describe("Filtering", () => {
     expect(getDataRows().length).toBeLessThan(participants.length);
 
     // Step 2: Reset filters - all rows should be visible
-    const resetAllFiltersButton = screen.getByRole("button", {
-      name: /resetuj wszystkie filtry/i,
-    });
-    await user.click(resetAllFiltersButton);
+    await user.click(resetFiltersButton);
     expect(getDataRows().length).toBe(participants.length);
   });
 });

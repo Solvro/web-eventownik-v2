@@ -3,41 +3,33 @@ import { HttpResponse, http } from "msw";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
-import type { SessionPayload } from "@/types/auth.js";
 
+import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
+import { setupMSW } from "./mocks/msw-setup";
 import { server } from "./mocks/node";
 import { deleteParticipantCaseData } from "./mocks/test-cases-data";
-import { getDataRows, getRow, getSubRow, renderTable } from "./utils";
+import { renderTable } from "./utils";
 
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-  vi.clearAllMocks();
-});
-afterAll(() => {
-  server.close();
-});
+setupMSW();
 
-vi.mock("@/lib/session", () => ({
-  verifySession: vi.fn(() => {
-    return { bearerToken: "BEARERTOKEN" } as SessionPayload;
-  }),
-}));
+vi.mock("@/lib/session", () => mockVerifySession());
 
 describe("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
+    mockParticipantGet(deleteParticipantCaseData.participants);
     cleanup();
   });
 
   it("should correctly remove participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRow, getExpandedRow, getDataRows } = renderTable(
+      participants,
+      attributes,
+    );
 
     // Step 1: Expand row to remove
-    const row = getRow(rowIndexToRemove);
+    const row = getDataRow(rowIndexToRemove);
     const expandButton = within(row).getByRole("button", {
       name: /rozwiń/i,
     });
@@ -45,7 +37,7 @@ describe("Removing participant", () => {
     await user.click(expandButton);
 
     // Step 2: Click remove button
-    const expandedRow = getSubRow(rowIndexToRemove);
+    const expandedRow = getExpandedRow(rowIndexToRemove);
     const deleteButton = within(expandedRow).getByRole("button", {
       name: /usuń/i,
     });
@@ -70,7 +62,7 @@ describe("Removing participant", () => {
 
   it("should correctly remove selected participants", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRows } = renderTable(participants, attributes);
 
     // Step 1: Select all rows
     for (const row of getDataRows()) {
@@ -102,7 +94,10 @@ describe("Removing participant", () => {
 
   it("should correctly handle server error when removing one participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRow, getExpandedRow } = renderTable(
+      participants,
+      attributes,
+    );
     server.use(
       http.delete<{ eventId: string; participantId: string }>(
         `${API_URL}/events/:eventId/participants/:participantId`,
@@ -113,7 +108,7 @@ describe("Removing participant", () => {
     );
 
     // Step 1: Expand row to remove
-    const row = getRow(rowIndexToRemove);
+    const row = getDataRow(rowIndexToRemove);
     const expandButton = within(row).getByRole("button", {
       name: /rozwiń/i,
     });
@@ -121,7 +116,7 @@ describe("Removing participant", () => {
     await user.click(expandButton);
 
     // Step 2: Click remove button
-    const expandedRow = getSubRow(rowIndexToRemove);
+    const expandedRow = getExpandedRow(rowIndexToRemove);
     const deleteButton = within(expandedRow).getByRole("button", {
       name: /usuń/i,
     });
@@ -140,12 +135,12 @@ describe("Removing participant", () => {
     // Check for an error
     const toast = screen.getByText(/nie powiodło/i);
     expect(toast).toBeVisible();
-    expect(getSubRow(rowIndexToRemove)).toBeVisible();
+    expect(getExpandedRow(rowIndexToRemove)).toBeVisible();
   });
 
   it("should correctly handle server error when removing many participants", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRows } = renderTable(participants, attributes);
     server.use(
       http.delete<{ eventId: string }>(
         `${API_URL}/events/:eventId/participants`,

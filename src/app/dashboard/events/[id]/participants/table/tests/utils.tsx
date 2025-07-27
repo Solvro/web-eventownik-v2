@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
@@ -24,17 +24,33 @@ export function renderTable(
     { wrapper: Providers },
   );
 
-  return { user };
-}
+  const getDataRows = () => {
+    return screen.getAllByRole("row").slice(1); //Skip header row
+  };
 
-export function getDataRows() {
-  return screen.getAllByRole("row").slice(1); //Skip header row
-}
-
-export function getRow(rowIndex: number) {
-  return getDataRows()[rowIndex];
-}
-
-export function getSubRow(parentRowIndex: number) {
-  return getDataRows()[parentRowIndex + 1]; // +1 from 'parent' row
+  return {
+    user,
+    getDataRows,
+    getDataRow: (rowIndex: number) => {
+      return getDataRows()[rowIndex];
+    },
+    getExpandedRow: (parentRowIndex: number) => {
+      return getDataRows()[parentRowIndex + 1]; // +1 from 'parent' row
+    },
+    getDisplayedValuesFromColumn: (columnIndex: number) => {
+      const rows = getDataRows();
+      return rows.map((row) => {
+        const cells = within(row).getAllByRole("cell");
+        return cells[columnIndex].textContent;
+      });
+    },
+    resetFiltersButton: screen.getByRole("button", {
+      name: /resetuj wszystkie filtry/i,
+    }),
+    resetSortingButton: screen.getByRole("button", {
+      name: /resetuj sortowanie/i,
+    }),
+    exportButton: screen.getByRole("button", { name: /eksportuj/i }),
+    globalSearchInput: screen.getByPlaceholderText(/wyszukaj/i),
+  };
 }

@@ -3,36 +3,25 @@ import { HttpResponse, http } from "msw";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
-import type { SessionPayload } from "@/types/auth";
 
+import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
+import { setupMSW } from "./mocks/msw-setup";
 import { server } from "./mocks/node";
 import {
   editParticipantDetailsTestCaseData,
   editParticipantTestCaseData,
 } from "./mocks/test-cases-data";
-import { getDataRows, getRow, getSubRow, renderTable } from "./utils";
+import { renderTable } from "./utils";
 
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-  vi.clearAllMocks();
-});
-afterAll(() => {
-  server.close();
-});
+setupMSW();
 
-vi.mock("@/lib/session", () => ({
-  verifySession: vi.fn(() => {
-    return { bearerToken: "BEARERTOKEN" } as SessionPayload;
-  }),
-}));
+vi.mock("@/lib/session", () => mockVerifySession());
 
 describe("Editing participant", () => {
   const rowIndexForEditing = 0;
 
   beforeEach(() => {
+    mockParticipantGet(editParticipantDetailsTestCaseData.participants);
     cleanup();
   });
 
@@ -43,10 +32,13 @@ describe("Editing participant", () => {
     const editedParticipant = {
       ...editParticipantDetailsTestCaseData.participants[0],
     };
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRow, getExpandedRow } = renderTable(
+      participants,
+      attributes,
+    );
 
     // Step 1: Expand row for editing
-    const firstRow = getRow(rowIndexForEditing);
+    const firstRow = getDataRow(rowIndexForEditing);
     const expandButton = within(firstRow).getByRole("button", {
       name: /rozwiń/i,
     });
@@ -54,7 +46,7 @@ describe("Editing participant", () => {
     await user.click(expandButton);
 
     // Step 2: Switch to edit mode
-    const expandedRow = getSubRow(rowIndexForEditing);
+    const expandedRow = getExpandedRow(rowIndexForEditing);
     const editButton = within(expandedRow).getByRole("button", {
       name: /edytuj/i,
     });
@@ -88,9 +80,11 @@ describe("Editing participant", () => {
     // Step 5: Check if changes are saved
     await user.click(expandButton);
 
-    expect(within(getRow(rowIndexForEditing)).getByText(newText)).toBeVisible();
     expect(
-      within(getSubRow(rowIndexForEditing)).getByText(newNumber),
+      within(getDataRow(rowIndexForEditing)).getByText(newText),
+    ).toBeVisible();
+    expect(
+      within(getExpandedRow(rowIndexForEditing)).getByText(newNumber),
     ).toBeVisible();
   });
 
@@ -98,7 +92,10 @@ describe("Editing participant", () => {
     // Test case data contains only attributes of type 'text' and 'number' for simplicity
     // Testing different types of attributes should happen in the AttributeInput's tests
     const { participants, attributes } = editParticipantTestCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDataRow, getExpandedRow, getDataRows } = renderTable(
+      participants,
+      attributes,
+    );
     server.use(
       http.put<{ eventId: string; participantId: string }>(
         `${API_URL}/events/:eventId/participants/:participantId`,
@@ -117,7 +114,7 @@ describe("Editing participant", () => {
     await user.click(expandButton);
 
     // Step 2: Switch to edit mode
-    const expandedRow = getSubRow(rowIndexForEditing);
+    const expandedRow = getExpandedRow(rowIndexForEditing);
     const editButton = within(expandedRow).getByRole("button", {
       name: /edytuj/i,
     });
@@ -144,6 +141,8 @@ describe("Editing participant", () => {
     // Step 4: Cancel editing
     const cancelButton = screen.getByRole("button", { name: /anuluj/i });
     await user.click(cancelButton);
-    expect(within(getRow(rowIndexForEditing)).getByText(oldText)).toBeVisible();
+    expect(
+      within(getDataRow(rowIndexForEditing)).getByText(oldText),
+    ).toBeVisible();
   });
 });

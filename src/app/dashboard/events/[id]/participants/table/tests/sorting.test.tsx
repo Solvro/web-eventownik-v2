@@ -1,8 +1,8 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { stringLikeDataTestCases, textCaseData } from "./mocks/test-cases-data";
-import { getDataRows, renderTable } from "./utils";
+import { renderTable } from "./utils";
 
 /**
  * For now every value is treated as string and the order used for comparison is alphanumeric (punctuation and symbols < numbers < uppercase letters < lowercase letters)
@@ -18,38 +18,33 @@ describe("Sorting", () => {
     cleanup();
   });
 
-  const getDisplayedValues = (columnIndex: number = TESTED_COLUMN_INDEX) => {
-    const rows = getDataRows();
-    return rows.map((row) => {
-      const cells = within(row).getAllByRole("cell");
-      return cells[columnIndex].textContent;
-    });
-  };
-
   // Default sorting state cycle - 'none' -> 'asc' -> 'desc' -> 'none'
   it.each([...stringLikeDataTestCases])(
     "should correctly cycle through each sorting state when sorting by $attributeType type",
     async ({ participants, attributes }) => {
-      const { user } = renderTable(participants, attributes);
+      const { user, getDisplayedValuesFromColumn } = renderTable(
+        participants,
+        attributes,
+      );
 
       const sortHeader = screen.getByRole("button", {
         name: attributes[0].name,
       });
 
       // Step 1: Capture initial order
-      const initialOrder = getDisplayedValues();
+      const initialOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
       // Step 2: Click to sort ascending
       await user.click(sortHeader);
-      const ascendingOrder = getDisplayedValues();
+      const ascendingOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
       // Step 3: Click to sort descending
       await user.click(sortHeader);
-      const descendingOrder = getDisplayedValues();
+      const descendingOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
       // Step 4: Click to return to no sorting
       await user.click(sortHeader);
-      const finalOrder = getDisplayedValues();
+      const finalOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
       // These assertions highly depend on test data so it's important to keep the data robust
       expect(ascendingOrder).not.toEqual(initialOrder); // Something changed
@@ -61,26 +56,23 @@ describe("Sorting", () => {
 
   it("should reset any sorting", async () => {
     const { participants, attributes } = textCaseData;
-    const { user } = renderTable(participants, attributes);
+    const { user, getDisplayedValuesFromColumn, resetSortingButton } =
+      renderTable(participants, attributes);
 
     const sortHeader = screen.getByRole("button", {
       name: attributes[0].name,
     });
 
-    const resetSortingButton = screen.getByRole("button", {
-      name: /resetuj sortowanie/i,
-    });
-
     // Step 1: Capture initial order
-    const initialOrder = getDisplayedValues();
+    const initialOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
     // Step 2: Click to sort ascending
     await user.click(sortHeader);
-    const ascendingOrder = getDisplayedValues();
+    const ascendingOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
     // Step 3: Click to reset sorting
     await user.click(resetSortingButton);
-    const finalOrder = getDisplayedValues();
+    const finalOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
     expect(ascendingOrder).not.toEqual(initialOrder);
     expect(finalOrder).toEqual(initialOrder);

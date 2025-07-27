@@ -1,7 +1,7 @@
 import type { Attribute, AttributeType } from "@/types/attributes";
 import type { Participant } from "@/types/participant";
 
-interface TestCaseData {
+export interface TestCaseData {
   participants: Participant[];
   attributes: Attribute[];
   attributeType?: AttributeType;
@@ -30,71 +30,6 @@ export const textCaseData: TestCaseData = {
     {
       id: 1,
       email: "anna@domain.com", // email domain changed for filtering tests
-      slug: "anna",
-      createdAt: "2025-07-01T10:00:00Z",
-      updatedAt: "2025-07-01T10:00:00Z",
-      attributes: [
-        {
-          id: 4,
-          name: "Nickname",
-          slug: "nickname",
-          value: "Alpha", // First alphabetically
-        },
-      ],
-    },
-    {
-      id: 3,
-      email: "charlie@example.com",
-      slug: "charlie",
-      createdAt: "2025-07-01T10:02:00Z",
-      updatedAt: "2025-07-01T10:02:00Z",
-      attributes: [
-        {
-          id: 4,
-          name: "Nickname",
-          slug: "nickname",
-          value: "Zebra", // Last alphabetically
-        },
-      ],
-    },
-  ],
-  attributes: [
-    {
-      id: 4,
-      name: "Nickname",
-      slug: "nickname",
-      eventId: 100,
-      showInList: true,
-      options: null,
-      type: "text",
-      createdAt: "2025-07-01T10:03:00Z",
-      updatedAt: "2025-07-01T10:03:00Z",
-    },
-  ] as Attribute[],
-  attributeType: "text",
-};
-
-export const deleteParticipantCaseData: TestCaseData = {
-  participants: [
-    // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
-    {
-      id: 2,
-      email: "bob@domain.com",
-      slug: "bob",
-      createdAt: "2025-07-01T10:01:00Z",
-      updatedAt: "2025-07-01T10:01:00Z",
-      attributes: [
-        {
-          id: 4,
-          name: "Nickname",
-          slug: "nickname",
-          value: "Medium", // Middle value
-        },
-      ],
-    },
-    {
-      id: 1,
-      email: "anna@domain.com",
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
       updatedAt: "2025-07-01T10:00:00Z",
@@ -990,7 +925,7 @@ export const editParticipantTestCaseData: TestCaseData = {
   ],
 };
 
-export const editParticipantDetailsTestCaseData = {
+export const editParticipantDetailsTestCaseData: TestCaseData = {
   participants: [
     {
       id: 4,
@@ -1014,6 +949,72 @@ export const editParticipantDetailsTestCaseData = {
       ],
     },
   ],
+  attributes: [],
+};
+
+export const deleteParticipantCaseData: TestCaseData = {
+  participants: [
+    // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
+    {
+      id: 2,
+      email: "bob@domain.com",
+      slug: "bob",
+      createdAt: "2025-07-01T10:01:00Z",
+      updatedAt: "2025-07-01T10:01:00Z",
+      attributes: [
+        {
+          id: 4,
+          name: "Nickname",
+          slug: "nickname",
+          value: "Medium", // Middle value
+        },
+      ],
+    },
+    {
+      id: 1,
+      email: "anna@domain.com",
+      slug: "anna",
+      createdAt: "2025-07-01T10:00:00Z",
+      updatedAt: "2025-07-01T10:00:00Z",
+      attributes: [
+        {
+          id: 4,
+          name: "Nickname",
+          slug: "nickname",
+          value: "Alpha", // First alphabetically
+        },
+      ],
+    },
+    {
+      id: 3,
+      email: "charlie@example.com",
+      slug: "charlie",
+      createdAt: "2025-07-01T10:02:00Z",
+      updatedAt: "2025-07-01T10:02:00Z",
+      attributes: [
+        {
+          id: 4,
+          name: "Nickname",
+          slug: "nickname",
+          value: "Zebra", // Last alphabetically
+        },
+      ],
+    },
+  ],
+  attributes: [
+    {
+      id: 4,
+      name: "Nickname",
+      slug: "nickname",
+      eventId: 100,
+      showInList: true,
+      options: null,
+      type: "text",
+      createdAt: "2025-07-01T10:03:00Z",
+      updatedAt: "2025-07-01T10:03:00Z",
+    },
+  ] as Attribute[],
+  attributeType: "text",
 };
 
 export const stringLikeDataTestCases = [
