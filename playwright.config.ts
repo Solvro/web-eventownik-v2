@@ -34,35 +34,24 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    // Setup project
-    {
-      name: "setup",
-      testMatch: /.*\.setup\.ts/,
-    },
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/user.json",
       },
-      dependencies: ["setup"],
     },
     {
       name: "firefox",
       use: {
         ...devices["Desktop Firefox"],
-        storageState: "playwright/.auth/user.json",
       },
-      dependencies: ["setup"],
     },
 
     {
       name: "webkit",
       use: {
         ...devices["Desktop Safari"],
-        storageState: "playwright/.auth/user.json",
       },
-      dependencies: ["setup"],
     },
     /* Test against mobile viewports. */
     // {
@@ -87,7 +76,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run build && npm run start",
+    command: "npm run dev",
     url: "http://localhost:3000",
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
