@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { expect, test } from "../fixtures";
 
 const testData = {
-  name: randomUUID(),
+  name: "E2E Test Event",
   location: "Playwright",
   description: "This is a test event created by Playwright E2E tests.",
   organizer: "KN Solvro",
@@ -60,6 +60,44 @@ test("event CRUD", async ({ page }) => {
     await expect(page.getByRole("main")).toContainText("13.08.2025 13:30");
     await expect(page.getByRole("main")).toContainText("14.08.2025 15:30");
     await expect(page.getByRole("main")).toContainText(testData.description);
+  });
+
+  await test.step("should edit an event", async () => {
+    await page.getByRole("link", { name: "Edytuj wydarzenie" }).click();
+    await page.waitForURL("/dashboard/events/*/settings");
+    await page
+      .getByRole("textbox", { name: "Nazwa" })
+      .fill(`${testData.name} edited`);
+    await page.getByRole("button", { name: "August 13th," }).click();
+    await page.getByRole("button", { name: "Friday, August 15th," }).click();
+    await page.getByRole("button", { name: "August 14th," }).first().click();
+    await page
+      .getByRole("button", { name: "Saturday, August 16th," })
+      .last()
+      .click();
+    await page
+      .getByRole("textbox", { name: "Opis" })
+      .fill(`${testData.description} edited`);
+    await page
+      .getByRole("textbox", { name: "Miejsce (opcjonalnie)" })
+      .fill(`${testData.location} edited`);
+    await page
+      .getByRole("textbox", { name: "Organizator (opcjonalnie)" })
+      .fill(`${testData.organizer} edited`);
+    await page.getByRole("button", { name: "Zapisz" }).click();
+    // Wait for the event to be updated
+    await page.getByText("Wydarzenie zostało zapisane").waitFor();
+    await page.goBack();
+    // Verify the event information
+    await expect(page.locator("h1")).toContainText(`${testData.name} edited`);
+    await expect(page.getByRole("main")).toContainText(
+      `${testData.organizer} edited`,
+    );
+    await expect(page.getByRole("main")).toContainText("15.08.2025 13:30");
+    await expect(page.getByRole("main")).toContainText("16.08.2025 15:30");
+    await expect(page.getByRole("main")).toContainText(
+      `${testData.description} edited`,
+    );
   });
 
   /**
