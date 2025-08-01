@@ -66,7 +66,7 @@ function DeleteBlockPopup({
           <DialogTitle>Usuń blok</DialogTitle>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <CircleX className="h-14 w-14 text-red-700" />
+          <CircleX className="text-destructive h-14 w-14" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
             Czy na pewno chcesz usunąć blok <strong>{blockName}</strong>?
@@ -76,7 +76,7 @@ function DeleteBlockPopup({
               <Button
                 type="submit"
                 variant="destructive"
-                className="bg-red-700"
+                className="bg-destructive"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
                 {form.formState.isSubmitting || shouldDisableButtons ? (
