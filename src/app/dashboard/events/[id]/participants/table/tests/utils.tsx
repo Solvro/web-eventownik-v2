@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
 import type { Attribute } from "@/types/attributes";
+import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 import { Providers } from "./providers";
@@ -10,6 +11,7 @@ import { Providers } from "./providers";
 export function renderTable(
   participants: Participant[],
   attributes: Attribute[],
+  emails: EventEmail[] = [],
 ) {
   const user = userEvent.setup();
 
@@ -18,7 +20,7 @@ export function renderTable(
       eventId="100"
       participants={participants}
       attributes={attributes}
-      emails={null}
+      emails={emails}
       blocks={null}
     />,
     { wrapper: Providers },
@@ -52,5 +54,6 @@ export function renderTable(
     }),
     exportButton: screen.getByRole("button", { name: /eksportuj/i }),
     globalSearchInput: screen.getByPlaceholderText(/wyszukaj/i),
+    sendMailsDialogTrigger: screen.getByRole("button", { name: /wyślij/i }),
   };
 }

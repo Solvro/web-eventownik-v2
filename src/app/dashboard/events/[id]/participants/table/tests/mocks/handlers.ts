@@ -49,4 +49,10 @@ export const handlers = [
       return HttpResponse.json();
     },
   ),
+  http.post<{ eventId: string; emailId: string }>(
+    `${API_URL}/events/:eventId/emails/send/:emailId`,
+    () => {
+      return HttpResponse.json();
+    },
+  ),
 ];

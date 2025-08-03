@@ -11,3 +11,7 @@ vi.mock("server-only", () => {
 });
 
 globalThis.ResizeObserver = ResizeObserver;
+
+globalThis.HTMLElement.prototype.scrollIntoView = vi.fn();
+globalThis.HTMLElement.prototype.hasPointerCapture = vi.fn();
+globalThis.HTMLElement.prototype.releasePointerCapture = vi.fn();

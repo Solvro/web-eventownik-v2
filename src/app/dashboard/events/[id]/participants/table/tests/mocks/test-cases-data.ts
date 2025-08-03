@@ -1,9 +1,11 @@
 import type { Attribute, AttributeType } from "@/types/attributes";
+import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 export interface TestCaseData {
   participants: Participant[];
   attributes: Attribute[];
+  emails?: EventEmail[];
   attributeType?: AttributeType;
 }
 
@@ -72,6 +74,39 @@ export const textCaseData: TestCaseData = {
     },
   ] as Attribute[],
   attributeType: "text",
+  emails: [
+    {
+      id: 1001,
+      eventId: 250,
+      name: "Welcome Email - New Registration",
+      trigger: "participant_registered",
+      triggerValue: null,
+      triggerValue2: null,
+      createdAt: "2024-12-15T09:30:00.000Z",
+      updatedAt: "2025-01-20T14:22:15.000Z",
+      meta: {
+        failedCount: "3",
+        pendingCount: "12",
+        sentCount: "847",
+      },
+    },
+
+    {
+      id: 1002,
+      eventId: 250,
+      name: "VIP Upgrade Notification",
+      trigger: "attribute_changed",
+      triggerValue: "ticket_type", // AI generated slop - idk if it makes any sense
+      triggerValue2: "VIP", // AI generated slop - idk if it makes any sense
+      createdAt: "2024-11-08T16:45:30.000Z",
+      updatedAt: "2025-02-01T11:18:42.000Z",
+      meta: {
+        failedCount: "1",
+        pendingCount: "0",
+        sentCount: "23",
+      },
+    },
+  ],
 };
 
 export const selectCaseData: TestCaseData = {
