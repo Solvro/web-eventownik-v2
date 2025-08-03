@@ -58,7 +58,9 @@ describe("Editing participant", () => {
 
     // Check if initial values are correctly set
     expect(textInput).toHaveValue(editedParticipant.attributes[0].value);
-    expect(numberInput).toHaveValue(+editedParticipant.attributes[1].value);
+    expect(numberInput).toHaveValue(
+      Number(editedParticipant.attributes[1].value),
+    );
 
     // Step 3: Update participant data
     const newText = "Testowy text";

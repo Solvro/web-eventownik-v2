@@ -21,7 +21,7 @@ export function mockParticipantGet(testCaseData: Participant[]) {
       ({ params }) => {
         const { participantId } = params;
         const participant: Participant | undefined = testCaseData.find(
-          (p) => p.id === +participantId,
+          (p) => p.id === Number(participantId),
         );
         if (participant === undefined) {
           return HttpResponse.json(

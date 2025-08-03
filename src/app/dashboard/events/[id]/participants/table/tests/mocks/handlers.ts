@@ -21,7 +21,7 @@ export const handlers = [
       DELETE_PARTICIPANTS_MOCK = {
         ...DELETE_PARTICIPANTS_MOCK,
         participants: DELETE_PARTICIPANTS_MOCK.participants.filter(
-          (p) => p.id !== +participantId,
+          (p) => p.id !== Number(participantId),
         ),
       };
       return HttpResponse.json();

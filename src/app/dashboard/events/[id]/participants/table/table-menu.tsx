@@ -123,7 +123,7 @@ export function TableMenu({
             table.setPageSize(
               value === "all"
                 ? table.getFilteredRowModel().rows.length
-                : +value,
+                : Number(value),
             );
           }}
           defaultValue={table.getState().pagination.pageSize.toString()}

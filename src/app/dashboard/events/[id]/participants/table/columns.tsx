@@ -40,7 +40,7 @@ export function generateColumns(
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            table.toggleAllRowsSelected(!!(value as boolean));
+            table.toggleAllRowsSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wszystkie"
         ></Checkbox>
@@ -49,7 +49,7 @@ export function generateColumns(
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
-            row.toggleSelected(!!(value as boolean));
+            row.toggleSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wiersz"
         ></Checkbox>
