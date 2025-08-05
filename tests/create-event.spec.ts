@@ -22,16 +22,18 @@ const FIELDS = {
 const today = new Date();
 
 test.describe("Create event", async () => {
-  test("should correctly create an event", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto("https://eventownik.solvro.pl/");
+  });
 
+  test("should correctly sign in", async ({ page }) => {
     /* Login */
-    await page.getByRole("link", { name: "Zaloguj się" }).click();
-    await page.getByRole("textbox", { name: "E-mail" }).click();
-    await page.getByRole("textbox", { name: "E-mail" }).fill(AUTH.EMAIL);
-    await page.getByRole("textbox", { name: "Hasło" }).click();
-    await page.getByRole("textbox", { name: "Hasło" }).fill(AUTH.PASSWD);
-    await page.getByRole("button", { name: "Kontynuuj" }).click();
+    await signIn(page);
+  });
+
+  test("should correctly create an event", async ({ page }) => {
+    /* Login */
+    await signIn(page);
 
     await expect(
       page.getByText("Logowanie zakończone sukcesem!", { exact: true }),
@@ -126,13 +128,59 @@ test.describe("Create event", async () => {
     await expect(heading).toBeVisible();
     /* Event created */
 
-    /* Delete created event */
-    await page.getByRole("link", { name: "Edytuj wydarzenie" }).click();
-    await page.getByRole("button", { name: "Usuń wydarzenie" }).click();
-    await page.getByRole("button", { name: "Usuń" }).click();
+    /* Delete event */
+    await deleteEvent(page);
+    await expectEmptyGridContent(page);
+  });
+
+  test("should correctly delete all created events", async ({ page }) => {
+    /* Login */
+    await signIn(page);
+    await page.getByRole("link", { name: "Wydarzenia" }).click();
+
+    const header = page.getByText("Moje wydarzenia");
+    await header.waitFor({ state: "visible" });
+
+    const eventLinks = await page.getByText("Wyświetl szczegóły").all();
+    if (!eventLinks.length) {
+      await expectEmptyGridContent(page);
+      return;
+    }
+
+    for (const link of eventLinks) {
+      /* Delete created event */
+      await link.click();
+      await deleteEvent(page);
+    }
+
+    await expectEmptyGridContent(page);
   });
 });
 
 const getFutureDate = (milliseconds: number): Date => {
   return new Date(new Date().getTime() + milliseconds);
+};
+
+const signIn = async (page) => {
+  await page.getByRole("link", { name: "Zaloguj się" }).click();
+  await page.getByRole("textbox", { name: "E-mail" }).click();
+  await page.getByRole("textbox", { name: "E-mail" }).fill(AUTH.EMAIL);
+  await page.getByRole("textbox", { name: "Hasło" }).click();
+  await page.getByRole("textbox", { name: "Hasło" }).fill(AUTH.PASSWD);
+  await page.getByRole("button", { name: "Kontynuuj" }).click();
+  const header = page.getByText("Panel organizatora");
+  await header.waitFor({ state: "visible" });
+};
+
+const expectEmptyGridContent = async (page) => {
+  const grid = await page.locator("div.grid.grid-cols-1.gap-4");
+  await expect(grid).toBeEmpty();
+};
+
+const deleteEvent = async (page) => {
+  await page.getByRole("link", { name: "Edytuj wydarzenie" }).click();
+  await page.getByRole("button", { name: "Usuń wydarzenie" }).click();
+  await page.getByRole("button", { name: "Usuń" }).click();
+  const header = page.getByText("Moje wydarzenia");
+  await header.waitFor({ state: "visible" });
 };
