@@ -31,6 +31,14 @@ jobs:
         run: npm run format:check
         if: always()
 
+      - name: Run tests
+        run: npm test
+        env:
+          EVENTOWNIK_API: https://example.com/
+          SESSION_SECRET: MEGATAJNYKLUCZ
+          NEXT_PUBLIC_PHOTO_URL: https://example.com/
+        if: always()
+
       - name: Build
         env:
           EVENTOWNIK_API: https://example.com/
