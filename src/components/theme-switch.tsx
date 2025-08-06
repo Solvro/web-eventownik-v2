@@ -24,7 +24,9 @@ function ThemeSwitch() {
   return mounted ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button>{resolvedTheme === "light" ? <Sun /> : <Moon />}</Button>
+        <Button variant="outline">
+          {resolvedTheme === "light" ? <Sun /> : <Moon />}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem
