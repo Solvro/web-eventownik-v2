@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
+import { setupSuggestions } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
@@ -244,6 +246,16 @@ function EventEmailEditForm({
     }
   }
 
+  const attributeTags = eventAttributes.map((attribute): MessageTag => {
+    return {
+      title: attribute.name,
+      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      // NOTE: Why 'attribute.slug' can be null?
+      value: `/participant_${attribute.slug ?? ""}`,
+      color: "brown",
+    };
+  }) satisfies MessageTag[];
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -339,6 +351,7 @@ function EventEmailEditForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={setupSuggestions(attributeTags)}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

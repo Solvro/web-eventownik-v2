@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { setupSuggestions } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
+import type { EventAttribute } from "@/types/attributes";
 
 import { createEventEmailTemplate } from "../actions";
 
@@ -54,9 +57,11 @@ function getTitlePlaceholder(trigger: string) {
 
 function MessageContentForm({
   eventId,
+  eventAttributes,
   goToPreviousStep,
 }: {
   eventId: string;
+  eventAttributes: EventAttribute[];
   goToPreviousStep: () => void;
 }) {
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
@@ -113,6 +118,16 @@ function MessageContentForm({
     }
   }
 
+  const attributeTags = eventAttributes.map((attribute): MessageTag => {
+    return {
+      title: attribute.name,
+      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      // NOTE: Why 'attribute.slug' can be null?
+      value: `/participant_${attribute.slug ?? ""}`,
+      color: "brown",
+    };
+  }) satisfies MessageTag[];
+
   return (
     <FormContainer
       description="Zawartość wiadomości"
@@ -152,6 +167,7 @@ function MessageContentForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={setupSuggestions(attributeTags)}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}
