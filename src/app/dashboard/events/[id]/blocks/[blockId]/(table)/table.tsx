@@ -6,6 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -30,7 +31,7 @@ function BlockParticipantsTable({
   });
 
   return (
-    <div className="relative max-h-72 overflow-y-auto">
+    <ScrollArea className="relative max-h-72">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -73,7 +74,7 @@ function BlockParticipantsTable({
           )}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 }
 

@@ -8,6 +8,7 @@ import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { SocialMediaLink } from "@/components/social-media-link";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -210,15 +211,17 @@ export default async function FormPage({ params }: FormPageProps) {
                   : null}
               </div>
             </div>
-            <div
-              className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-            />
+            <ScrollArea className="max-h-72">
+              <div
+                className="leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+              />
+            </ScrollArea>
           </div>
         </div>
       </div>
-      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
+      <ScrollArea className="relative flex flex-1 flex-col items-center gap-y-2 p-4">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           {form.name}
         </h2>
@@ -234,7 +237,7 @@ export default async function FormPage({ params }: FormPageProps) {
           eventSlug={eventSlug}
           userId={userId}
         />
-      </div>
+      </ScrollArea>
     </div>
   );
 }
