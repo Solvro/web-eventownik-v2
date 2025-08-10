@@ -9,31 +9,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { AttributeType } from "@/types/attributes";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 export function FilterButton({
   attributeType,
-  options,
+  options_,
   column,
 }: {
   attributeType: AttributeType;
-  options: string[] | null;
-  column: Column<
-    FlattenedParticipant,
-    string | number | boolean | Date | null | undefined
-  >;
+  options_: string[] | null;
+  column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
 }) {
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiselect" && options !== null)
+    (attributeType === "multiselect" && options_ !== null)
   ) {
-    const filterValues =
-      (column.getFilterValue() as string[] | undefined) ?? [];
+    let options: {
+      label: string;
+      value: ParticipantAttributeValueType;
+    }[] =
+      options_ === null
+        ? []
+        : options_.map((option) => ({
+            label: option,
+            value: option,
+          }));
 
-    if (attributeType === "checkbox" && options === null) {
-      options = ["true", "false"];
+    const filterValues =
+      (column.getFilterValue() as
+        | ParticipantAttributeValueType[]
+        | undefined) ?? [];
+
+    if (attributeType === "checkbox" && options_ === null) {
+      options = [
+        { label: "True", value: "true" },
+        { label: "False", value: "false" },
+      ];
     }
+
+    options.push({ label: "Brak", value: null });
 
     return (
       <DropdownMenu>
@@ -47,28 +65,28 @@ export function FilterButton({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {options?.map((option) => {
+          {options.map(({ label, value }) => {
             return (
               <DropdownMenuCheckboxItem
-                key={option}
+                // Setting key to " " when filter value is null prevents from adding reserved keywords for end users
+                key={value === null ? " " : label}
                 onSelect={(event) => {
                   event.preventDefault();
                 }}
-                checked={filterValues.includes(option)}
+                checked={filterValues.includes(value)}
                 onCheckedChange={(checked) => {
                   const newFilterValues = checked
-                    ? [...filterValues, option]
-                    : filterValues.filter((value) => value !== option);
+                    ? [...filterValues, value]
+                    : filterValues.filter((_value) => _value !== value);
                   column.setFilterValue(
                     newFilterValues.length > 0 ? newFilterValues : [],
                   );
                 }}
               >
-                {option}
+                {label}
               </DropdownMenuCheckboxItem>
             );
           })}
-          {/* TODO Maybe add 'Empty' option which will filter empty values ("")  */}
         </DropdownMenuContent>
       </DropdownMenu>
     );

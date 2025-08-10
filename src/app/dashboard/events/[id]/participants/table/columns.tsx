@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 import { getParticipant } from "../actions";
 import { flattenParticipant } from "./data";
@@ -124,7 +127,7 @@ export function generateColumns(
             <div className="flex items-center">
               <FilterButton
                 attributeType={attribute.type}
-                options={attribute.options}
+                options_={attribute.options}
                 column={column}
               />
               <SortButton column={column}>
@@ -177,7 +180,33 @@ export function generateColumns(
           }
         },
         //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
-        filterFn: "arrIncludesSome",
+        filterFn: (
+          row: Row<FlattenedParticipant>,
+          columnId: string,
+          filterValue: ParticipantAttributeValueType[],
+        ) => {
+          if (filterValue.length === 0) {
+            return true;
+          }
+          const rowValue = row.original[columnId] ?? null;
+
+          // Multiselect case has to be handled separately
+          // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+          if (rowValue !== null && attribute.type === "multiselect") {
+            const values = new Set(
+              (row.original[columnId] as string).split(","),
+            );
+            return filterValue.some((value) => values.has(value as string));
+          }
+
+          // Special case when attribute of single select type is set empty
+          // Check implementation of AttributeInput for explanation
+          if (rowValue === " " && filterValue.includes(null)) {
+            return true;
+          }
+
+          return filterValue.includes(rowValue);
+        },
         sortDescFirst: false,
       });
     }),

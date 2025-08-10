@@ -104,6 +104,56 @@ describe("Filtering", () => {
     },
   );
 
+  it.each([selectCaseData, multiselectCaseData, checkboxCaseData])(
+    "should correctly filter rows by empty values using header filter for $attributeType attribute",
+    async ({ participants, attributes }) => {
+      // Only one row will have empty values
+      const participantWithEmptyValues = { ...participants[0] };
+      participantWithEmptyValues.attributes = [];
+      participants = [...participants.slice(0, 2), participantWithEmptyValues];
+      const numberOfRowsWithEmptyValues = 1;
+
+      const { user, getDataRows } = renderTable(participants, attributes);
+
+      // Step 1: All rows should be visisble at the beginning
+      expect(getDataRows().length).toBe(participants.length);
+
+      const headerFilter = screen.getByRole("columnheader", {
+        name: attributes[0].name,
+      });
+      const filterButtonPopup = getFilterButtonPopup(headerFilter);
+
+      // Step 2: Click filter popup button - popup menu should be visible
+      await user.click(filterButtonPopup);
+      const filterMenu = screen.getByRole("menu");
+      expect(filterMenu).toBeVisible();
+
+      // Step 3: Click last filter option (Empty)- rows should be filtered
+      let options = getMenuOptions(filterMenu);
+      const emptyOption = options.at(-1);
+      if (emptyOption === undefined) {
+        throw new Error("Empty option not found!");
+      }
+      await user.click(emptyOption);
+      // Close menu - aria-hidden is set to true when portal is opened
+      await user.keyboard("{Escape}");
+      const rowsAfterFiltering = getDataRows();
+      expect(rowsAfterFiltering.length).toBe(numberOfRowsWithEmptyValues);
+
+      // Step 5: Check all filters - all rows should be visible
+      await user.click(filterButtonPopup);
+      options = getMenuOptions(screen.getByRole("menu"));
+      for (const option of options) {
+        if (option.getAttribute("aria-checked") === "false") {
+          await user.click(option);
+        }
+      }
+      await user.keyboard("{Escape}");
+
+      expect(getDataRows().length).toBe(participants.length);
+    },
+  );
+
   it("should reset all column filters", async () => {
     const { participants, attributes } = selectAndMultiselectTestCaseData;
     const { user, resetFiltersButton, getDataRows } = renderTable(
