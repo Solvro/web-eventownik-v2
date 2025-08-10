@@ -47,7 +47,7 @@ function RegisterForm() {
           description: "Spróbuj zarejestrować się ponownie.",
         });
       } else {
-        const redirectUrl = redirectTo ?? "/dashboard";
+        const redirectUrl = redirectTo ?? "/dashboard/events";
         router.replace(redirectUrl);
       }
     } catch {
