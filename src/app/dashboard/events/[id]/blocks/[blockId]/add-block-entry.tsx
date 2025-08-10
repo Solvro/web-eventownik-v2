@@ -129,6 +129,7 @@ function AddBlockEntry({
             <Button
               type="submit"
               className="w-full"
+              variant="eventDefault"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (

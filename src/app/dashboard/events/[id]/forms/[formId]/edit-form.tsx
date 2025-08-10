@@ -145,7 +145,7 @@ function EventFormEditForm({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant="outline"
                               className="w-[240px] pl-3 text-left font-normal"
                               disabled={
                                 form.formState.isSubmitting ? true : undefined
@@ -208,7 +208,7 @@ function EventFormEditForm({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant="outline"
                               className="w-[240px] pl-3 text-left font-normal"
                               disabled={
                                 form.formState.isSubmitting ? true : undefined
@@ -328,7 +328,7 @@ function EventFormEditForm({
             setIncludedAttributes={setIncludedAttributes}
           />
         </div>
-        <Button type="submit">
+        <Button type="submit" variant="eventDefault">
           <Save /> Zapisz
         </Button>
       </form>

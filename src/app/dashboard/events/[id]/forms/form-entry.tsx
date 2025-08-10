@@ -11,14 +11,14 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
     <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
         {/* TODO: Implement form edit view */}
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="eventGhost" size="icon" asChild>
           <Link href={`forms/${form.id.toString()}`}>
             <SquarePen />
             <span className="sr-only">Edytuj formularz</span>
           </Link>
         </Button>
         {/* TODO: Implement form preview */}
-        {/*<Button variant="ghost" size="icon" asChild>*/}
+        {/*<Button variant="eventGhost" size="icon" asChild>*/}
         {/*  <Link href="/">*/}
         {/*    <Eye />*/}
         {/*    <span className="sr-only">Podgląd formularzu</span>*/}

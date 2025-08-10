@@ -89,7 +89,7 @@ export default async function DashboardEventPage({
             : null}
         </div>
         <div className="flex flex-col gap-2 md:flex-row">
-          <Button asChild>
+          <Button variant="eventDefault" asChild>
             <Link href={`/dashboard/events/${id}/settings`}>
               <SquarePenIcon /> Edytuj wydarzenie
             </Link>

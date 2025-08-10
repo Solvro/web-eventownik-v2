@@ -241,7 +241,7 @@ const AttributeItem = memo(
     return (
       <div className="mb-2 flex gap-2 rounded-lg p-2">
         <Button
-          variant="ghost"
+          variant="eventGhost"
           size="icon"
           onClick={onRemove}
           className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
