@@ -14,15 +14,13 @@ function getContrastColor(hex?: string) {
   const b = Number.parseInt(hex.slice(4, 6), 16);
   // Calculate luminance
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5
-    ? "var(--color-secondary-foreground)"
-    : "var(--color-primary-foreground)";
+  return luminance > 0.5 ? "hsl(0 0% 9%)" : "hsl(0 0% 98%)";
 }
 
 export function setEventPrimaryColors(primaryColor?: string) {
   document.documentElement.style.setProperty(
     "--event-primary-color",
-    primaryColor ?? "var(--primary)",
+    primaryColor ?? "var(--color-primary)",
   );
   document.documentElement.style.setProperty(
     "--event-primary-foreground-color",
@@ -41,7 +39,7 @@ export function EventPrimaryColorSetter({
       // Reset to default colors when component unmounts
       document.documentElement.style.setProperty(
         "--event-primary-color",
-        "var(--primary)",
+        "var(--color-primary)",
       );
       document.documentElement.style.setProperty(
         "--event-primary-foreground-color",
