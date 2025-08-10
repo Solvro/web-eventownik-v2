@@ -56,7 +56,7 @@ function DeleteBlockPopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-red-700">
+        <Button variant="eventGhost" size="icon" className="text-red-700">
           <Trash2 />
           <span className="sr-only">Usuń blok</span>
         </Button>

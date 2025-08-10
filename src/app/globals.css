@@ -103,6 +103,8 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --event-primary-color: var(--color-primary);
+    --event-primary-foreground-color: var(--color-primary-foreground);
   }
 
   .dark {

@@ -161,7 +161,7 @@ function MessageContentForm({
           />
           <div className="flex justify-between">
             <Button
-              variant="ghost"
+              variant="eventGhost"
               onClick={() => {
                 saveEdits();
                 goToPreviousStep();
@@ -170,7 +170,11 @@ function MessageContentForm({
             >
               <ArrowLeft /> Wróć
             </Button>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              variant="eventDefault"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? (
                 <Loader className="animate-spin" />
               ) : (

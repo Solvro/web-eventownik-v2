@@ -84,7 +84,7 @@ function EditBlockEntry({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="eventGhost" size="icon">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
         </Button>
@@ -131,6 +131,7 @@ function EditBlockEntry({
             />
             <Button
               type="submit"
+              variant="eventDefault"
               className="w-full"
               disabled={form.formState.isSubmitting}
             >

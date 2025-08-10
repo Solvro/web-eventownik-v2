@@ -21,7 +21,7 @@ function BlockParticipantsPopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" title="Uczestnicy bloku">
+        <Button variant="eventGhost" size="icon" title="Uczestnicy bloku">
           <TableProperties />
           <span className="sr-only">Uczestnicy bloku</span>
         </Button>

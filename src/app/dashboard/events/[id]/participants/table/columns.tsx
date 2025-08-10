@@ -187,7 +187,7 @@ export function generateColumns(
           .rows.filter((row) => !row.original.wasExpanded);
         return (
           <Button
-            variant="ghost"
+            variant="eventGhost"
             onClick={async () => {
               await Promise.all(
                 notExpandedRows.map(async (row) => {
@@ -208,7 +208,7 @@ export function generateColumns(
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant={row.getIsExpanded() ? "outline" : "ghost"}
+            variant={row.getIsExpanded() ? "outline" : "eventGhost"}
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);

@@ -112,6 +112,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         <br />
         <div className="text-center">
           <Button
+            variant="eventDefault"
             onClick={() => {
               form.reset();
             }}
@@ -193,6 +194,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
 
         <Button
           type="submit"
+          variant="eventDefault"
           disabled={form.formState.isSubmitting}
           className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >
