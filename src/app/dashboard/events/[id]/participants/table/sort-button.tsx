@@ -28,7 +28,7 @@ export function SortButton({
 }: SortButtonProps) {
   return (
     <Button
-      variant="ghost"
+      variant="eventGhost"
       className={className}
       onClick={(event) => {
         const toggleSorting = column.getToggleSortingHandler();

@@ -163,7 +163,11 @@ function SendMailForm({
                     .join("\n")}
                 </pre>
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                  <Button
+                    type="submit"
+                    variant="eventDefault"
+                    disabled={form.formState.isSubmitting}
+                  >
                     {form.formState.isSubmitting ? (
                       <Loader className="animate-spin" />
                     ) : (

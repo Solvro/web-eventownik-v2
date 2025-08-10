@@ -39,7 +39,7 @@ export function FilterButton({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={filterValues.length === 0 ? "ghost" : "outline"}
+            variant={filterValues.length === 0 ? "eventGhost" : "outline"}
             size="icon"
             aria-label="Otwórz menu filtrów"
           >

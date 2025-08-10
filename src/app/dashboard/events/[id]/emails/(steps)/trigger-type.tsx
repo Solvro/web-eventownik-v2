@@ -280,7 +280,7 @@ function TriggerTypeForm({
           </div>
           <div className="flex justify-end">
             <Button
-              variant="ghost"
+              variant="eventGhost"
               type="submit"
               disabled={form.formState.isSubmitting}
             >

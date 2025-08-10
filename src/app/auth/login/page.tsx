@@ -45,7 +45,7 @@ function LoginForm() {
         title: "Logowanie zakończone sukcesem!",
         duration: 2000,
       });
-      const redirectUrl = redirectTo ?? "/dashboard";
+      const redirectUrl = redirectTo ?? "/dashboard/events";
       router.replace(redirectUrl);
     } else {
       toast({

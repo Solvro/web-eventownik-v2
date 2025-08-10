@@ -5,6 +5,7 @@ import { useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { setEventPrimaryColors } from "@/components/event-primary-color";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -209,6 +210,10 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     id={colorInputId}
                     disabled={form.formState.isSubmitting}
                     {...field}
+                    onChange={(event_) => {
+                      setEventPrimaryColors(event_.target.value);
+                      field.onChange(event_);
+                    }}
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">

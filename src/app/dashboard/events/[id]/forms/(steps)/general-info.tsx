@@ -125,7 +125,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={"outline"}
+                                variant="outline"
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
@@ -184,7 +184,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={"outline"}
+                                variant="outline"
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
                               >
@@ -292,7 +292,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button variant="ghost" type="submit">
+            <Button variant="eventGhost" type="submit">
               <ArrowRight /> Dalej
             </Button>
           </div>

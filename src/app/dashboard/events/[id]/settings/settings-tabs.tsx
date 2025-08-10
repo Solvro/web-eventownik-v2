@@ -198,7 +198,7 @@ export function EventSettingsTabs({
             <Tabs.Trigger
               key={tab.value}
               value={tab.value}
-              className="hover:bg-primary/10 rounded-lg px-4 py-1 transition-colors data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:hover:bg-blue-600"
+              className="rounded-lg px-4 py-1 transition-colors hover:bg-[var(--event-primary-color)]/10 data-[state=active]:bg-[var(--event-primary-color)] data-[state=active]:text-[var(--event-primary-foreground-color)] data-[state=active]:hover:bg-[var(--event-primary-color)]/90"
             >
               {tab.name}
             </Tabs.Trigger>
@@ -222,7 +222,9 @@ export function EventSettingsTabs({
         ))}
       </Tabs.Root>
       <div className="max-w-80/full flex justify-between gap-2 pt-4">
-        <Button onClick={saveForm}>Zapisz</Button>
+        <Button variant="eventDefault" onClick={saveForm}>
+          Zapisz
+        </Button>
         {activeTabValue === "general" && (
           <AlertDialog
             open={isDeleteEventDialogOpen}

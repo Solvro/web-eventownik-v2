@@ -142,6 +142,7 @@ export function FormGenerator({
         <br />
         <div className="text-center">
           <Button
+            variant="eventDefault"
             onClick={() => {
               form.reset();
               location.reload();
@@ -208,6 +209,7 @@ export function FormGenerator({
         )}
         <Button
           type="submit"
+          variant="eventDefault"
           disabled={form.formState.isSubmitting}
           className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >

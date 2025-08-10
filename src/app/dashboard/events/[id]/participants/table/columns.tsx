@@ -190,7 +190,7 @@ export function generateColumns(
           .rows.filter((row) => !row.original.wasExpanded);
         return (
           <Button
-            variant="ghost"
+            variant="eventGhost"
             onClick={async () => {
               // TODO stop DDOSing backend server 😭
               await Promise.all(
@@ -212,7 +212,7 @@ export function generateColumns(
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant={row.getIsExpanded() ? "outline" : "ghost"}
+            variant={row.getIsExpanded() ? "outline" : "eventGhost"}
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);

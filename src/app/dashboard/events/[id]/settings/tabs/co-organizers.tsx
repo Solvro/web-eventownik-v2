@@ -341,6 +341,7 @@ export function CoOrganizers({
                       Anuluj
                     </Button>
                     <Button
+                      variant="eventDefault"
                       onClick={() => {
                         handleAddOrganizer(newEmail, selectedPermissions);
                         setNewEmail("");
