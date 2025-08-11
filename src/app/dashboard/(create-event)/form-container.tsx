@@ -1,3 +1,5 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 export function FormContainer({
   children,
   step,
@@ -23,7 +25,7 @@ export function FormContainer({
           <p className="text-lg font-medium">{description}</p>
         </div>
       </div>
-      <div className="overflow-y-auto p-px">{children}</div>
+      <ScrollArea className="p-px">{children}</ScrollArea>
     </div>
   );
 }

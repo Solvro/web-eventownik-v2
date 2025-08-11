@@ -9,6 +9,7 @@ import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { SocialMediaLink } from "@/components/social-media-link";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
@@ -118,19 +119,21 @@ export default async function EventPage({ params }: EventPageProps) {
                   : null}
               </div>
             </div>
-            <p className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line">
-              {event.description}
-            </p>
+            <ScrollArea className="max-h-72">
+              <p className="leading-relaxed whitespace-pre-line">
+                {event.description}
+              </p>
+            </ScrollArea>
           </div>
         </div>
       </div>
-      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
+      <ScrollArea className="relative flex flex-1 flex-col items-center gap-y-2 p-4">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           Rejestracja na wydarzenie
         </h2>
         <p className="mb-8">Wypełnij formularz, aby się zarejestrować</p>
         <RegisterParticipantForm event={event} />
-      </div>
+      </ScrollArea>
     </div>
   );
 }

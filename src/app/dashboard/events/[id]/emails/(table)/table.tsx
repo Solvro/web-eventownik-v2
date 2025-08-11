@@ -6,6 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -26,7 +27,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
   });
 
   return (
-    <div className="relative max-h-72 overflow-y-auto">
+    <ScrollArea className="relative max-h-72">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -69,7 +70,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
           )}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   );
 }
 
