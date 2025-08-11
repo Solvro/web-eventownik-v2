@@ -23,11 +23,9 @@ import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../actions";
-import {
-  DeleteParticipantDialog,
-  EditParticipantButton,
-} from "./action-components";
+import { DeleteParticipantDialog } from "./delete-dialog";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
+import { EditParticipantButton } from "./edit-button";
 
 interface TableRowFormProps {
   row: Row<FlattenedParticipant>;
@@ -118,6 +116,10 @@ export function TableRowForm({
       });
       return;
     }
+    toast({
+      variant: "default",
+      title: "Udana aktualizacja uczestnika",
+    });
     row.toggleExpanded();
     setData((previousData) => {
       return previousData.map((_participant) =>
@@ -328,7 +330,7 @@ function getDefaultValues(cells: Cell<FlattenedParticipant, unknown>[]) {
     const columnAttribute = cell.column.columnDef.meta?.attribute;
     if (columnAttribute !== undefined) {
       if (columnAttribute.type === "multiselect") {
-        //cell value is transformed string array (["v1", "v2"] => "v1, v2")
+        //cell value is transformed string array (["v1", "v2"] => "v1,v2")
         const cellValue = cell.getValue() as string | undefined;
         _defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
       } else {

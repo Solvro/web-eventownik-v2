@@ -23,5 +23,13 @@ export interface FlattenedParticipant {
   mode: "edit" | "view";
   wasExpanded: boolean;
   //key is attribute id
-  [key: string]: string | number | boolean | Date | null | undefined;
+  [key: string]: ParticipantAttributeValueType;
 }
+
+export type ParticipantAttributeValueType =
+  | string
+  | number
+  | boolean
+  | Date
+  | null
+  | undefined;

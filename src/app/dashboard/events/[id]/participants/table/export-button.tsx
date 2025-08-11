@@ -54,6 +54,7 @@ export function ExportButton({ eventId }: { eventId: string }) {
           size="icon"
           variant="outline"
           disabled={isQuerying}
+          aria-label="Eksportuj do Excela"
         >
           {isQuerying ? (
             <Loader2 className="h-4 w-4 animate-spin" />
