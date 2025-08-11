@@ -89,14 +89,14 @@ function SendMailForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="icon" variant="outline">
+            <Button size="icon" variant="outline" aria-label="Wyślij maila">
               <Mail />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>Wyślij maila</TooltipContent>
       </Tooltip>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader className="sr-only">
           <DialogTitle>Wyślij maila</DialogTitle>
         </DialogHeader>
