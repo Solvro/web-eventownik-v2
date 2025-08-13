@@ -1,8 +1,11 @@
-import { CreateEmailTemplateForm } from "./create-email-template-form";
+import { SquarePlus } from "lucide-react";
+import Link from "next/link";
+
+// import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
-  getEventAttributes,
+  // getEventAttributes,
   getEventEmails,
-  getEventForms,
+  // getEventForms,
 } from "./data-access";
 import { EmailTemplateEntry } from "./template-entry";
 
@@ -13,18 +16,26 @@ export default async function DashboardEventEmailTemplatesPage({
 }) {
   const { id } = await params;
   const templates = await getEventEmails(id);
-  const attributes = await getEventAttributes(id);
-  const forms = await getEventForms(id);
+  // const attributes = await getEventAttributes(id);
+  // const forms = await getEventForms(id);
 
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-3xl font-bold">Szablony maili</h1>
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-        <CreateEmailTemplateForm
+        {/* New create email template form */}
+        <Link
+          href="emails/new"
+          className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4"
+        >
+          <SquarePlus className="h-6 w-6" /> Stwórz szablon
+        </Link>
+        {/* Old create email template form */}
+        {/* <CreateEmailTemplateForm
           eventId={id}
           eventAttributes={attributes}
           eventForms={forms}
-        />
+        /> */}
         {templates === null ? (
           <p className="text-red-600">Nie udało się pobrać szablonów</p>
         ) : (
