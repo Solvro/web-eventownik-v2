@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -91,6 +92,8 @@ export function TableRowForm({
   const form = useForm({
     defaultValues,
   });
+
+  useUnsavedForm(form.formState.isDirty);
 
   useEffect(() => {
     form.reset({ ...getDefaultValues(cells) });

@@ -3,6 +3,7 @@
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
+import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -26,6 +28,7 @@ function CreateEmailTemplateForm({
   eventForms: EventForm[];
 }) {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  useUnsavedAtom(newEventEmailTemplateAtom);
 
   return (
     <Dialog>

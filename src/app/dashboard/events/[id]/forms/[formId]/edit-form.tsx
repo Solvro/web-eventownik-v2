@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -75,6 +76,8 @@ function EventFormEditForm({
 
   const router = useRouter();
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {

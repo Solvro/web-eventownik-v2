@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
@@ -43,6 +44,8 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       email: "",
     },
   });
+
+  useUnsavedForm(form.formState.isDirty);
 
   const { toast } = useToast();
 

@@ -3,6 +3,7 @@
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
+import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import type { EventAttribute } from "@/types/attributes";
 
 import { AttributesForm } from "./(steps)/attributes";
@@ -23,6 +25,7 @@ function CreateEventFormForm({
   attributes: EventAttribute[];
 }) {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  useUnsavedAtom(newEventFormAtom);
 
   return (
     <Dialog>

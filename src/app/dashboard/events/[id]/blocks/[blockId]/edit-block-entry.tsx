@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
 
 const BlockSchema = z.object({
@@ -55,6 +56,8 @@ function EditBlockEntry({
     },
   });
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await updateBlock(
