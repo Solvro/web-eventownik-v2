@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightbulb, Save, Text, Zap } from "lucide-react";
+import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -352,7 +352,12 @@ function EventEmailEditForm({
           variant="eventDefault"
           disabled={form.formState.isSubmitting}
         >
-          <Save /> Zapisz zmiany
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>

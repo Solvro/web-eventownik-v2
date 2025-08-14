@@ -179,8 +179,7 @@ export function EditParticipantButton({
         await handleSubmit(event);
       }}
     >
-      <Save />
-      Zapisz
+      {disabled ? <Loader className="animate-spin" /> : <Save />} Zapisz
     </Button>
   ) : (
     <Button
