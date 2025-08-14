@@ -69,7 +69,7 @@ function DeleteEmailPopup({
           <DialogTitle>Usuń szablon</DialogTitle>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <CircleX className="text-destructive h-14 w-14" />
+          <CircleX className="h-14 w-14 text-[#EB0000]" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
             Czy na pewno chcesz usunąć szablon maila <strong>{mailName}</strong>
@@ -80,7 +80,7 @@ function DeleteEmailPopup({
               <Button
                 type="submit"
                 variant="destructive"
-                className="bg-destructive"
+                className="bg-[#EB0000]"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
                 {form.formState.isSubmitting || shouldDisableButtons ? (
