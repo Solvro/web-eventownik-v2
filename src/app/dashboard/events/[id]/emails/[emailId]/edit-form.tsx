@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
@@ -215,6 +216,8 @@ function EventEmailEditForm({
   });
 
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   async function onSubmit(values: z.infer<typeof EventEmailEditFormSchema>) {
     const updatedMail = {
