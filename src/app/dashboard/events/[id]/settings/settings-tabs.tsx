@@ -1,7 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { Trash } from "lucide-react";
+import { Loader, Save, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -90,6 +90,7 @@ export function EventSettingsTabs({
   >(async () => {
     return { success: true, event };
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setEvent(unmodifiedEvent);
@@ -108,7 +109,7 @@ export function EventSettingsTabs({
   };
 
   const saveForm = async () => {
-    // setLoading(true);
+    setIsSaving(true);
     const { success, event: newEvent } = await saveFormRef.current();
     if (!success || newEvent == null) {
       toast({
@@ -164,6 +165,8 @@ export function EventSettingsTabs({
         title: "Nie udało się zapisać wydarzenia!",
         description: "Spróbuj zapisać wydarzenie ponownie",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -224,8 +227,8 @@ export function EventSettingsTabs({
         ))}
       </Tabs.Root>
       <div className="max-w-80/full flex justify-between gap-2 pt-4">
-        <Button variant="eventDefault" onClick={saveForm}>
-          Zapisz
+        <Button variant="eventDefault" onClick={saveForm} disabled={isSaving}>
+          {isSaving ? <Loader className="animate-spin" /> : <Save />} Zapisz
         </Button>
         {activeTabValue === "general" && (
           <AlertDialog

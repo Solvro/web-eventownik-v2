@@ -23,8 +23,9 @@ import { useAtom } from "jotai";
 import {
   ArrowLeft,
   GripVertical,
-  Loader2,
+  Loader,
   PlusIcon,
+  SquarePlus,
   TextIcon,
   TrashIcon,
 } from "lucide-react";
@@ -517,13 +518,8 @@ export function AttributesForm({
               <ArrowLeft /> Wróć
             </Button>
             <Button className="w-min" onClick={createEvent} disabled={loading}>
-              {loading ? (
-                <>
-                  Zapisywanie danych... <Loader2 className="animate-spin" />
-                </>
-              ) : (
-                <>Utwórz wydarzenie</>
-              )}
+              {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
+              Dodaj wydarzenie
             </Button>
           </div>
         </div>

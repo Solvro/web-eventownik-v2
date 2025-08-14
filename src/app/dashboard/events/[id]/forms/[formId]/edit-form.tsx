@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Save } from "lucide-react";
+import { CalendarIcon, Loader, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -329,7 +329,12 @@ function EventFormEditForm({
           />
         </div>
         <Button type="submit" variant="eventDefault">
-          <Save /> Zapisz
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>
