@@ -110,7 +110,12 @@ export function TableRowForm({
       participant.id.toString(),
     );
 
-    if (!success) {
+    if (success) {
+      toast({
+        title: "Pomyślnie zaktualizowano dane uczestnika",
+        description: error,
+      });
+    } else {
       toast({
         variant: "destructive",
         title: "Aktualizacja uczestnika nie powiodła się!",
