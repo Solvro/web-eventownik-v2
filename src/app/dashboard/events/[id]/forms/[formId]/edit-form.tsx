@@ -86,13 +86,13 @@ function EventFormEditForm({
 
       if (result.success) {
         toast({
-          title: "Formularz został zaktualizowany",
+          title: "Zapisano zmiany w formularzu",
         });
 
         router.refresh();
       } else {
         toast({
-          title: "Nie udało się zaktualizować formularza",
+          title: "Nie udało się zapisać zmian w formularzu!",
           description: result.error,
           variant: "destructive",
         });
@@ -100,7 +100,7 @@ function EventFormEditForm({
     } catch (error) {
       console.error("Error updating event form:", error);
       toast({
-        title: "Nie udało się zaktualizować formularza",
+        title: "Nie udało się zapisać zmian w formularzu!",
         description: "Wystąpił błąd podczas aktualizacji formularza.",
         variant: "destructive",
       });

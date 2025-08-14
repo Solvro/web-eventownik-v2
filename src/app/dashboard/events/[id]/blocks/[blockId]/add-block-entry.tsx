@@ -67,12 +67,12 @@ function AddBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Pomyślnie utworzono blok",
+        title: "Dodano nowy blok",
       });
       location.reload();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się dodać bloku!",
         description: result.error,
         variant: "destructive",
       });

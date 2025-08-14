@@ -106,7 +106,7 @@ function MessageContentForm({
       location.reload();
     } else {
       toast({
-        title: "Nie udało się dodać szablonu",
+        title: "Nie udało się dodać szablonu!",
         description: result.error,
         variant: "destructive",
       });

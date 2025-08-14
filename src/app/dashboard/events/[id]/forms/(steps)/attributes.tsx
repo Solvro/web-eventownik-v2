@@ -74,14 +74,14 @@ function AttributesForm({
         location.reload();
       } else {
         toast({
-          title: "Nie udało się dodać formularza",
+          title: "Nie udało się dodać formularza!",
           description: result.error,
           variant: "destructive",
         });
       }
     } catch {
       toast({
-        title: "Nie udało się dodać formularza",
+        title: "Nie udało się dodać formularza!",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
         variant: "destructive",
       });

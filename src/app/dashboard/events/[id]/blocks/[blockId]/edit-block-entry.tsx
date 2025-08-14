@@ -69,12 +69,12 @@ function EditBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Pomyślnie zedytowano blok",
+        title: "Zapisano zmiany w bloku",
       });
       location.reload();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się zapisać zmian w bloku!",
         description: result.error,
         variant: "destructive",
       });

@@ -232,12 +232,12 @@ function EventEmailEditForm({
 
     if (result.success) {
       toast({
-        title: "Szablon został zaktualizowany",
+        title: "Zapisano zmiany w szablonie",
       });
       location.reload();
     } else {
       toast({
-        title: "Nie udało się zaktualizować szablonu",
+        title: "Nie udało się zapisać zmian w szablonie!",
         description: result.error,
         variant: "destructive",
       });

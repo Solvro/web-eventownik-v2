@@ -112,13 +112,13 @@ export function TableRowForm({
 
     if (success) {
       toast({
-        title: "Pomyślnie zaktualizowano dane uczestnika",
+        title: "Zapisano zmiany w uczestniku",
         description: error,
       });
     } else {
       toast({
         variant: "destructive",
-        title: "Aktualizacja uczestnika nie powiodła się!",
+        title: "Nie udało się zapisać zmian w uczestniku!",
         description: error,
       });
       return;
