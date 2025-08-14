@@ -8,7 +8,7 @@ import {
   Loader2,
   PlusIcon,
   SettingsIcon,
-  TrashIcon,
+  Trash2,
   UploadIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -259,7 +259,7 @@ export function PersonalizationForm({
                                 remove(index);
                               }}
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                           {form.formState.errors.links?.[index]?.value
