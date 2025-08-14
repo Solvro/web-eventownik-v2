@@ -44,7 +44,7 @@ function DeleteFormPopup({
       router.refresh();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się usunąć formularza!",
         variant: "destructive",
         description: result.error,
       });

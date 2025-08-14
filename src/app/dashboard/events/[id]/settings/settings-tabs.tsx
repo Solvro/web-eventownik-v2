@@ -113,8 +113,8 @@ export function EventSettingsTabs({
     if (!success || newEvent == null) {
       toast({
         variant: "destructive",
-        title: "Wydarzenie nie zostało zapisane.",
-        description: "Popraw błędy w formularzu, aby kontynuować.",
+        title: "Nie udało się zapisać wydarzenia!",
+        description: "Popraw błędy w formularzu, aby kontynuować",
       });
       return;
     }
@@ -136,7 +136,7 @@ export function EventSettingsTabs({
       if ("errors" in eventResult) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
+          title: "Nie udało się zapisać wydarzenia!",
           description: `Spróbuj zapisać wydarzenie ponownie.\n${eventResult.errors
             .map((error) => error.message)
             .join("\n")}`,
@@ -154,16 +154,15 @@ export function EventSettingsTabs({
         });
         toast({
           variant: "default",
-          title: "Wydarzenie zostało zapisane.",
-          description: "Twoje zmiany zostały zapisane.",
+          title: "Zapisano zmiany w wydarzeniu",
         });
       }
     } catch (error) {
       console.error("[EventSettingsTabs] Error saving event:", error);
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Spróbuj zapisać wydarzenie ponownie.",
+        title: "Nie udało się zapisać wydarzenia!",
+        description: "Spróbuj zapisać wydarzenie ponownie",
       });
     }
   };
@@ -173,16 +172,15 @@ export function EventSettingsTabs({
     if ("errors" in result) {
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: `Spróbuj usunąć wydarzenie ponownie.\n${result.errors
+        title: "Nie udało się usunąć wydarzenia!",
+        description: `Spróbuj ponownie.\n${result.errors
           .map((error) => error.message)
           .join("\n")}`,
       });
     } else {
       toast({
         variant: "default",
-        title: "Wydarzenie zostało usunięte.",
-        description: "Twoje wydarzenie zostało usunięte.",
+        title: "Usunięto wydarzenie",
       });
       router.push("/dashboard/events");
     }

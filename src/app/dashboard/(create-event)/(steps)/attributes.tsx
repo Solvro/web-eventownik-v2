@@ -379,14 +379,14 @@ export function AttributesForm({
       if ("errors" in result) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj utworzyć wydarzenie ponownie.",
+          title: "Nie udało się dodać wydarzenia!",
+          description: "Spróbuj utworzyć wydarzenie ponownie",
         });
       } else {
         URL.revokeObjectURL(event.image);
 
         toast({
-          title: "Pomyślnie utworzono nowe wydarzenie",
+          title: "Dodano nowe wydarzenie",
         });
 
         setEvent({
@@ -412,8 +412,8 @@ export function AttributesForm({
     } catch {
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: "Brak połączenia z serwerem",
+        description: "Sprawdź swoje połączenie z internetem",
       });
     }
     setLoading(false);

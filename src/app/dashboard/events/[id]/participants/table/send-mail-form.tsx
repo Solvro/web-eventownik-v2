@@ -70,14 +70,14 @@ function SendMailForm({
 
     if (result.success) {
       toast({
-        title: "Pomyślnie rozesłano maile",
+        title: "Wysłano wiadomości",
       });
 
       // 'router.refresh()' doesn't work here for some reason - using native method instead
       location.reload();
     } else {
       toast({
-        title: "Nie udało się wysłać maili",
+        title: "Nie udało się wysłać wiadomości!",
         description: result.error,
         variant: "destructive",
       });
