@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
+import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -293,7 +293,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                             remove(index);
                           }}
                         >
-                          <TrashIcon className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                       {form.formState.errors.socialMediaLinks?.[index]?.value

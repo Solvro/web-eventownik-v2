@@ -27,7 +27,7 @@ import {
   PlusIcon,
   SquarePlus,
   TextIcon,
-  TrashIcon,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -195,7 +195,7 @@ const AttributeItem = memo(
           onClick={onRemove}
           className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
         >
-          <TrashIcon className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
 
         <div className="flex flex-1 flex-col gap-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { Loader, Save, Trash } from "lucide-react";
+import { Loader, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -240,7 +240,7 @@ export function EventSettingsTabs({
                 variant="destructive"
                 className="bg-background hover:bg-destructive/10 border border-red-500 text-red-500"
               >
-                <Trash />
+                <Trash2 />
                 Usuń wydarzenie
               </Button>
             </AlertDialogTrigger>
