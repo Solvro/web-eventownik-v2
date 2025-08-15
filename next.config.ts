@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.gravatar.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.mos.cms.futurecdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "image.api.playstation.com",
+      },
+      {
+        protocol: "https",
+        hostname: "shared.fastly.steamstatic.com",
+      },
     ],
   },
   experimental: {
