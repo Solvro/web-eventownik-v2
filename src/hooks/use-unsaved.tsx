@@ -1,12 +1,13 @@
+"use client";
+
 import { useAtomValue } from "jotai";
 import type { Atom } from "jotai";
-import { useEffect, useRef } from "react";
+import { useNavigationGuard } from "next-navigation-guard";
+import { useCallback, useRef } from "react";
 
-const launchAlert = (event: BeforeUnloadEvent) => {
-  event.preventDefault();
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  event.returnValue = "";
-};
+/* eslint-disable no-alert */
+
+const ALERT_MESSAGE = "Masz niezapisane zmiany. Czy chcesz kontynuować?";
 
 /**
  * This hook is used to prevent the user from navigating away from the page if there are unsaved changes
@@ -17,14 +18,9 @@ const launchAlert = (event: BeforeUnloadEvent) => {
  * @param isDirty The boolean value accessible in `form.formState.isDirty`
  */
 function useUnsavedForm(isDirty: boolean) {
-  useEffect(() => {
-    if (isDirty) {
-      window.addEventListener("beforeunload", launchAlert);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", launchAlert);
-    };
+  useNavigationGuard({
+    enabled: isDirty,
+    confirm: () => window.confirm(ALERT_MESSAGE),
   });
 
   return null;
@@ -42,25 +38,19 @@ function useUnsavedAtom(atom: Atom<unknown>) {
   const initialValue = useRef({ ...atom });
   const currentValue = useAtomValue(atom);
 
-  const checkIfDirty = () => {
+  const checkIfDirty = useCallback(() => {
     return (
       // @ts-expect-error: The 'init' property is actually there
       JSON.stringify(currentValue) !== JSON.stringify(initialValue.current.init)
     );
-  };
+  }, [currentValue, initialValue]);
 
-  useEffect(() => {
-    const isDirty = checkIfDirty();
-    if (isDirty) {
-      window.addEventListener("beforeunload", launchAlert);
-    }
+  const isDirty = checkIfDirty();
 
-    return () => {
-      window.removeEventListener("beforeunload", launchAlert);
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentValue]);
+  useNavigationGuard({
+    enabled: isDirty,
+    confirm: () => window.confirm(ALERT_MESSAGE),
+  });
 
   return null;
 }

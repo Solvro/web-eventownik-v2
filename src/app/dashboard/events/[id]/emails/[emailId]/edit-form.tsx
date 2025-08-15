@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -214,6 +215,7 @@ function EventEmailEditForm({
       content: emailToEdit.content,
     },
   });
+  const router = useRouter();
 
   const { toast } = useToast();
 
@@ -237,7 +239,7 @@ function EventEmailEditForm({
       toast({
         title: "Zapisano zmiany w szablonie",
       });
-      location.reload();
+      router.refresh();
     } else {
       toast({
         title: "Nie udało się zapisać zmian w szablonie!",

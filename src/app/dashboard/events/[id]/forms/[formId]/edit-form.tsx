@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Loader, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -73,8 +72,6 @@ function EventFormEditForm({
       slug: formToEdit.slug,
     },
   });
-
-  const router = useRouter();
   const { toast } = useToast();
 
   useUnsavedForm(form.formState.isDirty);
@@ -91,8 +88,7 @@ function EventFormEditForm({
         toast({
           title: "Zapisano zmiany w formularzu",
         });
-
-        router.refresh();
+        form.reset();
       } else {
         toast({
           title: "Nie udało się zapisać zmian w formularzu!",

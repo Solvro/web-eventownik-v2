@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -56,6 +57,7 @@ function EditBlockEntry({
     },
   });
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
 
   useUnsavedForm(form.formState.isDirty);
 
@@ -74,7 +76,7 @@ function EditBlockEntry({
       toast({
         title: "Zapisano zmiany w bloku",
       });
-      location.reload();
+      setOpen(false);
     } else {
       toast({
         title: "Nie udało się zapisać zmian w bloku!",
@@ -85,7 +87,7 @@ function EditBlockEntry({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="eventGhost" size="icon">
           <Edit />

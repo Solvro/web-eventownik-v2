@@ -96,7 +96,8 @@ export function TableRowForm({
   useUnsavedForm(form.formState.isDirty);
 
   useEffect(() => {
-    form.reset({ ...getDefaultValues(cells) });
+    // 'keepDirtyValues' is required here so that 'useUnsavedForm' works correctly
+    form.reset({ ...getDefaultValues(cells) }, { keepDirtyValues: true });
   }, [cells, form]);
 
   async function onSubmit(values: Record<string, string | string[]>) {
@@ -118,6 +119,7 @@ export function TableRowForm({
         title: "Zapisano zmiany w uczestniku",
         description: error,
       });
+      form.reset();
     } else {
       toast({
         variant: "destructive",
