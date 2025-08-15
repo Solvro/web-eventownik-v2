@@ -1,19 +1,23 @@
+import { EventList } from "@/components/landing/event-list";
+import { Footer } from "@/components/landing/footer";
+import { Functionalities } from "@/components/landing/functionalities";
+import { ImageCarousel } from "@/components/landing/image-carousel";
 import { Navbar } from "@/components/landing/navbar";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
     <div className="text-foreground min-h-screen">
-      <div className="flex w-full flex-col items-center gap-20 bg-gradient-to-tr from-[#E9EAEE] to-[#6f83af] pt-12 dark:from-[#101011] dark:to-[#213560]">
+      <div className="flex w-full flex-col items-center gap-20 bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] py-12 dark:from-[#101011] dark:to-[#213560]">
         <Navbar />
-        <div className="flex flex-col items-center gap-8">
+        <div className="container flex w-full flex-col items-center gap-8 px-4 text-center">
           <div className="rounded-full bg-gradient-to-r from-[#6583C8] to-[#80B3FF] p-0.5">
             <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 font-medium dark:bg-[#192237]">
               Spraw sobie niezapomniane wydarzenia
             </p>
           </div>
           <p className="text-8xl font-bold uppercase">Eventownik Solvro</p>
-          <p className="text-secondary text-3xl">
+          <p className="text-3xl text-[#191A1A] dark:text-[#D9E8FF]">
             Z nami zorganizujesz każde wydarzenie – łatwo, bez stresu i z
             gwarancją sukcesu.
           </p>
@@ -29,7 +33,11 @@ export default function Home() {
             </Button>
           </div>
         </div>
+        <ImageCarousel />
+        <EventList />
+        <Functionalities />
       </div>
+      <Footer />
     </div>
   );
 }
