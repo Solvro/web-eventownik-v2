@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, SquarePlus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -54,6 +56,8 @@ function AddBlockEntry({
     },
   });
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   useUnsavedForm(form.formState.isDirty);
 
@@ -72,7 +76,11 @@ function AddBlockEntry({
       toast({
         title: "Dodano nowy blok",
       });
-      location.reload();
+      form.reset();
+      setOpen(false);
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
         title: "Nie udało się dodać bloku!",
@@ -83,7 +91,7 @@ function AddBlockEntry({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
           <SquarePlus className="h-6 w-6" /> Stwórz blok

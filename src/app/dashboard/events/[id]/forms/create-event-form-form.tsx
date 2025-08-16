@@ -25,10 +25,11 @@ function CreateEventFormForm({
   attributes: EventAttribute[];
 }) {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
   useUnsavedAtom(newEventFormAtom);
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
           <SquarePlus className="h-6 w-6" /> Stwórz formularz
@@ -53,6 +54,7 @@ function CreateEventFormForm({
               goToPreviousStep={() => {
                 setCurrentStep(0);
               }}
+              setDialogOpen={setDialogOpen}
             />
           )}
         </div>
