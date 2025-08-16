@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -80,11 +80,17 @@ function MessageContentForm({
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  function saveEdits() {
+  const saveEdits = useCallback(() => {
     setNewEmailTemplate((previous) => {
       return { ...previous, ...form.getValues() };
     });
-  }
+  }, [form, setNewEmailTemplate]);
+
+  const content = form.watch("content");
+
+  useEffect(() => {
+    saveEdits();
+  }, [content, saveEdits]);
 
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
