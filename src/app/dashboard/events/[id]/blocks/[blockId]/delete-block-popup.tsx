@@ -56,7 +56,7 @@ function DeleteBlockPopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="eventGhost" size="icon" className="text-red-700">
+        <Button variant="eventGhost" size="icon" className="text-destructive">
           <Trash2 />
           <span className="sr-only">Usuń blok</span>
         </Button>
@@ -66,7 +66,7 @@ function DeleteBlockPopup({
           <DialogTitle>Usuń blok</DialogTitle>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <CircleX className="h-14 w-14 text-[#EB0000]" />
+          <CircleX className="text-destructive h-14 w-14" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
             Czy na pewno chcesz usunąć blok <strong>{blockName}</strong>?
@@ -76,7 +76,6 @@ function DeleteBlockPopup({
               <Button
                 type="submit"
                 variant="destructive"
-                className="bg-[#EB0000]"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
                 {form.formState.isSubmitting || shouldDisableButtons ? (
