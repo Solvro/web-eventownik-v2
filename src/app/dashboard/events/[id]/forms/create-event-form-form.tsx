@@ -3,6 +3,7 @@
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
+import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UnsavedIndicator } from "@/components/unsaved-indicator";
+import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import type { EventAttribute } from "@/types/attributes";
 
 import { AttributesForm } from "./(steps)/attributes";
@@ -23,12 +26,19 @@ function CreateEventFormForm({
   attributes: EventAttribute[];
 }) {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const isDirty = useUnsavedAtom(newEventFormAtom);
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
-          <SquarePlus className="h-6 w-6" /> Stwórz formularz
+          <div className="relative flex gap-2">
+            <SquarePlus className="h-6 w-6" /> Stwórz formularz
+            {isDirty && !dialogOpen ? (
+              <UnsavedIndicator markerOffset="-0.25" pingOffset="-0.75" />
+            ) : null}
+          </div>
         </button>
       </DialogTrigger>
       <DialogContent>
@@ -50,6 +60,7 @@ function CreateEventFormForm({
               goToPreviousStep={() => {
                 setCurrentStep(0);
               }}
+              setDialogOpen={setDialogOpen}
             />
           )}
         </div>

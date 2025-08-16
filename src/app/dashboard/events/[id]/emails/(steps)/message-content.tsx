@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
-import { useRef } from "react";
+import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -55,9 +56,11 @@ function getTitlePlaceholder(trigger: string) {
 function MessageContentForm({
   eventId,
   goToPreviousStep,
+  setDialogOpen,
 }: {
   eventId: string;
   goToPreviousStep: () => void;
+  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
@@ -73,13 +76,21 @@ function MessageContentForm({
     },
   });
 
+  const router = useRouter();
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  function saveEdits() {
+  const saveEdits = useCallback(() => {
     setNewEmailTemplate((previous) => {
       return { ...previous, ...form.getValues() };
     });
-  }
+  }, [form, setNewEmailTemplate]);
+
+  const content = form.watch("content");
+
+  useEffect(() => {
+    saveEdits();
+  }, [content, saveEdits]);
 
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
@@ -94,19 +105,24 @@ function MessageContentForm({
         title: "Dodano nowy szablon",
       });
 
+      // NOTE: The order of these resets is important
+      // Otherwise, 'useUnsavedAtom' will think the form is dirty
       setNewEmailTemplate({
-        content: "",
         name: "",
+        content: "",
         trigger: "manual",
         triggerValue: null,
         triggerValue2: null,
       });
 
-      // 'router.refresh()' doesn't work here for some reason - using native method instead
-      location.reload();
+      setDialogOpen(false);
+
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
-        title: "Nie udało się dodać szablonu",
+        title: "Nie udało się dodać szablonu!",
         description: result.error,
         variant: "destructive",
       });
@@ -168,7 +184,7 @@ function MessageContentForm({
               }}
               disabled={form.formState.isSubmitting}
             >
-              <ArrowLeft /> Wróć
+              <ArrowLeft /> Zapisz i wróć
             </Button>
             <Button
               type="submit"
@@ -178,9 +194,9 @@ function MessageContentForm({
               {form.formState.isSubmitting ? (
                 <Loader className="animate-spin" />
               ) : (
-                <Save />
+                <SquarePlus />
               )}{" "}
-              Zapisz
+              Dodaj nowy szablon
             </Button>
           </div>
         </form>

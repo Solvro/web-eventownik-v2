@@ -46,7 +46,7 @@ function DeleteBlockPopup({
       router.refresh();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się usunąć bloku!",
         variant: "destructive",
         description: result.error,
       });

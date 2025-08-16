@@ -3,6 +3,7 @@
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
+import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useUnsavedAtom } from "@/hooks/use-unsaved";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { CoorganizersForm } from "./(steps)/coorganizers";
@@ -19,6 +21,9 @@ import { PersonalizationForm } from "./(steps)/personalization";
 
 export function CreateEventForm() {
   const [currentStep, setCurrentStep] = useState<number>(0);
+
+  useUnsavedAtom(newEventFormAtom);
+
   const steps = [
     <GeneralInfoForm
       key={0}
@@ -51,6 +56,7 @@ export function CreateEventForm() {
       }}
     />,
   ];
+
   return (
     <Dialog>
       <DialogTrigger asChild>

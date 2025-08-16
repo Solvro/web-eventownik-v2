@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightbulb, Save, Text, Zap } from "lucide-react";
+import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
@@ -213,8 +215,11 @@ function EventEmailEditForm({
       content: emailToEdit.content,
     },
   });
+  const router = useRouter();
 
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   async function onSubmit(values: z.infer<typeof EventEmailEditFormSchema>) {
     const updatedMail = {
@@ -232,12 +237,12 @@ function EventEmailEditForm({
 
     if (result.success) {
       toast({
-        title: "Szablon został zaktualizowany",
+        title: "Zapisano zmiany w szablonie",
       });
-      location.reload();
+      router.refresh();
     } else {
       toast({
-        title: "Nie udało się zaktualizować szablonu",
+        title: "Nie udało się zapisać zmian w szablonie!",
         description: result.error,
         variant: "destructive",
       });
@@ -352,7 +357,12 @@ function EventEmailEditForm({
           variant="eventDefault"
           disabled={form.formState.isSubmitting}
         >
-          <Save /> Zapisz zmiany
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>

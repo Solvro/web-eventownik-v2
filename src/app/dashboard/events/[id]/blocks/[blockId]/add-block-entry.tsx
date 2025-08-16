@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, SquarePlus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +26,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UnsavedIndicator } from "@/components/unsaved-indicator";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 
 const BlockSchema = z.object({
   name: z.string().min(1, "Nazwa bloku jest wymagana"),
@@ -53,6 +57,10 @@ function AddBlockEntry({
     },
   });
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  useUnsavedForm(form.formState.isDirty);
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await createBlock(
@@ -67,12 +75,16 @@ function AddBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Pomyślnie utworzono blok",
+        title: "Dodano nowy blok",
       });
-      location.reload();
+      form.reset();
+      setOpen(false);
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się dodać bloku!",
         description: result.error,
         variant: "destructive",
       });
@@ -80,10 +92,15 @@ function AddBlockEntry({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
-          <SquarePlus className="h-6 w-6" /> Stwórz blok
+          <div className="relative flex gap-2">
+            <SquarePlus className="h-6 w-6" /> Stwórz blok
+            {form.formState.isDirty && !open ? (
+              <UnsavedIndicator markerOffset="-0.25" pingOffset="-0.75" />
+            ) : null}
+          </div>
         </button>
       </DialogTrigger>
       <DialogContent className="w-96">

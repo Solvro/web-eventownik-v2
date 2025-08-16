@@ -293,7 +293,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
           </div>
           <div className="flex justify-end">
             <Button variant="eventGhost" type="submit">
-              <ArrowRight /> Dalej
+              <ArrowRight /> Zapisz i przejdź dalej
             </Button>
           </div>
         </form>

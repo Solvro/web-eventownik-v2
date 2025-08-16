@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Loader } from "lucide-react";
+import { Edit, Loader, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +26,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UnsavedIndicator } from "@/components/unsaved-indicator";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
 
 const BlockSchema = z.object({
@@ -54,7 +58,12 @@ function EditBlockEntry({
       capacity: blockToEdit.capacity ?? "",
     },
   });
+
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  useUnsavedForm(form.formState.isDirty);
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await updateBlock(
@@ -69,12 +78,16 @@ function EditBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Pomyślnie zedytowano blok",
+        title: "Zapisano zmiany w bloku",
       });
-      location.reload();
+      form.reset();
+      setOpen(false);
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się zapisać zmian w bloku!",
         description: result.error,
         variant: "destructive",
       });
@@ -82,11 +95,14 @@ function EditBlockEntry({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="eventGhost" size="icon">
+        <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
+          {form.formState.isDirty && !open ? (
+            <UnsavedIndicator markerOffset="2" />
+          ) : null}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
@@ -136,12 +152,11 @@ function EditBlockEntry({
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (
-                <>
-                  <Loader className="animate-spin" /> Edytowanie bloku...
-                </>
+                <Loader className="animate-spin" />
               ) : (
-                "Zapisz zmiany"
-              )}
+                <Save />
+              )}{" "}
+              Zapisz
             </Button>
           </form>
         </Form>

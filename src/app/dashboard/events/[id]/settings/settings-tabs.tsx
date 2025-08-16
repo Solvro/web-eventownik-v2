@@ -1,7 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { Trash } from "lucide-react";
+import { Loader, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -90,6 +90,7 @@ export function EventSettingsTabs({
   >(async () => {
     return { success: true, event };
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setEvent(unmodifiedEvent);
@@ -108,13 +109,13 @@ export function EventSettingsTabs({
   };
 
   const saveForm = async () => {
-    // setLoading(true);
+    setIsSaving(true);
     const { success, event: newEvent } = await saveFormRef.current();
     if (!success || newEvent == null) {
       toast({
         variant: "destructive",
-        title: "Wydarzenie nie zostało zapisane.",
-        description: "Popraw błędy w formularzu, aby kontynuować.",
+        title: "Nie udało się zapisać wydarzenia!",
+        description: "Popraw błędy w formularzu, aby kontynuować",
       });
       return;
     }
@@ -136,7 +137,7 @@ export function EventSettingsTabs({
       if ("errors" in eventResult) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
+          title: "Nie udało się zapisać wydarzenia!",
           description: `Spróbuj zapisać wydarzenie ponownie.\n${eventResult.errors
             .map((error) => error.message)
             .join("\n")}`,
@@ -154,17 +155,18 @@ export function EventSettingsTabs({
         });
         toast({
           variant: "default",
-          title: "Wydarzenie zostało zapisane.",
-          description: "Twoje zmiany zostały zapisane.",
+          title: "Zapisano zmiany w wydarzeniu",
         });
       }
     } catch (error) {
       console.error("[EventSettingsTabs] Error saving event:", error);
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Spróbuj zapisać wydarzenie ponownie.",
+        title: "Nie udało się zapisać wydarzenia!",
+        description: "Spróbuj zapisać wydarzenie ponownie",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -173,16 +175,15 @@ export function EventSettingsTabs({
     if ("errors" in result) {
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: `Spróbuj usunąć wydarzenie ponownie.\n${result.errors
+        title: "Nie udało się usunąć wydarzenia!",
+        description: `Spróbuj ponownie.\n${result.errors
           .map((error) => error.message)
           .join("\n")}`,
       });
     } else {
       toast({
         variant: "default",
-        title: "Wydarzenie zostało usunięte.",
-        description: "Twoje wydarzenie zostało usunięte.",
+        title: "Usunięto wydarzenie",
       });
       router.push("/dashboard/events");
     }
@@ -226,8 +227,8 @@ export function EventSettingsTabs({
         ))}
       </Tabs.Root>
       <div className="max-w-80/full flex justify-between gap-2 pt-4">
-        <Button variant="eventDefault" onClick={saveForm}>
-          Zapisz
+        <Button variant="eventDefault" onClick={saveForm} disabled={isSaving}>
+          {isSaving ? <Loader className="animate-spin" /> : <Save />} Zapisz
         </Button>
         {activeTabValue === "general" && (
           <AlertDialog
@@ -239,7 +240,7 @@ export function EventSettingsTabs({
                 variant="destructive"
                 className="bg-background hover:bg-destructive/10 border border-red-500 text-red-500"
               >
-                <Trash />
+                <Trash2 />
                 Usuń wydarzenie
               </Button>
             </AlertDialogTrigger>

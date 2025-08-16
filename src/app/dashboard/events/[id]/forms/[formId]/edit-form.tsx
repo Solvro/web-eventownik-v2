@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { CalendarIcon, Loader, Save } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -72,9 +72,9 @@ function EventFormEditForm({
       slug: formToEdit.slug,
     },
   });
-
-  const router = useRouter();
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {
@@ -86,13 +86,12 @@ function EventFormEditForm({
 
       if (result.success) {
         toast({
-          title: "Formularz został zaktualizowany",
+          title: "Zapisano zmiany w formularzu",
         });
-
-        router.refresh();
+        form.reset();
       } else {
         toast({
-          title: "Nie udało się zaktualizować formularza",
+          title: "Nie udało się zapisać zmian w formularzu!",
           description: result.error,
           variant: "destructive",
         });
@@ -100,7 +99,7 @@ function EventFormEditForm({
     } catch (error) {
       console.error("Error updating event form:", error);
       toast({
-        title: "Nie udało się zaktualizować formularza",
+        title: "Nie udało się zapisać zmian w formularzu!",
         description: "Wystąpił błąd podczas aktualizacji formularza.",
         variant: "destructive",
       });
@@ -329,7 +328,12 @@ function EventFormEditForm({
           />
         </div>
         <Button type="submit" variant="eventDefault">
-          <Save /> Zapisz
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>

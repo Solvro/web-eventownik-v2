@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -92,8 +93,11 @@ export function TableRowForm({
     defaultValues,
   });
 
+  useUnsavedForm(form.formState.isDirty);
+
   useEffect(() => {
-    form.reset({ ...getDefaultValues(cells) });
+    // 'keepDirtyValues' is required here so that 'useUnsavedForm' works correctly
+    form.reset({ ...getDefaultValues(cells) }, { keepDirtyValues: true });
   }, [cells, form]);
 
   async function onSubmit(values: Record<string, string | string[]>) {
@@ -110,10 +114,16 @@ export function TableRowForm({
       participant.id.toString(),
     );
 
-    if (!success) {
+    if (success) {
+      toast({
+        title: "Zapisano zmiany w uczestniku",
+        description: error,
+      });
+      form.reset();
+    } else {
       toast({
         variant: "destructive",
-        title: "Aktualizacja uczestnika nie powiodła się!",
+        title: "Nie udało się zapisać zmian w uczestniku!",
         description: error,
       });
       return;
