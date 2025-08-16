@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -58,6 +59,7 @@ function EditBlockEntry({
   });
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   useUnsavedForm(form.formState.isDirty);
 
@@ -76,7 +78,11 @@ function EditBlockEntry({
       toast({
         title: "Zapisano zmiany w bloku",
       });
+      form.reset();
       setOpen(false);
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
         title: "Nie udało się zapisać zmian w bloku!",

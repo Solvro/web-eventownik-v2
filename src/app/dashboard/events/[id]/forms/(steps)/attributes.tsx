@@ -2,6 +2,7 @@
 
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
@@ -17,14 +18,17 @@ function AttributesForm({
   eventId,
   attributes,
   goToPreviousStep,
+  setDialogOpen,
 }: {
   eventId: string;
   attributes: EventAttribute[];
   goToPreviousStep: () => void;
+  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
   >(
@@ -63,15 +67,19 @@ function AttributesForm({
           description: "",
           name: "",
           slug: "",
-          startTime: "",
-          endTime: "",
-          startDate: new Date(),
-          endDate: new Date(),
+          startTime: "12:00",
+          endTime: "12:00",
+          // Tomorrow, midnight
+          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
           attributes: [],
         });
 
-        // 'router.refresh()' doesn't work here for some reason - using native method instead
-        location.reload();
+        setDialogOpen(false);
+
+        setTimeout(() => {
+          router.refresh();
+        }, 100);
       } else {
         toast({
           title: "Nie udało się dodać formularza!",
