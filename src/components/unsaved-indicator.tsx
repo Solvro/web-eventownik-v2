@@ -1,21 +1,24 @@
-function UnsavedIndicator({ offset }: { offset?: string }) {
-  const pingOffset =
-    offset === undefined ? "1.5" : (Number.parseInt(offset) - 0.5).toString();
-
+function UnsavedIndicator({
+  pingOffset,
+  markerOffset,
+}: {
+  pingOffset?: string;
+  markerOffset?: string;
+}) {
   return (
     <>
       <span
         className="absolute size-3 animate-ping rounded-full bg-amber-500 opacity-50"
         style={{
-          top: `calc(var(--spacing) * ${pingOffset})`,
-          left: `calc(var(--spacing) * ${pingOffset})`,
+          top: `calc(var(--spacing) * ${pingOffset ?? "1.5"})`,
+          left: `calc(var(--spacing) * ${pingOffset ?? "1.5"})`,
         }}
       />
       <span
         className="absolute size-2 rounded-full bg-amber-500"
         style={{
-          top: `calc(var(--spacing) * ${offset ?? "1"})`,
-          left: `calc(var(--spacing) * ${offset ?? "1"})`,
+          top: `calc(var(--spacing) * ${markerOffset ?? "1"})`,
+          left: `calc(var(--spacing) * ${markerOffset ?? "1"})`,
         }}
       />
     </>

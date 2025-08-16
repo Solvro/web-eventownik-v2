@@ -39,7 +39,7 @@ function CreateEmailTemplateForm({
           <div className="relative flex gap-2">
             <SquarePlus className="h-6 w-6" /> Stwórz szablon
             {isDirty && !dialogOpen ? (
-              <UnsavedIndicator offset="-0.25" />
+              <UnsavedIndicator markerOffset="-0.25" pingOffset="-0.75" />
             ) : null}
           </div>
         </button>

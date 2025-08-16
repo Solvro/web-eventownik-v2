@@ -101,7 +101,7 @@ function EditBlockEntry({
           <Edit />
           <span className="sr-only">Edytuj blok</span>
           {form.formState.isDirty && !open ? (
-            <UnsavedIndicator offset="2" />
+            <UnsavedIndicator markerOffset="2" />
           ) : null}
         </Button>
       </DialogTrigger>
