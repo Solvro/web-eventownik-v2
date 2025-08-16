@@ -284,7 +284,7 @@ function TriggerTypeForm({
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              <ArrowRight /> Dalej
+              <ArrowRight /> Zapisz i przejdź dalej
             </Button>
           </div>
         </form>
