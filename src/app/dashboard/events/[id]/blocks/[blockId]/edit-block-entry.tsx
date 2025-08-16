@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UnsavedIndicator } from "@/components/unsaved-indicator";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
@@ -57,6 +58,7 @@ function EditBlockEntry({
       capacity: blockToEdit.capacity ?? "",
     },
   });
+
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -95,9 +97,12 @@ function EditBlockEntry({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="eventGhost" size="icon">
+        <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
+          {form.formState.isDirty && !open ? (
+            <UnsavedIndicator offset="2" />
+          ) : null}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">

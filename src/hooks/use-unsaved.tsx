@@ -52,7 +52,7 @@ function useUnsavedAtom(atom: Atom<unknown>) {
     confirm: () => window.confirm(ALERT_MESSAGE),
   });
 
-  return null;
+  return isDirty;
 }
 
 export { useUnsavedAtom, useUnsavedForm };
