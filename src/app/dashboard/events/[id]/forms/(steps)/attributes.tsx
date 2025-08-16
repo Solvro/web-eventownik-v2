@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
+import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -120,11 +120,15 @@ function AttributesForm({
             }}
             disabled={isSubmitting}
           >
-            <ArrowLeft /> Wróć
+            <ArrowLeft /> Zapisz i wróć
           </Button>
           <Button type="submit" variant="eventDefault" disabled={isSubmitting}>
-            {isSubmitting ? <Loader className="animate-spin" /> : <Save />}{" "}
-            Zapisz
+            {isSubmitting ? (
+              <Loader className="animate-spin" />
+            ) : (
+              <SquarePlus />
+            )}{" "}
+            Dodaj formularz
           </Button>
         </div>
       </form>
