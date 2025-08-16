@@ -28,6 +28,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -81,11 +86,16 @@ function SendMailForm({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="icon" variant="outline" title="Wyślij maila">
-          <Mail />
-        </Button>
-      </DialogTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button size="icon" variant="outline">
+              <Mail />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Wyślij maila</TooltipContent>
+      </Tooltip>
       <DialogContent>
         <DialogHeader className="sr-only">
           <DialogTitle>Wyślij maila</DialogTitle>
@@ -153,7 +163,11 @@ function SendMailForm({
                     .join("\n")}
                 </pre>
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                  <Button
+                    type="submit"
+                    variant="eventDefault"
+                    disabled={form.formState.isSubmitting}
+                  >
                     {form.formState.isSubmitting ? (
                       <Loader className="animate-spin" />
                     ) : (

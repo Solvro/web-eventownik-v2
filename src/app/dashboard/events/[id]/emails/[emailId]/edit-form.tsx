@@ -347,7 +347,11 @@ function EventEmailEditForm({
             )}
           />
         </div>
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          variant="eventDefault"
+          disabled={form.formState.isSubmitting}
+        >
           <Save /> Zapisz zmiany
         </Button>
       </form>

@@ -7,6 +7,7 @@ import React from "react";
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
@@ -59,6 +60,7 @@ export default async function EventPage({ params }: EventPageProps) {
   // TODO: primaryColor set based on color from API
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
+      <EventPrimaryColorSetter primaryColor={event.primaryColor} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{

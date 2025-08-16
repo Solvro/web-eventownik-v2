@@ -105,7 +105,7 @@ function AttributesForm({
         />
         <div className="flex justify-between">
           <Button
-            variant="ghost"
+            variant="eventGhost"
             onClick={() => {
               saveSelectedAttributes();
               goToPreviousStep();
@@ -114,7 +114,7 @@ function AttributesForm({
           >
             <ArrowLeft /> Wróć
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" variant="eventDefault" disabled={isSubmitting}>
             {isSubmitting ? <Loader className="animate-spin" /> : <Save />}{" "}
             Zapisz
           </Button>

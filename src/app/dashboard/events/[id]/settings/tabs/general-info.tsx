@@ -132,7 +132,7 @@ export function General({ event, saveFormRef }: TabProps) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className="justify-start pl-3 text-left font-normal"
                           >
                             {format(field.value, "PPP")}
@@ -186,7 +186,7 @@ export function General({ event, saveFormRef }: TabProps) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className="justify-start pl-3 text-left font-normal"
                             disabled={form.formState.isSubmitting}
                           >

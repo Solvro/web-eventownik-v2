@@ -39,7 +39,7 @@ export function generateColumns(
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            table.toggleAllRowsSelected(!!(value as boolean));
+            table.toggleAllRowsSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wszystkie"
         ></Checkbox>
@@ -48,7 +48,7 @@ export function generateColumns(
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
-            row.toggleSelected(!!(value as boolean));
+            row.toggleSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wiersz"
         ></Checkbox>
@@ -78,9 +78,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Email
-            </SortButton>
+            <SortButton column={column}>Email</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -95,9 +93,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Data rejestracji
-            </SortButton>
+            <SortButton column={column}>Data rejestracji</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -130,7 +126,7 @@ export function generateColumns(
                 options={attribute.options}
                 column={column}
               />
-              <SortButton sortingDirection={sortingDirection} column={column}>
+              <SortButton column={column}>
                 <span className="max-w-sm truncate">{attribute.name}</span>
               </SortButton>
               <SortIcon sortingDirection={sortingDirection} />
@@ -191,7 +187,7 @@ export function generateColumns(
           .rows.filter((row) => !row.original.wasExpanded);
         return (
           <Button
-            variant="ghost"
+            variant="eventGhost"
             onClick={async () => {
               await Promise.all(
                 notExpandedRows.map(async (row) => {
@@ -212,7 +208,7 @@ export function generateColumns(
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant={row.getIsExpanded() ? "outline" : "ghost"}
+            variant={row.getIsExpanded() ? "outline" : "eventGhost"}
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);

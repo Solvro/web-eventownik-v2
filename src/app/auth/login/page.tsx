@@ -1,12 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -22,9 +24,11 @@ import { loginFormSchema } from "@/types/schemas";
 
 import { login } from "../actions";
 
-export default function LoginPage() {
+function LoginForm() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParameters = useSearchParams();
+  const redirectTo = searchParameters.get("redirectTo");
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -33,6 +37,7 @@ export default function LoginPage() {
       password: "",
     },
   });
+
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     const result = await login(values);
     if (result.success) {
@@ -40,7 +45,8 @@ export default function LoginPage() {
         title: "Logowanie zakończone sukcesem!",
         duration: 2000,
       });
-      router.replace("/dashboard");
+      const redirectUrl = redirectTo ?? "/dashboard/events";
+      router.replace(redirectUrl);
     } else {
       toast({
         variant: "destructive",
@@ -49,12 +55,19 @@ export default function LoginPage() {
       });
     }
   }
+
   return (
     <>
-      <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">Logowanie organizatora</p>
-        <p>Podaj swój email by się zalogować.</p>
-      </div>
+      {redirectTo !== null && redirectTo !== "/dashboard/events" && (
+        <Alert variant="destructive">
+          <AlertCircleIcon className="!text-red-500" />
+          <AlertTitle>
+            <p className="font-black text-red-500">
+              Żeby zarządzać wydarzeniami najpierw musisz się zalogować!
+            </p>
+          </AlertTitle>
+        </Alert>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -114,13 +127,29 @@ export default function LoginPage() {
             )}
           </Button>
           <Link
-            href="/auth/register"
-            className={`w-full text-neutral-600 ${buttonVariants({ variant: "link" })}`}
+            href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
+            className={`w-full text-neutral-600 ${buttonVariants({
+              variant: "link",
+            })}`}
           >
             Nie masz jeszcze konta? Zarejestruj się
           </Link>
         </form>
       </Form>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <>
+      <div className="space-y-2 text-center">
+        <p className="text-3xl font-black">Logowanie organizatora</p>
+        <p>Podaj swój email by się zalogować.</p>
+      </div>
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </>
   );
 }

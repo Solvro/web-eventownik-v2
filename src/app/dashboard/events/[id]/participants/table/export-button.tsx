@@ -5,6 +5,11 @@ import { useState } from "react";
 
 import { exportData } from "@/app/dashboard/events/[id]/participants/actions";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { downloadFile } from "@/lib/utils";
 
@@ -42,14 +47,22 @@ export function ExportButton({ eventId }: { eventId: string }) {
   }
 
   return (
-    <Button
-      onClick={handleExportClick}
-      size="icon"
-      variant="outline"
-      title="Eksportuj do Excela"
-      disabled={isQuerying}
-    >
-      {isQuerying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download />}
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          onClick={handleExportClick}
+          size="icon"
+          variant="outline"
+          disabled={isQuerying}
+        >
+          {isQuerying ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download />
+          )}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Eksportuj do Excela</TooltipContent>
+    </Tooltip>
   );
 }

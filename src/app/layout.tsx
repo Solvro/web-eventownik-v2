@@ -20,6 +20,20 @@ export const metadata: Metadata = {
     template: "%s | Eventownik",
     default: "Eventownik - organizacja wydarzeń",
   },
+  icons: [
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      url: "/favicon.ico",
+      media: "(prefers-color-scheme: light)",
+    },
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      url: "/favicon-dark.ico",
+      media: "(prefers-color-scheme: dark)",
+    },
+  ],
   description:
     "Eventownik to rozwiązanie służące wspomaganiu organizacji wydarzeń, ze szczególnym uwzględnieniem działalności Politechniki Wrocławskiej.",
   robots: "index, follow",
@@ -50,6 +64,7 @@ export default function RootLayout({
             defer
             src="https://analytics.solvro.pl/script.js"
             data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
+            data-domains="eventownik.solvro.pl"
           ></Script>
         </Providers>
       </body>
