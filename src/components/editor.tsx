@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 import { EditorMenuBar } from "./editor-menu-bar";
+import { ScrollArea } from "./ui/scroll-area";
 
 function WysiwygEditor({
   content,
@@ -43,8 +44,7 @@ function WysiwygEditor({
     },
     editorProps: {
       attributes: {
-        class:
-          "pb-4 focus:outline-none cursor-text max-h-[200px] overflow-y-auto leading-relaxed",
+        class: "pb-4 focus:outline-none cursor-text leading-relaxed",
       },
       handleKeyDown: (_, event) => {
         if (event.key === "Enter") {
@@ -70,7 +70,9 @@ function WysiwygEditor({
       )}
     >
       <EditorMenuBar editor={editor} />
-      <EditorContent editor={editor} />
+      <ScrollArea className="h-[200px]">
+        <EditorContent editor={editor} />
+      </ScrollArea>
     </div>
   );
 }

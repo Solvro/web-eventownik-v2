@@ -7,7 +7,9 @@ import sanitizeHtml from "sanitize-html";
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { SocialMediaLink } from "@/components/social-media-link";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -153,6 +155,7 @@ export default async function FormPage({ params }: FormPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
+      <EventPrimaryColorSetter primaryColor={event.primaryColor} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
@@ -210,14 +213,17 @@ export default async function FormPage({ params }: FormPageProps) {
                   : null}
               </div>
             </div>
-            <div
-              className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-            />
+            <ScrollArea className="h-72">
+              <div
+                className="leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+              />
+            </ScrollArea>
           </div>
         </div>
       </div>
+      {/* No need for ScrollArea (it's viewport's side scrollbar) */}
       <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           {form.name}
