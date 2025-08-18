@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Save } from "lucide-react";
+import { CalendarArrowDownIcon, CalendarArrowUpIcon, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -152,7 +152,7 @@ function EventFormEditForm({
                               }
                             >
                               {format(field.value, "PPP")}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
@@ -215,7 +215,7 @@ function EventFormEditForm({
                               }
                             >
                               {format(field.value, "PPP")}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>

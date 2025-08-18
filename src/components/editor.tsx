@@ -36,6 +36,7 @@ function WysiwygEditor({
       }),
       ...extensions,
     ],
+    immediatelyRender: false,
     editable: disabled === undefined ? true : !disabled,
     content,
     onUpdate: ({ editor: onUpdateEditor }) => {
