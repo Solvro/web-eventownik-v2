@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 import { EditorMenuBar } from "./editor-menu-bar";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 function WysiwygEditor({
   content,
@@ -73,6 +73,7 @@ function WysiwygEditor({
       <EditorMenuBar editor={editor} />
       <ScrollArea className="h-[200px]">
         <EditorContent editor={editor} />
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   );
