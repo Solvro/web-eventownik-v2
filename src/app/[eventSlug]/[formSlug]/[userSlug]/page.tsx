@@ -18,7 +18,7 @@ import type { PublicParticipant } from "@/types/participant";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
-  params: Promise<{ eventSlug: string; formSlug: string; userId: string }>;
+  params: Promise<{ eventSlug: string; formSlug: string; userSlug: string }>;
 }
 
 async function getEvent(eventSlug: string) {
@@ -53,10 +53,10 @@ async function getForm(eventSlug: string, formSlug: string) {
 async function getUserData(
   formAttributes: FormAttribute[],
   eventSlug: string,
-  userId: string,
+  userSlug: string,
 ) {
   const attributesUrl = new URL(
-    `${API_URL}/events/${eventSlug}/participants/${userId}`,
+    `${API_URL}/events/${eventSlug}/participants/${userSlug}`,
   );
 
   for (const attribute of formAttributes) {
@@ -94,7 +94,7 @@ async function getEventBlockAttributeBlocks(
 }
 
 export default async function FormPage({ params }: FormPageProps) {
-  const { eventSlug, formSlug, userId } = await params;
+  const { eventSlug, formSlug, userSlug } = await params;
 
   const event = await getEvent(eventSlug);
   if (event === null) {
@@ -106,7 +106,7 @@ export default async function FormPage({ params }: FormPageProps) {
     return <div>Nie znaleziono formularza 😪</div>;
   }
 
-  const userData = await getUserData(form.attributes, event.slug, userId);
+  const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
     return <div>Nie udało się pobrać twoich danych 😪</div>;
   }
@@ -232,7 +232,7 @@ export default async function FormPage({ params }: FormPageProps) {
           originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
           formId={form.id.toString()}
           eventSlug={eventSlug}
-          userId={userId}
+          userSlug={userSlug}
         />
       </div>
     </div>
