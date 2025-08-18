@@ -61,7 +61,7 @@ export default async function EventPage({ params }: EventPageProps) {
   // TODO: primaryColor set based on color from API
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
-      <EventPrimaryColorSetter primaryColor={event.primaryColor} />
+      <EventPrimaryColorSetter primaryColor={event.primaryColor || "#3672fd"} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
