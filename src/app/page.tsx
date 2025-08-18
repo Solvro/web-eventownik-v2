@@ -18,8 +18,7 @@ export default function Home() {
           </div>
           <p className="text-8xl font-bold uppercase">Eventownik Solvro</p>
           <p className="text-3xl text-[#191A1A] dark:text-[#D9E8FF]">
-            Z nami zorganizujesz każde wydarzenie – łatwo, bez stresu i z
-            gwarancją sukcesu.
+            Zróbmy razem wydarzenie! Łatwo, bez stresu i z gwarancją sukcesu.
           </p>
           <div className="space-x-4">
             <Button className="rounded-full px-5 py-4 text-lg font-medium">
