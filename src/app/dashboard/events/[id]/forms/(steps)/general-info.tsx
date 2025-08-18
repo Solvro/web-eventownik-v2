@@ -3,7 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
-import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenText,
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -133,7 +138,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -192,7 +197,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>

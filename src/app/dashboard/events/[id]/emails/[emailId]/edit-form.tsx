@@ -70,7 +70,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="border-primary/25 flex max-w-lg grow flex-col gap-2 rounded-md border p-4">
+    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -252,7 +252,7 @@ function EventEmailEditForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+        <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
           <div className="border-foreground rounded-full border p-2">
             <Zap />
           </div>
@@ -312,7 +312,7 @@ function EventEmailEditForm({
               form={form}
             />
           </div>
-          <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+          <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
             <div className="border-foreground rounded-full border p-2">
               <Text />
             </div>
