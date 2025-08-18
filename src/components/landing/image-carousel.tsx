@@ -96,7 +96,7 @@ export function ImageCarousel() {
   const variantsList = ["left", "center", "right"];
   const [index, setIndex] = useState(0);
   return (
-    <div className="flex w-full flex-col items-start gap-16">
+    <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-hidden pt-16">
       <div className="relative flex h-[24rem] w-full justify-center">
         <CarouselImage
           src={images[0].src}
