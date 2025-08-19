@@ -20,7 +20,7 @@ export async function submitForm(
   values: Values,
   formId: string,
   eventSlug: string,
-  userId: string,
+  userSlug: string,
   files: File[],
 ) {
   try {
@@ -31,7 +31,7 @@ export async function submitForm(
       formData.append(file.name, file);
     }
 
-    formData.append("participantSlug", userId);
+    formData.append("participantSlug", userSlug);
     for (const [key, value] of Object.entries(values)) {
       formData.append(key, String(value));
     }
