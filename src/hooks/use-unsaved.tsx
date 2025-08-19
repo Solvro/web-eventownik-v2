@@ -66,7 +66,7 @@ function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
     },
   });
 
-  return isDirty;
+  return null;
 }
 
 export { useUnsavedAtom, useUnsavedForm };

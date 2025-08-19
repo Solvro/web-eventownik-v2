@@ -26,7 +26,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UnsavedIndicator } from "@/components/unsaved-indicator";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
@@ -100,9 +99,6 @@ function EditBlockEntry({
         <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
-          {form.formState.isDirty && !open ? (
-            <UnsavedIndicator markerOffset="2" />
-          ) : null}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
