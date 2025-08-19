@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
-import { CalendarArrowDown, CalendarArrowUp } from "lucide-react";
+import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -136,7 +136,7 @@ export function General({ event, saveFormRef }: TabProps) {
                             className="justify-start pl-3 text-left font-normal"
                           >
                             {format(field.value, "PPP")}
-                            <CalendarArrowDown className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -191,7 +191,7 @@ export function General({ event, saveFormRef }: TabProps) {
                             disabled={form.formState.isSubmitting}
                           >
                             {format(field.value, "PPP")}
-                            <CalendarArrowUp className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>

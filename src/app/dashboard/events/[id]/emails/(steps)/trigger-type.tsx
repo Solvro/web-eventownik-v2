@@ -64,7 +64,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="border-primary/25 flex max-w-lg grow flex-col gap-2 rounded-md border p-4">
+    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>

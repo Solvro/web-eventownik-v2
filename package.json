@@ -34,7 +34,7 @@
     "@radix-ui/react-radio-group": "^1.2.3",
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.3",
-    "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-toast": "^1.2.6",
@@ -65,7 +65,7 @@
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.5.0",
     "sanitize-html": "^2.16.0",
-    "tailwind-merge": "^3.0.2",
+    "tailwind-merge": "^3.3.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -85,7 +85,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.0.15",
-    "tw-animate-css": "^1.2.5",
+    "tw-animate-css": "^1.3.6",
     "typescript": "^5.8.2"
   },
   "engines": {

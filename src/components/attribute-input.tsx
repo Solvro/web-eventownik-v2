@@ -74,7 +74,7 @@ export function AttributeInput({
           {attribute.options?.map((option) => (
             <div key={option} className="mb-2 flex items-center space-x-2">
               <Checkbox
-                id={option}
+                id={`${attribute.id.toString()}-${option}`}
                 disabled={field.disabled}
                 checked={((field.value ?? []) as string[]).includes(option)}
                 onCheckedChange={(checked) => {
@@ -92,7 +92,9 @@ export function AttributeInput({
                   }
                 }}
               />
-              <Label htmlFor={option}>{option}</Label>
+              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
+                {option}
+              </Label>
             </div>
           ))}
         </div>
@@ -146,7 +148,14 @@ export function AttributeInput({
       );
     }
     case "tel": {
-      return <Input type="tel" {...field} />;
+      return (
+        <Input
+          type="tel"
+          pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
+          maxLength={16}
+          {...field}
+        />
+      );
     }
     case "file": {
       // Handled in ./attribute-input-file.tsx

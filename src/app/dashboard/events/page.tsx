@@ -38,7 +38,9 @@ export default async function EventListPage() {
       </div>
     );
   }
-  const events = (await response.json()) as Event[];
+  const events = ((await response.json()) as Event[]).sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">

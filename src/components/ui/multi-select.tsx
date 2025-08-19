@@ -1,17 +1,12 @@
 // src/components/multi-select.tsx
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import {
-  CheckIcon,
-  ChevronDown,
-  WandSparkles,
-  XCircle,
-  XIcon,
-} from "lucide-react";
+import { ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Command,
   CommandEmpty,
@@ -349,16 +344,11 @@ export const MultiSelect = React.forwardRef<
                   onSelect={toggleAll}
                   className="cursor-pointer"
                 >
-                  <div
-                    className={cn(
-                      "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
-                      selectedValues.length === options.length
-                        ? "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible",
-                    )}
-                  >
-                    <CheckIcon className="h-4 w-4" />
-                  </div>
+                  <Checkbox
+                    id="select-all"
+                    className="mr-2"
+                    checked={selectedValues.length === options.length}
+                  />
                   <span>(Wszystkie)</span>
                 </CommandItem>
                 {filteredOptions.map((option) => {
@@ -371,16 +361,13 @@ export const MultiSelect = React.forwardRef<
                       }}
                       className="cursor-pointer"
                     >
-                      <div
-                        className={cn(
-                          "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
-                          isSelected
-                            ? "bg-primary text-primary-foreground"
-                            : "opacity-50 [&_svg]:invisible",
-                        )}
-                      >
-                        <CheckIcon className="h-4 w-4" />
-                      </div>
+                      <Checkbox
+                        className="mr-2"
+                        checked={isSelected}
+                        onCheckedChange={() => {
+                          toggleOption(option.value);
+                        }}
+                      />
                       {option.icon != null && (
                         <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
                       )}
