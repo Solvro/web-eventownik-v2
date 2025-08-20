@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
+import { useSetAtom } from "jotai";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,6 +24,7 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 const EventGeneralInfoSchema = z
@@ -55,6 +58,8 @@ const EventGeneralInfoSchema = z
   );
 
 export function General({ event, saveFormRef }: TabProps) {
+  const setIsDirty = useSetAtom(areSettingsDirty);
+
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: {
@@ -95,6 +100,12 @@ export function General({ event, saveFormRef }: TabProps) {
   }
 
   saveFormRef.current = saveForm;
+
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsDirty(true);
+    }
+  }, [form.formState.isDirty, setIsDirty]);
 
   return (
     <Form {...form}>

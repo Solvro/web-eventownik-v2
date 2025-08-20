@@ -1,7 +1,9 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
+import { useAtomValue } from "jotai";
 import { Loader, Save, Trash2 } from "lucide-react";
+import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
@@ -25,6 +28,7 @@ import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 import { deleteEvent, updateEvent } from "./actions";
+import { areSettingsDirty } from "./settings-context";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
@@ -68,12 +72,15 @@ export function EventSettingsTabs({
   unmodifiedAttributes,
 }: TabsProps) {
   const [event, setEvent] = useState(unmodifiedEvent);
+
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
+
   const [coOrganizersChanges, setCoOrganizersChanges] = useState({
     added: [] as CoOrganizer[],
     updated: [] as CoOrganizer[],
     deleted: [] as CoOrganizer[],
   });
+
   const [attributes, setAttributes] =
     useState<EventAttribute[]>(unmodifiedAttributes);
   const [attributesChanges, setAttributesChanges] = useState({
@@ -81,15 +88,20 @@ export function EventSettingsTabs({
     updated: [] as EventAttribute[],
     deleted: [] as EventAttribute[],
   });
+
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
+
   const [isDeleteEventDialogOpen, setIsDeleteEventDialogOpen] = useState(false);
+
   const router = useRouter();
+
   const saveFormRef = useRef<
     () => Promise<{ success: boolean; event: Event | null }>
     // eslint-disable-next-line @typescript-eslint/require-await
   >(async () => {
     return { success: true, event };
   });
+
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -190,8 +202,19 @@ export function EventSettingsTabs({
     setIsDeleteEventDialogOpen(false);
   };
 
+  const isDirty = useAtomValue(areSettingsDirty);
+
+  const navGuard = useNavigationGuard({
+    enabled: isDirty,
+  });
+
   return (
     <>
+      <UnsavedChangesAlert
+        active={navGuard.active}
+        onCancel={navGuard.reject}
+        onConfirm={navGuard.accept}
+      />
       <Tabs.Root
         value={activeTabValue}
         className="space-y-6"

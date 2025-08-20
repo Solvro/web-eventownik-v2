@@ -16,6 +16,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useSetAtom } from "jotai";
 import {
   ALargeSmall,
   Binary,
@@ -58,6 +59,7 @@ import {
 import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 export const ATTRIBUTE_TYPES: {
@@ -474,6 +476,7 @@ export function Attributes({
   setAttributesChanges,
 }: TabProps) {
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
+  const setIsDirty = useSetAtom(areSettingsDirty);
 
   const handleAddAttribute = useCallback(() => {
     if (!newAttributeLabel.trim()) {
@@ -504,7 +507,8 @@ export function Attributes({
       added: [...previous.added, newAttribute],
     }));
     setNewAttributeLabel("");
-  }, [newAttributeLabel, setAttributes, setAttributesChanges]);
+    setIsDirty(true);
+  }, [newAttributeLabel, setAttributes, setAttributesChanges, setIsDirty]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
@@ -521,8 +525,9 @@ export function Attributes({
             )
           : [...previous.updated, updatedAttribute],
       }));
+      setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges],
+    [setAttributes, setAttributesChanges, setIsDirty],
   );
 
   const handleRemoveAttribute = useCallback(
@@ -537,8 +542,9 @@ export function Attributes({
         }
         return previous.filter((a) => a.id !== attributeId);
       });
+      setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges],
+    [setAttributes, setAttributesChanges, setIsDirty],
   );
 
   return (
