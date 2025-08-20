@@ -32,6 +32,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAutoSave } from "@/hooks/use-autosave";
 import type { Permission } from "@/types/co-organizer";
 
 import { FormContainer } from "../form-container";
@@ -93,8 +94,8 @@ export function CoorganizersForm({
     },
   });
 
-  function onSubmit(data: z.infer<typeof EventCoorganizersFormSchema>) {
-    // TODO: verify if coorganizer exists in the database
+  useAutoSave(() => {
+    const data = form.getValues();
     setEvent((_event) => ({
       ..._event,
       coorganizers: [
@@ -109,8 +110,7 @@ export function CoorganizersForm({
         },
       ],
     }));
-    form.reset();
-  }
+  }, form);
 
   return (
     <FormContainer
@@ -147,7 +147,9 @@ export function CoorganizersForm({
             <form className="flex flex-row gap-2">
               <NewCoOrganizer
                 form={form}
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(() => {
+                  form.reset();
+                })}
               />
             </form>
           </Form>

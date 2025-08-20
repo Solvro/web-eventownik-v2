@@ -3,7 +3,6 @@
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
-import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,17 +11,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { CoorganizersForm } from "./(steps)/coorganizers";
 import { GeneralInfoForm } from "./(steps)/general-info";
 import { PersonalizationForm } from "./(steps)/personalization";
+import { eventAtom } from "./state";
 
 export function CreateEventForm() {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [alertActive, setAlertActive] = useState(false);
 
-  useUnsavedAtom(newEventFormAtom);
+  const { isDirty, isGuardActive, onCancel, onConfirm } =
+    useUnsavedAtom(eventAtom);
 
   const steps = [
     <GeneralInfoForm
@@ -58,7 +62,30 @@ export function CreateEventForm() {
   ];
 
   return (
-    <Dialog>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open: boolean) => {
+        if (open) {
+          setDialogOpen(open);
+        } else {
+          if (isDirty || isGuardActive) {
+            setAlertActive(isDirty || isGuardActive);
+          } else {
+            setDialogOpen(open);
+          }
+        }
+      }}
+    >
+      <UnsavedChangesAlert
+        active={alertActive}
+        setActive={setAlertActive}
+        setDialogOpen={setDialogOpen}
+        onCancel={onCancel}
+        onConfirm={() => {
+          setCurrentStep(0);
+          onConfirm();
+        }}
+      />
       <DialogTrigger asChild>
         <Button variant="ghost">
           <SquarePlus /> Stwórz wydarzenie

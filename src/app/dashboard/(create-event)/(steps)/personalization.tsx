@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { cn } from "@/lib/utils";
 
 import { isSlugTaken } from "../actions";
@@ -100,16 +101,10 @@ export function PersonalizationForm({
       });
       return;
     }
-    setEvent({
-      ...event,
-      image: event.image,
-      color: data.color ?? "#3672fd",
-      participantsNumber: data.participantsNumber,
-      links: data.links.map((link) => link.value),
-      slug: data.slug,
-    });
     goToNextStep();
   }
+
+  useAutoSave(setEvent, form);
 
   return (
     <FormContainer

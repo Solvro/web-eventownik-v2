@@ -322,7 +322,6 @@ export function AttributesForm({
       type: "text",
     },
   });
-
   const router = useRouter();
 
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
@@ -393,8 +392,9 @@ export function AttributesForm({
         setEvent({
           name: "",
           description: "",
-          startDate: new Date(),
-          endDate: new Date(),
+          // Tomorrow, midnight
+          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
           location: "",
           organizer: "",
           image: "",

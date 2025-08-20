@@ -57,6 +57,9 @@ function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
     enabled: isDirty,
   });
 
+  console.log("[useUnsavedAtom] isDirty:", isDirty);
+  console.log("[useUnsavedAtom] isGuardActive:", navGuard.active);
+
   const onConfirm = useCallback(() => {
     setAtom(initialValue.current.init);
     navGuard.accept();
