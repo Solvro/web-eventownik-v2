@@ -5,10 +5,6 @@ import type { PrimitiveAtom } from "jotai";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useCallback, useRef } from "react";
 
-/* eslint-disable no-alert */
-
-const ALERT_MESSAGE = "Masz niezapisane zmiany. Czy chcesz kontynuować?";
-
 // NOTE: Jotai's source code says that this is an internal type and shouldn't be referenced
 // as it is subject to change without notice. However, defining it here allows to not use
 // any eslint-disable or ts-ignore directives
@@ -25,12 +21,15 @@ interface WithInitialValue<T> {
  * @param isDirty The boolean value accessible in `form.formState.isDirty`
  */
 function useUnsavedForm(isDirty: boolean) {
-  useNavigationGuard({
+  const navGuard = useNavigationGuard({
     enabled: isDirty,
-    confirm: () => window.confirm(ALERT_MESSAGE),
   });
 
-  return null;
+  return {
+    isGuardActive: navGuard.active,
+    onConfirm: navGuard.accept,
+    onCancel: navGuard.reject,
+  };
 }
 
 /**
@@ -54,19 +53,21 @@ function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
 
   const isDirty = checkIfDirty();
 
-  useNavigationGuard({
+  const navGuard = useNavigationGuard({
     enabled: isDirty,
-    confirm: () => {
-      const result = window.confirm(ALERT_MESSAGE);
-      if (result) {
-        // If user confirms, reset the atom to its initial value
-        setAtom(initialValue.current.init);
-      }
-      return result;
-    },
   });
 
-  return null;
+  const onConfirm = useCallback(() => {
+    setAtom(initialValue.current.init);
+    navGuard.accept();
+  }, [setAtom, navGuard, initialValue]);
+
+  return {
+    isDirty,
+    isGuardActive: navGuard.active,
+    onConfirm,
+    onCancel: navGuard.reject,
+  };
 }
 
 export { useUnsavedAtom, useUnsavedForm };

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 
 import { createEventEmailTemplate } from "../actions";
@@ -80,17 +81,7 @@ function MessageContentForm({
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  const saveEdits = useCallback(() => {
-    setNewEmailTemplate((previous) => {
-      return { ...previous, ...form.getValues() };
-    });
-  }, [form, setNewEmailTemplate]);
-
-  const content = form.watch("content");
-
-  useEffect(() => {
-    saveEdits();
-  }, [content, saveEdits]);
+  useAutoSave(setNewEmailTemplate, form);
 
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
@@ -178,13 +169,10 @@ function MessageContentForm({
           <div className="flex justify-between">
             <Button
               variant="eventGhost"
-              onClick={() => {
-                saveEdits();
-                goToPreviousStep();
-              }}
+              onClick={goToPreviousStep}
               disabled={form.formState.isSubmitting}
             >
-              <ArrowLeft /> Zapisz i wróć
+              <ArrowLeft /> Wróć
             </Button>
             <Button
               type="submit"

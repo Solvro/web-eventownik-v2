@@ -32,6 +32,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
@@ -79,7 +80,9 @@ function EventFormEditForm({
   });
   const { toast } = useToast();
 
-  useUnsavedForm(form.formState.isDirty);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {
@@ -113,6 +116,11 @@ function EventFormEditForm({
 
   return (
     <Form {...form}>
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="flex max-w-xl flex-col gap-8">
           <div className="w-full space-y-8">

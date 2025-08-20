@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 
@@ -56,10 +57,13 @@ function AddBlockEntry({
     },
   });
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [alertActive, setAlertActive] = useState(false);
   const router = useRouter();
 
-  useUnsavedForm(form.formState.isDirty);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await createBlock(
@@ -77,7 +81,7 @@ function AddBlockEntry({
         title: "Dodano nowy blok",
       });
       form.reset();
-      setOpen(false);
+      setDialogOpen(false);
       setTimeout(() => {
         router.refresh();
       }, 100);
@@ -91,7 +95,20 @@ function AddBlockEntry({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open: boolean) => {
+        if (open) {
+          setDialogOpen(open);
+        } else {
+          if (form.formState.isDirty || isGuardActive) {
+            setAlertActive(form.formState.isDirty || isGuardActive);
+          } else {
+            setDialogOpen(open);
+          }
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
           <div className="relative flex gap-2">
@@ -103,6 +120,16 @@ function AddBlockEntry({
         <DialogHeader>
           <DialogTitle>Stwórz blok</DialogTitle>
         </DialogHeader>
+        <UnsavedChangesAlert
+          active={alertActive}
+          setActive={setAlertActive}
+          setDialogOpen={setDialogOpen}
+          onCancel={onCancel}
+          onConfirm={() => {
+            form.reset();
+            onConfirm();
+          }}
+        />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

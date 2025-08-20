@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventFormAtom } from "@/atoms/new-event-form-atom";
@@ -36,12 +36,6 @@ function AttributesForm({
       (a, b) => (a.order ?? 0) - (b.order ?? 0),
     ),
   );
-
-  function saveSelectedAttributes() {
-    setNewEventForm((previous) => {
-      return { ...previous, attributes: includedAttributes };
-    });
-  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -98,6 +92,13 @@ function AttributesForm({
     }
   }
 
+  // Auto save implementation exclusive to this step
+  useEffect(() => {
+    setNewEventForm((previous) => {
+      return { ...previous, attributes: includedAttributes };
+    });
+  }, [attributes, setNewEventForm, includedAttributes]);
+
   return (
     <FormContainer
       description="Wybierz atrybuty"
@@ -114,13 +115,10 @@ function AttributesForm({
         <div className="flex justify-between">
           <Button
             variant="eventGhost"
-            onClick={() => {
-              saveSelectedAttributes();
-              goToPreviousStep();
-            }}
+            onClick={goToPreviousStep}
             disabled={isSubmitting}
           >
-            <ArrowLeft /> Zapisz i wróć
+            <ArrowLeft /> Zapisz
           </Button>
           <Button type="submit" variant="eventDefault" disabled={isSubmitting}>
             {isSubmitting ? (

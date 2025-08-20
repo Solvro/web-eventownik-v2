@@ -15,7 +15,7 @@ export interface NewEventForm
 export const newEventFormAtom = atom<NewEventForm>({
   isOpen: true,
   isFirstForm: false,
-  description: "",
+  description: "<p></p>",
   name: "",
   slug: "",
   startTime: "12:00",

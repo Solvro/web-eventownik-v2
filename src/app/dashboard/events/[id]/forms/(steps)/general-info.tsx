@@ -33,6 +33,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { useAutoSave } from "@/hooks/use-autosave";
 
 const EventFormGeneralInfoSchema = z
   .object({
@@ -82,10 +83,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
-    setNewEventForm({ ...newEventForm, ...values });
-    goToNextStep();
-  }
+  useAutoSave(setNewEventForm, form);
 
   return (
     <FormContainer
@@ -95,7 +93,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       title="Krok 1"
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
           <div className="grid gap-8 md:grid-cols-2 md:gap-10">
             <div className="w-full space-y-8">
               <FormField

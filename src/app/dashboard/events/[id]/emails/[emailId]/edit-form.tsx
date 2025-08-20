@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
@@ -219,7 +220,9 @@ function EventEmailEditForm({
 
   const { toast } = useToast();
 
-  useUnsavedForm(form.formState.isDirty);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   async function onSubmit(values: z.infer<typeof EventEmailEditFormSchema>) {
     const updatedMail = {
@@ -251,6 +254,11 @@ function EventEmailEditForm({
 
   return (
     <Form {...form}>
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
           <div className="border-foreground rounded-full border p-2">

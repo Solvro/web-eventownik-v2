@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,9 @@ export function TableRowForm({
     defaultValues,
   });
 
-  useUnsavedForm(form.formState.isDirty);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   useEffect(() => {
     // 'keepDirtyValues' is required here so that 'useUnsavedForm' works correctly
@@ -102,7 +105,7 @@ export function TableRowForm({
 
   async function onSubmit(values: Record<string, string | string[]>) {
     for (const key in values) {
-      //Handling multiselect
+      // Handling multiselect
       if (typeof values[key] === "object") {
         values[key] = values[key].join(",");
       }
@@ -149,6 +152,11 @@ export function TableRowForm({
   return (
     <FormProvider {...form}>
       <Fragment key={row.id}>
+        <UnsavedChangesAlert
+          active={isGuardActive}
+          onCancel={onCancel}
+          onConfirm={onConfirm}
+        />
         <TableRow
           className={cn(
             "[&>td:last-of-type]:sticky [&>td:last-of-type]:right-[-1px] [&>td:last-of-type>button]:backdrop-blur-lg",
