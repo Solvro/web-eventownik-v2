@@ -124,7 +124,7 @@ export function CoorganizersForm({
           <p>Współorganizatorzy</p>
           {event.coorganizers.map((coorganizer) => (
             <div
-              key={coorganizer.id}
+              key={coorganizer.email}
               className="flex w-full flex-row items-center justify-between gap-2"
             >
               <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
@@ -136,7 +136,7 @@ export function CoorganizersForm({
                   setEvent((_event) => ({
                     ..._event,
                     coorganizers: _event.coorganizers.filter(
-                      (co) => co.id !== coorganizer.id,
+                      (co) => co.email !== coorganizer.email,
                     ),
                   }));
                 }}

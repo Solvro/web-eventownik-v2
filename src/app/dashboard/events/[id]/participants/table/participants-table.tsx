@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -206,54 +207,58 @@ export function ParticipantTable({
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>
-      <div className="relative mt-4 w-full overflow-auto">
-        <Table>
-          <TableHeader className="border-border border-b-2">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
-                key={headerGroup.id}
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={cn(
-                        "border-border bg-background border-r-2",
-                        header.id === "expand" ? "w-16 text-right" : "",
-                        header.column.columnDef.meta?.headerClassName,
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <TableRowForm
-                  key={row.id}
-                  cells={row.getAllCells()}
-                  eventId={eventId}
-                  row={row}
-                  setData={setData}
-                  deleteParticipant={deleteParticipant}
-                  isQuerying={isQuerying}
-                  blocks={blocks ?? []}
-                ></TableRowForm>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <ScrollArea className="mt-4 w-full">
+        <div className="relative">
+          <Table>
+            <TableHeader className="border-border border-b-2">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                  key={headerGroup.id}
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          "border-border bg-background border-r-2",
+                          header.id === "expand" ? "w-16 text-right" : "",
+                          header.column.columnDef.meta?.headerClassName,
+                        )}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <TableRowForm
+                    key={row.id}
+                    cells={row.getAllCells()}
+                    eventId={eventId}
+                    row={row}
+                    setData={setData}
+                    deleteParticipant={deleteParticipant}
+                    isQuerying={isQuerying}
+                    blocks={blocks ?? []}
+                  ></TableRowForm>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
       {table.getRowCount() === 0 ? (
         <div className="text-center">
           Nie znaleziono żadnych pasujących wyników

@@ -32,14 +32,14 @@ export function FormGenerator({
   originalEventBlocks,
   formId,
   eventSlug,
-  userId,
+  userSlug,
 }: {
   attributes: FormAttribute[];
   userData: PublicParticipant;
   originalEventBlocks: PublicBlock[];
   formId: string;
   eventSlug: string;
-  userId: string;
+  userSlug: string;
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
@@ -72,6 +72,15 @@ export function FormGenerator({
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
       const result = await submitForm(values, formId, eventSlug, userId, files);
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    try {
+      const result = await submitForm(
+        values,
+        formId,
+        eventSlug,
+        userSlug,
+        files,
+      );
       if (result.success) {
         setFiles([]);
       } else {
