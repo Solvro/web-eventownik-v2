@@ -71,9 +71,6 @@ export function FormGenerator({
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-      const result = await submitForm(values, formId, eventSlug, userId, files);
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
-    try {
       const result = await submitForm(
         values,
         formId,
