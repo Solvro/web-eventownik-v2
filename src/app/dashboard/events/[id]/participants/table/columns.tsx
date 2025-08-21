@@ -180,29 +180,30 @@ export function generateColumns(
     }),
     columnHelper.display({
       id: "expand",
-      header: ({ table }) => {
-        const isAnyExpanded = table.getIsSomeRowsExpanded();
-        const notExpandedRows = table
-          .getCoreRowModel()
-          .rows.filter((row) => !row.original.wasExpanded);
-        return (
-          <Button
-            variant="eventGhost"
-            onClick={async () => {
-              await Promise.all(
-                notExpandedRows.map(async (row) => {
-                  return fetchAdditionalParticipantData(row, table, eventId);
-                }),
-              );
-              isAnyExpanded
-                ? table.resetExpanded(isAnyExpanded)
-                : table.toggleAllRowsExpanded();
-            }}
-          >
-            {isAnyExpanded ? "Zwiń" : "Rozwiń"}
-          </Button>
-        );
-      },
+      // TODO: wait for backend for better/different implementation of fetching additional data
+      // header: ({ table }) => {
+      //   const isAnyExpanded = table.getIsSomeRowsExpanded();
+      //   const notExpandedRows = table
+      //     .getCoreRowModel()
+      //     .rows.filter((row) => !row.original.wasExpanded);
+      //   return (
+      //     <Button
+      //       variant="eventGhost"
+      //       onClick={async () => {
+      //         await Promise.all(
+      //           notExpandedRows.map(async (row) => {
+      //             return fetchAdditionalParticipantData(row, table, eventId);
+      //           }),
+      //         );
+      //         isAnyExpanded
+      //           ? table.resetExpanded(isAnyExpanded)
+      //           : table.toggleAllRowsExpanded();
+      //       }}
+      //     >
+      //       {isAnyExpanded ? "Zwiń" : "Rozwiń"}
+      //     </Button>
+      //   );
+      // },
       cell: ({ row, table }) => {
         const isLoading = table.options.meta?.isRowLoading(row.index) ?? false;
         return row.getCanExpand() ? (
