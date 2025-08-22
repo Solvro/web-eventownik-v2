@@ -17,7 +17,7 @@ vi.mock("@/lib/session", () => mockVerifySession());
 describe("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
-    mockParticipantGet(deleteParticipantCaseData.participants);
+    server.use(mockParticipantGet(deleteParticipantCaseData.participants));
     cleanup();
   });
 

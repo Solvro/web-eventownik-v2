@@ -21,7 +21,9 @@ describe("Editing participant", () => {
   const rowIndexForEditing = 0;
 
   beforeEach(() => {
-    mockParticipantGet(editParticipantDetailsTestCaseData.participants);
+    server.use(
+      mockParticipantGet(editParticipantDetailsTestCaseData.participants),
+    );
     cleanup();
   });
 
