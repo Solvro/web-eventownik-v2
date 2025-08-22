@@ -1,4 +1,9 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  getAllByRole,
+  getByRole,
+  screen,
+} from "@testing-library/react";
 import { describe, it } from "vitest";
 
 import {
@@ -11,11 +16,11 @@ import {
 import { renderTable } from "./utils";
 
 function getMenuOptions(menu: HTMLElement) {
-  return within(menu).getAllByRole("menuitemcheckbox");
+  return getAllByRole(menu, "menuitemcheckbox");
 }
 
 function getFilterButtonPopup(header: HTMLElement) {
-  return within(header).getByRole("button", {
+  return getByRole(header, "button", {
     name: /filtr/i,
   });
 }

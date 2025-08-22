@@ -1,5 +1,6 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, getByRole, getByText, screen } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
+import assert from "node:assert";
 import { describe } from "vitest";
 
 import { API_URL } from "@/lib/api";
@@ -48,17 +49,20 @@ describe("Send mails", () => {
       const rowToSelect = rows.find((row) =>
         row.innerHTML.includes(participant.email),
       );
-      if (rowToSelect === undefined) {
-        throw new Error("Row to select not found - something rendered wrong!");
-      }
-      const selectButton = within(rowToSelect).getByRole("checkbox");
+
+      assert.ok(
+        rowToSelect !== undefined,
+        "Row to select not found - something rendered wrong!",
+      );
+
+      const selectButton = getByRole(rowToSelect, "checkbox");
       await user.click(selectButton);
     }
 
     // Step 2: open send mail dialog
     await user.click(sendMailsDialogTrigger);
     const sendMailDialog = screen.getByRole("dialog");
-    const sendMailButton = within(sendMailDialog).getByRole("button", {
+    const sendMailButton = getByRole(sendMailDialog, "button", {
       name: /wyślij/i,
     });
     expect(sendMailDialog).toBeVisible();
@@ -69,12 +73,12 @@ describe("Send mails", () => {
 
     for (const participant of participantsToBeSelected) {
       expect(
-        within(sendMailDialog).getByText(new RegExp(participant.email, "i")),
+        getByText(sendMailDialog, new RegExp(participant.email, "i")),
       ).toBeVisible();
     }
 
     // Step 4: Select mail template
-    const mailTemplateSelect = within(sendMailDialog).getByRole("combobox");
+    const mailTemplateSelect = getByRole(sendMailDialog, "combobox");
     expect(mailTemplateSelect).toBeVisible();
 
     await user.click(mailTemplateSelect);
@@ -117,22 +121,27 @@ describe("Send mails", () => {
       const rowToSelect = rows.find((row) =>
         row.innerHTML.includes(participant.email),
       );
-      if (rowToSelect === undefined) {
-        throw new Error("Row to select not found - something rendered wrong!");
-      }
-      const selectButton = within(rowToSelect).getByRole("checkbox");
+
+      assert.ok(
+        rowToSelect !== undefined,
+        "Row to select not found - something rendered wrong!",
+      );
+
+      const selectButton = getByRole(rowToSelect, "checkbox");
       await user.click(selectButton);
     }
 
     // Step 2: open send mail dialog
     await user.click(sendMailsDialogTrigger);
     const sendMailDialog = screen.getByRole("dialog");
-    const sendMailButton = within(sendMailDialog).getByRole("button", {
+    const sendMailButton = getByRole(sendMailDialog, "button", {
       name: /wyślij/i,
     });
-
+    getByRole(sendMailDialog, "button", {
+      name: /wyślij/i,
+    });
     // Step 3: Select mail template
-    const mailTemplateSelect = within(sendMailDialog).getByRole("combobox");
+    const mailTemplateSelect = getByRole(sendMailDialog, "combobox");
     await user.click(mailTemplateSelect);
     const mailTemplateOptions = screen.getAllByRole("option");
 
