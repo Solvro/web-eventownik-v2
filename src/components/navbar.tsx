@@ -30,7 +30,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
   return (
     <nav className="w-full">
       <Collapsible.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <div className="mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="mx-auto">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <Collapsible.Trigger asChild>
@@ -40,7 +40,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
               </Collapsible.Trigger>
             </div>
 
-            <div className="flex flex-1 items-center justify-center space-x-8 sm:items-stretch sm:justify-start">
+            <div className="flex flex-1 items-center justify-center gap-x-8 sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center">
                 <AppLogo />
               </div>

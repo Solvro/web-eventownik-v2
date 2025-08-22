@@ -54,10 +54,14 @@ async function getParticipantsInRootBlock(
     return [];
   }
   const participants = (await response.json()) as Participant[];
+  // TODO fix case when block attribute has field showInList=false
+  // In such case this filter will return empty list
+  // since participants won't have block attribute in their fields (attribute.id === blockId is always false)
+  // The error results from what data does the backend return (`${API_URL}/events/${eventId}/participants` endpoint)
   return participants.filter((participant) => {
-    const targetBlockAttribute = participant.attributes.find(
-      (attribute) => attribute.id.toString() === blockId,
-    );
+    const targetBlockAttribute = participant.attributes.find((attribute) => {
+      return attribute.id.toString() === blockId;
+    });
     return targetBlockAttribute !== undefined;
   });
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import { setEventPrimaryColors } from "@/components/event-primary-color";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,6 +93,9 @@ export function EventSettingsTabs({
 
   useEffect(() => {
     setEvent(unmodifiedEvent);
+    return () => {
+      setEventPrimaryColors(unmodifiedEvent.primaryColor);
+    };
   }, [unmodifiedEvent]);
 
   const handleTabChange = async (newValue: string) => {

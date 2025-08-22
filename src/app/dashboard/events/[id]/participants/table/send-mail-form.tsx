@@ -21,6 +21,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -157,11 +158,14 @@ function SendMailForm({
                   Zamierzasz wysłać tą wiadomość do {targetParticipants.length}{" "}
                   uczestników z następującymi adresami:
                 </h2>
-                <pre className="bg-muted/20 max-h-16 overflow-y-auto rounded-md p-4 whitespace-pre-wrap">
-                  {targetParticipants
-                    .map((participant) => participant.email)
-                    .join("\n")}
-                </pre>
+                <ScrollArea className="h-32">
+                  <pre className="bg-muted/70 rounded-md p-4 whitespace-pre-wrap">
+                    {targetParticipants
+                      .map((participant) => participant.email)
+                      .join("\n")}
+                  </pre>
+                </ScrollArea>
+
                 <div className="flex justify-end">
                   <Button
                     type="submit"

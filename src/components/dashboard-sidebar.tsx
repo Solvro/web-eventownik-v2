@@ -105,7 +105,9 @@ export function DashboardSidebar({
                   <Button
                     className="w-full justify-start"
                     variant={
-                      pathname.endsWith(link.route)
+                      pathname.endsWith(link.route) ||
+                      (link.route !== event.id.toString() &&
+                        pathname.includes(link.route))
                         ? "eventDefault"
                         : "eventGhost"
                     }

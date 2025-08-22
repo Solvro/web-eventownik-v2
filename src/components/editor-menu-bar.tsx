@@ -29,7 +29,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
     <div className="flex gap-2 pb-4">
       <Button
         size="icon"
-        variant={editor?.isActive("bold") ? "default" : "ghost"}
+        variant={editor?.isActive("bold") ? "eventDefault" : "eventGhost"}
         type="button"
         onClick={() => editor?.chain().focus().toggleBold().run()}
         title="Pogrubienie"
@@ -38,7 +38,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       </Button>
       <Button
         size="icon"
-        variant={editor?.isActive("italic") ? "default" : "ghost"}
+        variant={editor?.isActive("italic") ? "eventDefault" : "eventGhost"}
         type="button"
         onClick={() => editor?.chain().focus().toggleItalic().run()}
         title="Kursywa"
@@ -47,7 +47,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       </Button>
       <Button
         size="icon"
-        variant={editor?.isActive("code") ? "default" : "ghost"}
+        variant={editor?.isActive("code") ? "eventDefault" : "eventGhost"}
         type="button"
         onClick={() => editor?.chain().focus().toggleCode().run()}
         title="Kod (czcionka mono)"
@@ -57,7 +57,9 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         variant={
-          editor?.isActive("heading", { level: 1 }) ? "default" : "ghost"
+          editor?.isActive("heading", { level: 1 })
+            ? "eventDefault"
+            : "eventGhost"
         }
         type="button"
         onClick={() =>
@@ -70,7 +72,9 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         variant={
-          editor?.isActive("heading", { level: 2 }) ? "default" : "ghost"
+          editor?.isActive("heading", { level: 2 })
+            ? "eventDefault"
+            : "eventGhost"
         }
         type="button"
         onClick={() =>
@@ -83,7 +87,9 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       <Button
         size="icon"
         variant={
-          editor?.isActive("heading", { level: 3 }) ? "default" : "ghost"
+          editor?.isActive("heading", { level: 3 })
+            ? "eventDefault"
+            : "eventGhost"
         }
         type="button"
         onClick={() =>
@@ -97,7 +103,11 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         size="icon"
         type="button"
         onClick={() => editor?.chain().focus().setTextAlign("left").run()}
-        variant={editor?.isActive({ textAlign: "left" }) ? "default" : "ghost"}
+        variant={
+          editor?.isActive({ textAlign: "left" })
+            ? "eventDefault"
+            : "eventGhost"
+        }
         title="Wyrównanie do lewej"
       >
         <AlignLeft />
@@ -113,7 +123,9 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
         }}
         variant={
-          editor?.isActive({ textAlign: "center" }) ? "default" : "ghost"
+          editor?.isActive({ textAlign: "center" })
+            ? "eventDefault"
+            : "eventGhost"
         }
         title="Wyrównanie do środka"
       >
@@ -129,7 +141,11 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
             editor?.chain().focus().setTextAlign("right").run();
           }
         }}
-        variant={editor?.isActive({ textAlign: "right" }) ? "default" : "ghost"}
+        variant={
+          editor?.isActive({ textAlign: "right" })
+            ? "eventDefault"
+            : "eventGhost"
+        }
         title="Wyrównanie w prawo"
       >
         <AlignRight />
@@ -145,7 +161,9 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
         }}
         variant={
-          editor?.isActive({ textAlign: "justify" }) ? "default" : "ghost"
+          editor?.isActive({ textAlign: "justify" })
+            ? "eventDefault"
+            : "eventGhost"
         }
         title="Justowanie"
       >
@@ -169,7 +187,7 @@ function EditorMenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         size="icon"
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        variant={editor?.isActive("image") ? "default" : "ghost"}
+        variant={editor?.isActive("image") ? "eventDefault" : "eventGhost"}
         title="Wstaw zdjęcie"
       >
         <ImageIcon />

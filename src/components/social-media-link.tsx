@@ -30,7 +30,7 @@ export function SocialMediaLink({
       <TooltipTrigger asChild>
         <Link href={link} target="_blank">
           <EventInfoDiv className={className}>
-            {link.includes("facebook.com") ? (
+            {link.includes("facebook.com") || link.includes("fb.me") ? (
               <FaFacebookF size={20} />
             ) : link.includes("instagram.com") ? (
               <FaInstagram size={20} />
@@ -42,7 +42,8 @@ export function SocialMediaLink({
               <FaYoutube size={20} />
             ) : link.includes("google.com/maps") ? (
               <FaLocationDot size={20} />
-            ) : link.includes("docs.google.com") ? (
+            ) : link.includes("docs.google.com") ||
+              link.includes("drive.google.com") ? (
               <FaGoogleDrive size={20} />
             ) : (
               <FaGlobe size={20} />

@@ -50,6 +50,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
@@ -58,22 +63,93 @@ import type { TabProps } from "./tab-props";
 export const ATTRIBUTE_TYPES: {
   value: AttributeType;
   title: string;
+  description?: string;
   icon: JSX.Element;
 }[] = [
-  { value: "text", title: "Tekst", icon: <ALargeSmall /> },
-  { value: "number", title: "Liczba", icon: <Binary /> },
-  { value: "textarea", title: "Pole tekstowe", icon: <LetterText /> },
-  { value: "file", title: "Plik", icon: <CloudUpload /> },
-  { value: "select", title: "Wybór", icon: <SquareDashedMousePointer /> },
-  { value: "multiselect", title: "Wielokrotny wybór", icon: <ListTodo /> },
-  { value: "block", title: "Blok", icon: <Cuboid /> },
-  { value: "date", title: "Data", icon: <Calendar /> },
-  { value: "time", title: "Czas", icon: <Clock /> },
-  { value: "datetime", title: "Data i czas", icon: <CalendarClock /> },
-  { value: "email", title: "Email", icon: <Mail /> },
-  { value: "tel", title: "Telefon", icon: <Smartphone /> },
-  { value: "color", title: "Kolor", icon: <Palette /> },
-  { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
+  {
+    value: "text",
+    title: "Tekst",
+    description: "Krótkie pole tekstowe",
+    icon: <ALargeSmall />,
+  },
+  {
+    value: "number",
+    title: "Liczba",
+    description: "Dozwolone jedynie liczby, nie litery",
+    icon: <Binary />,
+  },
+  {
+    value: "textarea",
+    title: "Pole tekstowe",
+    description: "Dłuższe pole tekstowe",
+    icon: <LetterText />,
+  },
+  {
+    value: "file",
+    title: "Plik",
+    description: "Przesłanie pliku każdego typu",
+    icon: <CloudUpload />,
+  },
+  {
+    value: "select",
+    title: "Wybór",
+    description: "Wybór 1 opcji spośród możliwych z listy rozwijanej",
+    icon: <SquareDashedMousePointer />,
+  },
+  {
+    value: "multiselect",
+    title: "Wielokrotny wybór",
+    description: "Wybór kilku opcji spośród możliwych",
+    icon: <ListTodo />,
+  },
+  {
+    value: "block",
+    title: "Blok",
+    description: "Zapisy na miejsca",
+    icon: <Cuboid />,
+  },
+  {
+    value: "date",
+    title: "Data",
+    description: "Dzień, miesiąc, rok",
+    icon: <Calendar />,
+  },
+  {
+    value: "time",
+    title: "Czas",
+    description: "Godzina i minuta",
+    icon: <Clock />,
+  },
+  {
+    value: "datetime",
+    title: "Data i czas",
+    description: "Dzień, miesiąc, rok, godzina, minuta",
+    icon: <CalendarClock />,
+  },
+  {
+    value: "email",
+    title: "Email",
+    description: "Wymagany format email",
+    icon: <Mail />,
+  },
+  {
+    value: "tel",
+    title: "Telefon",
+    description: "Wymagany format telefonu",
+    icon: <Smartphone />,
+  },
+  {
+    value: "color",
+    title: "Kolor",
+    description: "Podanie koloru w kodzie RGB, HSL, HEX",
+    icon: <Palette />,
+  },
+  {
+    value: "checkbox",
+    title: "Pole wyboru",
+    description: "Pole, które można zaznaczyć lub odznaczyć",
+    icon: <Check />,
+  },
 ];
 
 interface AttributeItemProps {
@@ -226,14 +302,21 @@ const AttributeItem = memo(
     const attributeTypeOptions = useMemo(
       () =>
         ATTRIBUTE_TYPES.map((type) => (
-          <SelectItem key={type.value} value={type.value}>
-            <div className="flex items-center gap-2">
-              {type.icon}
-              <span className="overflow-x-hidden text-ellipsis">
-                {type.title}
-              </span>
-            </div>
-          </SelectItem>
+          <Tooltip key={type.value}>
+            <TooltipTrigger asChild>
+              <SelectItem value={type.value}>
+                <div className="flex items-center gap-2">
+                  {type.icon}
+                  <span className="overflow-x-hidden text-ellipsis">
+                    {type.title}
+                  </span>
+                </div>
+              </SelectItem>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>{type.description ?? type.title}</p>
+            </TooltipContent>
+          </Tooltip>
         )),
       [],
     );

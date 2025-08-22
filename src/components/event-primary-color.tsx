@@ -28,6 +28,17 @@ export function setEventPrimaryColors(primaryColor?: string) {
   );
 }
 
+export function resetEventPrimaryColors() {
+  document.documentElement.style.setProperty(
+    "--event-primary-color",
+    "var(--color-primary)",
+  );
+  document.documentElement.style.setProperty(
+    "--event-primary-foreground-color",
+    "var(--color-primary-foreground)",
+  );
+}
+
 export function EventPrimaryColorSetter({
   primaryColor,
 }: {
@@ -36,15 +47,7 @@ export function EventPrimaryColorSetter({
   useEffect(() => {
     setEventPrimaryColors(primaryColor);
     return () => {
-      // Reset to default colors when component unmounts
-      document.documentElement.style.setProperty(
-        "--event-primary-color",
-        "var(--color-primary)",
-      );
-      document.documentElement.style.setProperty(
-        "--event-primary-foreground-color",
-        "var(--color-primary-foreground)",
-      );
+      resetEventPrimaryColors();
     };
   }, [primaryColor]);
 

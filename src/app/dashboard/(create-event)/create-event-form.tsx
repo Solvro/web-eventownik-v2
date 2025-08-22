@@ -54,7 +54,7 @@ export function CreateEventForm() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="ghost">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>
