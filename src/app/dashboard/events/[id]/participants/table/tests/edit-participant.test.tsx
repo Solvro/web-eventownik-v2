@@ -4,9 +4,9 @@ import assert from "node:assert";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
+import { server } from "@/tests/msw/node";
 
 import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
-import { server } from "./mocks/node";
 import {
   editParticipantDetailsTestCaseData,
   editParticipantTestCaseData,

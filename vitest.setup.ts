@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import ResizeObserver from "resize-observer-polyfill";
 import { vi } from "vitest";
 
-import { server } from "@/app/dashboard/events/[id]/participants/table/tests/mocks/node";
+import { server } from "./tests/msw/node";
 
 beforeAll(() => {
   server.listen();

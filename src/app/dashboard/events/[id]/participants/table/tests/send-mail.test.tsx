@@ -11,10 +11,10 @@ import assert from "node:assert";
 import { describe } from "vitest";
 
 import { API_URL } from "@/lib/api";
+import { server } from "@/tests/msw/node";
 import type { Participant } from "@/types/participant";
 
 import { mockVerifySession } from "./mocks/mocks";
-import { server } from "./mocks/node";
 import { textCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
 

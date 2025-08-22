@@ -3,9 +3,9 @@ import { HttpResponse, http } from "msw";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
+import { server } from "@/tests/msw/node";
 
 import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
-import { server } from "./mocks/node";
 import { deleteParticipantCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
 
