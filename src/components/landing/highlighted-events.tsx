@@ -92,7 +92,7 @@ function CarouselImage({
   );
 }
 
-export function ImageCarousel() {
+export function HighlightedEvents() {
   const variantsList = ["left", "center", "right"];
   const [index, setIndex] = useState(0);
   return (

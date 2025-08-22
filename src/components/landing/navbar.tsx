@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 
 export function Navbar() {
   return (
-    <header className="bg-background border-border container flex w-full flex-row items-center justify-between gap-16 rounded-2xl border p-3 xl:max-w-6xl">
+    <header className="bg-background border-border container flex w-full flex-row items-center justify-between gap-16 overflow-hidden rounded-2xl border p-3 xl:max-w-6xl">
       <div className="flex items-center gap-8 uppercase">
         <h1 className="sr-only">Eventownik</h1>
         <AppLogo />

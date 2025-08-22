@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+      // Remove them later
+      {
+        protocol: "https",
         hostname: "cdn.mos.cms.futurecdn.net",
       },
       {
