@@ -1,10 +1,21 @@
-import { loadEnvConfig } from "@next/env";
 import "@testing-library/jest-dom";
 import ResizeObserver from "resize-observer-polyfill";
 import { vi } from "vitest";
 
-// Load envs from .env.test
-loadEnvConfig(process.cwd());
+import { server } from "@/app/dashboard/events/[id]/participants/table/tests/mocks/node";
+
+beforeAll(() => {
+  server.listen();
+});
+
+afterEach(() => {
+  server.resetHandlers();
+  vi.clearAllMocks();
+});
+
+afterAll(() => {
+  server.close();
+});
 
 vi.mock("server-only", () => {
   return {};
