@@ -181,6 +181,7 @@ function HighlightedContributor({
       href={contributor.url}
       target="_blank"
       rel="noreferrer noopener"
+      className={className}
     >
       <Image
         src={
@@ -191,7 +192,7 @@ function HighlightedContributor({
         alt={contributor.name}
         width={500}
         height={500}
-        className={cn("size-72 rounded-4xl drop-shadow-2xl", className)}
+        className="size-72 rounded-4xl drop-shadow-2xl"
       />
     </a>
   );
