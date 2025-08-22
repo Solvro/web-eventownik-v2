@@ -40,7 +40,7 @@ const contributors: Contributor[] = [
     roles: ["Frontend Techlead"],
     image:
       "https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member",
-    url: "https://github.com/dawidlinek",
+    url: "https://github.com/Antoni-Czaplicki",
   },
   {
     name: "Szymon Stępień",
