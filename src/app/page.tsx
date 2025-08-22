@@ -1,7 +1,8 @@
+import { Contributors } from "@/components/landing/contributors";
 import { EventList } from "@/components/landing/event-list";
 import { Footer } from "@/components/landing/footer";
 import { Functionalities } from "@/components/landing/functionalities";
-import { ImageCarousel } from "@/components/landing/image-carousel";
+import { HighlightedEvents } from "@/components/landing/highlighted-events";
 import { Navbar } from "@/components/landing/navbar";
 import { Button } from "@/components/ui/button";
 
@@ -32,9 +33,10 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        <ImageCarousel />
+        <HighlightedEvents />
         <EventList />
         <Functionalities />
+        <Contributors />
       </div>
       <Footer />
     </div>
