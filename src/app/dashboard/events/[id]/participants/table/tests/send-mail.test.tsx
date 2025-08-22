@@ -1,9 +1,17 @@
-import { cleanup, getByRole, getByText, screen } from "@testing-library/react";
+import {
+  cleanup,
+  getByRole,
+  getByText,
+  queryByText,
+  screen,
+} from "@testing-library/react";
+import type { UserEvent } from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import assert from "node:assert";
 import { describe } from "vitest";
 
 import { API_URL } from "@/lib/api";
+import type { Participant } from "@/types/participant";
 
 import { mockVerifySession } from "./mocks/mocks";
 import { server } from "./mocks/node";
@@ -11,6 +19,26 @@ import { textCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
+
+async function selectUsers(
+  participantsToBeSelected: Participant[],
+  rows: HTMLElement[],
+  user: UserEvent,
+) {
+  for (const participant of participantsToBeSelected) {
+    const rowToSelect = rows.find(
+      (row) => queryByText(row, participant.email) !== null,
+    );
+
+    assert.ok(
+      rowToSelect !== undefined,
+      "Row to select not found - something rendered wrong!",
+    );
+
+    const selectButton = getByRole(rowToSelect, "checkbox");
+    await user.click(selectButton);
+  }
+}
 
 describe("Send mails", () => {
   beforeAll(() => {
@@ -45,19 +73,7 @@ describe("Send mails", () => {
     // Step 1: Select users to whom mail will be sent
 
     const rows = getDataRows();
-    for (const participant of participantsToBeSelected) {
-      const rowToSelect = rows.find((row) =>
-        row.innerHTML.includes(participant.email),
-      );
-
-      assert.ok(
-        rowToSelect !== undefined,
-        "Row to select not found - something rendered wrong!",
-      );
-
-      const selectButton = getByRole(rowToSelect, "checkbox");
-      await user.click(selectButton);
-    }
+    await selectUsers(participantsToBeSelected, rows, user);
 
     // Step 2: open send mail dialog
     await user.click(sendMailsDialogTrigger);
@@ -117,19 +133,7 @@ describe("Send mails", () => {
     // Step 1: Select users to whom mail will be sent
 
     const rows = getDataRows();
-    for (const participant of participantsToBeSelected) {
-      const rowToSelect = rows.find((row) =>
-        row.innerHTML.includes(participant.email),
-      );
-
-      assert.ok(
-        rowToSelect !== undefined,
-        "Row to select not found - something rendered wrong!",
-      );
-
-      const selectButton = getByRole(rowToSelect, "checkbox");
-      await user.click(selectButton);
-    }
+    await selectUsers(participantsToBeSelected, rows, user);
 
     // Step 2: open send mail dialog
     await user.click(sendMailsDialogTrigger);
