@@ -11,7 +11,8 @@ import type { FlattenedParticipant } from "@/types/participant";
 
 import { getParticipant } from "../actions";
 import { flattenParticipant } from "./data";
-import { FilterButton, SortButton, SortIcon } from "./utils";
+import { FilterButton } from "./filter-button";
+import { SortButton, SortIcon } from "./sort-button";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -175,7 +176,9 @@ export function generateColumns(
             }
           }
         },
+        //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
         filterFn: "arrIncludesSome",
+        sortDescFirst: false,
       });
     }),
     columnHelper.display({
@@ -218,6 +221,7 @@ export function generateColumns(
               }
               row.toggleExpanded();
             }}
+            aria-label={row.getIsExpanded() ? "Zwiń wiersz" : "Rozwiń wiersz"}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

@@ -25,11 +25,9 @@ import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../actions";
-import {
-  DeleteParticipantDialog,
-  EditParticipantButton,
-} from "./action-components";
+import { DeleteParticipantDialog } from "./delete-dialog";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
+import { EditParticipantButton } from "./edit-button";
 
 interface TableRowFormProps {
   row: Row<FlattenedParticipant>;
@@ -131,6 +129,10 @@ export function TableRowForm({
       });
       return;
     }
+    toast({
+      variant: "default",
+      title: "Udana aktualizacja uczestnika",
+    });
     row.toggleExpanded();
     setData((previousData) => {
       return previousData.map((_participant) =>
