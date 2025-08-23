@@ -326,6 +326,7 @@ export function TableRowForm({
                             : _participant,
                         );
                       });
+                      form.reset();
                     }}
                   >
                     Anuluj
