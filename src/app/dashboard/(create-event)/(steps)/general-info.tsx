@@ -30,6 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoSave } from "@/hooks/use-autosave";
 
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
@@ -84,17 +85,10 @@ export function GeneralInfoForm({
       });
       return;
     }
-    setEvent({
-      ...event,
-      name: values.name,
-      description: values.description,
-      startDate: values.startDate,
-      endDate: values.endDate,
-      location: values.location,
-      organizer: values.organizer,
-    });
     goToNextStep();
   }
+
+  useAutoSave(setEvent, form);
 
   return (
     <FormContainer

@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -65,6 +66,8 @@ export function FormGenerator({
   });
 
   const { toast } = useToast();
+
+  useUnsavedForm(form.formState.isDirty);
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {

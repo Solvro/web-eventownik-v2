@@ -134,7 +134,7 @@ export function ParticipantTable({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Usunięcie uczestnika nie powiodło się!",
+          title: "Nie udało się usunąć uczestnika!",
           description: error,
         });
         return;
@@ -152,7 +152,7 @@ export function ParticipantTable({
       });
     } catch {
       toast({
-        title: "Usunięcie uczestnika nie powiodło się!",
+        title: "Nie udało się usunąć uczestnika!",
         variant: "destructive",
         description: "Wystąpił błąd podczas usuwania uczestnika.",
       });
@@ -177,18 +177,18 @@ export function ParticipantTable({
         });
         table.resetRowSelection();
         toast({
-          title: "Uczestnicy zostali pomyślnie usunięci",
+          title: "Usunięto uczestników",
           description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
         });
       } else {
         toast({
-          title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+          title: "Nie udało się grupowo usunąć uczestników!",
           description: response.error,
         });
       }
     } catch {
       toast({
-        title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+        title: "Nie udało się grupowo usunąć uczestników!",
         variant: "destructive",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
       });
@@ -214,7 +214,7 @@ export function ParticipantTable({
         />
       </div>
       <ScrollArea className="mt-4 w-full">
-        <div className="relative mt-4 w-full overflow-auto">
+        <div className="relative">
           <Table>
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (

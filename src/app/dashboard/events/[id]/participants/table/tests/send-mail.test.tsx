@@ -106,7 +106,7 @@ describe("Send mails", () => {
     // Step 5: Send mail
     await user.click(sendMailButton);
 
-    const toast = screen.getByText(/pomyślnie/i);
+    const toast = screen.getByText(/wysłano/i);
     expect(toast).toBeVisible();
   });
 

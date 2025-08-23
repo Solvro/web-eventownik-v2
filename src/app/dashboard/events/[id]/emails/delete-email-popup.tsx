@@ -44,7 +44,7 @@ function DeleteEmailPopup({
       location.reload();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się usunąć szablonu!",
         variant: "destructive",
         description: result.error,
       });

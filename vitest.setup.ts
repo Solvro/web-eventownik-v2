@@ -21,6 +21,10 @@ vi.mock("server-only", () => {
   return {};
 });
 
+vi.mock("next-navigation-guard", () => ({
+  useNavigationGuard: vi.fn(() => ({})),
+}));
+
 globalThis.ResizeObserver = ResizeObserver;
 
 globalThis.HTMLElement.prototype.scrollIntoView = vi.fn();

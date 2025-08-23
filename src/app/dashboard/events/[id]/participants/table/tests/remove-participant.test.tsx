@@ -130,7 +130,7 @@ describe("Removing participant", () => {
     await user.click(confirmDeletionButton);
 
     // Check for an error
-    const toast = screen.getByText(/nie powiodło/i);
+    const toast = screen.getByText(/nie udało/i);
     expect(toast).toBeVisible();
     expect(getExpandedRow(rowIndexToRemove)).toBeVisible();
   });
@@ -171,7 +171,7 @@ describe("Removing participant", () => {
     await user.click(confirmDeletion);
 
     // Every row should be displayed
-    const toast = screen.getByText(/błąd/i);
+    const toast = screen.getByText(/nie udało/i);
     expect(toast).toBeVisible();
     expect(getDataRows().length).toBe(participants.length);
   });

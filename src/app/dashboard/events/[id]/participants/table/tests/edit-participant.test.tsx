@@ -135,7 +135,7 @@ describe("Editing participant", () => {
       name: /zapisz/i,
     });
     await user.click(saveButton);
-    const toast = screen.getByText(/nie powiodła/i);
+    const toast = screen.getByText(/nie udało/i);
     expect(toast).toBeVisible();
 
     // Step 4: Cancel editing
