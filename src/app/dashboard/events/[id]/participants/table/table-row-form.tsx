@@ -17,7 +17,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -92,13 +94,18 @@ export function TableRowForm({
     defaultValues,
   });
 
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
+
   useEffect(() => {
-    form.reset({ ...getDefaultValues(cells) });
+    // 'keepDirtyValues' is required here so that 'useUnsavedForm' works correctly
+    form.reset({ ...getDefaultValues(cells) }, { keepDirtyValues: true });
   }, [cells, form]);
 
   async function onSubmit(values: Record<string, string | string[]>) {
     for (const key in values) {
-      //Handling multiselect
+      // Handling multiselect
       if (typeof values[key] === "object") {
         values[key] = values[key].join(",");
       }
@@ -110,10 +117,16 @@ export function TableRowForm({
       participant.id.toString(),
     );
 
-    if (!success) {
+    if (success) {
+      toast({
+        title: "Zapisano zmiany w uczestniku",
+        description: error,
+      });
+      form.reset();
+    } else {
       toast({
         variant: "destructive",
-        title: "Aktualizacja uczestnika nie powiodła się!",
+        title: "Nie udało się zapisać zmian w uczestniku!",
         description: error,
       });
       return;
@@ -139,6 +152,11 @@ export function TableRowForm({
   return (
     <FormProvider {...form}>
       <Fragment key={row.id}>
+        <UnsavedChangesAlert
+          active={isGuardActive}
+          onCancel={onCancel}
+          onConfirm={onConfirm}
+        />
         <TableRow
           className={cn(
             "[&>td:last-of-type]:sticky [&>td:last-of-type]:right-[-1px] [&>td:last-of-type>button]:backdrop-blur-lg",
@@ -308,6 +326,7 @@ export function TableRowForm({
                             : _participant,
                         );
                       });
+                      form.reset();
                     }}
                   >
                     Anuluj

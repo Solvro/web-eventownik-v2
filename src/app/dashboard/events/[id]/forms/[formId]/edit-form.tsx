@@ -2,8 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  Loader,
+  Save,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,7 +32,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -72,9 +78,11 @@ function EventFormEditForm({
       slug: formToEdit.slug,
     },
   });
-
-  const router = useRouter();
   const { toast } = useToast();
+
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {
@@ -86,13 +94,12 @@ function EventFormEditForm({
 
       if (result.success) {
         toast({
-          title: "Formularz został zaktualizowany",
+          title: "Zapisano zmiany w formularzu",
         });
-
-        router.refresh();
+        form.reset();
       } else {
         toast({
-          title: "Nie udało się zaktualizować formularza",
+          title: "Nie udało się zapisać zmian w formularzu!",
           description: result.error,
           variant: "destructive",
         });
@@ -100,7 +107,7 @@ function EventFormEditForm({
     } catch (error) {
       console.error("Error updating event form:", error);
       toast({
-        title: "Nie udało się zaktualizować formularza",
+        title: "Nie udało się zapisać zmian w formularzu!",
         description: "Wystąpił błąd podczas aktualizacji formularza.",
         variant: "destructive",
       });
@@ -109,6 +116,11 @@ function EventFormEditForm({
 
   return (
     <Form {...form}>
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="flex max-w-xl flex-col gap-8">
           <div className="w-full space-y-8">
@@ -329,7 +341,12 @@ function EventFormEditForm({
           />
         </div>
         <Button type="submit" variant="eventDefault">
-          <Save /> Zapisz
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>

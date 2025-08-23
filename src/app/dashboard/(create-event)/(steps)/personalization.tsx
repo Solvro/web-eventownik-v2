@@ -8,7 +8,7 @@ import {
   Loader2,
   PlusIcon,
   SettingsIcon,
-  TrashIcon,
+  Trash2,
   UploadIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { cn } from "@/lib/utils";
 
 import { isSlugTaken } from "../actions";
@@ -100,16 +101,10 @@ export function PersonalizationForm({
       });
       return;
     }
-    setEvent({
-      ...event,
-      image: event.image,
-      color: data.color ?? "#3672fd",
-      participantsNumber: data.participantsNumber,
-      links: data.links.map((link) => link.value),
-      slug: data.slug,
-    });
     goToNextStep();
   }
+
+  useAutoSave(setEvent, form);
 
   return (
     <FormContainer
@@ -259,7 +254,7 @@ export function PersonalizationForm({
                                 remove(index);
                               }}
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                           {form.formState.errors.links?.[index]?.value
