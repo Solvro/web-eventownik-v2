@@ -1,23 +1,20 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, getByRole, screen } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
+import { server } from "@/tests/msw/node";
 
 import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
-import { setupMSW } from "./mocks/msw-setup";
-import { server } from "./mocks/node";
 import { deleteParticipantCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
-
-setupMSW();
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
 describe("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
-    mockParticipantGet(deleteParticipantCaseData.participants);
+    server.use(mockParticipantGet(deleteParticipantCaseData.participants));
     cleanup();
   });
 
@@ -30,7 +27,7 @@ describe("Removing participant", () => {
 
     // Step 1: Expand row to remove
     const row = getDataRow(rowIndexToRemove);
-    const expandButton = within(row).getByRole("button", {
+    const expandButton = getByRole(row, "button", {
       name: /rozwiń/i,
     });
     expect(expandButton).toBeVisible();
@@ -38,7 +35,7 @@ describe("Removing participant", () => {
 
     // Step 2: Click remove button
     const expandedRow = getExpandedRow(rowIndexToRemove);
-    const deleteButton = within(expandedRow).getByRole("button", {
+    const deleteButton = getByRole(expandedRow, "button", {
       name: /usuń/i,
     });
     expect(deleteButton).toBeVisible();
@@ -47,7 +44,7 @@ describe("Removing participant", () => {
     // Step 3: Confirm deletion
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
-    const confirmDeletionButton = within(alertDialog).getByRole("button", {
+    const confirmDeletionButton = getByRole(alertDialog, "button", {
       name: /usuń/i,
     });
     expect(confirmDeletionButton).toBeVisible();
@@ -66,7 +63,7 @@ describe("Removing participant", () => {
 
     // Step 1: Select all rows
     for (const row of getDataRows()) {
-      const selectButton = within(row).getByRole("checkbox", {
+      const selectButton = getByRole(row, "checkbox", {
         name: /wybierz wiersz/i,
       });
       await user.click(selectButton);
@@ -82,7 +79,7 @@ describe("Removing participant", () => {
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
 
-    const confirmDeletion = within(alertDialog).getByRole("button", {
+    const confirmDeletion = getByRole(alertDialog, "button", {
       name: /usuń/i,
     });
     await user.click(confirmDeletion);
@@ -109,7 +106,7 @@ describe("Removing participant", () => {
 
     // Step 1: Expand row to remove
     const row = getDataRow(rowIndexToRemove);
-    const expandButton = within(row).getByRole("button", {
+    const expandButton = getByRole(row, "button", {
       name: /rozwiń/i,
     });
     expect(expandButton).toBeVisible();
@@ -117,7 +114,7 @@ describe("Removing participant", () => {
 
     // Step 2: Click remove button
     const expandedRow = getExpandedRow(rowIndexToRemove);
-    const deleteButton = within(expandedRow).getByRole("button", {
+    const deleteButton = getByRole(expandedRow, "button", {
       name: /usuń/i,
     });
     expect(deleteButton).toBeVisible();
@@ -126,14 +123,14 @@ describe("Removing participant", () => {
     // Step 3: Confirm deletion
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
-    const confirmDeletionButton = within(alertDialog).getByRole("button", {
+    const confirmDeletionButton = getByRole(alertDialog, "button", {
       name: /usuń/i,
     });
     expect(confirmDeletionButton).toBeVisible();
     await user.click(confirmDeletionButton);
 
     // Check for an error
-    const toast = screen.getByText(/nie powiodło/i);
+    const toast = screen.getByText(/nie udało/i);
     expect(toast).toBeVisible();
     expect(getExpandedRow(rowIndexToRemove)).toBeVisible();
   });
@@ -152,7 +149,7 @@ describe("Removing participant", () => {
 
     // Step 1: Select all rows
     for (const row of getDataRows()) {
-      const selectButton = within(row).getByRole("checkbox", {
+      const selectButton = getByRole(row, "checkbox", {
         name: /wybierz wiersz/i,
       });
       await user.click(selectButton);
@@ -168,13 +165,13 @@ describe("Removing participant", () => {
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
 
-    const confirmDeletion = within(alertDialog).getByRole("button", {
+    const confirmDeletion = getByRole(alertDialog, "button", {
       name: /usuń/i,
     });
     await user.click(confirmDeletion);
 
     // Every row should be displayed
-    const toast = screen.getByText(/błąd/i);
+    const toast = screen.getByText(/nie udało/i);
     expect(toast).toBeVisible();
     expect(getDataRows().length).toBe(participants.length);
   });

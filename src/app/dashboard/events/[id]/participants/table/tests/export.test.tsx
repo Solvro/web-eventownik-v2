@@ -4,14 +4,11 @@ import { describe } from "vitest";
 
 import { API_URL } from "@/lib/api";
 import * as utils from "@/lib/utils";
+import { server } from "@/tests/msw/node";
 
 import { mockVerifySession } from "./mocks/mocks";
-import { setupMSW } from "./mocks/msw-setup";
-import { server } from "./mocks/node";
 import { textCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
-
-setupMSW();
 
 vi.mock("@/lib/session", () => mockVerifySession());
 

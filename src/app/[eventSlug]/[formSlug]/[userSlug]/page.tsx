@@ -7,7 +7,9 @@ import sanitizeHtml from "sanitize-html";
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { SocialMediaLink } from "@/components/social-media-link";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -18,7 +20,7 @@ import type { PublicParticipant } from "@/types/participant";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
-  params: Promise<{ eventSlug: string; formSlug: string; userId: string }>;
+  params: Promise<{ eventSlug: string; formSlug: string; userSlug: string }>;
 }
 
 async function getEvent(eventSlug: string) {
@@ -53,10 +55,10 @@ async function getForm(eventSlug: string, formSlug: string) {
 async function getUserData(
   formAttributes: FormAttribute[],
   eventSlug: string,
-  userId: string,
+  userSlug: string,
 ) {
   const attributesUrl = new URL(
-    `${API_URL}/events/${eventSlug}/participants/${userId}`,
+    `${API_URL}/events/${eventSlug}/participants/${userSlug}`,
   );
 
   for (const attribute of formAttributes) {
@@ -94,7 +96,7 @@ async function getEventBlockAttributeBlocks(
 }
 
 export default async function FormPage({ params }: FormPageProps) {
-  const { eventSlug, formSlug, userId } = await params;
+  const { eventSlug, formSlug, userSlug } = await params;
 
   const event = await getEvent(eventSlug);
   if (event === null) {
@@ -106,7 +108,7 @@ export default async function FormPage({ params }: FormPageProps) {
     return <div>Nie znaleziono formularza 😪</div>;
   }
 
-  const userData = await getUserData(form.attributes, event.slug, userId);
+  const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
     return <div>Nie udało się pobrać twoich danych 😪</div>;
   }
@@ -153,6 +155,7 @@ export default async function FormPage({ params }: FormPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
+      <EventPrimaryColorSetter primaryColor={event.primaryColor} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
@@ -210,14 +213,17 @@ export default async function FormPage({ params }: FormPageProps) {
                   : null}
               </div>
             </div>
-            <div
-              className="max-h-72 overflow-y-auto leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-            />
+            <ScrollArea className="h-72">
+              <div
+                className="leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+              />
+            </ScrollArea>
           </div>
         </div>
       </div>
+      {/* No need for ScrollArea (it's viewport's side scrollbar) */}
       <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           {form.name}
@@ -232,7 +238,7 @@ export default async function FormPage({ params }: FormPageProps) {
           originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
           formId={form.id.toString()}
           eventSlug={eventSlug}
-          userId={userId}
+          userSlug={userSlug}
         />
       </div>
     </div>

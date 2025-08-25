@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -31,14 +32,14 @@ export function FormGenerator({
   originalEventBlocks,
   formId,
   eventSlug,
-  userId,
+  userSlug,
 }: {
   attributes: FormAttribute[];
   userData: PublicParticipant;
   originalEventBlocks: PublicBlock[];
   formId: string;
   eventSlug: string;
-  userId: string;
+  userSlug: string;
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
@@ -66,9 +67,17 @@ export function FormGenerator({
 
   const { toast } = useToast();
 
+  useUnsavedForm(form.formState.isDirty);
+
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-      const result = await submitForm(values, formId, eventSlug, userId, files);
+      const result = await submitForm(
+        values,
+        formId,
+        eventSlug,
+        userSlug,
+        files,
+      );
       if (result.success) {
         setFiles([]);
       } else {

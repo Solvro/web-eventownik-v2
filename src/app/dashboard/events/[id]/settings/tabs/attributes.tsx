@@ -16,6 +16,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useSetAtom } from "jotai";
 import {
   ALargeSmall,
   Binary,
@@ -33,7 +34,7 @@ import {
   PlusIcon,
   Smartphone,
   SquareDashedMousePointer,
-  TrashIcon,
+  Trash2,
 } from "lucide-react";
 import type { JSX } from "react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -50,30 +51,107 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 export const ATTRIBUTE_TYPES: {
   value: AttributeType;
   title: string;
+  description?: string;
   icon: JSX.Element;
 }[] = [
-  { value: "text", title: "Tekst", icon: <ALargeSmall /> },
-  { value: "number", title: "Liczba", icon: <Binary /> },
-  { value: "textarea", title: "Pole tekstowe", icon: <LetterText /> },
-  { value: "file", title: "Plik", icon: <CloudUpload /> },
-  { value: "select", title: "Wybór", icon: <SquareDashedMousePointer /> },
-  { value: "multiselect", title: "Wielokrotny wybór", icon: <ListTodo /> },
-  { value: "block", title: "Blok", icon: <Cuboid /> },
-  { value: "date", title: "Data", icon: <Calendar /> },
-  { value: "time", title: "Czas", icon: <Clock /> },
-  { value: "datetime", title: "Data i czas", icon: <CalendarClock /> },
-  { value: "email", title: "Email", icon: <Mail /> },
-  { value: "tel", title: "Telefon", icon: <Smartphone /> },
-  { value: "color", title: "Kolor", icon: <Palette /> },
-  { value: "checkbox", title: "Pole wyboru", icon: <Check /> },
+  {
+    value: "text",
+    title: "Tekst",
+    description: "Krótkie pole tekstowe",
+    icon: <ALargeSmall />,
+  },
+  {
+    value: "number",
+    title: "Liczba",
+    description: "Dozwolone jedynie liczby, nie litery",
+    icon: <Binary />,
+  },
+  {
+    value: "textarea",
+    title: "Pole tekstowe",
+    description: "Dłuższe pole tekstowe",
+    icon: <LetterText />,
+  },
+  {
+    value: "file",
+    title: "Plik",
+    description: "Przesłanie pliku każdego typu",
+    icon: <CloudUpload />,
+  },
+  {
+    value: "select",
+    title: "Wybór",
+    description: "Wybór 1 opcji spośród możliwych z listy rozwijanej",
+    icon: <SquareDashedMousePointer />,
+  },
+  {
+    value: "multiselect",
+    title: "Wielokrotny wybór",
+    description: "Wybór kilku opcji spośród możliwych",
+    icon: <ListTodo />,
+  },
+  {
+    value: "block",
+    title: "Blok",
+    description: "Zapisy na miejsca",
+    icon: <Cuboid />,
+  },
+  {
+    value: "date",
+    title: "Data",
+    description: "Dzień, miesiąc, rok",
+    icon: <Calendar />,
+  },
+  {
+    value: "time",
+    title: "Czas",
+    description: "Godzina i minuta",
+    icon: <Clock />,
+  },
+  {
+    value: "datetime",
+    title: "Data i czas",
+    description: "Dzień, miesiąc, rok, godzina, minuta",
+    icon: <CalendarClock />,
+  },
+  {
+    value: "email",
+    title: "Email",
+    description: "Wymagany format email",
+    icon: <Mail />,
+  },
+  {
+    value: "tel",
+    title: "Telefon",
+    description: "Wymagany format telefonu",
+    icon: <Smartphone />,
+  },
+  {
+    value: "color",
+    title: "Kolor",
+    description: "Podanie koloru w kodzie RGB, HSL, HEX",
+    icon: <Palette />,
+  },
+  {
+    value: "checkbox",
+    title: "Pole wyboru",
+    description: "Pole, które można zaznaczyć lub odznaczyć",
+    icon: <Check />,
+  },
 ];
 
 interface AttributeItemProps {
@@ -226,14 +304,21 @@ const AttributeItem = memo(
     const attributeTypeOptions = useMemo(
       () =>
         ATTRIBUTE_TYPES.map((type) => (
-          <SelectItem key={type.value} value={type.value}>
-            <div className="flex items-center gap-2">
-              {type.icon}
-              <span className="overflow-x-hidden text-ellipsis">
-                {type.title}
-              </span>
-            </div>
-          </SelectItem>
+          <Tooltip key={type.value}>
+            <TooltipTrigger asChild>
+              <SelectItem value={type.value}>
+                <div className="flex items-center gap-2">
+                  {type.icon}
+                  <span className="overflow-x-hidden text-ellipsis">
+                    {type.title}
+                  </span>
+                </div>
+              </SelectItem>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>{type.description ?? type.title}</p>
+            </TooltipContent>
+          </Tooltip>
         )),
       [],
     );
@@ -246,7 +331,7 @@ const AttributeItem = memo(
           onClick={onRemove}
           className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
         >
-          <TrashIcon className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
 
         <div className="flex flex-1 flex-col gap-2">
@@ -391,6 +476,7 @@ export function Attributes({
   setAttributesChanges,
 }: TabProps) {
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
+  const setIsDirty = useSetAtom(areSettingsDirty);
 
   const handleAddAttribute = useCallback(() => {
     if (!newAttributeLabel.trim()) {
@@ -421,7 +507,8 @@ export function Attributes({
       added: [...previous.added, newAttribute],
     }));
     setNewAttributeLabel("");
-  }, [newAttributeLabel, setAttributes, setAttributesChanges]);
+    setIsDirty(true);
+  }, [newAttributeLabel, setAttributes, setAttributesChanges, setIsDirty]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
@@ -438,8 +525,9 @@ export function Attributes({
             )
           : [...previous.updated, updatedAttribute],
       }));
+      setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges],
+    [setAttributes, setAttributesChanges, setIsDirty],
   );
 
   const handleRemoveAttribute = useCallback(
@@ -454,8 +542,9 @@ export function Attributes({
         }
         return previous.filter((a) => a.id !== attributeId);
       });
+      setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges],
+    [setAttributes, setAttributesChanges, setIsDirty],
   );
 
   return (

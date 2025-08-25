@@ -3,7 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, getHours, getMinutes, subDays } from "date-fns";
 import { useAtom } from "jotai";
-import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  CalendarIcon,
+  Loader2,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,6 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoSave } from "@/hooks/use-autosave";
 
 import { FormContainer } from "../form-container";
 import { eventAtom } from "../state";
@@ -78,17 +85,10 @@ export function GeneralInfoForm({
       });
       return;
     }
-    setEvent({
-      ...event,
-      name: values.name,
-      description: values.description,
-      startDate: values.startDate,
-      endDate: values.endDate,
-      location: values.location,
-      organizer: values.organizer,
-    });
     goToNextStep();
   }
+
+  useAutoSave(setEvent, form);
 
   return (
     <FormContainer
@@ -140,7 +140,7 @@ export function GeneralInfoForm({
                                 className="w-[240px] pl-3 text-left font-normal"
                               >
                                 {format(field.value, "PPP")}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -198,7 +198,7 @@ export function GeneralInfoForm({
                                 disabled={form.formState.isSubmitting}
                               >
                                 {format(field.value, "PPP")}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>

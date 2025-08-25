@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, TrashIcon, UploadIcon } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 // Required for usage of useFieldArray hook
@@ -53,6 +55,8 @@ export function Personalization({ event, saveFormRef }: TabProps) {
   const [lastImageUrl, setLastImageUrl] = useState<string>(
     event.photoUrl ?? "",
   );
+
+  const setIsDirty = useSetAtom(areSettingsDirty);
 
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
@@ -92,6 +96,12 @@ export function Personalization({ event, saveFormRef }: TabProps) {
   }
 
   saveFormRef.current = saveForm;
+
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsDirty(true);
+    }
+  }, [form.formState.isDirty, setIsDirty]);
 
   return (
     <Form {...form}>
@@ -293,7 +303,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                             remove(index);
                           }}
                         >
-                          <TrashIcon className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                       {form.formState.errors.socialMediaLinks?.[index]?.value
@@ -316,7 +326,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     }}
                   >
                     <PlusIcon className="h-4 w-4" />
-                    Dodaj Linka
+                    Dodaj link
                   </Button>
                 </div>
               </FormItem>

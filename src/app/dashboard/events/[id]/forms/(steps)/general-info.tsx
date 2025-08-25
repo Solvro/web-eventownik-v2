@@ -3,7 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
-import { ArrowRight, BookOpenText, CalendarIcon } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenText,
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -28,6 +33,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { useAutoSave } from "@/hooks/use-autosave";
 
 const EventFormGeneralInfoSchema = z
   .object({
@@ -77,10 +83,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
-    setNewEventForm({ ...newEventForm, ...values });
-    goToNextStep();
-  }
+  useAutoSave(setNewEventForm, form);
 
   return (
     <FormContainer
@@ -90,7 +93,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       title="Krok 1"
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
           <div className="grid gap-8 md:grid-cols-2 md:gap-10">
             <div className="w-full space-y-8">
               <FormField
@@ -133,7 +136,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -192,7 +195,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -293,7 +296,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
           </div>
           <div className="flex justify-end">
             <Button variant="eventGhost" type="submit">
-              <ArrowRight /> Dalej
+              <ArrowRight /> Zapisz i przejdź dalej
             </Button>
           </div>
         </form>

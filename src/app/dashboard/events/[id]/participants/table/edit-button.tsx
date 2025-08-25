@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Save } from "lucide-react";
+import { Loader, Pencil, Save } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,7 @@ export function EditParticipantButton({
         await handleSubmit(event);
       }}
     >
-      <Save />
-      Zapisz
+      {disabled ? <Loader className="animate-spin" /> : <Save />} Zapisz
     </Button>
   ) : (
     <Button
