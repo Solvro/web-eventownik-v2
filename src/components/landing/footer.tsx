@@ -92,7 +92,7 @@ export function Footer() {
       <div className="container w-full p-4">
         <div className="border-input relative overflow-hidden rounded-4xl border border-dashed">
           <div className="flex w-full flex-col items-center">
-            <div className="flex w-full flex-col items-center gap-16 p-16">
+            <div className="z-10 flex w-full flex-col items-center gap-16 p-16">
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
                   src="/logo_outline_light.png"
@@ -122,13 +122,13 @@ export function Footer() {
                 <span />
               </div>
             </div>
-            <div className="absolute -z-10 h-[64rem] w-6xl bg-gradient-to-br from-transparent from-20% via-[#3A5BA4]/60 via-35% to-transparent to-50% blur-lg dark:via-[#1A2640]" />
+            <div className="absolute h-[64rem] w-6xl bg-gradient-to-br from-transparent from-20% via-[#3A5BA4]/60 via-35% to-transparent to-50% blur-lg dark:via-[#1A2640]" />
           </div>
 
           <Image
             src={footerBackground}
             alt=""
-            className="absolute inset-0 z-0 h-full w-full opacity-10"
+            className="absolute inset-0 h-full w-full opacity-10"
           />
         </div>
       </div>
