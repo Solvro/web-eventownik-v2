@@ -68,7 +68,7 @@ export function Functionalities() {
   const scale = useTransform(scrollYProgress, [0.1, 0.6], [1, 0.5]);
 
   return (
-    <div className="flex w-full flex-col items-center">
+    <section className="flex w-full flex-col items-center">
       <div className="flex flex-col items-center px-6 pt-48">
         {/* This will get covered */}
         <motion.div
@@ -376,6 +376,6 @@ export function Functionalities() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
