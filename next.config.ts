@@ -20,19 +20,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
-      // Remove them later
-      {
-        protocol: "https",
-        hostname: "cdn.mos.cms.futurecdn.net",
-      },
-      {
-        protocol: "https",
-        hostname: "image.api.playstation.com",
-      },
-      {
-        protocol: "https",
-        hostname: "shared.fastly.steamstatic.com",
-      },
     ],
   },
   experimental: {

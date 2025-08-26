@@ -8,18 +8,33 @@ import { useState } from "react";
 
 import { Badge } from "../ui/badge";
 
-const images = [
+const events = [
   {
-    src: "https://cdn.mos.cms.futurecdn.net/FgWBEA5raiBXkNQDrf9mte.jpg",
-    alt: "Titans",
+    name: "Event 1",
+    description: "Event 1 description",
+    year: 2025,
+    image: {
+      src: "/event-photo-placeholder.png",
+      alt: "Event placeholder",
+    },
   },
   {
-    src: "https://image.api.playstation.com/cdn/EP0006/CUSA04013_00/TGqPQusudXOvba747LKq0ANs6Cykqd43.jpg",
-    alt: "Cover",
+    name: "Event 2",
+    description: "Event 2 description",
+    year: 2024,
+    image: {
+      src: "/event-photo-placeholder.png",
+      alt: "Event placeholder",
+    },
   },
   {
-    src: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1237970/ss_f4a8464ce43962b76fa6f2156b341eee28ad6494.1920x1080.jpg?t=1726160226",
-    alt: "Gameplay",
+    name: "Event 3",
+    description: "Event 3 description",
+    year: 2023,
+    image: {
+      src: "/event-photo-placeholder.png",
+      alt: "Event placeholder",
+    },
   },
 ];
 
@@ -79,7 +94,7 @@ function CarouselImage({
       <Image
         src={src}
         alt={alt}
-        className="border-input rounded-4xl border object-cover"
+        className="border-input h-full rounded-4xl border object-cover"
         width={750}
         height={480}
       />
@@ -99,31 +114,31 @@ export function HighlightedEvents() {
     <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-hidden pt-16">
       <div className="relative flex h-[24rem] w-full justify-center">
         <CarouselImage
-          src={images[0].src}
-          alt={images[0].alt}
+          src={events[0].image.src}
+          alt={events[0].image.alt}
           initial={variants.left}
           animate={variantsList[index]}
-          year={2016}
-          title="Titans"
-          description="The main battle-horses of Titanfall. Titans are massive hulking mechanical beasts, highly equipped with various tactical systems and heavy weaponry."
+          year={events[0].year}
+          title={events[0].name}
+          description={events[0].description}
         />
         <CarouselImage
-          src={images[2].src}
-          alt={images[2].alt}
+          src={events[2].image.src}
+          alt={events[2].image.alt}
           initial={variants.right}
           animate={variantsList[(index + 2) % variantsList.length]}
-          year={2016}
-          title="Gameplay"
-          description="The gameplay of Titanfall 2 is a seamless blend of fast-paced first-person shooting and fluid parkour movement."
+          year={events[2].year}
+          title={events[2].name}
+          description={events[2].description}
         />
         <CarouselImage
-          src={images[1].src}
-          alt={images[1].alt}
+          src={events[1].image.src}
+          alt={events[1].image.alt}
           initial={variants.center}
           animate={variantsList[(index + 1) % variantsList.length]}
-          year={2016}
-          title="Titanfall 2"
-          description="The sequel to the acclaimed Titanfall, featuring a single-player campaign and improved multiplayer."
+          year={events[1].year}
+          title={events[1].name}
+          description={events[1].description}
         />
       </div>
       <div className="flex w-full flex-row items-center justify-center gap-6">

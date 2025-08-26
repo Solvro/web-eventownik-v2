@@ -7,21 +7,6 @@ import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 
-const images = [
-  {
-    src: "https://cdn.mos.cms.futurecdn.net/FgWBEA5raiBXkNQDrf9mte.jpg",
-    alt: "Titans",
-  },
-  {
-    src: "https://image.api.playstation.com/cdn/EP0006/CUSA04013_00/TGqPQusudXOvba747LKq0ANs6Cykqd43.jpg",
-    alt: "Cover",
-  },
-  {
-    src: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1237970/ss_f4a8464ce43962b76fa6f2156b341eee28ad6494.1920x1080.jpg?t=1726160226",
-    alt: "Gameplay",
-  },
-];
-
 function TimelineStep({
   month,
   isActive,
@@ -178,24 +163,24 @@ function Events() {
           organizer="Organizator"
           description="Opis wydarzenia"
           date={new Date("2025-08-05")}
-          imageSource={images[0].src}
-          imageAlt={images[0].alt}
+          imageSource={"/event-photo-placeholder.png"}
+          imageAlt={"Event placeholder"}
         />
         <Event
           title="Tytuł wydarzenia"
           organizer="Organizator"
           description="Opis wydarzenia"
           date={new Date("2025-08-03")}
-          imageSource={images[1].src}
-          imageAlt={images[1].alt}
+          imageSource={"/event-photo-placeholder.png"}
+          imageAlt={"Event placeholder"}
         />
         <Event
           title="Tytuł wydarzenia"
           organizer="Organizator"
           description="Opis wydarzenia"
           date={new Date("2025-08-01")}
-          imageSource={images[2].src}
-          imageAlt={images[2].alt}
+          imageSource={"/event-photo-placeholder.png"}
+          imageAlt={"Event placeholder"}
         />
       </div>
       <div className="clip-curve flex w-full flex-col items-center justify-center bg-white p-4">
