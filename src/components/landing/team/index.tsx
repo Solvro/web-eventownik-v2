@@ -1,26 +1,11 @@
-import Image from "next/image";
+import { Star } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 
-import { cn } from "@/lib/utils";
+import { HighlightedMembers } from "./highlighted-members";
+import { Member } from "./member";
+import type { TeamMember } from "./team-member";
 
-type role =
-  | "Project Manager"
-  | "Opiekun Projektu"
-  | "Backend Techlead"
-  | "Backend Developer"
-  | "Frontend Techlead"
-  | "Frontend Developer"
-  | "UI/UX Designer"
-  | "Devops Engineer"
-  | "Marketing Coordinator";
-
-interface Contributor {
-  name: string;
-  roles: role[];
-  image?: string;
-  url: string;
-}
-
-const contributors: Contributor[] = [
+const team: TeamMember[] = [
   {
     name: "Amelia Sroczyńska",
     roles: ["Project Manager"],
@@ -168,97 +153,53 @@ const contributors: Contributor[] = [
   },
 ];
 
-function HighlightedContributor({
-  contributor,
-  className,
-}: {
-  contributor: Contributor;
-  className?: string;
-}) {
-  return (
-    <a
-      title={contributor.name}
-      href={contributor.url}
-      target="_blank"
-      rel="noreferrer noopener"
-      className={className}
-    >
-      <Image
-        src={
-          typeof contributor.image === "string"
-            ? contributor.image
-            : "/person.webp"
-        }
-        alt={contributor.name}
-        width={500}
-        height={500}
-        className="size-72 rounded-4xl drop-shadow-2xl"
-      />
-    </a>
+export async function Team() {
+  const repositoryData = await fetch(
+    "https://api.github.com/repos/Solvro/web-eventownik-v2",
   );
-}
-
-export function Contributors() {
+  const { stargazers_count } = (await repositoryData.json()) as {
+    stargazers_count: number;
+  };
   return (
-    <div className="container flex flex-col items-center gap-32">
+    <div className="border-input container mb-16 flex flex-col items-center gap-24 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 py-20">
       <div className="flex flex-col items-center gap-8">
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
         </p>
         <p className="text-center text-3xl font-medium">
           Eventownik powstał dzięki pracy{" "}
-          <span className="text-[#6583C8]">{contributors.length} osób</span> z
-          naszego zespołu.
+          <span className="text-[#6583C8]">{team.length} osób</span> z naszego
+          zespołu.
           <br />
           Stworzyliśmy go, by ułatwić organizowanie wydarzeń i poznawanie ludzi.
         </p>
       </div>
       <div className="flex flex-col items-center gap-32">
-        <div className="flex flex-row -space-x-16">
-          <HighlightedContributor
-            contributor={contributors[3]}
-            className="translate-y-16 rotate-6"
-          />
-          <HighlightedContributor
-            contributor={contributors[1]}
-            className="z-10 translate-y-4 -rotate-6"
-          />
-          <HighlightedContributor
-            contributor={contributors[0]}
-            className="z-20 rotate-12"
-          />
-          <HighlightedContributor
-            contributor={contributors[2]}
-            className="z-10 translate-y-4 rotate-6"
-          />
-          <HighlightedContributor
-            contributor={contributors[4]}
-            className="translate-y-16 -rotate-6"
-          />
-        </div>
-        <div className="flex flex-row -space-x-4">
-          {contributors.slice(5).map((contributor) => (
-            <a
-              title={contributor.name}
-              href={contributor.url}
-              key={contributor.name}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <Image
-                src={
-                  typeof contributor.image === "string"
-                    ? contributor.image
-                    : "/person.webp"
-                }
-                alt={contributor.name}
-                width={500}
-                height={500}
-                className="size-20 rounded-full"
-              />
-            </a>
+        <HighlightedMembers team={team.slice(0, 5)} />
+        <div className="flex flex-row flex-wrap justify-center space-y-4 -space-x-4">
+          {team.slice(5).map((member) => (
+            <Member key={member.name} member={member} />
           ))}
         </div>
+      </div>
+      <div className="flex flex-col items-center gap-12">
+        <p className="text-center text-2xl font-medium">
+          Jeśli doceniasz naszą pracę nad Eventownikiem, zostaw gwiazdkę na
+          GitHubie — to dla nas duża motywacja do dalszego rozwoju!
+        </p>
+        <a
+          href="https://github.com/solvro/web-eventownik-v2"
+          target="_blank"
+          className="flex flex-row items-center gap-4 rounded-full border-2 bg-transparent px-6 py-4 transition hover:bg-[#3672FD]/30"
+          rel="noreferrer noopener"
+        >
+          <FaGithub size={20} />
+          <p className="text-xl font-medium">Walnij nam gwiazdkę</p>
+          <div className="flex flex-row items-center gap-1">
+            <Star fill="#3672FD" strokeWidth={0} size={20} />
+            <p className="text-xl font-medium">{stargazers_count}</p>
+          </div>
+        </a>
       </div>
     </div>
   );

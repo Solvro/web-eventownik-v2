@@ -69,7 +69,7 @@ function CarouselImage({
   year: number;
 }) {
   return (
-    <motion.div
+    <motion.section
       variants={variants}
       initial={initial}
       animate={animate}
@@ -88,7 +88,7 @@ function CarouselImage({
         <h3 className="text-3xl font-semibold">{title}</h3>
         <p className="w-2/3 text-lg">{description}</p>
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
 

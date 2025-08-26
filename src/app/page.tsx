@@ -1,15 +1,17 @@
-import { Contributors } from "@/components/landing/contributors";
 import { EventList } from "@/components/landing/event-list";
 import { Footer } from "@/components/landing/footer";
 import { Functionalities } from "@/components/landing/functionalities";
 import { HighlightedEvents } from "@/components/landing/highlighted-events";
 import { Navbar } from "@/components/landing/navbar";
+import { Partners } from "@/components/landing/partners";
+import { Team } from "@/components/landing/team";
+import { ToPWr } from "@/components/landing/to-pwr";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
     <div className="text-foreground min-h-screen">
-      <div className="flex w-full flex-col items-center gap-20 bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] py-12 dark:from-[#101011] dark:to-[#213560]">
+      <div className="flex w-full flex-col items-center gap-20 bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] pt-12 dark:from-[#101011] dark:to-[#213560]">
         <Navbar />
         <div className="container flex w-full flex-col items-center gap-8 px-4 text-center">
           <div className="rounded-full bg-gradient-to-r from-[#6583C8] to-[#80B3FF] p-0.5">
@@ -36,9 +38,13 @@ export default function Home() {
         <HighlightedEvents />
         <EventList />
         <Functionalities />
-        <Contributors />
       </div>
-      <Footer />
+      <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
+        <Team />
+        <ToPWr />
+        <Partners />
+        <Footer />
+      </div>
     </div>
   );
 }

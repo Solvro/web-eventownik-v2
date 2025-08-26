@@ -171,7 +171,7 @@ function Event({
 
 function Events() {
   return (
-    <div className="flex flex-col">
+    <section className="flex flex-col">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b">
         <Event
           title="Tytuł wydarzenia"
@@ -203,7 +203,7 @@ function Events() {
           Pokaż więcej
         </Button>
       </div>
-    </div>
+    </section>
   );
 }
 
