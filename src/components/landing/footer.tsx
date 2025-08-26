@@ -95,10 +95,18 @@ export function Footer() {
             <div className="flex w-full flex-col items-center gap-16 p-16">
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
-                  src="/logo_outline.png"
+                  src="/logo_outline_light.png"
                   alt="Eventownik logo"
                   width="1500"
                   height="1000"
+                  className="block dark:hidden"
+                />
+                <Image
+                  src="/logo_outline_dark.png"
+                  alt="Eventownik logo"
+                  width="1500"
+                  height="1000"
+                  className="hidden dark:block"
                 />
               </div>
               <div className="container grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
@@ -120,7 +128,7 @@ export function Footer() {
           <Image
             src={footerBackground}
             alt=""
-            className="absolute inset-0 -z-20 h-full w-full opacity-10"
+            className="absolute inset-0 z-0 h-full w-full opacity-10"
           />
         </div>
       </div>
