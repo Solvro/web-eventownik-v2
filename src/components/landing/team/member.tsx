@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRightFromCircle } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -15,7 +16,7 @@ export function Member({ member }: { member: TeamMember }) {
   };
   return (
     <div
-      className="relative"
+      className="relative hover:cursor-pointer"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -24,38 +25,66 @@ export function Member({ member }: { member: TeamMember }) {
         setIsHovered(false);
       }}
     >
+      <Image
+        src={
+          typeof member.image === "string"
+            ? member.image
+            : "/assets/person.webp"
+        }
+        alt={member.name}
+        width={500}
+        height={500}
+        className="size-20 rounded-full"
+      />
+      <AnimatePresence>
+        {isHovered ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: 1.1 }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{ duration: 0.1 }}
+            className="absolute inset-0 z-20"
+          >
+            <Image
+              src={
+                typeof member.image === "string"
+                  ? member.image
+                  : "/assets/person.webp"
+              }
+              alt={member.name}
+              width={500}
+              height={500}
+              className="size-20 rounded-full"
+            />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <a
         title={member.name}
         href={member.url}
         key={member.name}
         target="_blank"
-        className="inline-block shrink-0"
+        className="absolute inset-0 block h-full w-full shrink-0"
         rel="noreferrer noopener"
-      >
-        <Image
-          src={
-            typeof member.image === "string"
-              ? member.image
-              : "/assets/person.webp"
-          }
-          alt={member.name}
-          width={500}
-          height={500}
-          className="size-20 rounded-full"
-        />
-      </a>
-      {isHovered ? (
-        <div
-          className="pointer-events-none absolute flex -translate-x-full flex-row items-center gap-2 rounded-full bg-black px-3 py-1 text-white shadow-lg"
-          style={{
-            top: position.y + 5,
-            left: position.x - 5,
-          }}
-        >
-          <p className="font-medium whitespace-nowrap">{member.name}</p>
-          <ArrowUpRightFromCircle size={16} />
-        </div>
-      ) : null}
+      />
+      <AnimatePresence>
+        {isHovered ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="pointer-events-none absolute z-20 flex -translate-x-full flex-row items-center gap-2 rounded-full bg-black px-3 py-1 text-white shadow-lg"
+            style={{
+              top: position.y + 5,
+              left: position.x - 5,
+            }}
+          >
+            <p className="font-medium whitespace-nowrap">{member.name}</p>
+            <ArrowUpRightFromCircle size={16} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
