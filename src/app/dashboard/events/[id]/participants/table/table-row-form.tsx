@@ -349,7 +349,7 @@ function getDefaultValues(cells: Cell<FlattenedParticipant, unknown>[]) {
     const columnAttribute = cell.column.columnDef.meta?.attribute;
     if (columnAttribute !== undefined) {
       if (columnAttribute.type === "multiselect") {
-        //cell value is transformed string array (["v1", "v2"] => "v1, v2")
+        //cell value is transformed string array (["v1", "v2"] => "v1,v2")
         const cellValue = cell.getValue() as string | undefined;
         _defaultValues[cell.column.id] = cellValue?.split(",") ?? [];
       } else {
