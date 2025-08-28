@@ -74,6 +74,7 @@ function CarouselImage({
   title,
   description,
   year,
+  onClick,
 }: {
   src: string;
   alt: string;
@@ -82,14 +83,16 @@ function CarouselImage({
   title: string;
   description: string;
   year: number;
+  onClick: () => void;
 }) {
   return (
-    <motion.section
+    <motion.button
       variants={variants}
       initial={initial}
       animate={animate}
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="absolute h-[23.7rem] w-2xl"
+      onClick={onClick}
     >
       <Image
         src={src}
@@ -98,12 +101,12 @@ function CarouselImage({
         width={750}
         height={480}
       />
-      <div className="absolute inset-0 flex h-full w-full flex-col gap-4 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-16 text-white">
+      <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-4 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-16 text-left text-white">
         <Badge>{year}</Badge>
         <h3 className="text-3xl font-semibold">{title}</h3>
         <p className="w-2/3 text-lg">{description}</p>
       </div>
-    </motion.section>
+    </motion.button>
   );
 }
 
@@ -114,13 +117,16 @@ export function HighlightedEvents() {
     <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-hidden pt-16">
       <div className="relative flex h-[24rem] w-full justify-center">
         <CarouselImage
-          src={events[0].image.src}
-          alt={events[0].image.alt}
+          src={events[1].image.src}
+          alt={events[1].image.alt}
           initial={variants.left}
           animate={variantsList[index]}
-          year={events[0].year}
-          title={events[0].name}
-          description={events[0].description}
+          year={events[1].year}
+          title={events[1].name}
+          description={events[1].description}
+          onClick={() => {
+            setIndex(1);
+          }}
         />
         <CarouselImage
           src={events[2].image.src}
@@ -130,15 +136,21 @@ export function HighlightedEvents() {
           year={events[2].year}
           title={events[2].name}
           description={events[2].description}
+          onClick={() => {
+            setIndex(2);
+          }}
         />
         <CarouselImage
-          src={events[1].image.src}
-          alt={events[1].image.alt}
+          src={events[0].image.src}
+          alt={events[0].image.alt}
           initial={variants.center}
           animate={variantsList[(index + 1) % variantsList.length]}
-          year={events[1].year}
-          title={events[1].name}
-          description={events[1].description}
+          year={events[0].year}
+          title={events[0].name}
+          description={events[0].description}
+          onClick={() => {
+            setIndex(0);
+          }}
         />
       </div>
       <div className="flex w-full flex-row items-center justify-center gap-6">
