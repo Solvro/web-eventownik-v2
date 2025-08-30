@@ -71,7 +71,7 @@ export function HighlightedMember({
           src={
             typeof member.image === "string"
               ? member.image
-              : "/assets/person.webp"
+              : "/assets/landing/person.webp"
           }
           alt={member.name}
           width={500}
