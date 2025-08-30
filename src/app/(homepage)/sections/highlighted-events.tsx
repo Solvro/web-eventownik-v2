@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { Badge } from "../ui/badge";
+import { Badge } from "../../../components/ui/badge";
 
 interface HighlightedEvent {
   name: string;

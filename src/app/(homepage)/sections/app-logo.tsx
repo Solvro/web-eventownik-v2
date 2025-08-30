@@ -20,7 +20,6 @@ export function AppLogo({
   forceTheme,
 }: { forceTheme?: "dark" | "light" } = {}) {
   const { resolvedTheme } = useTheme();
-  console.log("Resolved theme:", resolvedTheme);
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {

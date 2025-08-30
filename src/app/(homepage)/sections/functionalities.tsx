@@ -20,8 +20,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Badge } from "../../../components/ui/badge";
+import { Button } from "../../../components/ui/button";
 import EventPageScreenshot2 from "./images/event-page-screenshot-2.png";
 import EventPageScreenshot from "./images/event-page-screenshot.png";
 import Events from "./images/events.png";

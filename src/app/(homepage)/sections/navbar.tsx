@@ -2,9 +2,9 @@ import { Bug, Menu, Star } from "lucide-react";
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
 
-import { AppLogo } from "../landing/app-logo";
-import { ThemeSwitch } from "../theme-switch";
-import { Button } from "../ui/button";
+import { ThemeSwitch } from "../../../components/theme-switch";
+import { Button } from "../../../components/ui/button";
+import { AppLogo } from "./app-logo";
 
 export async function Navbar() {
   const repositoryData = await fetch(
