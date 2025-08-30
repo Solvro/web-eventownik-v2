@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   CircleEllipsis,
-  ClipboardList,
+  FilePenLine,
   Mail,
   Pencil,
 } from "lucide-react";
@@ -25,9 +25,10 @@ import { Button } from "../ui/button";
 import EventPageScreenshot2 from "./images/event-page-screenshot-2.png";
 import EventPageScreenshot from "./images/event-page-screenshot.png";
 import Events from "./images/events.png";
-import Forms from "./images/forms.jpg";
+import FormScreenshot from "./images/form.png";
 import Gmail from "./images/gmail.png";
 import OrganizerView from "./images/organizer-view.jpg";
+import SignupScreenshot from "./images/signup.png";
 
 function FeatureTile({
   name,
@@ -48,6 +49,27 @@ function FeatureTile({
         <p className="text-muted-foreground">{description}</p>
       </div>
     </div>
+  );
+}
+
+function CustomAccordionItem({
+  value,
+  title,
+  children,
+}: {
+  value: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <AccordionItem value={value}>
+      <AccordionTrigger className="text-3xl font-bold">
+        {title}
+      </AccordionTrigger>
+      <AccordionContent className="flex flex-col items-start gap-6 text-balance">
+        {children}
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 
@@ -94,7 +116,7 @@ export function Functionalities() {
         >
           <div className="divide-input flex w-full flex-col divide-y-[1px] divide-dashed overflow-hidden rounded-t-4xl bg-[#ffffff] dark:bg-[#101011]">
             {/* Step 1 */}
-            <div className="grid w-full grid-cols-1 gap-8 p-16 lg:grid-cols-2">
+            <div className="grid w-full grid-cols-1 gap-16 p-16 lg:grid-cols-2">
               <div className="flex w-full flex-col gap-16">
                 <div className="w-full space-y-4">
                   <p className="text-2xl font-medium">Krok 1</p>
@@ -231,30 +253,40 @@ export function Functionalities() {
           </div>
         </div>*/}
             {/* Step 2 */}
-            <div className="grid w-full grid-cols-1 gap-8 p-16 lg:grid-cols-2">
+            <div className="grid w-full grid-cols-1 gap-16 p-16 lg:grid-cols-2">
+              <div className="grid grid-cols-2 gap-8">
+                <Image
+                  src={FormScreenshot}
+                  alt="Widok formularza"
+                  className="h-full rounded-3xl object-contain"
+                />
+                <Image
+                  src={SignupScreenshot}
+                  alt="Widok zapisów"
+                  className="h-full rounded-3xl object-contain"
+                />
+              </div>
               <div className="flex w-full flex-col gap-16">
                 <div className="w-full space-y-4">
                   <p className="text-2xl font-medium">Krok 2</p>
-                  <p className="text-5xl font-medium">Formularze</p>
+                  <p className="text-5xl font-medium">
+                    Formularze i zapisy na miejsca
+                  </p>
                 </div>
                 <p className="text-muted-foreground text-2xl">
                   Tworzenie formularzy z wybranymi atrybutami, generowanie
                   linków rejestracyjnych i automatyczne udostępnianie formularzy
-                  II etapu.
+                  II etapu - w tym zapisy na miejsca aktualizowane w czasie
+                  rzeczywistym.
                 </p>
                 <FeatureTile
-                  name={"Zarządzanie szczegółami"}
+                  name={"Zarządzanie zapisami"}
                   description={
-                    "Ustaw datę, miejsce, agendę i prowadzących wydarzenie."
+                    "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca - anonimowo, imię i nazwisko, a może nawet inny atrybut."
                   }
-                  icon={<ClipboardList />}
+                  icon={<FilePenLine />}
                 />
               </div>
-              <Image
-                src={Forms}
-                alt="Krok 2 - Formularze"
-                className="rounded-3xl lg:max-w-5xl"
-              />
             </div>
           </div>
         </div>
@@ -262,99 +294,104 @@ export function Functionalities() {
       <div className="border-input z-20 flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
         <div className="container grid grid-cols-1 lg:grid-cols-2">
           <div className="z-10 space-y-12 bg-white p-16 dark:bg-[#101011]">
-            <div className="space-y-6">
-              <p className="text-3xl font-bold">Kopiowanie wydarzenia</p>
-              <p className="text-muted-foreground text-2xl font-medium">
-                Skorzystaj z opcji kopiowania — wszystkie dane zostaną
-                automatycznie uzupełnione. Wystarczy nanieść ewentualne zmiany i
-                gotowe!
-              </p>
-            </div>
             <div className="space-y-2">
-              <Button
-                asChild
-                variant="link"
-                className="p-0 text-xl font-medium text-[#6583c8]"
-              >
-                <Link href="/">
-                  Więcej informacji <ArrowRight />
-                </Link>
-              </Button>
               <Accordion
                 type="single"
                 collapsible
-                className="divide-input border-input w-full border-t"
-                defaultValue="item-1"
+                className="divide-input w-full"
+                defaultValue="contact"
               >
-                <AccordionItem value="item-1">
-                  <AccordionTrigger className="text-2xl font-bold">
-                    Limit miejsc
-                  </AccordionTrigger>
-                  <AccordionContent className="flex flex-col gap-4 text-balance">
-                    <p>
-                      Our flagship product combines cutting-edge technology with
-                      sleek design. Built with premium materials, it offers
-                      unparalleled performance and reliability.
+                <CustomAccordionItem value="contact" title="Osoba kontaktowa">
+                  <p className="text-muted-foreground text-xl font-medium">
+                    Przy zakładaniu wydarzenia na Eventowniku zachęcamy do
+                    kontaktu z naszą osobą kontaktową - chętnie wytłumaczymy i
+                    pomożemy w razie problemów. Jednak jeśli nie czujesz takiej
+                    potrzeby, możesz założyć wydarzenie w pełni samodzielnie!
+                  </p>
+                  <Button
+                    asChild
+                    variant="link"
+                    className="p-0 text-xl font-medium text-[#6583c8]"
+                  >
+                    <Link href="mailto:eventownik@pwr.edu.pl">
+                      Skontaktuj się z nami <ArrowRight />
+                    </Link>
+                  </Button>
+                  <div className="space-y-2">
+                    <p className="text-xl font-medium">
+                      Osoba do kontaktu: Amelia Sroczyńska (Project Manager
+                      Eventownika)
                     </p>
-                    <p>
-                      Key features include advanced processing capabilities, and
-                      an intuitive user interface designed for both beginners
-                      and experts.
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger className="text-2xl font-bold">
-                    Ukrywanie wydarzenia
-                  </AccordionTrigger>
-                  <AccordionContent className="flex flex-col gap-4 text-balance">
-                    <p>
-                      We offer worldwide shipping through trusted courier
-                      partners. Standard delivery takes 3-5 business days, while
-                      express shipping ensures delivery within 1-2 business
-                      days.
-                    </p>
-                    <p>
-                      All orders are carefully packaged and fully insured. Track
-                      your shipment in real-time through our dedicated tracking
-                      portal.
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                  <AccordionTrigger className="text-2xl font-bold">
-                    Własne pytania w formularzu
-                  </AccordionTrigger>
-                  <AccordionContent className="flex flex-col gap-4 text-balance">
-                    <p>
-                      We stand behind our products with a comprehensive 30-day
-                      return policy. If you&apos;re not completely satisfied,
-                      simply return the item in its original condition.
-                    </p>
-                    <p>
-                      Our hassle-free return process includes free return
-                      shipping and full refunds processed within 48 hours of
-                      receiving the returned item.
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-4">
-                  <AccordionTrigger className="text-2xl font-bold">
-                    Rejestracja
-                  </AccordionTrigger>
-                  <AccordionContent className="flex flex-col gap-4 text-balance">
-                    <p>
-                      We stand behind our products with a comprehensive 30-day
-                      return policy. If you&apos;re not completely satisfied,
-                      simply return the item in its original condition.
-                    </p>
-                    <p>
-                      Our hassle-free return process includes free return
-                      shipping and full refunds processed within 48 hours of
-                      receiving the returned item.
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
+                    <ul className="list-inside list-disc text-lg">
+                      <li>Telefon: (+48) 606 365 628</li>
+                      <li>Email: eventownik@pwr.edu.pl</li>
+                    </ul>
+                  </div>
+                </CustomAccordionItem>
+                <CustomAccordionItem
+                  value="instruction"
+                  title="Jasna instrukcja"
+                >
+                  <p className="text-muted-foreground text-xl font-medium">
+                    Aby ułatwić organizatorom stworzenie ich pierwszego
+                    wydarzenia na Eventowniku oraz pozwolić im w pełni
+                    wykorzystać możliwości platformy, przygotowaliśmy
+                    przejrzystą i szczegółową instrukcję opisującą wszystkie
+                    dostępne funkcje.
+                  </p>
+                  <Button
+                    asChild
+                    variant="link"
+                    className="p-0 text-xl font-medium text-[#6583c8]"
+                  >
+                    <Link href="/">
+                      Zapoznaj się z instrukcją <ArrowRight />
+                    </Link>
+                  </Button>
+                </CustomAccordionItem>
+                <CustomAccordionItem
+                  value="no-account-needed"
+                  title="Brak potrzeby zakładania konta dla uczestników"
+                >
+                  <p className="text-muted-foreground text-xl font-medium">
+                    Uczestnicy zapisują się na wydarzenie bez korzystania z
+                    konta - nie muszą go wcale zakładać. Konto wymagane jest
+                    jedynie dla organizatorów, aby utworzyć wydarzenie.
+                  </p>
+                  <Button
+                    asChild
+                    variant="link"
+                    className="p-0 text-xl font-medium text-[#6583c8]"
+                  >
+                    <Link href="/auth/register">
+                      Utwórz konto <ArrowRight />
+                    </Link>
+                  </Button>
+                </CustomAccordionItem>
+                <CustomAccordionItem
+                  value="multiple-coorganizers"
+                  title="Współtworzenie wydarzenia przez wiele osób"
+                >
+                  <p className="text-muted-foreground text-xl font-medium">
+                    Podczas tworzenia wydarzenia istnieje możliwość dodania
+                    współorganizatorów oraz przypisania im konkretnych
+                    uprawnień, takich jak dostęp wyłącznie do listy uczestników
+                    czy możliwość edycji formularza. Dzięki temu współpraca
+                    staje się znacznie łatwiejsza, gdy wydarzenie jest
+                    realizowane przez cały sztab organizacyjny!
+                  </p>
+                </CustomAccordionItem>
+                <CustomAccordionItem value="security" title="Bezpieczeństwo">
+                  <p className="text-muted-foreground text-xl font-medium">
+                    Eventownik powstał przy konsultacji z jednostkami
+                    Politechniki Wrocławskiej - Działem Informatyzacji, Działem
+                    Informatyzacji, Inspektorem Ochrony Danych i innymi. Dzięki
+                    temu spełnia najwyższe standardy bezpieczeństwa. Co więcej,
+                    wytrzyma nawet bardzo duże obciążenia i może obsłużyć
+                    jednocześnie duże ilości użytkowników bez utraty
+                    stabilności.
+                  </p>
+                </CustomAccordionItem>
               </Accordion>
             </div>
           </div>
