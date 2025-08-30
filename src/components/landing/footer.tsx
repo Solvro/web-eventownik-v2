@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
 
-import footerBackground from "@/components/landing/images/footer_bg.jpg";
 import { cn } from "@/lib/utils";
 
 import { buttonVariants } from "../ui/button";
@@ -126,9 +125,11 @@ export function Footer() {
           </div>
 
           <Image
-            src={footerBackground}
+            src={"/assets/landing/footer_bg.jpg"}
             alt=""
-            className="absolute inset-0 h-full w-full opacity-10"
+            width={1600}
+            height={500}
+            className="absolute inset-0 h-full w-full object-cover opacity-10"
           />
         </div>
       </div>

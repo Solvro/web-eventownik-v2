@@ -29,7 +29,7 @@ export function Member({ member }: { member: TeamMember }) {
         src={
           typeof member.image === "string"
             ? member.image
-            : "/assets/person.webp"
+            : "/assets/landing/person.webp"
         }
         alt={member.name}
         width={500}
@@ -49,7 +49,7 @@ export function Member({ member }: { member: TeamMember }) {
               src={
                 typeof member.image === "string"
                   ? member.image
-                  : "/assets/person.webp"
+                  : "/assets/landing/person.webp"
               }
               alt={member.name}
               width={500}

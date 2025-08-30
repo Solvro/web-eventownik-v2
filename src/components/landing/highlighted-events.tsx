@@ -8,12 +8,22 @@ import { useState } from "react";
 
 import { Badge } from "../ui/badge";
 
-const events = [
+interface HighlightedEvent {
+  name: string;
+  year: number;
+  description?: string;
+  image: {
+    src: string;
+    alt: string;
+  };
+}
+
+const events: HighlightedEvent[] = [
   {
     name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
     year: 2025,
     image: {
-      src: "/assets/landing/shrekspedycja.jpg",
+      src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
       alt: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
     },
   },
@@ -21,7 +31,7 @@ const events = [
     name: 'Rejs "W8 na Fali"',
     year: 2025,
     image: {
-      src: "/assets/landing/rejs-w8.jpg",
+      src: "/assets/landing/highlighted-events/rejs-w8.jpg",
       alt: 'Rejs "W8 na Fali"',
     },
   },
@@ -29,7 +39,7 @@ const events = [
     name: "Wyjazd do Graz w ramach Unite!",
     year: 2025,
     image: {
-      src: "/assets/landing/wyjazd-graz.jpg",
+      src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
       alt: "Wyjazd do Graz w ramach Unite!",
     },
   },

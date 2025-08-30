@@ -26,7 +26,6 @@ import EventPageScreenshot2 from "./images/event-page-screenshot-2.png";
 import EventPageScreenshot from "./images/event-page-screenshot.png";
 import Events from "./images/events.png";
 import FormScreenshot from "./images/form.png";
-import Gmail from "./images/gmail.png";
 import OrganizerView from "./images/organizer-view.jpg";
 import SignupScreenshot from "./images/signup.png";
 
@@ -172,7 +171,13 @@ export function Functionalities() {
                       key={index}
                       className="border-input flex h-min flex-row gap-6 overflow-hidden rounded-2xl border bg-[#f7f7f7] p-6 dark:bg-[#151515]"
                     >
-                      <Image src={Gmail} alt="Gmail logo" className="size-10" />
+                      <Image
+                        src={"/assets/landing/gmail.png"}
+                        alt="Gmail logo"
+                        className="size-10"
+                        width={40}
+                        height={40}
+                      />
                       <div className="flex h-min flex-col gap-1">
                         <p className="text-sm whitespace-nowrap">
                           Eventownik - nowe wydarzenie &#x2022;
