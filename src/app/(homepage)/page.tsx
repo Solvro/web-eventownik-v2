@@ -1,11 +1,11 @@
-import { EventList } from "@/app/(homepage)/components/event-list";
-import { Footer } from "@/app/(homepage)/components/footer";
-import { Functionalities } from "@/app/(homepage)/components/functionalities";
-import { HighlightedEvents } from "@/app/(homepage)/components/highlighted-events";
-import { Navbar } from "@/app/(homepage)/components/navbar";
-import { Partners } from "@/app/(homepage)/components/partners";
-import { Team } from "@/app/(homepage)/components/team";
-import { ToPWr } from "@/app/(homepage)/components/to-pwr";
+import { EventList } from "@/app/(homepage)/sections/event-list";
+import { Footer } from "@/app/(homepage)/sections/footer";
+import { Functionalities } from "@/app/(homepage)/sections/functionalities";
+import { HighlightedEvents } from "@/app/(homepage)/sections/highlighted-events";
+import { Navbar } from "@/app/(homepage)/sections/navbar";
+import { Partners } from "@/app/(homepage)/sections/partners";
+import { Team } from "@/app/(homepage)/sections/team";
+import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
