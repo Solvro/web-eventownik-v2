@@ -30,7 +30,7 @@ export async function Navbar() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" className="hidden lg:block" asChild>
+          <Button variant="outline" className="hidden lg:flex" asChild>
             <a
               target="_blank"
               href="https://github.com/Solvro/web-eventownik-v2"
@@ -42,7 +42,7 @@ export async function Navbar() {
               <p className="font-medium">{stargazers_count}</p>
             </a>
           </Button>
-          <Button variant="outline" asChild className="hidden lg:block">
+          <Button variant="outline" asChild className="hidden lg:flex">
             <a
               target="_blank"
               href="https://solvro.pwr.edu.pl/contact/"
