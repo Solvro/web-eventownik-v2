@@ -83,18 +83,18 @@ function Event({
   return (
     <div
       className={cn(
-        "group flex w-full justify-center bg-white p-6 text-black transition hover:bg-[#192339] hover:text-white lg:p-8",
+        "group flex w-full justify-center bg-white p-6 text-black transition hover:bg-[#3672FD]/10 lg:p-8",
       )}
     >
       <div className="divide-input container flex flex-col gap-12 lg:flex-row lg:gap-16">
         {/* Desktop view only */}
         <div className="hidden w-1/3 flex-col items-center gap-4 lg:flex">
-          <p className="text-center text-5xl font-extrabold">
+          <p className="text-center text-5xl font-extrabold text-[#274276]">
             {`${dateParts[0]}.${dateParts[1]}`}
             <br />
             {dateParts[2]}
           </p>
-          <p className="bg-success/30 rounded-full px-5 py-2 text-center font-extrabold text-[#61a21c] hover:text-[#62a319]">
+          <p className="rounded-full bg-[#7CFF51]/50 px-5 py-2 text-center font-extrabold text-[#61a21c] hover:text-[#62a319]">
             Dostępna rejestracja
           </p>
         </div>
@@ -124,10 +124,8 @@ function Event({
           <div className="w-full min-w-2/3 space-y-12">
             <div className="space-y-6">
               <p className="text-4xl font-semibold">{title}</p>
-              <p className="text-muted-foreground text-sm font-medium">
-                {organizer}
-              </p>
-              <p className="text-muted-foreground text-2xl">{description}</p>
+              <p className="text-sm font-medium">{organizer}</p>
+              <p className="text-2xl">{description}</p>
             </div>
             <Button
               asChild
