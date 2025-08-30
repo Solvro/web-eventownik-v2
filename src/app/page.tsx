@@ -16,12 +16,12 @@ export default function Home() {
         <div className="container flex w-full flex-col items-center gap-8 px-4 text-center">
           <div className="rounded-full bg-gradient-to-r from-[#6583C8] to-[#80B3FF] p-0.5">
             <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 font-medium dark:bg-[#192237]">
-              Spraw sobie niezapomniane wydarzenia
+              #wytrzyma
             </p>
           </div>
           <p className="text-8xl font-bold uppercase">Eventownik Solvro</p>
           <p className="text-3xl text-[#191A1A] dark:text-[#D9E8FF]">
-            Zróbmy razem wydarzenie! Łatwo, bez stresu i z gwarancją sukcesu.
+            Zróbmy razem wydarzenie!
           </p>
           <div className="space-x-4">
             <Button className="rounded-full px-5 py-4 text-lg font-medium">
