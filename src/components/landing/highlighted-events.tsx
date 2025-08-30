@@ -10,30 +10,27 @@ import { Badge } from "../ui/badge";
 
 const events = [
   {
-    name: "Event 1",
-    description: "Event 1 description",
+    name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
     year: 2025,
     image: {
-      src: "/event-photo-placeholder.png",
-      alt: "Event placeholder",
+      src: "/assets/landing/shrekspedycja.jpg",
+      alt: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
     },
   },
   {
-    name: "Event 2",
-    description: "Event 2 description",
-    year: 2024,
+    name: 'Rejs "W8 na Fali"',
+    year: 2025,
     image: {
-      src: "/event-photo-placeholder.png",
-      alt: "Event placeholder",
+      src: "/assets/landing/rejs-w8.jpg",
+      alt: 'Rejs "W8 na Fali"',
     },
   },
   {
-    name: "Event 3",
-    description: "Event 3 description",
-    year: 2023,
+    name: "Wyjazd do Graz w ramach Unite!",
+    year: 2025,
     image: {
-      src: "/event-photo-placeholder.png",
-      alt: "Event placeholder",
+      src: "/assets/landing/wyjazd-graz.jpg",
+      alt: "Wyjazd do Graz w ramach Unite!",
     },
   },
 ];
@@ -81,7 +78,7 @@ function CarouselImage({
   initial: TargetAndTransition;
   animate: VariantLabels;
   title: string;
-  description: string;
+  description?: string;
   year: number;
   onClick: () => void;
 }) {
@@ -104,7 +101,9 @@ function CarouselImage({
       <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-4 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-16 text-left text-white">
         <Badge>{year}</Badge>
         <h3 className="text-3xl font-semibold">{title}</h3>
-        <p className="w-2/3 text-lg">{description}</p>
+        {description == null ? null : (
+          <p className="w-2/3 text-lg">{description}</p>
+        )}
       </div>
     </motion.button>
   );
