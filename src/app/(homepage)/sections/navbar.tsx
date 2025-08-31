@@ -53,7 +53,11 @@ export async function Navbar() {
             </a>
           </Button>
           <ThemeSwitch />
-          <Button variant="outline" className="block lg:hidden">
+          <Button
+            variant="outline"
+            title="Otwórz menu"
+            className="block lg:hidden"
+          >
             <Menu />
           </Button>
         </div>
