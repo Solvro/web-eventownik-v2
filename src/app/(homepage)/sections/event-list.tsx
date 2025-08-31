@@ -83,7 +83,7 @@ function Event({
   return (
     <div
       className={cn(
-        "group flex w-full justify-center bg-white p-6 text-black transition hover:bg-[#3672FD]/10 lg:p-8",
+        "group flex w-full justify-center bg-white p-6 text-black transition hover:bg-[#b7cdff] lg:p-8",
       )}
     >
       <div className="divide-input container flex flex-col gap-12 lg:flex-row lg:gap-16">
