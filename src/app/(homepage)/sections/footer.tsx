@@ -12,11 +12,16 @@ export function Footer() {
   return (
     <footer className="flex w-full flex-col items-center">
       <div className="container flex w-full flex-col items-center justify-between gap-32 px-8 py-16 2xl:flex-row 2xl:items-center">
-        <div className="flex w-full flex-col gap-16 2xl:w-auto">
-          <p className="text-3xl font-medium">
-            Zostań na bieżąco z Eventownikiem Solvro <br /> i zapisz się do
-            newslettera.
-          </p>
+        <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
+          <p>Zostań na bieżąco z Eventownikiem Solvro -</p>
+          <Link
+            href="/newsletter-eventownik"
+            className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"
+          >
+            <span className="text-[#6583C8]">zapisz się do newslettera.</span>
+            <ArrowRight />
+          </Link>
+          {/*
           <div className="border-input flex flex-row items-center gap-4 border-b focus-within:border-black dark:focus-within:border-white">
             <Input
               className="rounded-none border-0 focus-visible:ring-0"
@@ -24,6 +29,7 @@ export function Footer() {
             />
             <ArrowRight />
           </div>
+          */}
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
           <div className="flex w-full flex-row gap-12">
