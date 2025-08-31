@@ -6,7 +6,6 @@ import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 
 import { buttonVariants } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 
 export function Footer() {
   return (
