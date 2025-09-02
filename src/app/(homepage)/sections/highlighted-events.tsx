@@ -21,6 +21,8 @@ interface HighlightedEvent {
 const events: HighlightedEvent[] = [
   {
     name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
+    description:
+      "Rajd organizowany był przez Wydziałowe Rady Samorządów Studenckich W6, W8 i W12. Organizatorom został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalności i sprawdzili jak bardzo może usprawnić zarządzanie dużym wydarzeniem z liczną grupą uczestników.",
     year: 2025,
     image: {
       src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
@@ -29,6 +31,8 @@ const events: HighlightedEvent[] = [
   },
   {
     name: 'Rejs "W8 na Fali"',
+    description:
+      "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia, czyli Rejsu 2025.",
     year: 2025,
     image: {
       src: "/assets/landing/highlighted-events/rejs-w8.jpg",
@@ -37,6 +41,8 @@ const events: HighlightedEvent[] = [
   },
   {
     name: "Wyjazd do Graz w ramach Unite!",
+    description:
+      "Studenci z naszego Koła Solvro wzięli udział w wymianie do Graz w ramach programu Unite!  Podczas organizacji wyjazdu korzystali z Eventownika, co pozwoliło usprawnić organizację oraz komunikację, zapewniając płynny przebieg całego przedsięwzięcia.",
     year: 2025,
     image: {
       src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
@@ -112,7 +118,7 @@ function CarouselImage({
         <Badge>{year}</Badge>
         <h3 className="text-3xl font-semibold">{title}</h3>
         {description == null ? null : (
-          <p className="w-2/3 text-lg">{description}</p>
+          <p className="w-3/4 text-lg">{description}</p>
         )}
       </div>
     </motion.button>
