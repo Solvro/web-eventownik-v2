@@ -53,17 +53,24 @@ export function AttributeInput({
           {...field}
         >
           <SelectTrigger>
-            <SelectValue {...field}> {field.value as string}</SelectValue>
+            <SelectValue {...field}>
+              {(field.value as string) === " " ? "Brak" : field.value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value=" ">Wybierz opcję</SelectItem>
-            )}
             {attribute.options?.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
             ))}
+            {/* 
+            This hacky solution allows for setting "empty" option/ "unchecking" option
+            Filtering logic is based on this value (" ")
+            Feel free to propose better solution
+            */}
+            {!("isRequired" in attribute ? attribute.isRequired : false) && (
+              <SelectItem value={" "}>Brak</SelectItem>
+            )}
           </SelectContent>
         </Select>
       );
