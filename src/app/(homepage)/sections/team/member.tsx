@@ -16,7 +16,7 @@ export function Member({ member }: { member: TeamMember }) {
   };
   return (
     <div
-      className="relative hover:cursor-pointer"
+      className="relative"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -59,14 +59,6 @@ export function Member({ member }: { member: TeamMember }) {
           </motion.div>
         ) : null}
       </AnimatePresence>
-      <a
-        title={member.name}
-        href={member.url}
-        key={member.name}
-        target="_blank"
-        className="absolute inset-0 block h-full w-full shrink-0"
-        rel="noreferrer noopener"
-      />
       <AnimatePresence>
         {isHovered ? (
           <motion.div
@@ -84,6 +76,13 @@ export function Member({ member }: { member: TeamMember }) {
             <ArrowUpRightFromCircle size={16} />
           </motion.div>
         ) : null}
+        <a
+          title={member.name}
+          href={member.url}
+          target="_blank"
+          className="absolute inset-0 z-30 block h-full w-full shrink-0"
+          rel="noreferrer noopener"
+        />
       </AnimatePresence>
     </div>
   );
