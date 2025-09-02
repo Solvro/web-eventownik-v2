@@ -56,6 +56,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       const result = await registerParticipant(values, event, files);
       if (result.success) {
         setFiles([]);
+        form.reset(undefined, { keepIsSubmitSuccessful: true });
       } else {
         if (
           result.errors?.[0]?.rule === "database.unique" &&

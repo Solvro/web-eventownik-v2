@@ -1,7 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Loader, Save, Trash2 } from "lucide-react";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
@@ -104,6 +104,9 @@ export function EventSettingsTabs({
 
   const [isSaving, setIsSaving] = useState(false);
 
+  const isDirty = useAtomValue(areSettingsDirty);
+  const setIsDirty = useSetAtom(areSettingsDirty);
+
   useEffect(() => {
     setEvent(unmodifiedEvent);
     return () => {
@@ -165,6 +168,7 @@ export function EventSettingsTabs({
           updated: [],
           deleted: [],
         });
+        setIsDirty(false);
         toast({
           variant: "default",
           title: "Zapisano zmiany w wydarzeniu",
@@ -184,6 +188,7 @@ export function EventSettingsTabs({
 
   const handleDeleteEvent = async () => {
     const result = await deleteEvent(unmodifiedEvent.id);
+    setIsDirty(false);
     if ("errors" in result) {
       toast({
         variant: "destructive",
@@ -201,8 +206,6 @@ export function EventSettingsTabs({
     }
     setIsDeleteEventDialogOpen(false);
   };
-
-  const isDirty = useAtomValue(areSettingsDirty);
 
   const navGuard = useNavigationGuard({
     enabled: isDirty,

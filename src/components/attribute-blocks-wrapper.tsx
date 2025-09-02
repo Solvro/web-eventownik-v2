@@ -7,7 +7,6 @@ import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
-import { Accordion } from "./ui/accordion";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
@@ -28,8 +27,7 @@ export function AttributeBlocksWrapper({
   attribute: Attribute;
 }) {
   return (
-    <Accordion
-      type="multiple"
+    <div
       className={`mt-4 ${eventBlocks.length >= 3 ? "flex justify-center" : ""}`}
     >
       <RadioGroup
@@ -37,7 +35,7 @@ export function AttributeBlocksWrapper({
         defaultValue={String(field.value)}
         className={`mt-4 ${eventBlocks.length >= 3 ? "xl:min-w-xl xl:grid-cols-2" : ""}`}
       >
-        <FormItem className="flex h-fit flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+        <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
           <div className="flex items-center gap-4">
             <FormControl>
               <RadioGroupItem value={"null"} />
@@ -57,6 +55,6 @@ export function AttributeBlocksWrapper({
           />
         ))}
       </RadioGroup>
-    </Accordion>
+    </div>
   );
 }
