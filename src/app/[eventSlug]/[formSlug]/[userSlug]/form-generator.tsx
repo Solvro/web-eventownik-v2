@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -45,6 +46,7 @@ export function FormGenerator({
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
   const currentBlocksRef = useRef<PublicBlock[]>(originalEventBlocks); // used to prevent unnecessary re-renders
   const isMounted = useRef(true);
+  const router = useRouter();
   // generate schema for form based on attributes
   const FormSchema = z.object({
     ...getSchemaObjectForAttributes(
@@ -80,6 +82,7 @@ export function FormGenerator({
       );
       if (result.success) {
         setFiles([]);
+        form.reset(values);
       } else {
         form.setError("root", {
           type: "manual",
@@ -154,7 +157,7 @@ export function FormGenerator({
             variant="eventDefault"
             onClick={() => {
               form.reset();
-              location.reload();
+              router.refresh();
             }}
           >
             Edytuj swoją odpowiedź
