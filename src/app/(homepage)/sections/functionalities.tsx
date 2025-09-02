@@ -22,12 +22,6 @@ import {
 
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
-import EventPageScreenshot2 from "./images/event-page-screenshot-2.png";
-import EventPageScreenshot from "./images/event-page-screenshot.png";
-import Events from "./images/events.png";
-import FormScreenshot from "./images/form.png";
-import OrganizerView from "./images/organizer-view.jpg";
-import SignupScreenshot from "./images/signup.png";
 
 function FeatureTile({
   name,
@@ -136,9 +130,11 @@ export function Functionalities() {
                 />
               </div>
               <Image
-                src={Events}
+                src="/assets/landing/functionalities/event-creation.png"
                 alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
                 className="rounded-3xl lg:max-w-5xl"
+                width={2000}
+                height={1000}
               />
             </div>
             {/* New functionalities */}
@@ -217,58 +213,38 @@ export function Functionalities() {
                 <div className="relative space-y-4">
                   <span className="absolute z-10 h-full w-full bg-gradient-to-b from-transparent to-white to-90% dark:to-[#101011]" />
                   <Image
-                    src={EventPageScreenshot}
+                    src="/assets/landing/functionalities/event-page.png"
                     alt="Strona wydarzenia"
                     className="rounded-3xl"
+                    width={2000}
+                    height={1000}
                   />
                   <Image
-                    src={EventPageScreenshot2}
+                    src="/assets/landing/functionalities/event-page-2.png"
                     alt="Strona wydarzenia - widok 2"
                     className="rounded-3xl"
+                    width={2000}
+                    height={1000}
                   />
                 </div>
               </div>
             </div>
             {/* Step 2 */}
-            {/*
-        <div className="flex flex-col gap-8 p-16 lg:flex-row">
-          <Image
-            src={step1Image}
-            alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
-            className="self-center rounded-3xl lg:max-w-5xl lg:-translate-x-1/2"
-          />
-          <div className="flex w-full flex-col gap-16 pr-16 lg:max-w-1/2">
-            <div className="w-full space-y-4">
-              <p className="text-2xl font-medium">Krok 2</p>
-              <p className="text-5xl font-medium">
-                Tworzenie i konfiguracja wydarzeń
-              </p>
-            </div>
-            <p className="text-muted-foreground text-2xl">
-              Zakładanie wydarzeń przez organizatora, ustawianie atrybutów
-              uczestników oraz dodawanie współorganizatorów.
-            </p>
-            <FeatureTile
-              name={"Personalizacja wydarzenia"}
-              description={
-                "Pozwala dostosować wygląd, formularze rejestracyjne i ustawienia do potrzeb uczestników i charakteru spotkania."
-              }
-              icon={<Pencil />}
-            />
-          </div>
-        </div>*/}
-            {/* Step 2 */}
             <div className="grid w-full grid-cols-1 gap-16 p-16 lg:grid-cols-2">
               <div className="grid grid-cols-2 gap-8">
                 <Image
-                  src={FormScreenshot}
+                  src="/assets/landing/functionalities/form.png"
                   alt="Widok formularza"
                   className="h-full rounded-3xl object-contain"
+                  width={500}
+                  height={1000}
                 />
                 <Image
-                  src={SignupScreenshot}
+                  src="/assets/landing/functionalities/signup.png"
                   alt="Widok zapisów"
                   className="h-full rounded-3xl object-contain"
+                  width={500}
+                  height={1000}
                 />
               </div>
               <div className="flex w-full flex-col gap-16">
@@ -403,16 +379,20 @@ export function Functionalities() {
           <div className="flex flex-col items-center -space-y-32 px-8 py-16">
             <div className="-translate-x-8 rounded-4xl border border-[#798DDE] bg-[#1B4AE4]/40 p-2 drop-shadow-[0_-4px_72px_rgba(56,115,255,0.69)] dark:bg-[#26486E]/40">
               <Image
-                src={OrganizerView}
+                src="/assets/landing/functionalities/organizer-view.jpg"
                 alt="Organizer View"
                 className="max-w-xl rounded-3xl"
+                width={2000}
+                height={1000}
               />
             </div>
             <div className="translate-x-8 rounded-4xl border border-[#798DDE] bg-[#1B4AE4]/40 p-2 drop-shadow-[0_-4px_72px_rgba(56,115,255,0.69)] dark:bg-[#26486E]/40">
               <Image
-                src={OrganizerView}
+                src="/assets/landing/functionalities/organizer-view.jpg"
                 alt="Organizer View"
                 className="max-w-xl rounded-3xl"
+                width={2000}
+                height={1000}
               />
             </div>
           </div>

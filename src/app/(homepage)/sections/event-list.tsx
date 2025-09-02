@@ -31,7 +31,7 @@ function TimelineStep({
               "bg-input block",
               index === 5 ? "h-10 w-[1.5px]" : "h-5 w-px",
             )}
-            key={_}
+            key={index}
           />
         ))}
       </div>
