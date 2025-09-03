@@ -104,13 +104,13 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="absolute h-[23.7rem] w-2xl"
+      className="absolute h-[30rem] w-2xl"
       onClick={onClick}
     >
       <Image
         src={src}
         alt={alt}
-        className="border-input h-full rounded-4xl border object-cover"
+        className="border-input h-full max-h-[30rem] rounded-4xl border object-cover"
         width={750}
         height={480}
       />
@@ -129,8 +129,8 @@ export function HighlightedEvents() {
   const variantsList = ["left", "center", "right"];
   const [index, setIndex] = useState(0);
   return (
-    <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-hidden pt-16">
-      <div className="relative flex h-[24rem] w-full justify-center">
+    <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-x-hidden pt-16">
+      <div className="relative flex h-[32rem] w-full justify-center">
         <CarouselImage
           src={events[1].image.src}
           alt={events[1].image.alt}
