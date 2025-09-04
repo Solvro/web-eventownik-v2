@@ -44,20 +44,27 @@ export function Footer() {
             <Link href="/">RODO</Link>
           </div>
           <div className="flex w-full flex-row items-center justify-between gap-8">
-            <Image
-              src="/assets/logo/solvro_black.png"
-              alt="Logo Koła Naukowego Solvro"
-              className="block dark:hidden"
-              width={200}
-              height={200}
-            />
-            <Image
-              src="/assets/logo/solvro_white.png"
-              alt="Logo Koła Naukowego Solvro"
-              className="hidden dark:block"
-              width={200}
-              height={200}
-            />
+            <a
+              title="Koło Naukowe Solvro"
+              href="https://solvro.pwr.edu.pl/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                src="/assets/logo/solvro_black.png"
+                alt="Logo Koła Naukowego Solvro"
+                className="block dark:hidden"
+                width={200}
+                height={200}
+              />
+              <Image
+                src="/assets/logo/solvro_white.png"
+                alt="Logo Koła Naukowego Solvro"
+                className="hidden dark:block"
+                width={200}
+                height={200}
+              />
+            </a>
             <div className="flex flex-row gap-6">
               <a
                 title="Repozytorium Eventownika na Githubie"
