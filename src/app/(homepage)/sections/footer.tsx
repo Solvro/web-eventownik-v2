@@ -32,7 +32,13 @@ export function Footer() {
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
           <div className="flex w-full flex-row gap-12">
-            <Link href="/">Regulamin</Link>
+            <a
+              href="/documents/regulamin.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Regulamin
+            </a>
             <Link href="/">Polityka prywatności</Link>
             <Link href="/">Pliki Cookies</Link>
             <Link href="/">RODO</Link>
