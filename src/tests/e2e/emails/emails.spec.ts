@@ -138,17 +138,6 @@ test.describe("Creating templates - 2nd step", () => {
   });
 });
 
-// TODO: Refactor the whole creating and deleting mechanism
-// This is very messy because currently all tests need to be run in this specific sequence
-// otherwise there will be errors due to more than one template visible
-test.describe("Deleting templates", () => {
-  test("should delete template", async ({ page }) => {
-    await page.getByRole("button", { name: /usuń/i }).click();
-    const deleteConfirmation = page.getByRole("dialog");
-    await deleteConfirmation.getByRole("button", { name: /usuń/i }).click();
-  });
-});
-
 test.describe("Editor", () => {
   let editor: Editor;
 
