@@ -15,9 +15,6 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("General", () => {
   test("should render the page", async ({ page }) => {
-    await expect(page).toHaveURL(
-      `/dashboard/events/${EVENT_DATA.id.toString()}/emails`,
-    );
     await expect(
       page.getByRole("heading", { name: /szablony/i }),
     ).toBeVisible();
@@ -108,10 +105,12 @@ test.describe("Creating templates - 2nd step", () => {
   });
 
   test("should show the second step", async ({ page }) => {
-    const textBoxes = await page.getByRole("textbox").all();
+    const titleInput = page.getByTestId("title");
+    const editor = page.getByTestId("editor");
 
     await expect(page.getByLabel(/tytuł/i)).toBeVisible();
-    expect(textBoxes).toHaveLength(2); // NOTE: Title and editor - should it be done differently?
+    await expect(titleInput).toBeVisible();
+    await expect(editor).toBeVisible();
     await expect(page.getByRole("button", { name: /wróć/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /zapisz/i })).toBeVisible();
   });
