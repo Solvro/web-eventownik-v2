@@ -1,7 +1,11 @@
+"use client";
+
 import { format } from "date-fns";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, ArrowUpRight } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -9,27 +13,43 @@ import { Button } from "../../../components/ui/button";
 
 function TimelineStep({
   month,
+  monthNumber,
   isActive,
+  onClick,
 }: {
   month: string;
+  monthNumber: number;
   isActive: boolean;
+  onClick: () => void;
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <p
+      <button
+        onClick={onClick}
         className={cn(
-          "text-4xl font-bold uppercase",
-          isActive && "text-primary",
+          "text-4xl uppercase transition",
+          isActive ? "font-extrabold text-[#3458ae]" : "font-semibold",
         )}
       >
         {month}
-      </p>
+      </button>
       <div className="flex flex-row items-end gap-6">
         {Array.from({ length: 11 }).map((_, index) => (
           <span
             className={cn(
-              "bg-input block",
-              index === 5 ? "h-10 w-[1.5px]" : "h-5 w-px",
+              "block",
+              // Make the lines transparent if they are out of bounds
+              (index < 5 && monthNumber === 0) ||
+                (index > 5 && monthNumber === 11)
+                ? "bg-transparent"
+                : "bg-[#414141]",
+              // Full line for under the month
+              index === 5
+                ? "h-10 w-px"
+                : // Remove the last line so they won't stack up
+                  index === 10 && monthNumber !== 11
+                  ? "w-0"
+                  : "h-5 w-px",
             )}
             key={index}
           />
@@ -40,6 +60,18 @@ function TimelineStep({
 }
 
 function Timeline() {
+  // Get the current month number to set the right active month
+  const [month, setMonth] = useState<number>(new Date().getMonth());
+  const ref = useRef(null);
+  const [width, setWidth] = useState(0);
+
+  // Get the width of the timeline
+  useLayoutEffect(() => {
+    if (ref.current) {
+      setWidth(ref.current.offsetWidth);
+    }
+  }, [ref]);
+
   const months = [
     "Styczeń",
     "Luty",
@@ -56,10 +88,49 @@ function Timeline() {
   ];
 
   return (
-    <div className="flex flex-row">
-      {months.map((month, index) => (
-        <TimelineStep key={index} month={month} isActive={index === 7} />
-      ))}
+    <div className="relative flex h-22 w-full flex-col items-center">
+      <div className="absolute flex w-full flex-row justify-between px-8">
+        <ArrowLeftCircle
+          size={36}
+          className="z-10"
+          onClick={() => {
+            setMonth((previous) => Math.max(previous - 1, 0));
+          }}
+        />
+        <ArrowRightCircle
+          size={36}
+          className="z-10"
+          onClick={() => {
+            setMonth((previous) => Math.min(previous + 1, 11));
+          }}
+        />
+      </div>
+      <div className="faded-edges relative flex h-22 w-full flex-col items-center">
+        <motion.div
+          ref={ref}
+          animate={{
+            x: width / -24 - month * (width / 12),
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 20,
+          }}
+          className="absolute flex shrink-0 translate-x-1/2 flex-row"
+        >
+          {months.map((monthName, index) => (
+            <TimelineStep
+              key={monthName}
+              month={monthName}
+              monthNumber={index}
+              isActive={index === month}
+              onClick={() => {
+                setMonth(index);
+              }}
+            />
+          ))}
+        </motion.div>
+      </div>
     </div>
   );
 }
