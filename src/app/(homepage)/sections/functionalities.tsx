@@ -39,7 +39,7 @@ function FeatureTile({
       </div>
       <div className="space-y-1.5">
         <p className="text-lg font-medium">{name}</p>
-        <p className="text-muted-foreground">{description}</p>
+        <p className="text-[#515151] dark:text-[#B4B4B4]">{description}</p>
       </div>
     </div>
   );
@@ -117,7 +117,7 @@ export function Functionalities() {
                     Tworzenie i konfiguracja wydarzeń
                   </p>
                 </div>
-                <p className="text-muted-foreground text-2xl">
+                <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
                   Zakładanie wydarzeń przez organizatora, ustawianie atrybutów
                   uczestników oraz dodawanie współorganizatorów.
                 </p>
@@ -147,7 +147,7 @@ export function Functionalities() {
                     </Badge>
                     <p className="text-5xl font-medium">Maile</p>
                   </div>
-                  <p className="text-muted-foreground text-2xl">
+                  <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
                     Tworzenie szablonów z dynamicznymi danymi, automatyczna i
                     grupowa wysyłka maili w zależności od statusu uczestnika.
                   </p>
@@ -177,12 +177,12 @@ export function Functionalities() {
                       <div className="flex h-min flex-col gap-1">
                         <p className="text-sm whitespace-nowrap">
                           Eventownik - nowe wydarzenie &#x2022;
-                          <span className="text-muted-foreground text-xs">
+                          <span className="text-xs text-[#515151] dark:text-[#B4B4B4]">
                             {" "}
                             2 minuty temu
                           </span>
                         </p>
-                        <p className="text-muted-foreground text-xs">
+                        <p className="text-xs text-[#515151] dark:text-[#B4B4B4]">
                           Dodano nowe wydarzenie, sprawdź je!
                         </p>
                       </div>
@@ -198,7 +198,7 @@ export function Functionalities() {
                     </Badge>
                     <p className="text-5xl font-medium">Strona wydarzenia</p>
                   </div>
-                  <p className="text-muted-foreground text-2xl">
+                  <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
                     Publiczna strona z harmonogramem i aktualnościami, gotowa do
                     udostępnienia w mediach społecznościowych.
                   </p>
@@ -254,7 +254,7 @@ export function Functionalities() {
                     Formularze i zapisy na miejsca
                   </p>
                 </div>
-                <p className="text-muted-foreground text-2xl">
+                <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
                   Tworzenie formularzy z wybranymi atrybutami, generowanie
                   linków rejestracyjnych i automatyczne udostępnianie formularzy
                   II etapu - w tym zapisy na miejsca aktualizowane w czasie
@@ -283,7 +283,7 @@ export function Functionalities() {
                 defaultValue="contact"
               >
                 <CustomAccordionItem value="contact" title="Osoba kontaktowa">
-                  <p className="text-muted-foreground text-xl font-medium">
+                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                     Przy zakładaniu wydarzenia na Eventowniku zachęcamy do
                     kontaktu z naszą osobą kontaktową - chętnie wytłumaczymy i
                     pomożemy w razie problemów. Jednak jeśli nie czujesz takiej
@@ -313,7 +313,7 @@ export function Functionalities() {
                   value="instruction"
                   title="Jasna instrukcja"
                 >
-                  <p className="text-muted-foreground text-xl font-medium">
+                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                     Aby ułatwić organizatorom stworzenie ich pierwszego
                     wydarzenia na Eventowniku oraz pozwolić im w pełni
                     wykorzystać możliwości platformy, przygotowaliśmy
@@ -334,7 +334,7 @@ export function Functionalities() {
                   value="no-account-needed"
                   title="Brak potrzeby zakładania konta dla uczestników"
                 >
-                  <p className="text-muted-foreground text-xl font-medium">
+                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                     Uczestnicy zapisują się na wydarzenie bez korzystania z
                     konta - nie muszą go wcale zakładać. Konto wymagane jest
                     jedynie dla organizatorów, aby utworzyć wydarzenie.
@@ -353,7 +353,7 @@ export function Functionalities() {
                   value="multiple-coorganizers"
                   title="Współtworzenie wydarzenia przez wiele osób"
                 >
-                  <p className="text-muted-foreground text-xl font-medium">
+                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                     Podczas tworzenia wydarzenia istnieje możliwość dodania
                     współorganizatorów oraz przypisania im konkretnych
                     uprawnień, takich jak dostęp wyłącznie do listy uczestników
@@ -363,7 +363,7 @@ export function Functionalities() {
                   </p>
                 </CustomAccordionItem>
                 <CustomAccordionItem value="security" title="Bezpieczeństwo">
-                  <p className="text-muted-foreground text-xl font-medium">
+                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                     Eventownik powstał przy konsultacji z jednostkami
                     Politechniki Wrocławskiej - Działem Informatyzacji, Działem
                     Informatyzacji, Inspektorem Ochrony Danych i innymi. Dzięki

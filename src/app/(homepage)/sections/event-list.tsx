@@ -1,7 +1,12 @@
 "use client";
 
 import { format } from "date-fns";
-import { ArrowLeftCircle, ArrowRightCircle, ArrowUpRight } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  ArrowRightCircle,
+  ArrowUpRight,
+  CircleChevronDown,
+} from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +33,9 @@ function TimelineStep({
         onClick={onClick}
         className={cn(
           "text-4xl uppercase transition",
-          isActive ? "font-extrabold text-[#3458ae]" : "font-semibold",
+          isActive
+            ? "font-extrabold text-[#3458ae] dark:text-[#7294e2]"
+            : "font-semibold",
         )}
       >
         {month}
@@ -42,7 +49,7 @@ function TimelineStep({
               (index < 5 && monthNumber === 0) ||
                 (index > 5 && monthNumber === 11)
                 ? "bg-transparent"
-                : "bg-[#414141]",
+                : "bg-[#414141] dark:bg-[#d6d6d6]",
               // Full line for under the month
               index === 5
                 ? "h-10 w-px"
@@ -201,7 +208,7 @@ function Event({
             <Button
               asChild
               variant={"secondary"}
-              className="border-input/20 flex w-min items-center justify-center rounded-full border bg-[#d6d6d6] text-black group-hover:bg-[#4473E1] group-hover:text-white group-hover:hover:bg-[#3458ae]"
+              className="border-input/20 flex w-full items-center justify-center rounded-full border bg-[#d6d6d6] text-black group-hover:bg-[#4473E1] group-hover:text-white group-hover:hover:bg-[#3458ae] lg:w-min"
             >
               <Link href="/">
                 Sprawdź
@@ -253,7 +260,11 @@ function Events() {
         />
       </div>
       <div className="clip-curve flex w-full flex-col items-center justify-center bg-white p-4">
-        <Button variant={"outline"} className="rounded-full">
+        <Button
+          variant={"outline"}
+          className="rounded-full border-black bg-transparent text-black hover:bg-[#d6d6d6]/50 hover:text-black"
+        >
+          <CircleChevronDown />
           Pokaż więcej
         </Button>
       </div>
