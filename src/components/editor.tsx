@@ -44,7 +44,7 @@ function WysiwygEditor({
     editorProps: {
       attributes: {
         class:
-          "pb-4 focus:outline-none cursor-text h-[200px] overflow-y-auto leading-relaxed",
+          "pb-4 focus:outline-none cursor-text h-[200px] overflow-y-auto leading-relaxed resize-y",
         role: "textbox",
         "data-testid": "editor",
       },
