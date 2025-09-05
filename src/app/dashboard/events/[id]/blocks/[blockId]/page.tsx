@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { AddBlockEntry } from "@/app/dashboard/events/[id]/blocks/[blockId]/add-block-entry";
@@ -104,8 +105,31 @@ function getParticipantsInChildBlock(
     const targetBlockAttribute = participant.attributes.find(
       (attribute) => attribute.id.toString() === rootBlockId,
     ) as AttributeBase;
-    return targetBlockAttribute.value === childBlockId.toString();
+    return targetBlockAttribute.value === childBlockId;
   });
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; blockId: string }>;
+}): Promise<Metadata> {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+  const { bearerToken } = session;
+  const { id: eventId, blockId: rootBlockId } = await params;
+
+  const rootBlockName = await getRootBlockAttributeName(
+    eventId,
+    rootBlockId,
+    bearerToken,
+  );
+
+  return {
+    title: rootBlockName,
+  };
 }
 
 export default async function EventBlockEditPage({

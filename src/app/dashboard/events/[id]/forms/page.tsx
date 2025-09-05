@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
+
 import { CreateEventFormForm } from "./create-event-form-form";
 import { getEventAttributes, getEventForms } from "./data-access";
 import { FormEntry } from "./form-entry";
+
+export const metadata: Metadata = {
+  title: "Formularze",
+};
 
 export default async function DashboardEventFormsPage({
   params,

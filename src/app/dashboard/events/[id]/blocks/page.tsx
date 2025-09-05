@@ -1,4 +1,5 @@
 import { PackageOpenIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -6,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
+
+export const metadata: Metadata = {
+  title: "Bloki",
+};
 
 export default async function DashboardEventBlocksPage({
   params,
