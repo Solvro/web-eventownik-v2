@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Loader } from "lucide-react";
+import { Edit, Loader, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +26,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
 
 const BlockSchema = z.object({
@@ -54,7 +58,15 @@ function EditBlockEntry({
       capacity: blockToEdit.capacity ?? "",
     },
   });
+
   const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [alertActive, setAlertActive] = useState(false);
+  const router = useRouter();
+
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await updateBlock(
@@ -69,12 +81,16 @@ function EditBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Pomyślnie zedytowano blok",
+        title: "Zapisano zmiany w bloku",
       });
-      location.reload();
+      form.reset();
+      setDialogOpen(false);
+      setTimeout(() => {
+        router.refresh();
+      }, 100);
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się zapisać zmian w bloku!",
         description: result.error,
         variant: "destructive",
       });
@@ -82,9 +98,22 @@ function EditBlockEntry({
   };
 
   return (
-    <Dialog>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open: boolean) => {
+        if (open) {
+          setDialogOpen(open);
+        } else {
+          if (form.formState.isDirty || isGuardActive) {
+            setAlertActive(form.formState.isDirty || isGuardActive);
+          } else {
+            setDialogOpen(open);
+          }
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
         </Button>
@@ -93,6 +122,16 @@ function EditBlockEntry({
         <DialogHeader>
           <DialogTitle>Edytuj blok</DialogTitle>
         </DialogHeader>
+        <UnsavedChangesAlert
+          active={alertActive}
+          setActive={setAlertActive}
+          setDialogOpen={setDialogOpen}
+          onCancel={onCancel}
+          onConfirm={() => {
+            form.reset();
+            onConfirm();
+          }}
+        />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -131,16 +170,16 @@ function EditBlockEntry({
             />
             <Button
               type="submit"
+              variant="eventDefault"
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (
-                <>
-                  <Loader className="animate-spin" /> Edytowanie bloku...
-                </>
+                <Loader className="animate-spin" />
               ) : (
-                "Zapisz zmiany"
-              )}
+                <Save />
+              )}{" "}
+              Zapisz
             </Button>
           </form>
         </Form>

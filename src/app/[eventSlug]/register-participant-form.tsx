@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
@@ -44,6 +45,8 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     },
   });
 
+  useUnsavedForm(form.formState.isDirty);
+
   const { toast } = useToast();
 
   async function onSubmit(
@@ -53,6 +56,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
       const result = await registerParticipant(values, event, files);
       if (result.success) {
         setFiles([]);
+        form.reset(undefined, { keepIsSubmitSuccessful: true });
       } else {
         if (
           result.errors?.[0]?.rule === "database.unique" &&
@@ -112,6 +116,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
         <br />
         <div className="text-center">
           <Button
+            variant="eventDefault"
             onClick={() => {
               form.reset();
             }}
@@ -193,6 +198,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
 
         <Button
           type="submit"
+          variant="eventDefault"
           disabled={form.formState.isSubmitting}
           className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >

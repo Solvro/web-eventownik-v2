@@ -14,6 +14,7 @@ import React from "react";
 
 import { Button } from "@/components/ui/button";
 import type { Attribute } from "@/types/attributes";
+import type { Event } from "@/types/event";
 
 interface SidebarSection {
   title: string;
@@ -27,10 +28,10 @@ interface SidebarLink {
 }
 
 export function DashboardSidebar({
-  id,
+  event,
   attributes,
 }: {
-  id: string;
+  event: Event;
   attributes: Attribute[];
 }) {
   const pathname = usePathname();
@@ -53,7 +54,7 @@ export function DashboardSidebar({
         {
           title: "Wydarzenie",
           icon: <Play />,
-          route: id,
+          route: event.id.toString(),
         },
         {
           title: "Formularze",
@@ -104,12 +105,16 @@ export function DashboardSidebar({
                   <Button
                     className="w-full justify-start"
                     variant={
-                      pathname.endsWith(link.route) ? "default" : "ghost"
+                      pathname.endsWith(link.route) ||
+                      (link.route !== event.id.toString() &&
+                        pathname.includes(link.route))
+                        ? "eventDefault"
+                        : "eventGhost"
                     }
                     asChild
                   >
                     <Link
-                      href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
+                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                     >
                       {link.icon}
                       {link.title}
@@ -142,14 +147,15 @@ export function DashboardSidebar({
                 <Button
                   variant={
                     pathname.endsWith(link.route) ||
-                    (link.route !== id && pathname.includes(link.route))
-                      ? "default"
-                      : "ghost"
+                    (link.route !== event.id.toString() &&
+                      pathname.includes(link.route))
+                      ? "eventDefault"
+                      : "eventGhost"
                   }
                   asChild
                 >
                   <Link
-                    href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
+                    href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                   >
                     {link.icon}
                   </Link>

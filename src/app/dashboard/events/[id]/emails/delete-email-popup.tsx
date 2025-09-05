@@ -44,7 +44,7 @@ function DeleteEmailPopup({
       location.reload();
     } else {
       toast({
-        title: "Wystąpił błąd",
+        title: "Nie udało się usunąć szablonu!",
         variant: "destructive",
         description: result.error,
       });
@@ -55,7 +55,7 @@ function DeleteEmailPopup({
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="ghost"
+          variant="eventGhost"
           size="icon"
           title="Usuń szablon"
           className="text-red-700"
@@ -69,7 +69,7 @@ function DeleteEmailPopup({
           <DialogTitle>Usuń szablon</DialogTitle>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <CircleX className="h-14 w-14 text-red-700" />
+          <CircleX className="text-destructive h-14 w-14" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
             Czy na pewno chcesz usunąć szablon maila <strong>{mailName}</strong>

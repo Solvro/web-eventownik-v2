@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightbulb, Save, Text, Zap } from "lucide-react";
+import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
@@ -70,7 +72,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="border-primary/25 flex max-w-lg grow flex-col gap-2 rounded-md border p-4">
+    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -215,8 +217,11 @@ function EventEmailEditForm({
       content: emailToEdit.content,
     },
   });
-
   const { toast } = useToast();
+
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
   async function onSubmit(values: z.infer<typeof EventEmailEditFormSchema>) {
     const updatedMail = {
@@ -234,12 +239,12 @@ function EventEmailEditForm({
 
     if (result.success) {
       toast({
-        title: "Szablon został zaktualizowany",
+        title: "Zapisano zmiany w szablonie",
       });
-      location.reload();
+      form.reset(values);
     } else {
       toast({
-        title: "Nie udało się zaktualizować szablonu",
+        title: "Nie udało się zapisać zmian w szablonie!",
         description: result.error,
         variant: "destructive",
       });
@@ -258,8 +263,13 @@ function EventEmailEditForm({
 
   return (
     <Form {...form}>
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+        <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
           <div className="border-foreground rounded-full border p-2">
             <Zap />
           </div>
@@ -319,7 +329,7 @@ function EventEmailEditForm({
               form={form}
             />
           </div>
-          <div className="bg-primary/10 flex items-center gap-4 rounded-md p-4 text-2xl font-semibold">
+          <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
             <div className="border-foreground rounded-full border p-2">
               <Text />
             </div>
@@ -360,8 +370,17 @@ function EventEmailEditForm({
             )}
           />
         </div>
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          <Save /> Zapisz zmiany
+        <Button
+          type="submit"
+          variant="eventDefault"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <Save />
+          )}{" "}
+          Zapisz
         </Button>
       </form>
     </Form>

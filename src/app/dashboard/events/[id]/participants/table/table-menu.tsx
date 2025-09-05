@@ -21,7 +21,7 @@ import {
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./action-components";
+import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";
@@ -79,6 +79,7 @@ export function TableMenu({
               }}
               size="icon"
               variant="outline"
+              aria-label="Resetuj wszystkie filtry"
             >
               <FilterX />
             </Button>
@@ -93,6 +94,7 @@ export function TableMenu({
               }}
               size="icon"
               variant="outline"
+              aria-label="Resetuj sortowanie"
             >
               <ArrowUpDown />
             </Button>
@@ -121,7 +123,7 @@ export function TableMenu({
             table.setPageSize(
               value === "all"
                 ? table.getFilteredRowModel().rows.length
-                : +value,
+                : Number(value),
             );
           }}
           defaultValue={table.getState().pagination.pageSize.toString()}

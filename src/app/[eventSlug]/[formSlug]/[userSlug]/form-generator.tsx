@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getSchemaObjectForAttributes } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -31,19 +33,20 @@ export function FormGenerator({
   originalEventBlocks,
   formId,
   eventSlug,
-  userId,
+  userSlug,
 }: {
   attributes: FormAttribute[];
   userData: PublicParticipant;
   originalEventBlocks: PublicBlock[];
   formId: string;
   eventSlug: string;
-  userId: string;
+  userSlug: string;
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
   const currentBlocksRef = useRef<PublicBlock[]>(originalEventBlocks); // used to prevent unnecessary re-renders
   const isMounted = useRef(true);
+  const router = useRouter();
   // generate schema for form based on attributes
   const FormSchema = z.object({
     ...getSchemaObjectForAttributes(
@@ -66,11 +69,20 @@ export function FormGenerator({
 
   const { toast } = useToast();
 
+  useUnsavedForm(form.formState.isDirty);
+
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-      const result = await submitForm(values, formId, eventSlug, userId, files);
+      const result = await submitForm(
+        values,
+        formId,
+        eventSlug,
+        userSlug,
+        files,
+      );
       if (result.success) {
         setFiles([]);
+        form.reset(values);
       } else {
         form.setError("root", {
           type: "manual",
@@ -142,9 +154,10 @@ export function FormGenerator({
         <br />
         <div className="text-center">
           <Button
+            variant="eventDefault"
             onClick={() => {
               form.reset();
-              location.reload();
+              router.refresh();
             }}
           >
             Edytuj swoją odpowiedź
@@ -208,6 +221,7 @@ export function FormGenerator({
         )}
         <Button
           type="submit"
+          variant="eventDefault"
           disabled={form.formState.isSubmitting}
           className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >

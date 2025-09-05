@@ -53,17 +53,24 @@ export function AttributeInput({
           {...field}
         >
           <SelectTrigger>
-            <SelectValue {...field}> {field.value as string}</SelectValue>
+            <SelectValue {...field}>
+              {(field.value as string) === " " ? "Brak" : field.value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value=" ">Wybierz opcję</SelectItem>
-            )}
             {attribute.options?.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
             ))}
+            {/* 
+            This hacky solution allows for setting "empty" option/ "unchecking" option
+            Filtering logic is based on this value (" ")
+            Feel free to propose better solution
+            */}
+            {!("isRequired" in attribute ? attribute.isRequired : false) && (
+              <SelectItem value={" "}>Brak</SelectItem>
+            )}
           </SelectContent>
         </Select>
       );
@@ -74,7 +81,7 @@ export function AttributeInput({
           {attribute.options?.map((option) => (
             <div key={option} className="mb-2 flex items-center space-x-2">
               <Checkbox
-                id={option}
+                id={`${attribute.id.toString()}-${option}`}
                 disabled={field.disabled}
                 checked={((field.value ?? []) as string[]).includes(option)}
                 onCheckedChange={(checked) => {
@@ -92,7 +99,9 @@ export function AttributeInput({
                   }
                 }}
               />
-              <Label htmlFor={option}>{option}</Label>
+              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
+                {option}
+              </Label>
             </div>
           ))}
         </div>
@@ -146,7 +155,14 @@ export function AttributeInput({
       );
     }
     case "tel": {
-      return <Input type="tel" {...field} />;
+      return (
+        <Input
+          type="tel"
+          pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
+          maxLength={16}
+          {...field}
+        />
+      );
     }
     case "file": {
       // Handled in ./attribute-input-file.tsx

@@ -15,12 +15,13 @@ export interface NewEventForm
 export const newEventFormAtom = atom<NewEventForm>({
   isOpen: true,
   isFirstForm: false,
-  description: "",
+  description: "<p></p>",
   name: "",
   slug: "",
   startTime: "12:00",
   endTime: "12:00",
-  startDate: new Date(),
-  endDate: new Date(),
+  // Tomorrow, midnight
+  startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  endDate: new Date(new Date().setHours(24, 0, 0, 0)),
   attributes: [],
 });

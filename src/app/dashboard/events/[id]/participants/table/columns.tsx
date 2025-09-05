@@ -7,11 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 import { getParticipant } from "../actions";
 import { flattenParticipant } from "./data";
-import { FilterButton, SortButton, SortIcon } from "./utils";
+import { FilterButton } from "./filter-button";
+import { SortButton, SortIcon } from "./sort-button";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,7 +43,7 @@ export function generateColumns(
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            table.toggleAllRowsSelected(!!(value as boolean));
+            table.toggleAllRowsSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wszystkie"
         ></Checkbox>
@@ -48,7 +52,7 @@ export function generateColumns(
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
-            row.toggleSelected(!!(value as boolean));
+            row.toggleSelected(Boolean(value as boolean));
           }}
           aria-label="Wybierz wiersz"
         ></Checkbox>
@@ -123,7 +127,7 @@ export function generateColumns(
             <div className="flex items-center">
               <FilterButton
                 attributeType={attribute.type}
-                options={attribute.options}
+                options_={attribute.options}
                 column={column}
               />
               <SortButton column={column}>
@@ -175,40 +179,69 @@ export function generateColumns(
             }
           }
         },
-        filterFn: "arrIncludesSome",
+        //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
+        filterFn: (
+          row: Row<FlattenedParticipant>,
+          columnId: string,
+          filterValue: ParticipantAttributeValueType[],
+        ) => {
+          if (filterValue.length === 0) {
+            return true;
+          }
+          const rowValue = row.original[columnId] ?? null;
+
+          // Multiselect case has to be handled separately
+          // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+          if (rowValue !== null && attribute.type === "multiselect") {
+            const values = new Set(
+              (row.original[columnId] as string).split(","),
+            );
+            return filterValue.some((value) => values.has(value as string));
+          }
+
+          // Special case when attribute of single select type is set empty
+          // Check implementation of AttributeInput for explanation
+          if (rowValue === " " && filterValue.includes(null)) {
+            return true;
+          }
+
+          return filterValue.includes(rowValue);
+        },
+        sortDescFirst: false,
       });
     }),
     columnHelper.display({
       id: "expand",
-      header: ({ table }) => {
-        const isAnyExpanded = table.getIsSomeRowsExpanded();
-        const notExpandedRows = table
-          .getCoreRowModel()
-          .rows.filter((row) => !row.original.wasExpanded);
-        return (
-          <Button
-            variant="ghost"
-            onClick={async () => {
-              await Promise.all(
-                notExpandedRows.map(async (row) => {
-                  return fetchAdditionalParticipantData(row, table, eventId);
-                }),
-              );
-              isAnyExpanded
-                ? table.resetExpanded(isAnyExpanded)
-                : table.toggleAllRowsExpanded();
-            }}
-          >
-            {isAnyExpanded ? "Zwiń" : "Rozwiń"}
-          </Button>
-        );
-      },
+      // TODO: wait for backend for better/different implementation of fetching additional data
+      // header: ({ table }) => {
+      //   const isAnyExpanded = table.getIsSomeRowsExpanded();
+      //   const notExpandedRows = table
+      //     .getCoreRowModel()
+      //     .rows.filter((row) => !row.original.wasExpanded);
+      //   return (
+      //     <Button
+      //       variant="eventGhost"
+      //       onClick={async () => {
+      //         await Promise.all(
+      //           notExpandedRows.map(async (row) => {
+      //             return fetchAdditionalParticipantData(row, table, eventId);
+      //           }),
+      //         );
+      //         isAnyExpanded
+      //           ? table.resetExpanded(isAnyExpanded)
+      //           : table.toggleAllRowsExpanded();
+      //       }}
+      //     >
+      //       {isAnyExpanded ? "Zwiń" : "Rozwiń"}
+      //     </Button>
+      //   );
+      // },
       cell: ({ row, table }) => {
         const isLoading = table.options.meta?.isRowLoading(row.index) ?? false;
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant={row.getIsExpanded() ? "outline" : "ghost"}
+            variant={row.getIsExpanded() ? "outline" : "eventGhost"}
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);
@@ -217,6 +250,7 @@ export function generateColumns(
               }
               row.toggleExpanded();
             }}
+            aria-label={row.getIsExpanded() ? "Zwiń wiersz" : "Rozwiń wiersz"}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

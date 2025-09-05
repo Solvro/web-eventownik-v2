@@ -13,6 +13,9 @@ export interface EventAttribute {
   updatedAt: string;
 }
 
+/**
+ * @param value - Data returned from API is always a string (even numbers, booleans are in string format - "true", "123")
+ */
 export interface AttributeBase {
   id: number;
   name: string;
