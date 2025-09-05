@@ -22,7 +22,7 @@ const events: HighlightedEvent[] = [
   {
     name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
     description:
-      "Rajd organizowany był przez Wydziałowe Rady Samorządów Studenckich W6, W8 i W12. Organizatorom został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalności i sprawdzili jak bardzo może usprawnić zarządzanie dużym wydarzeniem z liczną grupą uczestników.",
+      "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalności i sprawdzili jak bardzo może usprawnić zarządzanie dużym wydarzeniem z liczną grupą uczestników.",
     year: 2025,
     image: {
       src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
