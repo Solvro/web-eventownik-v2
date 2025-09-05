@@ -151,6 +151,7 @@ function MessageContentForm({
                   <Input
                     type="text"
                     placeholder={getTitlePlaceholder(newEmailTemplate.trigger)}
+                    data-testid="title"
                     {...field}
                   />
                 </FormControl>

@@ -56,7 +56,10 @@ export function TagsList({ items, command, ref }: TagsListProps) {
   }));
 
   return (
-    <div className="bg-popover border-muted relative z-[9999] flex flex-col gap-1 overflow-auto rounded-md border p-2 shadow-md">
+    <div
+      className="bg-popover border-muted relative z-[9999] flex flex-col gap-1 overflow-auto rounded-md border p-2 shadow-md"
+      role="menu"
+    >
       {items.length > 0 ? (
         items.map((item, index) => (
           <button
