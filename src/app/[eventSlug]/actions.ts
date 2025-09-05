@@ -33,11 +33,11 @@ export async function registerParticipant(
     }
 
     for (const [key, value] of Object.entries(values)) {
-      formData.append(key, String(value));
+      formData.append(key, value);
     }
 
     const response = await fetch(
-      `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,
+      `${API_URL}/events/${event.slug}/forms/${event.firstForm.id}/submit`,
       {
         method: "POST",
         body: formData,

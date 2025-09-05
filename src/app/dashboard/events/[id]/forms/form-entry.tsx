@@ -12,7 +12,7 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
       <div className="flex items-center justify-end">
         {/* TODO: Implement form edit view */}
         <Button variant="eventGhost" size="icon" asChild>
-          <Link href={`forms/${form.id.toString()}`}>
+          <Link href={`forms/${form.id}`}>
             <SquarePen />
             <span className="sr-only">Edytuj formularz</span>
           </Link>
@@ -26,7 +26,7 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
         {/*</Button>*/}
         <DeleteFormPopup
           eventId={eventId}
-          formId={form.id.toString()}
+          formId={form.id}
           formName={form.name}
         />
       </div>

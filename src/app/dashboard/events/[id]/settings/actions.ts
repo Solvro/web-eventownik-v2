@@ -165,7 +165,7 @@ export async function updateEvent(
           continue; // Skip co-organizers without an ID
         }
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id}`,
           {
             method: "PUT",
             headers: {
@@ -195,7 +195,7 @@ export async function updateEvent(
           continue; // Skip co-organizers without an ID
         }
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${bearerToken}` },
