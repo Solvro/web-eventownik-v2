@@ -101,9 +101,7 @@ function EditorMenuBar({ editor }: { editor: Editor | null }) {
         type="button"
         onClick={() => editor.chain().focus().setTextAlign("left").run()}
         variant={
-          editor.isActive({ textAlign: "left" })
-            ? "eventDefault"
-            : "eventGhost"
+          editor.isActive({ textAlign: "left" }) ? "eventDefault" : "eventGhost"
         }
         title="Wyrównanie do lewej"
       >
