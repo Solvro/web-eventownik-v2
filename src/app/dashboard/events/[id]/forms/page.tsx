@@ -19,9 +19,11 @@ export default async function DashboardEventFormsPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-3xl font-bold">Formularze</h1>
-      <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
+      <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
+        <h1 className="text-3xl font-bold">Formularze</h1>
         <CreateEventFormForm eventId={id} attributes={attributes} />
+      </div>
+      <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {forms.length > 0
           ? forms.map((form) => (
               <FormEntry form={form} eventId={id} key={form.id} />

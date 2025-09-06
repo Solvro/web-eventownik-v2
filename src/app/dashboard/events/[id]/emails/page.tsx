@@ -24,13 +24,15 @@ export default async function DashboardEventEmailTemplatesPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-3xl font-bold">Szablony maili</h1>
-      <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
+      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <h1 className="text-3xl font-bold">Szablony maili</h1>
         <CreateEmailTemplateForm
           eventId={id}
           eventAttributes={attributes}
           eventForms={forms}
         />
+      </div>
+      <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {templates === null ? (
           <p className="text-red-600">Nie udało się pobrać szablonów</p>
         ) : (
