@@ -40,7 +40,7 @@ const BlockSchema = z.object({
     .optional(),
 });
 
-function AddBlockEntry({
+function CreateBlockForm({
   eventId,
   attributeId,
   parentId,
@@ -110,11 +110,9 @@ function AddBlockEntry({
       }}
     >
       <DialogTrigger asChild>
-        <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
-          <div className="relative flex gap-2">
-            <SquarePlus className="h-6 w-6" /> Stwórz blok
-          </div>
-        </button>
+        <Button variant="outline" className="w-full md:w-auto">
+          <SquarePlus className="h-6 w-6" /> Stwórz blok
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
         <DialogHeader>
@@ -187,4 +185,4 @@ function AddBlockEntry({
   );
 }
 
-export { AddBlockEntry };
+export { CreateBlockForm };
