@@ -248,6 +248,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       zawartości wyświetli się opis wydarzenia
                     </FormDescription>
                     <WysiwygEditor
+                      className="h-[200px]"
                       content={field.value}
                       onChange={field.onChange}
                       disabled={form.watch("isFirstForm")}
@@ -296,7 +297,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
           </div>
           <div className="flex justify-end">
             <Button variant="eventGhost" type="submit">
-              <ArrowRight /> Zapisz i przejdź dalej
+              <ArrowRight /> Przejdź dalej
             </Button>
           </div>
         </form>

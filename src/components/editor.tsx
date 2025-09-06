@@ -18,12 +18,14 @@ function WysiwygEditor({
   onChange,
   disabled,
   extensions = [],
+  className,
 }: {
   content: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   // TODO: This is for implementing a custom extension for tag hints (as in e.g. '/participant_slug')
   extensions?: Extension<unknown, unknown>[];
+  className?: string;
 }) {
   const editor = useEditor({
     extensions: [
@@ -68,6 +70,7 @@ function WysiwygEditor({
         disabled === undefined || !disabled
           ? ""
           : "pointer-events-none cursor-not-allowed opacity-50",
+        className,
       )}
     >
       <EditorMenuBar editor={editor} />
