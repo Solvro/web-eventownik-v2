@@ -45,6 +45,22 @@ function FeatureTile({
   );
 }
 
+function FeatureStep({ step }: { step: number }) {
+  return <p className="text-lg font-medium sm:text-2xl">Krok {step}</p>;
+}
+
+function FeatureTitle({ children }: { children: React.ReactNode }) {
+  return <p className="text-2xl font-medium sm:text-5xl">{children}</p>;
+}
+
+function FeatureDescription({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-base text-[#515151] sm:text-2xl dark:text-[#B4B4B4]">
+      {children}
+    </p>
+  );
+}
+
 function CustomAccordionItem({
   value,
   title,
@@ -84,43 +100,41 @@ export function Functionalities() {
 
   return (
     <section className="flex w-full flex-col items-center">
-      <div className="flex flex-col items-center px-6 pt-48">
+      <div className="flex flex-col items-center px-4 pt-24 sm:pt-48">
         {/* This will get covered */}
         <motion.div
           style={{ opacity, y, scale }}
-          className="sticky top-0 container flex w-full flex-col items-center gap-8 px-4 text-center"
+          className="sticky top-0 container flex w-full flex-col items-center gap-8 text-center"
         >
           <div className="rounded-full bg-gradient-to-r from-[#6583C8] to-[#80B3FF] p-0.5">
-            <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 font-medium dark:bg-[#192237]">
+            <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 text-sm font-medium sm:text-base dark:bg-[#192237]">
               Funkcjonalności
             </p>
           </div>
-          <p className="text-7xl font-bold">
+          <p className="text-5xl font-bold sm:text-7xl">
             Zakres dostępnych działań dla organizatora
           </p>
-          <p className="text-3xl text-[#191A1A] dark:text-[#D9E8FF]">
+          <p className="text-xl text-[#191A1A] sm:text-3xl dark:text-[#D9E8FF]">
             Sprawdź, co możesz zrobić i jak skorzystać z dostępnych możliwości!
           </p>
         </motion.div>
         {/* Functionalities */}
         <div
           ref={targetRef}
-          className="z-10 w-full max-w-[104rem] rounded-t-[3rem] border-x border-t border-[#798DDE] bg-[#1B4AE4]/40 px-4 pt-4 drop-shadow-[0_-35px_250px_rgba(56,115,255,0.69)] dark:bg-[#26486E]/40"
+          className="z-10 w-full max-w-[104rem] rounded-t-[2.5rem] border-x border-t border-[#798DDE] bg-[#1B4AE4]/40 px-2 pt-2 drop-shadow-[0_-35px_250px_rgba(56,115,255,0.69)] sm:rounded-t-[3rem] sm:px-4 sm:pt-4 dark:bg-[#26486E]/40"
         >
           <div className="divide-input flex w-full flex-col divide-y-[1px] divide-dashed overflow-hidden rounded-t-4xl bg-[#ffffff] dark:bg-[#101011]">
             {/* Step 1 */}
-            <div className="grid w-full grid-cols-1 gap-16 p-16 lg:grid-cols-2">
-              <div className="flex w-full flex-col gap-16">
+            <div className="grid w-full grid-cols-1 gap-8 p-4 sm:gap-16 sm:p-16 lg:grid-cols-2">
+              <div className="flex w-full flex-col gap-8 sm:gap-16">
                 <div className="w-full space-y-4">
-                  <p className="text-2xl font-medium">Krok 1</p>
-                  <p className="text-5xl font-medium">
-                    Tworzenie i konfiguracja wydarzeń
-                  </p>
+                  <FeatureStep step={1} />
+                  <FeatureTitle>Tworzenie i konfiguracja wydarzeń</FeatureTitle>
                 </div>
-                <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
+                <FeatureDescription>
                   Zakładanie wydarzeń przez organizatora, ustawianie atrybutów
                   uczestników oraz dodawanie współorganizatorów.
-                </p>
+                </FeatureDescription>
                 <FeatureTile
                   name={"Personalizacja wydarzenia"}
                   description={
@@ -132,25 +146,25 @@ export function Functionalities() {
               <Image
                 src="/assets/landing/functionalities/event-creation.png"
                 alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
-                className="rounded-3xl lg:max-w-5xl"
+                className="order-first rounded-3xl sm:order-last lg:max-w-5xl"
                 width={2000}
                 height={1000}
               />
             </div>
             {/* New functionalities */}
-            <div className="divide-input grid w-full grid-cols-1 gap-8 divide-x-[1px] divide-dashed lg:grid-cols-2">
-              <div className="flex flex-row gap-8 overflow-hidden py-16 pr-6 pl-16">
-                <div className="flex min-w-3xs flex-col gap-16">
+            <div className="divide-input grid w-full grid-cols-1 divide-y divide-dashed sm:gap-8 sm:divide-x-[1px] lg:grid-cols-2">
+              <div className="flex flex-col-reverse overflow-hidden p-4 sm:flex-row sm:py-16 sm:pr-6 sm:pl-16">
+                <div className="z-20 flex min-w-3xs flex-col gap-8 sm:gap-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
                       Nowe
                     </Badge>
-                    <p className="text-5xl font-medium">Maile</p>
+                    <FeatureTitle>Maile</FeatureTitle>
                   </div>
-                  <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
+                  <FeatureDescription>
                     Tworzenie szablonów z dynamicznymi danymi, automatyczna i
                     grupowa wysyłka maili w zależności od statusu uczestnika.
-                  </p>
+                  </FeatureDescription>
                   <FeatureTile
                     name={"Powiadomienia e-mail"}
                     description={
@@ -160,48 +174,50 @@ export function Functionalities() {
                   />
                 </div>
                 {/* Am I the only one who thought it was an image in the design? */}
-                <div className="relative space-y-4">
+                <div className="relative">
                   <span className="absolute z-10 h-full w-full bg-gradient-to-b from-transparent to-white to-90% dark:to-[#101011]" />
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="border-input flex h-min flex-row gap-6 overflow-hidden rounded-2xl border bg-[#f7f7f7] p-6 dark:bg-[#151515]"
-                    >
-                      <Image
-                        src={"/assets/landing/gmail.png"}
-                        alt="Gmail logo"
-                        className="size-10"
-                        width={40}
-                        height={40}
-                      />
-                      <div className="flex h-min flex-col gap-1">
-                        <p className="text-sm whitespace-nowrap">
-                          Eventownik - nowe wydarzenie &#x2022;
-                          <span className="text-xs text-[#515151] dark:text-[#B4B4B4]">
-                            {" "}
-                            2 minuty temu
-                          </span>
-                        </p>
-                        <p className="text-xs text-[#515151] dark:text-[#B4B4B4]">
-                          Dodano nowe wydarzenie, sprawdź je!
-                        </p>
+                  <div className="flex h-72 flex-col gap-4 overflow-hidden sm:h-auto">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="border-input flex h-min flex-row gap-6 rounded-2xl border bg-[#f7f7f7] p-6 dark:bg-[#151515]"
+                      >
+                        <Image
+                          src={"/assets/landing/gmail.png"}
+                          alt="Gmail logo"
+                          className="size-10"
+                          width={40}
+                          height={40}
+                        />
+                        <div className="flex h-min flex-col gap-1">
+                          <p className="text-sm whitespace-nowrap">
+                            Eventownik - nowe wydarzenie &#x2022;
+                            <span className="text-xs text-[#515151] dark:text-[#B4B4B4]">
+                              {" "}
+                              2 minuty temu
+                            </span>
+                          </p>
+                          <p className="text-xs text-[#515151] dark:text-[#B4B4B4]">
+                            Dodano nowe wydarzenie, sprawdź je!
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-row gap-8 p-16">
-                <div className="flex min-w-3xs flex-col gap-16">
+              <div className="flex flex-col-reverse p-4 sm:flex-row sm:gap-8 sm:p-16">
+                <div className="flex min-w-3xs flex-col gap-8 sm:gap-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
                       Nowe
                     </Badge>
-                    <p className="text-5xl font-medium">Strona wydarzenia</p>
+                    <FeatureTitle>Strona wydarzenia</FeatureTitle>
                   </div>
-                  <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
+                  <FeatureDescription>
                     Publiczna strona z harmonogramem i aktualnościami, gotowa do
                     udostępnienia w mediach społecznościowych.
-                  </p>
+                  </FeatureDescription>
                   <FeatureTile
                     name={"Strona rejestracyjna"}
                     description={
@@ -230,8 +246,8 @@ export function Functionalities() {
               </div>
             </div>
             {/* Step 2 */}
-            <div className="grid w-full grid-cols-1 gap-16 p-16 lg:grid-cols-2">
-              <div className="grid grid-cols-2 gap-8">
+            <div className="grid w-full grid-cols-1 gap-8 p-4 sm:gap-16 sm:p-16 lg:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4 sm:gap-8">
                 <Image
                   src="/assets/landing/functionalities/form.png"
                   alt="Widok formularza"
@@ -247,19 +263,17 @@ export function Functionalities() {
                   height={1000}
                 />
               </div>
-              <div className="flex w-full flex-col gap-16">
+              <div className="flex w-full flex-col gap-8 sm:gap-16">
                 <div className="w-full space-y-4">
-                  <p className="text-2xl font-medium">Krok 2</p>
-                  <p className="text-5xl font-medium">
-                    Formularze i zapisy na miejsca
-                  </p>
+                  <FeatureStep step={2} />
+                  <FeatureTitle>Formularze i zapisy na miejsca</FeatureTitle>
                 </div>
-                <p className="text-2xl text-[#515151] dark:text-[#B4B4B4]">
+                <FeatureDescription>
                   Tworzenie formularzy z wybranymi atrybutami, generowanie
                   linków rejestracyjnych i automatyczne udostępnianie formularzy
                   II etapu - w tym zapisy na miejsca aktualizowane w czasie
                   rzeczywistym.
-                </p>
+                </FeatureDescription>
                 <FeatureTile
                   name={"Zarządzanie zapisami"}
                   description={

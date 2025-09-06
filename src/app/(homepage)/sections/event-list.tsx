@@ -161,7 +161,7 @@ function Event({
   return (
     <div
       className={cn(
-        "group flex w-full justify-center bg-white p-6 text-black transition hover:bg-[#b7cdff] lg:p-8",
+        "group flex w-full justify-center bg-white px-4 py-8 text-black transition hover:bg-[#b7cdff] lg:px-8",
       )}
     >
       <div className="divide-input container flex flex-col gap-12 lg:flex-row lg:gap-16">
@@ -172,7 +172,7 @@ function Event({
             <br />
             {dateParts[2]}
           </p>
-          <p className="rounded-full bg-[#7CFF51]/50 px-5 py-2 text-center font-extrabold text-[#61a21c] hover:text-[#62a319]">
+          <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold text-[#5E941C]">
             Dostępna rejestracja
           </p>
         </div>
@@ -187,7 +187,7 @@ function Event({
           />
           {/* Text overlay */}
           <div className="absolute inset-0 flex flex-col items-start justify-between rounded-4xl bg-gradient-to-r from-black/60 to-transparent p-6 text-white">
-            <p className="bg-success rounded-full px-5 py-2 text-center text-sm font-extrabold text-[#61a21c] hover:text-[#62a319] sm:text-base">
+            <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center text-sm font-extrabold text-[#5E941C] sm:text-base">
               Dostępna rejestracja
             </p>
             <p className="text-left text-4xl font-semibold sm:text-5xl">

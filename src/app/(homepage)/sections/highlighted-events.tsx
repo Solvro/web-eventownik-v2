@@ -104,21 +104,23 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="absolute h-[30rem] w-2xl"
+      className="absolute aspect-[25/16] h-[18rem] sm:h-[22rem] md:h-[26rem] lg:h-[30rem]"
       onClick={onClick}
     >
       <Image
         src={src}
         alt={alt}
-        className="border-input h-full max-h-[30rem] rounded-4xl border object-cover"
+        className="border-input aspect-[25/16] h-full w-full rounded-4xl border object-cover"
         width={750}
         height={480}
       />
-      <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-4 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-16 text-left text-white">
+      <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-2 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-8 text-left text-white sm:gap-4 sm:py-16">
         <Badge>{year}</Badge>
-        <h3 className="text-3xl font-semibold">{title}</h3>
+        <h3 className="text-2xl font-semibold sm:text-3xl">{title}</h3>
         {description == null ? null : (
-          <p className="w-3/4 text-lg">{description}</p>
+          <p className="w-5/6 text-sm sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
+            {description}
+          </p>
         )}
       </div>
     </motion.button>
@@ -130,7 +132,7 @@ export function HighlightedEvents() {
   const [index, setIndex] = useState(0);
   return (
     <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-x-hidden pt-16">
-      <div className="relative flex h-[32rem] w-full justify-center">
+      <div className="relative flex h-[20rem] w-full justify-center sm:h-[24rem] md:h-[28rem] lg:h-[32rem]">
         <CarouselImage
           src={events[1].image.src}
           alt={events[1].image.alt}

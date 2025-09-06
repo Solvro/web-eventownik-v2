@@ -14,7 +14,7 @@ export async function Navbar() {
     stargazers_count: number;
   };
   return (
-    <div className="flex w-full flex-col items-center px-8">
+    <div className="flex w-full flex-col items-center px-4">
       <header className="bg-background border-border container flex w-full flex-row items-center justify-between gap-4 rounded-2xl border p-3 xl:max-w-6xl">
         <div className="flex items-center gap-8 uppercase">
           <h1 className="sr-only">Eventownik</h1>

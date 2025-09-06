@@ -10,15 +10,15 @@ import { buttonVariants } from "../../../components/ui/button";
 export function Footer() {
   return (
     <footer className="flex w-full flex-col items-center">
-      <div className="container flex w-full flex-col items-center justify-between gap-32 px-8 py-16 2xl:flex-row 2xl:items-center">
+      <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 py-16 sm:gap-32 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
-          <p>Zostań na bieżąco z Eventownikiem Solvro -</p>
+          <p>Zostań na bieżąco z Eventownikiem Solvro i</p>
           <Link
             href="/newsletter-eventownik"
             className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"
           >
             <span className="text-[#6583C8]">zapisz się do newslettera.</span>
-            <ArrowRight />
+            <ArrowRight size={32} />
           </Link>
           {/*
           <div className="border-input flex flex-row items-center gap-4 border-b focus-within:border-black dark:focus-within:border-white">
@@ -31,7 +31,7 @@ export function Footer() {
           */}
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
-          <div className="flex w-full flex-row gap-12">
+          <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-start sm:gap-12">
             <a
               href="/documents/regulamin.pdf"
               target="_blank"
@@ -43,7 +43,7 @@ export function Footer() {
             <Link href="/">Pliki Cookies</Link>
             <Link href="/">RODO</Link>
           </div>
-          <div className="flex w-full flex-row items-center justify-between gap-8">
+          <div className="flex w-full flex-col items-center justify-between gap-8 sm:flex-row">
             <a
               title="Koło Naukowe Solvro"
               href="https://solvro.pwr.edu.pl/"
@@ -109,7 +109,7 @@ export function Footer() {
       <div className="container w-full p-4">
         <div className="border-input relative overflow-hidden rounded-4xl border border-dashed">
           <div className="flex w-full flex-col items-center">
-            <div className="z-10 flex w-full flex-col items-center gap-16 p-16">
+            <div className="z-10 flex w-full flex-col items-center gap-4 p-4 sm:gap-16 sm:p-16">
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
                   src="/logo_outline_light.png"
@@ -127,10 +127,10 @@ export function Footer() {
                 />
               </div>
               <div className="container grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
-                <p>
+                <p className="text-center sm:text-left">
                   Design by <span className="font-bold">Matthew Design</span>
                 </p>
-                <p className="flex flex-row items-center gap-1 whitespace-nowrap lg:justify-center">
+                <p className="flex w-full flex-row items-center justify-center gap-1 whitespace-nowrap sm:justify-start lg:justify-center">
                   Made with <Heart className="fill-rose-500" strokeWidth={0} />{" "}
                   <span className="font-bold">
                     by Solvro © {new Date().getFullYear()}
