@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import { AddBlockEntry } from "@/app/dashboard/events/[id]/blocks/[blockId]/add-block-entry";
+import { CreateBlockForm } from "@/app/dashboard/events/[id]/blocks/[blockId]/create-block-form";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
@@ -104,7 +104,7 @@ function getParticipantsInChildBlock(
     const targetBlockAttribute = participant.attributes.find(
       (attribute) => attribute.id.toString() === rootBlockId,
     ) as AttributeBase;
-    return targetBlockAttribute.value === childBlockId.toString();
+    return targetBlockAttribute.value === childBlockId;
   });
 }
 
@@ -137,25 +137,23 @@ export default async function EventBlockEditPage({
   } else {
     return (
       <div className="flex grow flex-col gap-8">
-        <div className="flex justify-between">
-          <h1 className="text-3xl font-bold">{rootBlockName}</h1>
-          <div className="flex items-center gap-2">
-            <span className="hidden text-2xl font-bold sm:inline-block">
-              Liczba uczestników:
-            </span>
-            <span className="text-2xl font-bold">
+        <div className="flex justify-between align-top">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">{rootBlockName}</h1>
+            <span className="text-muted-foreground text-lg">
+              Łączna liczba uczestników:{" "}
               {rootBlock.children
                 .map((block) => block.meta.participantsInBlockCount ?? 0)
-                .reduce((a, b) => a + b, 0)}
+                .reduce((a, b) => a + b, 0)}{" "}
             </span>
           </div>
-        </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-          <AddBlockEntry
+          <CreateBlockForm
             eventId={eventId}
             attributeId={rootBlockId}
             parentId={rootBlock.id.toString()}
           />
+        </div>
+        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           {rootBlock.children.map((childBlock) => (
             <BlockEntry
               key={childBlock.id}

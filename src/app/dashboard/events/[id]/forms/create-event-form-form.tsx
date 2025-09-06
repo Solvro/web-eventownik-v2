@@ -4,6 +4,7 @@ import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
 import { newEventFormAtom } from "@/atoms/new-event-form-atom";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -48,11 +49,9 @@ function CreateEventFormForm({
       }}
     >
       <DialogTrigger asChild>
-        <button className="border-muted text-muted-foreground flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
-          <div className="relative flex gap-2">
-            <SquarePlus className="h-6 w-6" /> Stwórz formularz
-          </div>
-        </button>
+        <Button variant="outline">
+          <SquarePlus className="h-6 w-6" /> Stwórz formularz
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="sr-only">

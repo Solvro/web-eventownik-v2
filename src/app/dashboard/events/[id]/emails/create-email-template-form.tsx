@@ -4,6 +4,7 @@ import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -52,11 +53,9 @@ function CreateEmailTemplateForm({
       }}
     >
       <DialogTrigger asChild>
-        <button className="border-muted text-muted-foreground relative flex h-64 w-64 items-center justify-center gap-2 rounded-md border border-dotted p-4">
-          <div className="relative flex gap-2">
-            <SquarePlus className="h-6 w-6" /> Stwórz szablon
-          </div>
-        </button>
+        <Button variant="outline">
+          <SquarePlus className="h-6 w-6" /> Stwórz szablon
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className="sr-only">
