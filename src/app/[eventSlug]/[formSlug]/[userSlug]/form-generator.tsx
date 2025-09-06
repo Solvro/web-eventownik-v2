@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { getSchemaObjectForAttributes } from "@/lib/utils";
+import { cn, getSchemaObjectForAttributes } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -179,8 +179,15 @@ export function FormGenerator({
             control={form.control}
             name={attribute.id.toString()}
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{attribute.name}</FormLabel>
+              <FormItem
+                className={cn(
+                  attribute.type === "checkbox" &&
+                    "flex flex-row-reverse items-start justify-end space-y-0",
+                )}
+              >
+                <FormLabel htmlFor={attribute.id.toString()}>
+                  {attribute.name}
+                </FormLabel>
                 <FormControl>
                   {attribute.type === "file" ? (
                     <AttributeInputFile

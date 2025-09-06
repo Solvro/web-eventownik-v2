@@ -32,7 +32,7 @@ export function AttributeInput({
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
-      return <Input type="text" {...field} />;
+      return <Input type="text" id={attribute.id.toString()} {...field} />;
     }
     case "number": {
       return (
@@ -41,6 +41,7 @@ export function AttributeInput({
           onWheel={(event) => {
             event.currentTarget.blur();
           }}
+          id={attribute.id.toString()}
           {...field}
         />
       );
@@ -52,10 +53,10 @@ export function AttributeInput({
           defaultValue={field.value as string}
           {...field}
         >
-          <SelectTrigger>
-            <SelectValue {...field}>
-              {(field.value as string) === " " ? "Brak" : field.value}
-            </SelectValue>
+          <SelectTrigger id={attribute.id.toString()}>
+            <SelectValue
+              placeholder={`Wybierz ${attribute.name.toLowerCase()}`}
+            />
           </SelectTrigger>
           <SelectContent>
             {attribute.options?.map((option) => (
@@ -108,7 +109,7 @@ export function AttributeInput({
       );
     }
     case "email": {
-      return <Input type="email" {...field} />;
+      return <Input type="email" id={attribute.id.toString()} {...field} />;
     }
     case "date": {
       if (
@@ -119,7 +120,7 @@ export function AttributeInput({
         // It may break some features
         field.value = format(field.value as Date, "yyyy-MM-dd");
       }
-      return <Input type="date" {...field} />;
+      return <Input type="date" id={attribute.id.toString()} {...field} />;
     }
     case "datetime": {
       if (
@@ -129,22 +130,31 @@ export function AttributeInput({
       ) {
         field.value = format(field.value as Date, "yyyy-MM-dd HH:mm");
       }
-      return <Input type="datetime-local" {...field} />;
+      return (
+        <Input type="datetime-local" id={attribute.id.toString()} {...field} />
+      );
     }
     case "time": {
-      return <Input type="time" {...field} />;
+      return <Input type="time" id={attribute.id.toString()} {...field} />;
     }
     case "color": {
-      return <Input type="color" className="h-16 w-full" {...field} />;
+      return (
+        <Input
+          type="color"
+          className="h-16 w-full"
+          id={attribute.id.toString()}
+          {...field}
+        />
+      );
     }
     case "textarea": {
-      return <Textarea rows={3} {...field} />;
+      return <Textarea rows={3} id={attribute.id.toString()} {...field} />;
     }
     case "checkbox": {
       return (
         <div className="flex items-center space-x-2">
           <Checkbox
-            id={field.name}
+            id={attribute.id.toString()}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
               field.onChange(checked);
@@ -157,6 +167,7 @@ export function AttributeInput({
     case "tel": {
       return (
         <Input
+          id={attribute.id.toString()}
           type="tel"
           pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
           maxLength={16}

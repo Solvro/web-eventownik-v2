@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { getSchemaObjectForAttributes } from "@/lib/utils";
+import { cn, getSchemaObjectForAttributes } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -161,8 +161,15 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
             // @ts-expect-error zod schema object are dynamic
             name={attribute.id.toString()}
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{attribute.name}</FormLabel>
+              <FormItem
+                className={cn(
+                  attribute.type === "checkbox" &&
+                    "flex flex-row-reverse items-start justify-end space-y-0",
+                )}
+              >
+                <FormLabel htmlFor={attribute.id.toString()}>
+                  {attribute.name}
+                </FormLabel>
                 <FormControl>
                   {attribute.type === "file" ? (
                     <AttributeInputFile

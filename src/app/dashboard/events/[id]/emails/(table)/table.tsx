@@ -66,7 +66,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="text-muted h-24 text-center"
+                  className="text-muted-foreground h-24 text-center"
                 >
                   Brak wyników
                 </TableCell>
