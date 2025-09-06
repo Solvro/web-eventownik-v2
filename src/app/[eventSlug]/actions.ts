@@ -33,7 +33,7 @@ export async function registerParticipant(
     }
 
     for (const [key, value] of Object.entries(values)) {
-      formData.append(key, String(value));
+      formData.append(key, String(value as unknown));
     }
 
     const response = await fetch(
