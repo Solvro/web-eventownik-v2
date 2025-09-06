@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -22,7 +23,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 
 import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
@@ -295,16 +295,12 @@ export function General({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel className="mb-0">Opis</FormLabel>
-                <FormControl>
-                  <Textarea
-                    disabled={form.formState.isSubmitting}
-                    placeholder="Opisz wydarzenie"
-                    className="h-60 resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
+                <FormLabel>Opis</FormLabel>
+                <WysiwygEditor
+                  content={form.getValues("description") ?? "<p></p>"}
+                  onChange={field.onChange}
+                />
+                <FormMessage>
                   {form.formState.errors.description?.message}
                 </FormMessage>
               </FormItem>
