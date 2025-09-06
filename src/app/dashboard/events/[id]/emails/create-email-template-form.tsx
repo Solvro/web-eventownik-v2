@@ -53,7 +53,7 @@ function CreateEmailTemplateForm({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="w-full sm:w-auto">
           <SquarePlus className="h-6 w-6" /> Stwórz szablon
         </Button>
       </DialogTrigger>

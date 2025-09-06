@@ -13,7 +13,7 @@ export default async function DashboardEventFormsPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex justify-between">
+      <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <h1 className="text-3xl font-bold">Formularze</h1>
         <CreateEventFormForm eventId={id} attributes={attributes} />
       </div>

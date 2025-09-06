@@ -137,7 +137,7 @@ export default async function EventBlockEditPage({
   } else {
     return (
       <div className="flex grow flex-col gap-8">
-        <div className="flex justify-between align-top">
+        <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold">{rootBlockName}</h1>
             <span className="text-muted-foreground text-lg">
