@@ -8,6 +8,7 @@ import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
+import { SanitizedContent } from "@/components/sanitized-content";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
@@ -120,9 +121,7 @@ export default async function EventPage({ params }: EventPageProps) {
               </div>
             </div>
             <ScrollArea className="h-72">
-              <p className="leading-relaxed whitespace-pre-line">
-                {event.description}
-              </p>
+              <SanitizedContent contentToSanitize={event.description ?? ""} />
             </ScrollArea>
           </div>
         </div>
