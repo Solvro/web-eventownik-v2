@@ -82,14 +82,9 @@ export default async function EventListPage() {
                 </div>
               </div>
               <div className="flex flex-1 flex-col p-4">
-                <div className="flex-1">
-                  <h3 className="mb-2 line-clamp-2 text-2xl font-bold">
-                    {event.name}
-                  </h3>
-                  <p className="dark:text-muted-foreground mb-4 line-clamp-3 text-xs">
-                    {event.description}
-                  </p>
-                </div>
+                <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
+                  {event.name}
+                </h3>
                 <div className="flex w-full justify-between">
                   <Button asChild variant="ghost">
                     <Link href={`/dashboard/events/${event.id.toString()}`}>
