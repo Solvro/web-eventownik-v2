@@ -18,6 +18,8 @@ import type { Event } from "@/types/event";
 import type { Form } from "@/types/form";
 import type { PublicParticipant } from "@/types/participant";
 
+import EventPhotoPlaceholder from "../../../../../public/event-photo-placeholder.png";
+import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
@@ -113,17 +115,17 @@ export default async function FormPage({ params }: FormPageProps) {
 
   const event = await getEvent(eventSlug);
   if (event === null) {
-    return <div>Nie znaleziono wydarzenia 😪</div>;
+    return <EventNotFound whatNotFound="event" />;
   }
 
   const form = await getForm(eventSlug, formSlug);
   if (form === null) {
-    return <div>Nie znaleziono formularza 😪</div>;
+    return <EventNotFound whatNotFound="form" />;
   }
 
   const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
-    return <div>Nie udało się pobrać twoich danych 😪</div>;
+    return <EventNotFound whatNotFound="user" />;
   }
 
   const blockAttributesInForm = form.attributes.filter(
@@ -137,12 +139,7 @@ export default async function FormPage({ params }: FormPageProps) {
   );
 
   if (eventBlocks.includes(null)) {
-    return (
-      <div>
-        Nie udało się pobrać informacji dla przynajmniej jednego z bloków w tym
-        formularzu 😪
-      </div>
-    );
+    return <EventNotFound whatNotFound="blocks" />;
   }
 
   return (
@@ -151,7 +148,11 @@ export default async function FormPage({ params }: FormPageProps) {
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
-          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl ?? ""})`,
+          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${
+            event.photoUrl == null
+              ? EventPhotoPlaceholder.src
+              : `${PHOTO_URL}/${event.photoUrl}`
+          })`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

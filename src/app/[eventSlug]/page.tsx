@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
 
+import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
@@ -14,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
+import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.png";
 import { RegisterParticipantForm } from "./register-participant-form";
 
 interface EventPageProps {
@@ -55,18 +57,21 @@ export default async function EventPage({ params }: EventPageProps) {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
-    return <div>Nie znaleziono wydarzenia 😪</div>;
+    return <EventNotFound whatNotFound="event" />;
   }
   const event = (await response.json()) as Event;
 
-  // TODO: primaryColor set based on color from API
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <EventPrimaryColorSetter primaryColor={event.primaryColor || "#3672fd"} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
-          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl ?? ""})`,
+          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${
+            event.photoUrl == null
+              ? EventPhotoPlaceholder.src
+              : `${PHOTO_URL}/${event.photoUrl}`
+          })`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
