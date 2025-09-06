@@ -13,6 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -29,7 +30,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave } from "@/hooks/use-autosave";
 
 import { FormContainer } from "../form-container";
@@ -247,20 +247,16 @@ export function GeneralInfoForm({
             </div>
             <div>
               <FormField
-                name="description"
                 control={form.control}
+                name="description"
                 render={({ field }) => (
-                  <FormItem className="flex h-full flex-col gap-1">
+                  <FormItem className="flex flex-col gap-1">
                     <FormLabel>Opis</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        disabled={form.formState.isSubmitting}
-                        placeholder="Opisz wydarzenie"
-                        className="h-full resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-sm text-red-500">
+                    <WysiwygEditor
+                      content={form.getValues("description") ?? ""}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage>
                       {form.formState.errors.description?.message}
                     </FormMessage>
                   </FormItem>

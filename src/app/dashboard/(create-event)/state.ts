@@ -41,7 +41,7 @@ export interface Event {
 
 export const eventAtom = atom<Event>({
   name: "",
-  description: "",
+  description: "<p></p>",
   // Tomorrow, midnight
   startDate: new Date(new Date().setHours(24, 0, 0, 0)),
   endDate: new Date(new Date().setHours(24, 0, 0, 0)),
