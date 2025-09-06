@@ -86,11 +86,11 @@ export default async function EventListPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-1 flex-col p-4">
+              <div className="flex flex-1 flex-col justify-between p-4">
                 <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
                   {event.name}
                 </h3>
-                <div className="flex w-full justify-between">
+                <div className="flex w-full">
                   <Button asChild variant="ghost">
                     <Link href={`/dashboard/events/${event.id.toString()}`}>
                       <CircleHelpIcon className="mr-2 size-4" />
