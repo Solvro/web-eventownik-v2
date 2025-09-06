@@ -2,12 +2,12 @@ import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import sanitizeHtml from "sanitize-html";
 
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
+import { SanitizedContent } from "@/components/sanitized-content";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
@@ -132,27 +132,6 @@ export default async function FormPage({ params }: FormPageProps) {
     );
   }
 
-  const sanitizedDescription = sanitizeHtml(form.description, {
-    allowedAttributes: {
-      p: ["style"],
-      a: ["href", "name", "target"],
-      img: ["src", "srcset", "alt", "title", "width", "height", "loading"],
-    },
-    allowedTags: [
-      "h1",
-      "h2",
-      "h3",
-      "p",
-      "br",
-      "pre",
-      "strong",
-      "em",
-      "a",
-      "img",
-    ],
-    allowedSchemes: ["data", "https"],
-  });
-
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
       <EventPrimaryColorSetter primaryColor={event.primaryColor} />
@@ -214,11 +193,7 @@ export default async function FormPage({ params }: FormPageProps) {
               </div>
             </div>
             <ScrollArea className="h-72">
-              <div
-                className="leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-              />
+              <SanitizedContent contentToSanitize={form.description} />
             </ScrollArea>
           </div>
         </div>
