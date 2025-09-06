@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
   getEventAttributes,
@@ -5,6 +7,10 @@ import {
   getEventForms,
 } from "./data-access";
 import { EmailTemplateEntry } from "./template-entry";
+
+export const metadata: Metadata = {
+  title: "Szablony maili",
+};
 
 export default async function DashboardEventEmailTemplatesPage({
   params,
