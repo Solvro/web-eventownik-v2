@@ -86,7 +86,7 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {
-      const result = await updateEventForm(eventId, formToEdit.id, {
+      const result = await updateEventForm(eventId, formToEdit.id.toString(), {
         ...formToEdit,
         ...values,
         attributes: includedAttributes,

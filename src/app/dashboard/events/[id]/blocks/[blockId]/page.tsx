@@ -104,7 +104,7 @@ function getParticipantsInChildBlock(
     const targetBlockAttribute = participant.attributes.find(
       (attribute) => attribute.id.toString() === rootBlockId,
     ) as AttributeBase;
-    return targetBlockAttribute.value === childBlockId.toString();
+    return targetBlockAttribute.value === childBlockId;
   });
 }
 
