@@ -164,7 +164,7 @@ function TriggerConfigurationInputs({
                     {eventAttributes.map((attribute) => (
                       <SelectItem
                         key={attribute.id}
-                        value={attribute.id.toString()}
+                        value={String(attribute.id)}
                       >
                         {attribute.name}
                       </SelectItem>
