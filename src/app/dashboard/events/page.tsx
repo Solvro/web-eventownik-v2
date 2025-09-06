@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { AlertCircle, Calendar1, CircleHelpIcon, Users } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,6 +14,10 @@ import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
+
+export const metadata: Metadata = {
+  title: "Moje wydarzenia",
+};
 
 export default async function EventListPage() {
   const session = await verifySession();

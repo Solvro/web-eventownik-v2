@@ -87,7 +87,7 @@ export function CreateEventForm() {
         }}
       />
       <DialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="outline">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>

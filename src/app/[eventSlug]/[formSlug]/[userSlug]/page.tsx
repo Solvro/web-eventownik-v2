@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin, User } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
 
@@ -93,6 +94,18 @@ async function getEventBlockAttributeBlocks(
     return null;
   }
   return (await blocksResponse.json()) as PublicBlock[];
+}
+
+export async function generateMetadata({
+  params,
+}: FormPageProps): Promise<Metadata> {
+  const { eventSlug, formSlug } = await params;
+
+  const form = await getForm(eventSlug, formSlug);
+
+  return {
+    title: form === null ? "Formularz" : form.name,
+  };
 }
 
 export default async function FormPage({ params }: FormPageProps) {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { EventSettingsTabs } from "@/app/dashboard/events/[id]/settings/settings-tabs";
@@ -6,6 +7,10 @@ import { verifySession } from "@/lib/session";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
+
+export const metadata: Metadata = {
+  title: "Ustawienia",
+};
 
 export default async function DashboardEventSettingsPage({
   params,
