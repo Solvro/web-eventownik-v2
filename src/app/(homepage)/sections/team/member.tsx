@@ -38,52 +38,50 @@ export function Member({ member }: { member: TeamMember }) {
       />
       <AnimatePresence>
         {isHovered ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 1 }}
-            animate={{ opacity: 1, scale: 1.1 }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{ duration: 0.1 }}
-            className="absolute inset-0 z-20"
-          >
-            <Image
-              src={
-                typeof member.image === "string"
-                  ? member.image
-                  : "/assets/landing/person.webp"
-              }
-              alt={member.name}
-              width={500}
-              height={500}
-              className="size-20 rounded-full"
-            />
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ opacity: 1, scale: 1.1 }}
+              exit={{ opacity: 0, scale: 1 }}
+              transition={{ duration: 0.1 }}
+              className="absolute inset-0 z-20"
+            >
+              <Image
+                src={
+                  typeof member.image === "string"
+                    ? member.image
+                    : "/assets/landing/person.webp"
+                }
+                alt={member.name}
+                width={500}
+                height={500}
+                className="size-20 rounded-full"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+              className="pointer-events-none absolute z-20 flex -translate-x-full flex-row items-center gap-2 rounded-full bg-black px-3 py-1 text-white shadow-lg"
+              style={{
+                top: position.y + 5,
+                left: position.x - 5,
+              }}
+            >
+              <p className="font-medium whitespace-nowrap">{member.name}</p>
+              <ArrowUpRightFromCircle size={16} />
+            </motion.div>
+          </>
         ) : null}
       </AnimatePresence>
-      <AnimatePresence>
-        {isHovered ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="pointer-events-none absolute z-20 flex -translate-x-full flex-row items-center gap-2 rounded-full bg-black px-3 py-1 text-white shadow-lg"
-            style={{
-              top: position.y + 5,
-              left: position.x - 5,
-            }}
-          >
-            <p className="font-medium whitespace-nowrap">{member.name}</p>
-            <ArrowUpRightFromCircle size={16} />
-          </motion.div>
-        ) : null}
-        <a
-          title={member.name}
-          href={member.url}
-          target="_blank"
-          className="absolute inset-0 z-30 block h-full w-full shrink-0"
-          rel="noreferrer noopener"
-        />
-      </AnimatePresence>
+      <a
+        title={member.name}
+        href={member.url}
+        target="_blank"
+        className="absolute inset-0 z-30 block h-full w-full shrink-0"
+        rel="noreferrer noopener"
+      />
     </div>
   );
 }

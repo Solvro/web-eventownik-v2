@@ -177,8 +177,8 @@ export async function Team() {
       <div className="flex flex-col items-center gap-32">
         <HighlightedMembers team={team.slice(0, 5)} />
         <div className="flex flex-row flex-wrap justify-center space-y-4 -space-x-4">
-          {team.slice(5).map((member, index) => (
-            <Member key={index} member={member} />
+          {team.slice(5).map((member) => (
+            <Member key={member.name} member={member} />
           ))}
         </div>
       </div>
