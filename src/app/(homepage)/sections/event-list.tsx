@@ -69,12 +69,12 @@ function TimelineStep({
 function Timeline() {
   // Get the current month number to set the right active month
   const [month, setMonth] = useState<number>(new Date().getMonth());
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
   // Get the width of the timeline
   useLayoutEffect(() => {
-    if (ref.current) {
+    if (ref.current != null) {
       setWidth(ref.current.offsetWidth);
     }
   }, [ref]);
