@@ -45,8 +45,10 @@ export default function Home() {
         <Functionalities />
       </div>
       <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
-        <Team />
-        <ToPWr />
+        <div className="flex w-full flex-col px-4">
+          <Team />
+          <ToPWr />
+        </div>
         <Partners />
         <Footer />
       </div>

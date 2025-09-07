@@ -34,7 +34,7 @@ export function Member({ member }: { member: TeamMember }) {
         alt={member.name}
         width={500}
         height={500}
-        className="size-20 rounded-full"
+        className="size-16 rounded-full sm:size-20"
       />
       <AnimatePresence>
         {isHovered ? (
@@ -55,7 +55,7 @@ export function Member({ member }: { member: TeamMember }) {
                 alt={member.name}
                 width={500}
                 height={500}
-                className="size-20 rounded-full"
+                className="size-16 rounded-full sm:size-20"
               />
             </motion.div>
             <motion.div

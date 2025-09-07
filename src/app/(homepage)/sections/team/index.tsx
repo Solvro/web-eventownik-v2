@@ -161,7 +161,7 @@ export async function Team() {
     stargazers_count: number;
   };
   return (
-    <div className="border-input container mb-16 flex flex-col items-center gap-24 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 py-20">
+    <div className="border-input container mb-16 flex flex-col items-center gap-16 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 sm:gap-24 sm:pb-20">
       <div className="flex flex-col items-center gap-8">
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
@@ -183,21 +183,21 @@ export async function Team() {
         </div>
       </div>
       <div className="flex flex-col items-center gap-12">
-        <p className="text-center text-2xl font-medium">
+        <p className="text-center text-lg font-medium sm:text-2xl">
           Jeśli doceniasz naszą pracę nad Eventownikiem, zostaw gwiazdkę na
           GitHubie — to dla nas duża motywacja do dalszego rozwoju!
         </p>
         <a
           href="https://github.com/solvro/web-eventownik-v2"
           target="_blank"
-          className="flex flex-row items-center gap-4 rounded-full border-2 bg-transparent px-6 py-4 transition hover:bg-[#3672FD]/30"
+          className="test-base flex flex-row items-center gap-4 rounded-full border-2 bg-transparent px-6 py-4 transition hover:bg-[#3672FD]/30 sm:text-xl"
           rel="noreferrer noopener"
         >
           <FaGithub size={20} />
-          <p className="text-xl font-medium">Walnij nam gwiazdkę</p>
+          <p className="font-medium">Walnij nam gwiazdkę</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
-            <p className="text-xl font-medium">{stargazers_count}</p>
+            <p className="font-medium">{stargazers_count}</p>
           </div>
         </a>
       </div>
