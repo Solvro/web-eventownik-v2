@@ -38,7 +38,9 @@ function useUnsavedForm(isDirty: boolean) {
  *
  * **IMPORTANT:** Only for usage in multi-step forms. For single-step forms, use `useUnsavedForm` instead.
  *
- * @param atom The Jotai atom instance from within `src/app/atoms`
+ * **NOTE:** If the last step performs a redirect, make sure to disable the navigation guard before the redirect happens using `setDisabled(true)`
+ *
+ * @param atom The Jotai atom instance which holds the form state
  */
 function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
   const initialValue = useRef({ ...atom });
