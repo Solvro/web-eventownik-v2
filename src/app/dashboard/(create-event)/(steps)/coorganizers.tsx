@@ -143,12 +143,12 @@ export function CoorganizersForm({
             </div>
           ))}
           <Form {...form}>
-            <form className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
               <NewCoOrganizer
                 form={form}
                 onSubmit={form.handleSubmit(onSubmit)}
               />
-            </form>
+            </div>
           </Form>
           <span className="text-muted-foreground text-sm leading-none font-medium">
             Możesz dodać tylko osoby, które mają konto w Eventowniku
