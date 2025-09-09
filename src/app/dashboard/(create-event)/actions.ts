@@ -25,6 +25,7 @@ export async function saveEvent(event: Event) {
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
   formData.append("slug", event.slug);
+  formData.append("termsLink", event.termsLink);
 
   formData.append(
     "startDate",

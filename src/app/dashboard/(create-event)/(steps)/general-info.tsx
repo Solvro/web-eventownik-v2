@@ -44,6 +44,11 @@ const EventGeneralInfoSchema = z.object({
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   location: z.string().optional(),
   organizer: z.string().optional(),
+  termsLink: z
+    .string()
+    .url(
+      "Regulamin jest wymagany. Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
+    ),
 });
 
 export function GeneralInfoForm({
@@ -63,6 +68,7 @@ export function GeneralInfoForm({
       endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location,
       organizer: event.organizer,
+      termsLink: event.termsLink,
     },
   });
 
@@ -301,6 +307,26 @@ export function GeneralInfoForm({
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
                     {form.formState.errors.organizer?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="termsLink"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col gap-1">
+                  <FormLabel>Link do regulaminu</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      disabled={form.formState.isSubmitting}
+                      placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500">
+                    {form.formState.errors.termsLink?.message}
                   </FormMessage>
                 </FormItem>
               )}
