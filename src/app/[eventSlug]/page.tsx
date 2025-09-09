@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
+import { Building2, Calendar1, CalendarX, Info, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
@@ -132,12 +132,25 @@ export default async function EventPage({ params }: EventPageProps) {
         </div>
       </div>
       {/* No need for ScrollArea (it's viewport's side scrollbar) */}
-      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
+      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 pb-24 md:overflow-y-auto">
         <h2 className="text-center text-3xl font-bold md:text-4xl">
           Rejestracja na wydarzenie
         </h2>
         <p className="mb-8">Wypełnij formularz, aby się zarejestrować</p>
         <RegisterParticipantForm event={event} />
+        <div className="text-muted-foreground my-4 flex flex-col items-center justify-center gap-2 text-center text-sm">
+          <Info className="size-6" />
+          <p>
+            Kontynuując zgadzasz się na warunki zawarte w<br />
+            <Link
+              href={`/${event.slug}/privacy`}
+              className="text-primary/90"
+              target="_blank"
+            >
+              polityce prywatności wydarzenia
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
