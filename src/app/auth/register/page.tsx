@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -177,6 +177,19 @@ export default function RegisterPage() {
       <Suspense>
         <RegisterForm />
       </Suspense>
+      <div className="text-muted-foreground flex flex-col items-center justify-center gap-2 pb-4 text-center text-sm sm:pb-0">
+        <Info className="size-6" />
+        <p>
+          Rejestrując konto, zgadzasz się na warunki zawarte w <br />
+          <Link
+            href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
+            className="text-primary/90"
+            target="_blank"
+          >
+            regulaminie platformy
+          </Link>
+        </p>
+      </div>
     </>
   );
 }
