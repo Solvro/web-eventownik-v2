@@ -1,27 +1,13 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  ArrowRight,
-  CircleEllipsis,
-  FilePenLine,
-  Mail,
-  Pencil,
-} from "lucide-react";
+import { CircleEllipsis, FilePenLine, Mail, Pencil } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import type { JSX } from "react";
 import { useRef } from "react";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-
-import { Badge } from "../../../components/ui/badge";
-import { Button } from "../../../components/ui/button";
+import { Badge } from "../../../../components/ui/badge";
+import { FeatureAccordion } from "./feature-accordion";
 
 function FeatureTile({
   name,
@@ -58,27 +44,6 @@ function FeatureDescription({ children }: { children: React.ReactNode }) {
     <p className="text-base text-[#515151] sm:text-2xl dark:text-[#B4B4B4]">
       {children}
     </p>
-  );
-}
-
-function CustomAccordionItem({
-  value,
-  title,
-  children,
-}: {
-  value: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <AccordionItem value={value}>
-      <AccordionTrigger className="text-3xl font-bold">
-        {title}
-      </AccordionTrigger>
-      <AccordionContent className="flex flex-col items-start gap-6 text-balance">
-        {children}
-      </AccordionContent>
-    </AccordionItem>
   );
 }
 
@@ -246,7 +211,7 @@ export function Functionalities() {
               </div>
             </div>
             {/* Step 2 */}
-            <div className="grid w-full grid-cols-1 gap-8 p-4 sm:gap-16 sm:p-16 lg:grid-cols-2">
+            <div className="z-20 grid w-full grid-cols-1 gap-8 bg-white p-4 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
               <div className="grid grid-cols-2 gap-4 sm:gap-8">
                 <Image
                   src="/assets/landing/functionalities/form.png"
@@ -286,132 +251,7 @@ export function Functionalities() {
           </div>
         </div>
       </div>
-      <div className="border-input z-20 flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
-        <div className="container grid grid-cols-1 lg:grid-cols-2">
-          <div className="z-10 space-y-12 bg-white p-16 dark:bg-[#101011]">
-            <div className="space-y-2">
-              <Accordion
-                type="single"
-                collapsible
-                className="divide-input w-full"
-                defaultValue="contact"
-              >
-                <CustomAccordionItem value="contact" title="Osoba kontaktowa">
-                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                    Przy zakładaniu wydarzenia na Eventowniku zachęcamy do
-                    kontaktu z naszą osobą kontaktową - chętnie wytłumaczymy i
-                    pomożemy w razie problemów. Jednak jeśli nie czujesz takiej
-                    potrzeby, możesz założyć wydarzenie w pełni samodzielnie!
-                  </p>
-                  <Button
-                    asChild
-                    variant="link"
-                    className="p-0 text-xl font-medium text-[#6583c8]"
-                  >
-                    <Link href="mailto:eventownik@pwr.edu.pl">
-                      Skontaktuj się z nami <ArrowRight />
-                    </Link>
-                  </Button>
-                  <div className="space-y-2">
-                    <p className="text-xl font-medium">
-                      Osoba do kontaktu: Amelia Sroczyńska (Project Manager
-                      Eventownika)
-                    </p>
-                    <ul className="list-inside list-disc text-lg">
-                      <li>Telefon: (+48) 606 365 628</li>
-                      <li>Email: eventownik@pwr.edu.pl</li>
-                    </ul>
-                  </div>
-                </CustomAccordionItem>
-                <CustomAccordionItem
-                  value="instruction"
-                  title="Jasna instrukcja"
-                >
-                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                    Aby ułatwić organizatorom stworzenie ich pierwszego
-                    wydarzenia na Eventowniku oraz pozwolić im w pełni
-                    wykorzystać możliwości platformy, przygotowaliśmy
-                    przejrzystą i szczegółową instrukcję opisującą wszystkie
-                    dostępne funkcje.
-                  </p>
-                  <Button
-                    asChild
-                    variant="link"
-                    className="p-0 text-xl font-medium text-[#6583c8]"
-                  >
-                    <Link href="/">
-                      Zapoznaj się z instrukcją <ArrowRight />
-                    </Link>
-                  </Button>
-                </CustomAccordionItem>
-                <CustomAccordionItem
-                  value="no-account-needed"
-                  title="Brak potrzeby zakładania konta dla uczestników"
-                >
-                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                    Uczestnicy zapisują się na wydarzenie bez korzystania z
-                    konta - nie muszą go wcale zakładać. Konto wymagane jest
-                    jedynie dla organizatorów, aby utworzyć wydarzenie.
-                  </p>
-                  <Button
-                    asChild
-                    variant="link"
-                    className="p-0 text-xl font-medium text-[#6583c8]"
-                  >
-                    <Link href="/auth/register">
-                      Utwórz konto <ArrowRight />
-                    </Link>
-                  </Button>
-                </CustomAccordionItem>
-                <CustomAccordionItem
-                  value="multiple-coorganizers"
-                  title="Współtworzenie wydarzenia przez wiele osób"
-                >
-                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                    Podczas tworzenia wydarzenia istnieje możliwość dodania
-                    współorganizatorów oraz przypisania im konkretnych
-                    uprawnień, takich jak dostęp wyłącznie do listy uczestników
-                    czy możliwość edycji formularza. Dzięki temu współpraca
-                    staje się znacznie łatwiejsza, gdy wydarzenie jest
-                    realizowane przez cały sztab organizacyjny!
-                  </p>
-                </CustomAccordionItem>
-                <CustomAccordionItem value="security" title="Bezpieczeństwo">
-                  <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                    Eventownik powstał przy konsultacji z jednostkami
-                    Politechniki Wrocławskiej - Działem Informatyzacji, Działem
-                    Informatyzacji, Inspektorem Ochrony Danych i innymi. Dzięki
-                    temu spełnia najwyższe standardy bezpieczeństwa. Co więcej,
-                    wytrzyma nawet bardzo duże obciążenia i może obsłużyć
-                    jednocześnie duże ilości użytkowników bez utraty
-                    stabilności.
-                  </p>
-                </CustomAccordionItem>
-              </Accordion>
-            </div>
-          </div>
-          <div className="flex flex-col items-center -space-y-32 px-8 py-16">
-            <div className="-translate-x-8 rounded-4xl border border-[#798DDE] bg-[#1B4AE4]/40 p-2 drop-shadow-[0_-4px_72px_rgba(56,115,255,0.69)] dark:bg-[#26486E]/40">
-              <Image
-                src="/assets/landing/functionalities/organizer-view.jpg"
-                alt="Organizer View"
-                className="max-w-xl rounded-3xl"
-                width={2000}
-                height={1000}
-              />
-            </div>
-            <div className="translate-x-8 rounded-4xl border border-[#798DDE] bg-[#1B4AE4]/40 p-2 drop-shadow-[0_-4px_72px_rgba(56,115,255,0.69)] dark:bg-[#26486E]/40">
-              <Image
-                src="/assets/landing/functionalities/organizer-view.jpg"
-                alt="Organizer View"
-                className="max-w-xl rounded-3xl"
-                width={2000}
-                height={1000}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeatureAccordion />
     </section>
   );
 }
