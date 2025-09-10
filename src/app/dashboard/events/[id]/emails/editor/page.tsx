@@ -1,34 +1,98 @@
 "use client";
 
-import { Puck } from "@measured/puck";
-import type { Config } from "@measured/puck";
+import { FieldLabel, Puck } from "@measured/puck";
+import type {
+  Config,
+  CustomField,
+  NumberField,
+  RadioField,
+  SelectField,
+} from "@measured/puck";
 import "@measured/puck/no-external.css";
-import { ALargeSmall, Type } from "lucide-react";
+import { ALargeSmall, AlignLeft, Bold, Palette, Type } from "lucide-react";
 import type React from "react";
 
-// interface WithTypography {
-//   textAlign: {
-//     type: "radio";
-//     options: [
-//       { label: "Lewo"; value: "left" },
-//       { label: "Środek"; value: "center" },
-//       { label: "Prawo"; value: "right" },
-//       { label: "Justuj"; value: "justify" },
-//     ];
-//   };
-// }
+const ICON_CLASSNAME = "mr-1 size-5";
 
-interface Components {
-  Heading: {
-    title: string;
-    level: string;
-  };
-  Paragraph: {
-    content: string;
-  };
+// Definiuje konfiguracje pól + pełen autocomplete dla możliwych property
+const typography = {
+  textAlign: {
+    label: "Wyrównanie tekstu",
+    labelIcon: <AlignLeft className={ICON_CLASSNAME} />,
+    type: "radio",
+    options: [
+      { label: "Lewo", value: "left" },
+      { label: "Środek", value: "center" },
+      { label: "Prawo", value: "right" },
+      { label: "Justuj", value: "justify" },
+    ],
+  },
+  fontWeight: {
+    label: "Grubość czcionki",
+    labelIcon: <Bold className={ICON_CLASSNAME} />,
+    type: "select",
+    options: [
+      { label: "Cienka (300, Thin)", value: "300" },
+      { label: "Normalna (400, Normal)", value: "400" },
+      { label: "Wytłuszczona (500, Semibold)", value: "500" },
+      { label: "Pogrubiona (700, Bold)", value: "700" },
+      { label: "Bardzo gruba (900, Black)", value: "900" },
+    ],
+  },
+  fontSize: {
+    label: "Rozmiar czcionki (px)",
+    labelIcon: <Type className={ICON_CLASSNAME} />,
+    type: "number",
+    min: 1,
+    max: 128,
+  },
+  color: {
+    type: "custom",
+    render: ({ name, onChange, value }) => (
+      <FieldLabel
+        label="Kolor tekstu"
+        icon={<Palette className={ICON_CLASSNAME} />}
+      >
+        <input
+          defaultValue={value}
+          name={name}
+          type="color"
+          onChange={(event) => {
+            onChange(event.currentTarget.value);
+          }}
+        />
+      </FieldLabel>
+    ),
+  },
+} as const satisfies Record<
+  string,
+  RadioField | SelectField | NumberField | CustomField<string>
+>;
+
+// Definiuje wartości jakie może przyjąć pole
+interface WithTypography {
+  textAlign: (typeof typography)["textAlign"]["options"][number]["value"];
+  fontWeight: (typeof typography)["fontWeight"]["options"][number]["value"];
+  fontSize: number;
+  color: string;
 }
 
-function Heading({ title, level }: { title: string; level: number }) {
+// Definiuje pola dla tego komponentu i ich typy
+interface HeadingFields extends WithTypography {
+  title: string;
+  level: number;
+}
+
+interface ParagraphFields extends WithTypography {
+  content: string;
+}
+
+interface Components {
+  Heading: HeadingFields;
+  Paragraph: ParagraphFields;
+}
+
+function HeadingComponent({ title, level }: { title: string; level: number }) {
   switch (level) {
     case 1: {
       return <h1>{title}</h1>;
@@ -53,12 +117,12 @@ export const config: Config<Components> = {
         title: {
           type: "text",
           label: "Treść",
-          labelIcon: <Type className="size-6" />,
+          labelIcon: <Type className={ICON_CLASSNAME} />,
         },
         level: {
           type: "select",
           label: "Stopień",
-          labelIcon: <ALargeSmall className="size-6" />,
+          labelIcon: <ALargeSmall className={ICON_CLASSNAME} />,
           options: [
             {
               label: "1",
@@ -74,15 +138,20 @@ export const config: Config<Components> = {
             },
           ],
         },
+        ...typography,
       },
       defaultProps: {
         title: "Nagłówek",
-        level: "1",
+        level: 1,
+        fontWeight: "400",
+        textAlign: "left",
+        fontSize: 24,
+        color: "#FFFFFF",
       },
-      render: ({ level, title }) => {
+      render: ({ level, title, textAlign, fontWeight, fontSize, color }) => {
         return (
-          <div style={{ padding: 24 }}>
-            <Heading level={Number.parseInt(level)} title={title} />
+          <div style={{ padding: 16, textAlign, fontWeight, fontSize, color }}>
+            <HeadingComponent level={level} title={title} />
           </div>
         );
       },
@@ -93,15 +162,20 @@ export const config: Config<Components> = {
         content: {
           type: "text",
           label: "Treść",
-          labelIcon: <Type className="size-6" />,
+          labelIcon: <Type className={ICON_CLASSNAME} />,
         },
+        ...typography,
       },
       defaultProps: {
         content: "Lorem ipsum dolor sit amet",
+        textAlign: "left",
+        fontWeight: "400",
+        fontSize: 14,
+        color: "#FFFFFF",
       },
-      render: ({ content }) => {
+      render: ({ content, textAlign, fontWeight, fontSize, color }) => {
         return (
-          <div style={{ padding: 24 }}>
+          <div style={{ padding: 16, textAlign, fontWeight, fontSize, color }}>
             <p>{content}</p>
           </div>
         );
