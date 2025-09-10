@@ -3,13 +3,24 @@
 import { FieldLabel, Puck } from "@measured/puck";
 import type {
   Config,
+  Content,
   CustomField,
   NumberField,
   RadioField,
   SelectField,
 } from "@measured/puck";
 import "@measured/puck/no-external.css";
-import { ALargeSmall, AlignLeft, Bold, Palette, Type } from "lucide-react";
+import {
+  ALargeSmall,
+  AlignLeft,
+  Bold,
+  ChevronsRightLeft,
+  ChevronsUpDown,
+  Columns3,
+  Palette,
+  Rows3,
+  Type,
+} from "lucide-react";
 import type React from "react";
 
 const ICON_CLASSNAME = "mr-1 size-5";
@@ -90,6 +101,20 @@ interface ParagraphFields extends WithTypography {
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
+  Grid: {
+    content: Content;
+    columns: number;
+    columnGap: number;
+    rows: number;
+    rowGap: number;
+  };
+  Flex: {
+    content: Content;
+    direction: "row" | "column";
+    align: "start" | "center" | "end" | "stretch";
+    justify: "start" | "center" | "end" | "stretch";
+    gap: number;
+  };
 }
 
 function HeadingComponent({ title, level }: { title: string; level: number }) {
@@ -181,11 +206,139 @@ export const config: Config<Components> = {
         );
       },
     },
+    Grid: {
+      label: "Siatka",
+      fields: {
+        content: {
+          type: "slot",
+          label: "Bloki w kontenerze",
+        },
+        columns: {
+          type: "number",
+          label: "Kolumny",
+          labelIcon: <Columns3 className={ICON_CLASSNAME} />,
+          min: 1,
+          max: 6,
+        },
+        columnGap: {
+          type: "number",
+          label: "Odstęp między kolumnami",
+          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          min: 0,
+          max: 100,
+        },
+        rows: {
+          type: "number",
+          label: "Rzędy",
+          labelIcon: <Rows3 className={ICON_CLASSNAME} />,
+          min: 1,
+          max: 6,
+        },
+        rowGap: {
+          type: "number",
+          label: "Odstęp między rzędami",
+          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          min: 0,
+          max: 100,
+        },
+      },
+      render: ({ content: Content, columns, columnGap, rows, rowGap }) => {
+        return (
+          <Content
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr ".repeat(columns),
+              columnGap,
+              gridTemplateRows: "1fr ".repeat(rows),
+              rowGap,
+            }}
+          />
+        );
+      },
+      defaultProps: {
+        columns: 2,
+        columnGap: 16,
+        rows: 1,
+        rowGap: 16,
+        content: [],
+      },
+    },
+    Flex: {
+      label: "Flex",
+      fields: {
+        content: {
+          type: "slot",
+          label: "Bloki w kontenerze",
+        },
+        direction: {
+          type: "select",
+          label: "Kierunek",
+          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          options: [
+            { label: "W prawo", value: "row" },
+            { label: "W dół", value: "column" },
+          ],
+        },
+        align: {
+          type: "select",
+          label: "Wyrównanie na osi głównej",
+          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          options: [
+            { label: "Do lewej", value: "start" },
+            { label: "Do środka", value: "center" },
+            { label: "Do prawej", value: "end" },
+            { label: "Do środka", value: "stretch" },
+          ],
+        },
+        justify: {
+          type: "select",
+          label: "Wyrównanie na osi drugorzędnej",
+          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          options: [
+            { label: "Do góry", value: "start" },
+            { label: "Do środka", value: "center" },
+            { label: "Do dołu", value: "end" },
+            { label: "Do środka", value: "stretch" },
+          ],
+        },
+        gap: {
+          type: "number",
+          label: "Odstęp między elementami",
+          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          min: 0,
+          max: 100,
+        },
+      },
+      defaultProps: {
+        direction: "row",
+        align: "start",
+        justify: "start",
+        gap: 16,
+        content: [],
+      },
+      render: ({ content: Content, direction, align, justify, gap }) => {
+        return (
+          <Content
+            style={{
+              display: "flex",
+              flexDirection: direction,
+              alignItems: align,
+              justifyContent: justify,
+              gap,
+            }}
+          />
+        );
+      },
+    },
   },
   categories: {
     typography: {
       title: "Tekst",
       components: ["Heading", "Paragraph"],
+    },
+    layout: {
+      title: "Układ",
+      components: ["Grid", "Flex"],
     },
   },
 };
