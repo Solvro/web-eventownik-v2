@@ -44,6 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 /* eslint-disable no-console */
@@ -239,7 +240,7 @@ export const config: Config<Components> = {
       label: "Nagłówek",
       fields: {
         title: {
-          type: "text",
+          type: "textarea",
           contentEditable: true,
           label: "Treść",
           labelIcon: <Type className={ICON_CLASSNAME} />,
@@ -282,10 +283,10 @@ export const config: Config<Components> = {
       },
     },
     Paragraph: {
-      label: "Paragraf",
+      label: "Akapit",
       fields: {
         content: {
-          type: "text",
+          type: "textarea",
           contentEditable: true,
           label: "Treść",
           labelIcon: <Type className={ICON_CLASSNAME} />,
@@ -569,6 +570,18 @@ const overrides: Partial<Overrides> = {
         </>
       );
     },
+    textarea: ({ onChange, name, value, field }) => (
+      <>
+        <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
+        <Textarea
+          value={value as string}
+          onChange={(event) => {
+            onChange(event.currentTarget.value);
+          }}
+          className="text-foreground"
+        />
+      </>
+    ),
   },
 };
 
@@ -586,7 +599,6 @@ export default function Editor() {
             document.body.style.color = "black";
             document.body.style.fontFamily = "Arial, system-ui, sans-serif";
           }
-
           // eslint-disable-next-line react/jsx-no-useless-fragment
           return <>{children}</>;
         },
