@@ -7,8 +7,8 @@ import type {
   CustomField,
   NumberField,
   Overrides,
-  RadioField,
   SelectField,
+  TextField,
 } from "@measured/puck";
 import "@measured/puck/no-external.css";
 import { AccordionItem } from "@radix-ui/react-accordion";
@@ -19,6 +19,7 @@ import {
   ChevronsRightLeft,
   ChevronsUpDown,
   Columns3,
+  Image,
   Mail,
   Palette,
   Rows3,
@@ -50,7 +51,7 @@ import { cn } from "@/lib/utils";
 const ICON_CLASSNAME = "mr-1 size-5";
 
 // Definiuje konfiguracje pól + pełen autocomplete dla możliwych property
-const typography = {
+const withTypography = {
   textAlign: {
     label: "Wyrównanie tekstu",
     labelIcon: <AlignLeft className={ICON_CLASSNAME} />,
@@ -111,15 +112,75 @@ const typography = {
   },
 } as const satisfies Record<
   string,
-  RadioField | SelectField | NumberField | CustomField<string>
+  SelectField | NumberField | CustomField<string>
+>;
+
+const withLayout = {
+  width: {
+    label: "Szerokość (%)",
+    labelIcon: <Columns3 className={ICON_CLASSNAME} />,
+    type: "number",
+    min: 1,
+    max: 100,
+  },
+  height: {
+    label: "Wysokość (%)",
+    labelIcon: <Rows3 className={ICON_CLASSNAME} />,
+    type: "number",
+    min: 1,
+    max: 100,
+  },
+  backgroundColor: {
+    type: "custom",
+    render: ({ name, onChange, value }) => (
+      <FieldLabel
+        label="Kolor tła"
+        icon={<Palette className={ICON_CLASSNAME} />}
+      >
+        <label
+          htmlFor={name}
+          className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
+        >
+          <div
+            className="aspect-square size-4 rounded-full border border-gray-300"
+            style={{ backgroundColor: value }}
+          />
+          <p>{value}</p>
+        </label>
+        <Input
+          id={name}
+          type="color"
+          className="hidden"
+          onChange={(event) => {
+            onChange(event.currentTarget.value);
+          }}
+        />
+      </FieldLabel>
+    ),
+  },
+  backgroundImage: {
+    type: "text",
+    label: "Adres obrazu tła",
+    labelIcon: <Image className={ICON_CLASSNAME} />,
+  },
+} as const satisfies Record<
+  string,
+  TextField | NumberField | CustomField<string>
 >;
 
 // Definiuje wartości jakie może przyjąć pole
 interface WithTypography {
-  textAlign: (typeof typography)["textAlign"]["options"][number]["value"];
-  fontWeight: (typeof typography)["fontWeight"]["options"][number]["value"];
+  textAlign: (typeof withTypography)["textAlign"]["options"][number]["value"];
+  fontWeight: (typeof withTypography)["fontWeight"]["options"][number]["value"];
   fontSize: number;
   color: string;
+}
+
+interface WithLayout {
+  width: number;
+  height: number;
+  backgroundColor: string;
+  backgroundImage: string;
 }
 
 // Definiuje pola dla tego komponentu i ich typy
@@ -132,23 +193,27 @@ interface ParagraphFields extends WithTypography {
   content: string;
 }
 
+interface GridFields extends WithLayout {
+  content: Content;
+  columns: number;
+  columnGap: number;
+  rows: number;
+  rowGap: number;
+}
+
+interface FlexFields extends WithLayout {
+  content: Content;
+  direction: "row" | "column";
+  align: "start" | "center" | "end" | "stretch";
+  justify: "start" | "center" | "end" | "stretch";
+  gap: number;
+}
+
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
-  Grid: {
-    content: Content;
-    columns: number;
-    columnGap: number;
-    rows: number;
-    rowGap: number;
-  };
-  Flex: {
-    content: Content;
-    direction: "row" | "column";
-    align: "start" | "center" | "end" | "stretch";
-    justify: "start" | "center" | "end" | "stretch";
-    gap: number;
-  };
+  Grid: GridFields;
+  Flex: FlexFields;
 }
 
 function HeadingComponent({ title, level }: { title: string; level: number }) {
@@ -198,7 +263,7 @@ export const config: Config<Components> = {
             },
           ],
         },
-        ...typography,
+        ...withTypography,
       },
       defaultProps: {
         title: "Nagłówek",
@@ -225,7 +290,7 @@ export const config: Config<Components> = {
           label: "Treść",
           labelIcon: <Type className={ICON_CLASSNAME} />,
         },
-        ...typography,
+        ...withTypography,
       },
       defaultProps: {
         content: "Lorem ipsum dolor sit amet",
@@ -258,7 +323,7 @@ export const config: Config<Components> = {
         },
         columnGap: {
           type: "number",
-          label: "Odstęp między kolumnami",
+          label: "Odstęp - kolumny",
           labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
           min: 0,
           max: 100,
@@ -272,13 +337,24 @@ export const config: Config<Components> = {
         },
         rowGap: {
           type: "number",
-          label: "Odstęp między rzędami",
+          label: "Odstęp - rzędy",
           labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
           min: 0,
           max: 100,
         },
+        ...withLayout,
       },
-      render: ({ content: Content, columns, columnGap, rows, rowGap }) => {
+      render: ({
+        content: Content,
+        columns,
+        columnGap,
+        rows,
+        rowGap,
+        backgroundColor,
+        backgroundImage,
+        width,
+        height,
+      }) => {
         return (
           <Content
             style={{
@@ -287,6 +363,13 @@ export const config: Config<Components> = {
               columnGap,
               gridTemplateRows: "1fr ".repeat(rows),
               rowGap,
+              backgroundColor,
+              backgroundImage: `url('${backgroundImage}')`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              width: `${width.toString()}%`,
+              height: `${height.toString()}%`,
             }}
           />
         );
@@ -297,6 +380,10 @@ export const config: Config<Components> = {
         rows: 1,
         rowGap: 16,
         content: [],
+        backgroundColor: "#FFFFFF",
+        backgroundImage: "",
+        width: 100,
+        height: 100,
       },
     },
     Flex: {
@@ -344,6 +431,7 @@ export const config: Config<Components> = {
           min: 0,
           max: 100,
         },
+        ...withLayout,
       },
       defaultProps: {
         direction: "row",
@@ -351,8 +439,22 @@ export const config: Config<Components> = {
         justify: "start",
         gap: 16,
         content: [],
+        backgroundColor: "#FFFFFF",
+        backgroundImage: "",
+        width: 100,
+        height: 100,
       },
-      render: ({ content: Content, direction, align, justify, gap }) => {
+      render: ({
+        content: Content,
+        direction,
+        align,
+        justify,
+        gap,
+        backgroundColor,
+        backgroundImage,
+        width,
+        height,
+      }) => {
         return (
           <Content
             style={{
@@ -361,6 +463,13 @@ export const config: Config<Components> = {
               alignItems: align,
               justifyContent: justify,
               gap,
+              backgroundColor,
+              backgroundImage: `url('${backgroundImage}')`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              width,
+              height,
             }}
           />
         );
@@ -372,7 +481,7 @@ export const config: Config<Components> = {
       title: "Tekst",
       components: ["Heading", "Paragraph"],
     },
-    layout: {
+    withLayout: {
       title: "Układ",
       components: ["Grid", "Flex"],
     },
@@ -540,9 +649,9 @@ export default function Editor() {
                                       <Button
                                         asChild
                                         size="sm"
-                                        variant="outline"
+                                        variant="eventDefault"
                                       >
-                                        <div className="w-full py-2 text-lg">
+                                        <div className="w-full py-2">
                                           {componentLabel}
                                         </div>
                                       </Button>
