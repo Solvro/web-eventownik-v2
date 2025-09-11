@@ -8,8 +8,10 @@ import {
   CalendarArrowDownIcon,
   CalendarArrowUpIcon,
   CalendarIcon,
+  Download,
   Loader2,
 } from "lucide-react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -316,7 +318,25 @@ export function GeneralInfoForm({
               control={form.control}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col gap-1">
-                  <FormLabel>Link do regulaminu</FormLabel>
+                  <FormLabel className="flex items-center gap-4">
+                    <span>Link do regulaminu</span>
+                    <Button
+                      asChild
+                      variant="eventGhost"
+                      size="sm"
+                      className="px-2 py-1"
+                    >
+                      <Link
+                        href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+                        download
+                        target="_blank"
+                      >
+                        <Download className="size-3" />
+                        Pobierz szablon regulaminu (współtworzony z Działem
+                        Prawnym PWr)
+                      </Link>
+                    </Button>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
