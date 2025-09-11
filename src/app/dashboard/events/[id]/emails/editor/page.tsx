@@ -4,24 +4,18 @@ import { Drawer, FieldLabel, Puck } from "@measured/puck";
 import type {
   Config,
   Content,
-  CustomField,
   NumberField,
   Overrides,
   SelectField,
-  TextField,
 } from "@measured/puck";
 import "@measured/puck/no-external.css";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import {
   ALargeSmall,
-  AlignLeft,
-  Bold,
   ChevronsRightLeft,
   ChevronsUpDown,
   Columns3,
-  Image,
   Mail,
-  Palette,
   Rows3,
   Save,
   Sidebar,
@@ -30,6 +24,15 @@ import {
   X,
 } from "lucide-react";
 
+import {
+  PUCK_ICON_CLASSNAME,
+  withLayout,
+  withTypography,
+} from "@/components/editor/common";
+import type {
+  LayoutFields,
+  TypographyFields,
+} from "@/components/editor/common";
 import {
   Accordion,
   AccordionContent,
@@ -47,154 +50,17 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-/* eslint-disable no-console */
-
-const ICON_CLASSNAME = "mr-1 size-5";
-
-// Definiuje konfiguracje pól + pełen autocomplete dla możliwych property
-const withTypography = {
-  textAlign: {
-    label: "Wyrównanie tekstu",
-    labelIcon: <AlignLeft className={ICON_CLASSNAME} />,
-    type: "select",
-    options: [
-      { label: "Lewo", value: "left" },
-      { label: "Środek", value: "center" },
-      { label: "Prawo", value: "right" },
-      { label: "Justuj", value: "justify" },
-    ],
-  },
-  fontWeight: {
-    label: "Grubość czcionki",
-    labelIcon: <Bold className={ICON_CLASSNAME} />,
-    type: "select",
-    options: [
-      { label: "Cienka (300, Thin)", value: "300" },
-      { label: "Normalna (400, Normal)", value: "400" },
-      { label: "Wytłuszczona (500, Semibold)", value: "500" },
-      { label: "Pogrubiona (700, Bold)", value: "700" },
-      { label: "Bardzo gruba (900, Black)", value: "900" },
-    ],
-  },
-  fontSize: {
-    label: "Rozmiar czcionki (px)",
-    labelIcon: <Type className={ICON_CLASSNAME} />,
-    type: "number",
-    min: 1,
-    max: 128,
-  },
-  color: {
-    type: "custom",
-    render: ({ name, onChange, value }) => (
-      <FieldLabel
-        label="Kolor tekstu"
-        icon={<Palette className={ICON_CLASSNAME} />}
-      >
-        <label
-          htmlFor={name}
-          className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
-        >
-          <div
-            className="aspect-square size-4 rounded-full border border-gray-300"
-            style={{ backgroundColor: value }}
-          />
-          <p>{value}</p>
-        </label>
-        <Input
-          id={name}
-          type="color"
-          className="hidden"
-          onChange={(event) => {
-            onChange(event.currentTarget.value);
-          }}
-        />
-      </FieldLabel>
-    ),
-  },
-} as const satisfies Record<
-  string,
-  SelectField | NumberField | CustomField<string>
->;
-
-const withLayout = {
-  width: {
-    label: "Szerokość (%)",
-    labelIcon: <Columns3 className={ICON_CLASSNAME} />,
-    type: "number",
-    min: 1,
-    max: 100,
-  },
-  height: {
-    label: "Wysokość (%)",
-    labelIcon: <Rows3 className={ICON_CLASSNAME} />,
-    type: "number",
-    min: 1,
-    max: 100,
-  },
-  backgroundColor: {
-    type: "custom",
-    render: ({ name, onChange, value }) => (
-      <FieldLabel
-        label="Kolor tła"
-        icon={<Palette className={ICON_CLASSNAME} />}
-      >
-        <label
-          htmlFor={name}
-          className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
-        >
-          <div
-            className="aspect-square size-4 rounded-full border border-gray-300"
-            style={{ backgroundColor: value }}
-          />
-          <p>{value}</p>
-        </label>
-        <Input
-          id={name}
-          type="color"
-          className="hidden"
-          onChange={(event) => {
-            onChange(event.currentTarget.value);
-          }}
-        />
-      </FieldLabel>
-    ),
-  },
-  backgroundImage: {
-    type: "text",
-    label: "Adres obrazu tła",
-    labelIcon: <Image className={ICON_CLASSNAME} />,
-  },
-} as const satisfies Record<
-  string,
-  TextField | NumberField | CustomField<string>
->;
-
-// Definiuje wartości jakie może przyjąć pole
-interface WithTypography {
-  textAlign: (typeof withTypography)["textAlign"]["options"][number]["value"];
-  fontWeight: (typeof withTypography)["fontWeight"]["options"][number]["value"];
-  fontSize: number;
-  color: string;
-}
-
-interface WithLayout {
-  width: number;
-  height: number;
-  backgroundColor: string;
-  backgroundImage: string;
-}
-
 // Definiuje pola dla tego komponentu i ich typy
-interface HeadingFields extends WithTypography {
+interface HeadingFields extends TypographyFields {
   title: string;
   level: number;
 }
 
-interface ParagraphFields extends WithTypography {
+interface ParagraphFields extends TypographyFields {
   content: string;
 }
 
-interface GridFields extends WithLayout {
+interface GridFields extends LayoutFields {
   content: Content;
   columns: number;
   columnGap: number;
@@ -202,7 +68,7 @@ interface GridFields extends WithLayout {
   rowGap: number;
 }
 
-interface FlexFields extends WithLayout {
+interface FlexFields extends LayoutFields {
   content: Content;
   direction: "row" | "column";
   align: "start" | "center" | "end" | "stretch";
@@ -243,12 +109,12 @@ export const config: Config<Components> = {
           type: "textarea",
           contentEditable: true,
           label: "Treść",
-          labelIcon: <Type className={ICON_CLASSNAME} />,
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
         },
         level: {
           type: "select",
           label: "Stopień",
-          labelIcon: <ALargeSmall className={ICON_CLASSNAME} />,
+          labelIcon: <ALargeSmall className={PUCK_ICON_CLASSNAME} />,
           options: [
             {
               label: "1",
@@ -269,14 +135,24 @@ export const config: Config<Components> = {
       defaultProps: {
         title: "Nagłówek",
         level: 1,
-        fontWeight: "400",
-        textAlign: "left",
-        fontSize: 24,
-        color: "#000000",
+        typography: {
+          fontWeight: "700",
+          textAlign: "left",
+          fontSize: 24,
+          color: "#000000",
+        },
       },
-      render: ({ level, title, textAlign, fontWeight, fontSize, color }) => {
+      render: ({ level, title, typography }) => {
         return (
-          <div style={{ padding: 16, textAlign, fontWeight, fontSize, color }}>
+          <div
+            style={{
+              padding: 16,
+              textAlign: typography.textAlign,
+              fontWeight: typography.fontWeight,
+              fontSize: typography.fontSize,
+              color: typography.color,
+            }}
+          >
             <HeadingComponent level={level} title={title} />
           </div>
         );
@@ -289,20 +165,30 @@ export const config: Config<Components> = {
           type: "textarea",
           contentEditable: true,
           label: "Treść",
-          labelIcon: <Type className={ICON_CLASSNAME} />,
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
         },
         ...withTypography,
       },
       defaultProps: {
         content: "Lorem ipsum dolor sit amet",
-        textAlign: "left",
-        fontWeight: "400",
-        fontSize: 14,
-        color: "#000000",
+        typography: {
+          fontWeight: "400",
+          textAlign: "left",
+          fontSize: 16,
+          color: "#000000",
+        },
       },
-      render: ({ content, textAlign, fontWeight, fontSize, color }) => {
+      render: ({ content, typography }) => {
         return (
-          <div style={{ padding: 16, textAlign, fontWeight, fontSize, color }}>
+          <div
+            style={{
+              padding: 16,
+              textAlign: typography.textAlign,
+              fontWeight: typography.fontWeight,
+              fontSize: typography.fontSize,
+              color: typography.color,
+            }}
+          >
             <p>{content}</p>
           </div>
         );
@@ -318,28 +204,28 @@ export const config: Config<Components> = {
         columns: {
           type: "number",
           label: "Kolumny",
-          labelIcon: <Columns3 className={ICON_CLASSNAME} />,
+          labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
           min: 1,
           max: 6,
         },
         columnGap: {
           type: "number",
           label: "Odstęp - kolumny",
-          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
           min: 0,
           max: 100,
         },
         rows: {
           type: "number",
           label: "Rzędy",
-          labelIcon: <Rows3 className={ICON_CLASSNAME} />,
+          labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
           min: 1,
           max: 6,
         },
         rowGap: {
           type: "number",
           label: "Odstęp - rzędy",
-          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           min: 0,
           max: 100,
         },
@@ -351,10 +237,7 @@ export const config: Config<Components> = {
         columnGap,
         rows,
         rowGap,
-        backgroundColor,
-        backgroundImage,
-        width,
-        height,
+        layout: { backgroundColor, backgroundImage, width, height },
       }) => {
         return (
           <Content
@@ -381,10 +264,12 @@ export const config: Config<Components> = {
         rows: 1,
         rowGap: 16,
         content: [],
-        backgroundColor: "#FFFFFF",
-        backgroundImage: "",
-        width: 100,
-        height: 100,
+        layout: {
+          backgroundColor: "#FFFFFF",
+          backgroundImage: "",
+          width: 100,
+          height: 100,
+        },
       },
     },
     Flex: {
@@ -397,7 +282,7 @@ export const config: Config<Components> = {
         direction: {
           type: "select",
           label: "Kierunek",
-          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
           options: [
             { label: "W prawo", value: "row" },
             { label: "W dół", value: "column" },
@@ -406,7 +291,7 @@ export const config: Config<Components> = {
         align: {
           type: "select",
           label: "Wyrównanie na osi głównej",
-          labelIcon: <ChevronsRightLeft className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
           options: [
             { label: "Do lewej", value: "start" },
             { label: "Do środka", value: "center" },
@@ -417,7 +302,7 @@ export const config: Config<Components> = {
         justify: {
           type: "select",
           label: "Wyrównanie na osi drugorzędnej",
-          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           options: [
             { label: "Do góry", value: "start" },
             { label: "Do środka", value: "center" },
@@ -428,7 +313,7 @@ export const config: Config<Components> = {
         gap: {
           type: "number",
           label: "Odstęp między elementami",
-          labelIcon: <ChevronsUpDown className={ICON_CLASSNAME} />,
+          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           min: 0,
           max: 100,
         },
@@ -440,10 +325,12 @@ export const config: Config<Components> = {
         justify: "start",
         gap: 16,
         content: [],
-        backgroundColor: "#FFFFFF",
-        backgroundImage: "",
-        width: 100,
-        height: 100,
+        layout: {
+          backgroundColor: "#FFFFFF",
+          backgroundImage: "",
+          width: 100,
+          height: 100,
+        },
       },
       render: ({
         content: Content,
@@ -451,10 +338,7 @@ export const config: Config<Components> = {
         align,
         justify,
         gap,
-        backgroundColor,
-        backgroundImage,
-        width,
-        height,
+        layout: { backgroundColor, backgroundImage, width, height },
       }) => {
         return (
           <Content
@@ -493,7 +377,7 @@ export const config: Config<Components> = {
       name: {
         type: "text",
         label: "Nazwa szablonu",
-        labelIcon: <Mail className={ICON_CLASSNAME} />,
+        labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
       },
     },
   },
@@ -604,6 +488,7 @@ export default function Editor() {
         },
       }}
       onPublish={(test) => {
+        // eslint-disable-next-line no-console
         console.log(test);
       }}
     >
@@ -726,7 +611,15 @@ export default function Editor() {
               <Puck.Preview />
             </div>
           </div>
-          <div className="border-l border-[var(--event-primary-color)]/50 [&>form>div]:border-[var(--event-primary-color)]/50!">
+          <div
+            className={cn(
+              "border-l border-[var(--event-primary-color)]/50",
+              // Each field entry
+              "[&>form>div]:border-[var(--event-primary-color)]/50!",
+              // Field groups wrapper (commons)
+              "[&>form>div:last-of-type>div>div>div:nth-of-type(2)]:border-none! [&>form>div:last-of-type>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+            )}
+          >
             <Puck.Fields />
           </div>
         </div>
