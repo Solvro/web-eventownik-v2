@@ -88,10 +88,20 @@ const typography = {
         label="Kolor tekstu"
         icon={<Palette className={ICON_CLASSNAME} />}
       >
-        <input
-          defaultValue={value}
-          name={name}
+        <label
+          htmlFor={name}
+          className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
+        >
+          <div
+            className="aspect-square size-4 rounded-full border border-gray-300"
+            style={{ backgroundColor: value }}
+          />
+          <p>{value}</p>
+        </label>
+        <Input
+          id={name}
           type="color"
+          className="hidden"
           onChange={(event) => {
             onChange(event.currentTarget.value);
           }}
@@ -165,6 +175,7 @@ export const config: Config<Components> = {
       fields: {
         title: {
           type: "text",
+          contentEditable: true,
           label: "Treść",
           labelIcon: <Type className={ICON_CLASSNAME} />,
         },
@@ -210,6 +221,7 @@ export const config: Config<Components> = {
       fields: {
         content: {
           type: "text",
+          contentEditable: true,
           label: "Treść",
           labelIcon: <Type className={ICON_CLASSNAME} />,
         },
@@ -220,7 +232,7 @@ export const config: Config<Components> = {
         textAlign: "left",
         fontWeight: "400",
         fontSize: 14,
-        color: "#FFFFFF",
+        color: "#000000",
       },
       render: ({ content, textAlign, fontWeight, fontSize, color }) => {
         return (
@@ -463,6 +475,7 @@ export default function Editor() {
           if (document !== undefined) {
             document.body.style.backgroundColor = "white";
             document.body.style.color = "black";
+            document.body.style.fontFamily = "Arial, system-ui, sans-serif";
           }
 
           // eslint-disable-next-line react/jsx-no-useless-fragment
