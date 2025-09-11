@@ -1,15 +1,17 @@
 "use client";
 
-import { FieldLabel, Puck } from "@measured/puck";
+import { Drawer, FieldLabel, Puck } from "@measured/puck";
 import type {
   Config,
   Content,
   CustomField,
   NumberField,
+  Overrides,
   RadioField,
   SelectField,
 } from "@measured/puck";
 import "@measured/puck/no-external.css";
+import { AccordionItem } from "@radix-ui/react-accordion";
 import {
   ALargeSmall,
   AlignLeft,
@@ -17,11 +19,33 @@ import {
   ChevronsRightLeft,
   ChevronsUpDown,
   Columns3,
+  Mail,
   Palette,
   Rows3,
+  Save,
+  Sidebar,
   Type,
+  User,
+  X,
 } from "lucide-react";
-import type React from "react";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+
+/* eslint-disable no-console */
 
 const ICON_CLASSNAME = "mr-1 size-5";
 
@@ -30,7 +54,7 @@ const typography = {
   textAlign: {
     label: "Wyrównanie tekstu",
     labelIcon: <AlignLeft className={ICON_CLASSNAME} />,
-    type: "radio",
+    type: "select",
     options: [
       { label: "Lewo", value: "left" },
       { label: "Środek", value: "center" },
@@ -171,7 +195,7 @@ export const config: Config<Components> = {
         fontWeight: "400",
         textAlign: "left",
         fontSize: 24,
-        color: "#FFFFFF",
+        color: "#000000",
       },
       render: ({ level, title, textAlign, fontWeight, fontSize, color }) => {
         return (
@@ -341,10 +365,91 @@ export const config: Config<Components> = {
       components: ["Grid", "Flex"],
     },
   },
+  root: {
+    label: "Szablon",
+    fields: {
+      name: {
+        type: "text",
+        label: "Nazwa szablonu",
+        labelIcon: <Mail className={ICON_CLASSNAME} />,
+      },
+    },
+  },
 };
 
 // Describe the initial data
 const initialData = {};
+
+// Component overrides
+const overrides: Partial<Overrides> = {
+  fieldTypes: {
+    text: ({ onChange, name, value, field }) => (
+      <>
+        <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
+        <Input
+          type="text"
+          value={value as string}
+          onChange={(event) => {
+            onChange(event.currentTarget.value);
+          }}
+          className="text-foreground"
+        />
+      </>
+    ),
+    number: ({ onChange, name, value, field }) => {
+      const typedField = field as NumberField;
+      return (
+        <>
+          <FieldLabel
+            label={typedField.label ?? name}
+            icon={typedField.labelIcon}
+          />
+          <Input
+            type="number"
+            value={String(value ?? "")}
+            // <input type="number"/> value is a string but Puck's API still expects a number
+            onChange={(event) => {
+              const next = event.currentTarget.value;
+              onChange(next === "" ? undefined : Number(next));
+            }}
+            max={typedField.max}
+            min={typedField.min}
+            className="text-foreground"
+          />
+        </>
+      );
+    },
+    select: ({ onChange, name, value, field }) => {
+      const typedField = field as SelectField;
+      return (
+        <>
+          <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
+          <Select
+            onValueChange={(selectValue) => {
+              onChange(selectValue);
+            }}
+            defaultValue={value as string}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Wybierz opcję" />
+            </SelectTrigger>
+            <SelectContent>
+              {typedField.options.map((option) => (
+                <SelectItem
+                  key={option.value as string}
+                  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+                  value={option.value?.toString() ?? ""}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </>
+      );
+    },
+  },
+};
 
 // Render Puck editor
 export default function Editor() {
@@ -352,12 +457,146 @@ export default function Editor() {
     <Puck
       config={config}
       data={initialData}
+      overrides={{
+        ...overrides,
+        iframe: ({ children, document }) => {
+          if (document !== undefined) {
+            document.body.style.backgroundColor = "white";
+            document.body.style.color = "black";
+          }
+
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          return <>{children}</>;
+        },
+      }}
       onPublish={(test) => {
-        // eslint-disable-next-line no-alert
-        alert("See the document data in the console");
-        // eslint-disable-next-line no-console
         console.log(test);
       }}
-    />
+    >
+      <div className="mb-2 flex justify-between">
+        <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
+        <Button variant="outline">
+          <Save />
+          Zapisz
+        </Button>
+      </div>
+      <div className="border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
+        <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
+          <div>
+            <Button variant="ghost">
+              <Sidebar />
+            </Button>
+            <Button variant="ghost">
+              <Sidebar className="scale-[-1_-1]" />
+            </Button>
+          </div>
+        </div>
+        <div className="grid min-h-[775px] grid-cols-[1fr_3fr_1fr] gap-4">
+          <div className="space-y-4 border-r border-[var(--event-primary-color)]/50">
+            <h2 className="border-b border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+              Bloki
+            </h2>
+            <Drawer>
+              <Accordion type="multiple" className="px-4">
+                {config.categories === undefined
+                  ? null
+                  : Object.keys(config.categories).map(
+                      (category, categoryIndex) => {
+                        const categoryLabel =
+                          config.categories === undefined
+                            ? null
+                            : Object.values(config.categories)[categoryIndex]
+                                .title;
+                        const components =
+                          config.categories === undefined
+                            ? []
+                            : (Object.values(config.categories)[categoryIndex]
+                                .components ?? []);
+                        return (
+                          <AccordionItem value={category} key={category}>
+                            <AccordionTrigger className="text-muted-foreground tracking-wider uppercase">
+                              {categoryLabel}
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-2">
+                              {components.map((component) => {
+                                const componentLabel =
+                                  config.components[component].label;
+                                return (
+                                  <Drawer.Item name={component} key={component}>
+                                    {() => (
+                                      <Button
+                                        asChild
+                                        size="sm"
+                                        variant="outline"
+                                      >
+                                        <div className="w-full py-2 text-lg">
+                                          {componentLabel}
+                                        </div>
+                                      </Button>
+                                    )}
+                                  </Drawer.Item>
+                                );
+                              })}
+                            </AccordionContent>
+                          </AccordionItem>
+                        );
+                      },
+                    )}
+              </Accordion>
+            </Drawer>
+            <h2 className="border-y border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+              Schemat
+            </h2>
+            <div
+              className={cn(
+                // Outline list (ul - "_LayerTree")
+                "[&>div>ul]:px-4!",
+                // Outline list item (outer element - "_Layer")
+                "[&>div>ul>li]:border-[var(--event-primary-color)]/20!",
+                // Outline list item content (root element for each item - "_Layer-inner")
+                "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
+                // Outline list item button (wrapper for items below - "_Layer-clickable")
+                // Icon - "_Layer-icon")
+                "[&>div>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+                // Children of slot type component dropdown (as in layout blocks)
+                "[&>div>ul>li>div:nth-child(2)>ul>li>div]:text-foreground! [&>div>ul>li>div:nth-child(2)>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:nth-child(2)>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
+                "[&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+                // Background of slot type component dropdown ("BLOKI W KONTENERZE")
+                "[&>div>ul>li>div:nth-child(2)]:bg-transparent!",
+              )}
+            >
+              <Puck.Outline />
+            </div>
+          </div>
+          <div className="my-4 flex flex-col gap-2 bg-white font-[system-ui]">
+            <div className="flex items-center gap-2 px-14 py-2 text-xl text-black">
+              <p>Tytuł wiadomości</p>
+              <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
+                Odebrane <X className="size-3 stroke-3 align-middle" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-4">
+              <div className="rounded-full bg-slate-200 p-2">
+                <User />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-black">
+                  Nazwa wydarzenia
+                  <span className="text-muted-foreground ml-2 font-normal">
+                    {"<eventownik@solvro.pl>"}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div className="max-w-7xl grow scale-[0.9]">
+              <Puck.Preview />
+            </div>
+          </div>
+          <div className="border-l border-[var(--event-primary-color)]/50 [&>form>div]:border-[var(--event-primary-color)]/50!">
+            <Puck.Fields />
+          </div>
+        </div>
+      </div>
+    </Puck>
   );
 }
