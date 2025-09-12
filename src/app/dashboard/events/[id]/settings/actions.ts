@@ -58,6 +58,7 @@ export async function updateEvent(
     (event.participantsCount ?? 0).toString(),
   );
   formData.append("contactEmail", event.contactEmail ?? "");
+  formData.append("termsLink", event.termsLink ?? "");
   for (const link of event.socialMediaLinks ?? []) {
     if (link.trim() === "") {
       continue; // Skip empty links

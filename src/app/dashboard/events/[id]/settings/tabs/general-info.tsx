@@ -47,7 +47,8 @@ const EventGeneralInfoSchema = z
       .url(
         "Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
       )
-      .optional(),
+      .optional()
+      .or(z.literal("")),
   })
   .refine(
     (data) => {
@@ -107,6 +108,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endDate: formatISO9075(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
+      termsLink: values.termsLink ?? "",
     };
     return { success: true, event: newEvent };
   }

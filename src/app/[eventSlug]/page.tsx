@@ -144,11 +144,27 @@ export default async function EventPage({ params }: EventPageProps) {
             Kontynuując zgadzasz się na warunki zawarte w<br />
             <Link
               href={`/${event.slug}/privacy`}
-              className="text-primary/90"
+              className="text-[var(--event-primary-color)]/90"
               target="_blank"
             >
-              polityce prywatności wydarzenia
+              polityce prywatności
             </Link>
+            {event.termsLink === null ? (
+              <span> wydarzenia</span>
+            ) : (
+              <>
+                {" "}
+                oraz{" "}
+                <Link
+                  href={event.termsLink}
+                  className="text-[var(--event-primary-color)]/90"
+                  target="_blank"
+                >
+                  regulaminie
+                </Link>{" "}
+                wydarzenia
+              </>
+            )}
           </p>
         </div>
       </div>

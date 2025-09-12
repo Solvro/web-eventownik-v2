@@ -160,7 +160,6 @@ export default async function EventPage({ params }: EventPageProps) {
               W sprawach związanych z ochroną danych osobowych można kontaktować
               się z Administratorem Ochrony Danych pod adresem e-mail
               eventownik@pwr.edu.pl
-              {/* TODO: Contact email will be probably mandatory in the future */}
               {event.contactEmail === null
                 ? ""
                 : ` lub bezpośrednio z organizatorem pod adresem ${event.contactEmail}`}
