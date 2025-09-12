@@ -19,4 +19,5 @@ export interface Event {
   updatedAt: string;
   photoUrl: string | null;
   firstForm: EventForm | null;
+  termsLink: string | null;
 }

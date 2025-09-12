@@ -37,7 +37,7 @@ export interface Event {
   slug: string;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
-  termsLink: string;
+  termsLink: string | undefined;
 }
 
 export const eventAtom = atom<Event>({
