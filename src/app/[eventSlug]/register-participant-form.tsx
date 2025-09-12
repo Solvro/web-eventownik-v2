@@ -131,7 +131,7 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4 pb-24"
+        className="w-full max-w-sm space-y-4"
       >
         <FormField
           control={form.control}

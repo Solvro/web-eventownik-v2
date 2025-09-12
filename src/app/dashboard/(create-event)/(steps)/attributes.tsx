@@ -420,6 +420,7 @@ export function AttributesForm({
           slug: "",
           coorganizers: [],
           attributes: [],
+          termsLink: "",
         });
 
         disableNavguard();

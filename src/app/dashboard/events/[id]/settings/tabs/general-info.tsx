@@ -1,7 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
 import { useSetAtom } from "jotai";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  Download,
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,6 +42,13 @@ const EventGeneralInfoSchema = z
     endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
     location: z.string().optional(),
     organizer: z.string().optional(),
+    termsLink: z
+      .string()
+      .url(
+        "Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
+      )
+      .optional()
+      .or(z.literal("")),
   })
   .refine(
     (data) => {
@@ -71,6 +83,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location ?? "",
       organizer: event.organizer ?? "",
+      termsLink: event.termsLink ?? "",
     },
   });
 
@@ -95,6 +108,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endDate: formatISO9075(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
+      termsLink: values.termsLink ?? "",
     };
     return { success: true, event: newEvent };
   }
@@ -307,6 +321,44 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
+        <FormField
+          name="termsLink"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="col-span-2 flex flex-col gap-1">
+              <FormLabel className="flex items-center gap-4">
+                <span>Link do regulaminu</span>
+                <Button
+                  asChild
+                  variant="eventGhost"
+                  size="sm"
+                  className="px-2 py-1"
+                >
+                  <Link
+                    href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+                    download
+                    target="_blank"
+                  >
+                    <Download className="size-3" />
+                    Pobierz szablon regulaminu (współtworzony z Działem Prawnym
+                    PWr)
+                  </Link>
+                </Button>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm text-red-500">
+                {form.formState.errors.termsLink?.message}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
       </form>
     </Form>
   );
