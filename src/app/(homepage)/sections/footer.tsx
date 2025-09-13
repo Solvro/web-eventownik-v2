@@ -109,7 +109,7 @@ export function Footer() {
       <div className="container w-full p-4">
         <div className="border-input relative overflow-hidden rounded-4xl border border-dashed">
           <div className="flex w-full flex-col items-center">
-            <div className="z-10 flex w-full flex-col items-center gap-4 p-4 sm:gap-16 sm:p-16">
+            <div className="z-10 flex w-full flex-col justify-between gap-4 p-4 sm:gap-16 sm:p-16">
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
                   src="/logo_outline_light.png"
@@ -126,18 +126,12 @@ export function Footer() {
                   className="hidden dark:block"
                 />
               </div>
-              <div className="container grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
-                <p className="text-center sm:text-left">
-                  Design by <span className="font-bold">Matthew Design</span>
-                </p>
-                <p className="flex w-full flex-row items-center justify-center gap-1 whitespace-nowrap sm:justify-start lg:justify-center">
-                  Made with <Heart className="fill-rose-500" strokeWidth={0} />{" "}
-                  <span className="font-bold">
-                    by Solvro © {new Date().getFullYear()}
-                  </span>
-                </p>
-                <span />
-              </div>
+              <p className="flex w-full flex-row items-center justify-center gap-1 whitespace-nowrap sm:justify-start lg:justify-center">
+                Made with <Heart className="fill-rose-500" strokeWidth={0} />{" "}
+                <span className="font-bold">
+                  by Solvro © {new Date().getFullYear()}
+                </span>
+              </p>
             </div>
             <div className="absolute h-[64rem] w-6xl bg-gradient-to-br from-transparent from-20% via-[#3A5BA4]/60 via-35% to-transparent to-50% blur-lg dark:via-[#1A2640]" />
           </div>

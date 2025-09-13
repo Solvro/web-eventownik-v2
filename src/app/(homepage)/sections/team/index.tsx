@@ -33,11 +33,11 @@ const team: TeamMember[] = [
     url: "https://github.com/GOLDER303",
   },
   {
-    name: "Bartosz Gotowski",
-    roles: ["Frontend Techlead"],
+    name: "Maciej Talarczyk",
+    roles: ["UI/UX Designer"],
     image:
-      "https://cms.solvro.pl/assets/9d659db2-a12d-400e-9b45-87a89065a415?key=member",
-    url: "https://github.com/rei-x",
+      "https://cms.solvro.pl/assets/527f6108-e95b-4d64-b725-1b054b949d9f?key=member",
+    url: "https://github.com/muclx",
   },
   {
     name: "Dawid Błaszczyk",
@@ -72,6 +72,13 @@ const team: TeamMember[] = [
     roles: ["Backend Developer"],
     image: "https://avatars.githubusercontent.com/u/184450490?v=4",
     url: "https://github.com/K0smalka",
+  },
+  {
+    name: "Bartosz Gotowski",
+    roles: ["Frontend Techlead"],
+    image:
+      "https://cms.solvro.pl/assets/9d659db2-a12d-400e-9b45-87a89065a415?key=member",
+    url: "https://github.com/rei-x",
   },
   {
     name: "Maciej Król",
@@ -115,13 +122,7 @@ const team: TeamMember[] = [
     image: "https://avatars.githubusercontent.com/u/81564272?v=4",
     url: "https://github.com/Kuzdra24",
   },
-  {
-    name: "Maciej Talarczyk",
-    roles: ["UI/UX Designer"],
-    image:
-      "https://cms.solvro.pl/assets/527f6108-e95b-4d64-b725-1b054b949d9f?key=member",
-    url: "https://github.com/muclx",
-  },
+
   {
     name: "Marcin Blicharski",
     roles: ["UI/UX Designer"],
