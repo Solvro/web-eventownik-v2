@@ -31,10 +31,10 @@ export function AppLogo({
       <Image
         src={forceTheme ? getSource(forceTheme) : getSource(resolvedTheme)}
         alt="Eventownik"
-        className="h-10 w-11"
+        className="h-8 w-9 sm:h-10 sm:w-11"
       />
     </Link>
   ) : (
-    <div className="h-10 w-11"></div>
+    <div className="h-8 w-9 sm:h-10 sm:w-11"></div>
   );
 }
