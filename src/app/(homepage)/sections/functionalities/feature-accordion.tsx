@@ -284,8 +284,8 @@ export function FeatureAccordion() {
   return (
     <div className="border-input z-20 flex w-full flex-col items-center overflow-hidden border-t border-dashed bg-white dark:bg-[#101011]">
       <div className="grid w-full grid-cols-1 items-center justify-center xl:grid-cols-2">
-        <div className="z-10 container flex h-full w-full items-center justify-end space-y-12 bg-white p-16 xl:justify-self-start dark:bg-[#101011]">
-          <div className="w-full max-w-3xl space-y-2">
+        <div className="z-10 flex h-full w-full items-center justify-center bg-white xl:justify-end dark:bg-[#101011]">
+          <div className="w-full space-y-2 p-16 xl:max-w-3xl">
             <Accordion
               type="single"
               collapsible
