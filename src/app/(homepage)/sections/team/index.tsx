@@ -162,7 +162,7 @@ export async function Team() {
     stargazers_count: number;
   };
   return (
-    <div className="border-input container mb-16 flex flex-col items-center gap-16 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 sm:gap-24 sm:pb-20">
+    <div className="border-input container mb-16 flex flex-col items-center gap-8 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 sm:gap-24 sm:pb-20">
       <div className="flex flex-col items-center gap-8">
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
@@ -175,9 +175,9 @@ export async function Team() {
           Stworzyliśmy go, by ułatwić organizowanie wydarzeń i poznawanie ludzi.
         </p>
       </div>
-      <div className="flex flex-col items-center gap-32">
+      <div className="flex flex-col items-center gap-16 sm:gap-32">
         <HighlightedMembers team={team.slice(0, 5)} />
-        <div className="flex flex-row flex-wrap justify-center space-y-4 -space-x-4">
+        <div className="flex flex-row flex-wrap items-center justify-center -space-x-4 gap-y-2">
           {team.slice(5).map((member) => (
             <Member key={member.name} member={member} />
           ))}
@@ -195,7 +195,7 @@ export async function Team() {
           rel="noreferrer noopener"
         >
           <FaGithub size={20} />
-          <p className="font-medium">Walnij nam gwiazdkę</p>
+          <p className="font-medium whitespace-nowrap">Walnij nam gwiazdkę</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
             <p className="font-medium">{stargazers_count}</p>

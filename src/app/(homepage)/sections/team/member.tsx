@@ -34,7 +34,7 @@ export function Member({ member }: { member: TeamMember }) {
         alt={member.name}
         width={500}
         height={500}
-        className="size-16 rounded-full sm:size-20"
+        className="aspect-square h-auto w-full max-w-12 rounded-full sm:max-w-20"
       />
       <AnimatePresence>
         {isHovered ? (

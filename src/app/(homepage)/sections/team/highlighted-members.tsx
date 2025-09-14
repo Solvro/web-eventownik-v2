@@ -34,12 +34,12 @@ export function HighlightedMember({
       }}
       style={{ zIndex }}
     >
-      <div className="absolute flex flex-col items-center transition-all group-hover:flex group-hover:-translate-y-40 group-hover:drop-shadow-2xl">
+      <div className="absolute hidden flex-col items-center transition-all group-hover:drop-shadow-2xl sm:flex sm:translate-y-0 sm:group-hover:-translate-y-40">
         <div
           className="pointer-events-none flex flex-row items-center gap-4 rounded-full px-5 py-2.5 text-sm text-black"
           style={{ backgroundColor: color }}
         >
-          <div>
+          <div className="text-xs sm:text-base">
             <p className="font-medium whitespace-nowrap">{member.name}</p>
             <p className="font-bold whitespace-nowrap">
               {member.roles.join(", ")}
@@ -59,7 +59,7 @@ export function HighlightedMember({
         rel="noreferrer noopener"
         className={cn(
           className,
-          "inline-block aspect-square shrink-0 rounded-4xl transition group-hover:outline-2",
+          "inline-block aspect-square shrink-0 rounded-2xl outline-2 transition sm:rounded-4xl sm:outline-0 sm:group-hover:outline-2",
         )}
         style={{ outlineColor: color }}
         variants={{
@@ -76,7 +76,7 @@ export function HighlightedMember({
           alt={member.name}
           width={500}
           height={500}
-          className="size-72 rounded-4xl"
+          className="size-18 rounded-2xl sm:size-72 sm:rounded-4xl"
         />
       </motion.a>
     </motion.div>
@@ -89,13 +89,13 @@ export function HighlightedMembers({ team }: { team: TeamMember[] }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 1 }}
-      className="flex h-84 w-full flex-row items-end justify-center"
+      className="flex h-28 w-full flex-row items-end justify-center sm:h-84"
     >
       <HighlightedMember
         member={team[3]}
         translateY={16}
         rotate={6}
-        translateX="-32rem"
+        translateX="-170%"
         zIndex={0}
         color="#36B9F5"
       />
@@ -103,7 +103,7 @@ export function HighlightedMembers({ team }: { team: TeamMember[] }) {
         member={team[1]}
         translateY={4}
         rotate={-6}
-        translateX="-16rem"
+        translateX="-90%"
         zIndex={10}
         color="#B735F2"
       />
@@ -118,8 +118,8 @@ export function HighlightedMembers({ team }: { team: TeamMember[] }) {
       <HighlightedMember
         member={team[2]}
         translateY={4}
-        rotate={6}
-        translateX="16rem"
+        rotate={3}
+        translateX="90%"
         zIndex={10}
         color="#C3F235"
       />
@@ -127,7 +127,7 @@ export function HighlightedMembers({ team }: { team: TeamMember[] }) {
         member={team[4]}
         translateY={16}
         rotate={-6}
-        translateX="32rem"
+        translateX="170%"
         zIndex={0}
         color="#f1eb34"
       />
