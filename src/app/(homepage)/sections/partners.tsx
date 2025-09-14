@@ -18,28 +18,28 @@ export function Partners() {
             alt={"Politechnika Wrocławska"}
             width={300}
             height={300}
-            className="max-h-12 w-auto"
+            className="max-h-12 w-auto dark:invert"
           />
           <Image
-            src={"/assets/logo/wit.png"}
-            alt={"Wydział Informatyki i Telekomunikacji"}
+            src={"/assets/logo/solvro_black.png"}
+            alt={"Koło Naukowe Solvro"}
             width={300}
             height={300}
-            className="max-h-12 w-auto"
+            className="max-h-12 w-auto dark:invert"
           />
           <Image
-            src={"/assets/logo/seohost.png"}
+            src={"/assets/logo/wuzetka.png"}
+            alt={"Samorząd Studencki Wydziału Zarządzania"}
+            width={300}
+            height={300}
+            className="max-h-12 w-auto dark:invert"
+          />
+          <Image
+            src={"/assets/logo/seohost.svg"}
             alt={"Seohost"}
             width={300}
             height={300}
-            className="max-h-12 w-auto"
-          />
-          <Image
-            src={"/assets/logo/best.svg"}
-            alt={"Seohost"}
-            width={300}
-            height={300}
-            className="max-h-12 w-auto"
+            className="max-h-12 w-auto dark:invert"
           />
         </div>
       </div>
