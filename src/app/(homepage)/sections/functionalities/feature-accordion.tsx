@@ -44,16 +44,16 @@ const asideContents = new Map<string, React.ReactNode>([
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       key="contact"
-      className="grid h-full grid-cols-2 items-end overflow-hidden px-4 pt-4 sm:pt-8 xl:max-w-none xl:px-0"
+      className="grid h-full grid-cols-5 items-end gap-4 overflow-hidden px-4 pt-4 sm:grid-cols-2 sm:gap-0 sm:pt-8 xl:max-w-none xl:px-0"
     >
       <Image
         src="/assets/landing/functionalities/mobile-mockup.png"
         alt="Wygląd Eventownika na urządzeniach mobilnych"
-        className="w-full rounded-3xl px-4 drop-shadow-[-200px_-35px_50000px_rgba(56,115,255,0.69)] sm:px-8"
+        className="col-span-3 w-full rounded-3xl drop-shadow-[-200px_-35px_50000px_rgba(56,115,255,0.69)] sm:col-span-1 sm:px-8"
         width={2000}
         height={1000}
       />
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-4 py-8 sm:gap-8 sm:px-8">
+      <div className="col-span-2 flex h-full w-full flex-col items-center justify-center gap-4 py-8 sm:col-span-1 sm:gap-8 sm:px-8">
         <p className="w-full rounded-full border border-black bg-transparent px-2 py-1.5 text-center text-xs font-medium drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:w-auto sm:px-5 sm:py-3 sm:text-lg dark:border-white">
           Project Manager Eventownik
         </p>
@@ -65,7 +65,7 @@ const asideContents = new Map<string, React.ReactNode>([
           alt="Amelia Sroczyńska"
           width={250}
           height={250}
-          className="aspect-square h-2/5 w-auto -rotate-6 rounded-4xl drop-shadow-[0px_-35px_500px_rgba(56,115,255,0.69)] sm:h-auto"
+          className="aspect-square h-32 w-auto -rotate-6 rounded-4xl drop-shadow-[0px_-35px_500px_rgba(56,115,255,0.69)] sm:h-auto"
         />
         <div className="flex flex-col items-center text-center text-xs text-[#515151] sm:text-xl dark:text-[#B4B4B4]">
           <a href="tel:+48606365628">+48 606 365 628</a>
@@ -145,7 +145,7 @@ const asideContents = new Map<string, React.ReactNode>([
       key="no-account-needed"
       className="relative flex h-full flex-col items-center justify-center overflow-hidden p-4 sm:p-8"
     >
-      <div className="absolute max-w-3/5 -translate-x-32 translate-y-16 rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
+      <div className="absolute hidden max-w-3/5 -translate-x-32 translate-y-16 rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:block">
         <div className="z-10 flex flex-col items-center gap-8 rounded-4xl bg-white p-8 dark:bg-[#101011]">
           <div className="space-y-2 text-center">
             <p className="text-3xl font-black">Logowanie organizatora</p>
@@ -169,7 +169,7 @@ const asideContents = new Map<string, React.ReactNode>([
           </div>
         </div>
       </div>
-      <div className="absolute mt-16 max-w-3/5 translate-x-32 -translate-y-56 rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
+      <div className="rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:absolute sm:mt-16 sm:max-w-3/5 sm:translate-x-32 sm:-translate-y-56">
         <div className="z-10 flex flex-col items-center gap-8 rounded-4xl bg-white p-8 dark:bg-[#101011]">
           <div className="space-y-2 text-center">
             <p className="text-3xl font-black">Logowanie na wydarzenie</p>
@@ -197,11 +197,13 @@ const asideContents = new Map<string, React.ReactNode>([
       key="coorganizers"
       className="relative flex h-full w-full flex-col items-start justify-center overflow-hidden p-4 sm:p-8"
     >
-      <div className="z-10 flex w-full -translate-y-full flex-row items-center justify-center drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
+      <div className="z-10 flex w-full -translate-y-3/4 flex-row items-center justify-center drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:-translate-y-full">
         <div className="relative flex translate-8 flex-col items-center justify-center">
-          <div className="absolute flex -translate-y-30 flex-col items-center drop-shadow-2xl">
+          <div className="absolute hidden -translate-y-10 flex-col items-center drop-shadow-2xl sm:flex sm:-translate-y-30">
             <div className="pointer-events-none flex flex-row items-center gap-4 rounded-full bg-[#ffc94b] px-5 py-2.5 text-sm text-black">
-              <p className="font-bold whitespace-nowrap">Organizator</p>
+              <p className="text-xs font-bold whitespace-nowrap sm:text-base">
+                Organizator
+              </p>
             </div>
             <span className="h-24 border-l-2 border-dashed border-[#ffc94b]"></span>
           </div>
@@ -210,13 +212,15 @@ const asideContents = new Map<string, React.ReactNode>([
             alt=""
             width={200}
             height={200}
-            className="-rotate-6 rounded-4xl shadow-2xl"
+            className="aspect-square h-full w-40 -rotate-6 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
           />
         </div>
-        <div className="relative flex flex-col items-center justify-center">
-          <div className="absolute flex -translate-y-30 flex-col items-center drop-shadow-2xl">
+        <div className="relative z-10 flex translate-y-4 flex-col items-center justify-center sm:translate-y-0">
+          <div className="absolute hidden -translate-y-10 flex-col items-center drop-shadow-2xl sm:flex sm:-translate-y-30">
             <div className="pointer-events-none flex flex-row items-center gap-4 rounded-full bg-[#fd36fa] px-5 py-2.5 text-sm text-black">
-              <p className="font-bold whitespace-nowrap">Organizator</p>
+              <p className="text-xs font-bold whitespace-nowrap sm:text-base">
+                Organizator
+              </p>
             </div>
             <span className="h-24 border-l-2 border-dashed border-[#fd36fa]"></span>
           </div>
@@ -225,13 +229,15 @@ const asideContents = new Map<string, React.ReactNode>([
             alt=""
             width={200}
             height={200}
-            className="z-10 rounded-4xl shadow-2xl drop-shadow-2xl"
+            className="z-10 aspect-square h-full w-40 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
           />
         </div>
         <div className="relative flex -translate-x-8 translate-y-8 flex-col items-center justify-center">
-          <div className="absolute flex -translate-y-30 flex-col items-center drop-shadow-2xl">
+          <div className="absolute hidden -translate-y-10 flex-col items-center drop-shadow-2xl sm:flex sm:-translate-y-30">
             <div className="pointer-events-none flex flex-row items-center gap-4 rounded-full bg-[#3089dc] px-5 py-2.5 text-sm text-black">
-              <p className="font-bold whitespace-nowrap">Organizator</p>
+              <p className="text-xs font-bold whitespace-nowrap sm:text-base">
+                Organizator
+              </p>
             </div>
             <span className="h-24 border-l-2 border-dashed border-[#3089dc]"></span>
           </div>
@@ -240,14 +246,14 @@ const asideContents = new Map<string, React.ReactNode>([
             alt=""
             width={200}
             height={200}
-            className="rotate-6 rounded-4xl shadow-2xl"
+            className="aspect-square h-full w-40 rotate-6 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
           />
         </div>
       </div>
       <Image
         src="/assets/landing/functionalities/event-settings.png"
         alt="Ustawienia współorganizatorów w panelu organizatora"
-        className="absolute translate-y-1/2 rounded-4xl border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]"
+        className="absolute translate-y-2/3 rounded-4xl border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:translate-y-1/2"
         width={2000}
         height={1000}
       />
@@ -257,7 +263,7 @@ const asideContents = new Map<string, React.ReactNode>([
     "security",
     <motion.div
       key="security"
-      className="flex h-full w-full flex-col items-center justify-center p-16"
+      className="flex h-full w-full flex-col items-center justify-center p-4 sm:p-16"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -278,8 +284,8 @@ export function FeatureAccordion() {
   return (
     <div className="border-input z-20 flex w-full flex-col items-center overflow-hidden border-t border-dashed bg-white dark:bg-[#101011]">
       <div className="grid w-full grid-cols-1 items-center justify-center xl:grid-cols-2">
-        <div className="z-10 container flex h-full items-center justify-center space-y-12 justify-self-center bg-white p-16 xl:max-w-none xl:justify-self-start dark:bg-[#101011]">
-          <div className="space-y-2">
+        <div className="z-10 container flex h-full w-full items-center justify-end space-y-12 bg-white p-16 xl:justify-self-start dark:bg-[#101011]">
+          <div className="w-full max-w-3xl space-y-2">
             <Accordion
               type="single"
               collapsible
@@ -368,7 +374,7 @@ export function FeatureAccordion() {
             </Accordion>
           </div>
         </div>
-        <aside className="order-first h-128 w-full sm:h-240 xl:order-last xl:w-auto">
+        <aside className="order-first h-96 w-full sm:h-240 xl:order-last">
           <AnimatePresence mode="wait">
             {asideContents.get(selectedAside)}
           </AnimatePresence>
