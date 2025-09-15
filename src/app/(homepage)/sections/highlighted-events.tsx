@@ -108,11 +108,7 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="absolute left-1/2 aspect-[25/18] w-[calc(100%-3rem)] max-w-[600px] -translate-x-1/2 sm:aspect-[25/16] md:w-full"
-      style={{
-        height: "auto",
-        minWidth: 0,
-      }}
+      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-[600px] min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
       onClick={() => {
         onClick(index);
       }}
