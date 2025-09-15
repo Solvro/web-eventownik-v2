@@ -10,15 +10,19 @@ import "@measured/puck/no-external.css";
 import {
   AlignLeft,
   Bold,
-  Columns3,
+  ChevronsLeftRight,
+  ChevronsUpDown,
   Image,
+  Layout,
   Palette,
   PenTool,
-  Rows3,
+  Ratio,
+  SquareSquare,
   Type,
 } from "lucide-react";
 
 import { Input } from "../ui/input";
+import { HybridInput } from "./hybrid-input";
 
 export const PUCK_ICON_CLASSNAME = "mr-1 size-5";
 
@@ -66,7 +70,7 @@ export const withTypography = {
         ],
       },
       fontSize: {
-        label: "Rozmiar czcionki (px)",
+        label: "Rozmiar czcionki ",
         labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
         type: "number",
         min: 1,
@@ -117,20 +121,52 @@ export const withLayout = {
   layout: {
     type: "object",
     label: "Układ",
+    labelIcon: <Layout className={PUCK_ICON_CLASSNAME} />,
     objectFields: {
       width: {
-        label: "Szerokość (%)",
-        labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
-        type: "number",
-        min: 1,
-        max: 100,
+        label: "Szerokość",
+        labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
+        type: "custom",
+        render: ({ name, onChange, value, field }) => (
+          <>
+            <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
+            <HybridInput
+              autoValue="auto"
+              label="Automatycznie"
+              type="number"
+              value={value}
+              onChange={onChange}
+            />
+          </>
+        ),
       },
       height: {
-        label: "Wysokość (%)",
-        labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
+        label: "Wysokość",
+        labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+        type: "custom",
+        render: ({ name, onChange, value, field }) => (
+          <>
+            <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
+            <HybridInput
+              autoValue="auto"
+              label="Automatycznie"
+              type="number"
+              value={value}
+              onChange={onChange}
+              inputProps={{ min: "0", max: (10 ** 2).toString() }}
+            />
+          </>
+        ),
+      },
+      margin: {
+        label: "Margines zewnętrzny",
+        labelIcon: <Ratio className={PUCK_ICON_CLASSNAME} />,
         type: "number",
-        min: 1,
-        max: 100,
+      },
+      padding: {
+        label: "Margines wewnętrzny",
+        labelIcon: <SquareSquare className={PUCK_ICON_CLASSNAME} />,
+        type: "number",
       },
       backgroundColor: {
         type: "custom",
@@ -171,8 +207,10 @@ export const withLayout = {
 
 export interface LayoutFields {
   layout: {
-    width: number;
-    height: number;
+    width: string;
+    height: string;
+    margin: string;
+    padding: string;
     backgroundColor: string;
     backgroundImage: string;
   };
