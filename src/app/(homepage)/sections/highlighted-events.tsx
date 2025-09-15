@@ -53,16 +53,17 @@ const events: HighlightedEvent[] = [
 
 const variants = {
   left: {
-    x: -500,
+    x: "clamp(-500px, -22vw, -120px)",
     y: -20,
     filter: "brightness(50%)",
     opacity: 0.8,
     rotate: 9,
     zIndex: 0,
+    scale: 1,
   },
   center: {
-    x: 0,
-    y: 0,
+    x: "0vw",
+    y: "0px",
     filter: "brightness(100%)",
     opacity: 1,
     rotate: 0,
@@ -70,12 +71,13 @@ const variants = {
     zIndex: 20,
   },
   right: {
-    x: 500,
+    x: "clamp(120px, 22vw, 500px)",
     y: -20,
     filter: "brightness(50%)",
     opacity: 0.8,
     rotate: -9,
     zIndex: 10,
+    scale: 1,
   },
 };
 
@@ -88,6 +90,7 @@ function CarouselImage({
   description,
   year,
   onClick,
+  index,
 }: {
   src: string;
   alt: string;
@@ -96,32 +99,54 @@ function CarouselImage({
   title: string;
   description?: string;
   year: number;
-  onClick: () => void;
+  onClick: (index: number) => void;
+  index: number;
 }) {
   return (
     <motion.button
       variants={variants}
       initial={initial}
       animate={animate}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="absolute aspect-[25/16] h-[18rem] sm:h-[22rem] md:h-[26rem] lg:h-[30rem]"
-      onClick={onClick}
+      transition={{ type: "spring", stiffness: 200, damping: 30 }}
+      className="absolute left-1/2 aspect-[25/18] w-[calc(100%-3rem)] max-w-[600px] -translate-x-1/2 sm:aspect-[25/16] md:w-full"
+      style={{
+        height: "auto",
+        minWidth: 0,
+      }}
+      onClick={() => {
+        onClick(index);
+      }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.3}
+      dragTransition={{ bounceStiffness: 200, bounceDamping: 30 }}
+      onDragEnd={(_, info) => {
+        const swipeThreshold = 80;
+        if (info.offset.x > swipeThreshold) {
+          onClick((index + 1) % 3);
+        } else if (info.offset.x < -swipeThreshold) {
+          onClick((index - 1 + 3) % 3);
+        }
+      }}
+      tabIndex={0}
     >
-      <Image
-        src={src}
-        alt={alt}
-        className="border-input aspect-[25/16] h-full w-full rounded-4xl border object-cover"
-        width={750}
-        height={480}
-      />
-      <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-2 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-8 py-8 text-left text-white sm:gap-4 sm:py-16">
-        <Badge>{year}</Badge>
-        <h3 className="text-2xl font-semibold sm:text-3xl">{title}</h3>
-        {description == null ? null : (
-          <p className="w-5/6 text-sm sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
-            {description}
-          </p>
-        )}
+      <div className="relative h-full w-full">
+        <Image
+          src={src}
+          alt={alt}
+          className="border-input aspect-[25/18] h-auto w-full rounded-4xl border object-cover sm:aspect-[25/16]"
+          width={750}
+          height={540}
+        />
+        <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-2 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-4 py-8 text-left text-white sm:gap-4 sm:px-8 sm:py-16">
+          <Badge>{year}</Badge>
+          <h3 className="text-2xl font-semibold sm:text-3xl">{title}</h3>
+          {description == null ? null : (
+            <p className="w-5/6 text-xs sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
+              {description}
+            </p>
+          )}
+        </div>
       </div>
     </motion.button>
   );
@@ -131,8 +156,8 @@ export function HighlightedEvents() {
   const variantsList = ["left", "center", "right"];
   const [index, setIndex] = useState(0);
   return (
-    <div className="-mt-16 flex w-full flex-col items-start gap-16 overflow-x-hidden pt-16">
-      <div className="relative flex h-[20rem] w-full justify-center sm:h-[24rem] md:h-[28rem] lg:h-[32rem]">
+    <div className="-mt-16 flex w-full flex-col items-start gap-8 overflow-x-hidden pt-16 lg:gap-16">
+      <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-[520px] w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
         <CarouselImage
           src={events[1].image.src}
           alt={events[1].image.alt}
@@ -141,9 +166,8 @@ export function HighlightedEvents() {
           year={events[1].year}
           title={events[1].name}
           description={events[1].description}
-          onClick={() => {
-            setIndex(1);
-          }}
+          onClick={setIndex}
+          index={1}
         />
         <CarouselImage
           src={events[2].image.src}
@@ -153,9 +177,8 @@ export function HighlightedEvents() {
           year={events[2].year}
           title={events[2].name}
           description={events[2].description}
-          onClick={() => {
-            setIndex(2);
-          }}
+          onClick={setIndex}
+          index={2}
         />
         <CarouselImage
           src={events[0].image.src}
@@ -165,9 +188,8 @@ export function HighlightedEvents() {
           year={events[0].year}
           title={events[0].name}
           description={events[0].description}
-          onClick={() => {
-            setIndex(0);
-          }}
+          onClick={setIndex}
+          index={0}
         />
       </div>
       <div className="flex w-full flex-row items-center justify-center gap-6">
