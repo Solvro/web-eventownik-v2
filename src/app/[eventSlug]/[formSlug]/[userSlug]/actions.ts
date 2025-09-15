@@ -57,6 +57,7 @@ export async function submitForm(
 
       return {
         success: false,
+        errors: errorData.errors,
         error:
           errorMessages ||
           `Błąd ${response.status.toString()} ${response.statusText}`,
