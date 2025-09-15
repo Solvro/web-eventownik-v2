@@ -168,7 +168,7 @@ export async function Team() {
           Solvro Team
         </p>
         <p className="text-center text-3xl font-medium">
-          Eventownik powstał dzięki pracy{" "}
+          Eventownik powstał dzięki pracy
           <span className="text-[#6583C8]">{team.length} osób</span> z naszego
           zespołu.
           <br />
