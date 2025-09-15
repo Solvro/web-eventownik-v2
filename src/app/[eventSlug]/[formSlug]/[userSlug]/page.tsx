@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import React from "react";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
+import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { API_URL } from "@/lib/api";
 import type { FormAttribute } from "@/types/attributes";
@@ -70,24 +71,6 @@ async function getUserData(
     return null;
   }
   return (await userDataResponse.json()) as PublicParticipant;
-}
-
-async function getEventBlockAttributeBlocks(
-  eventSlug: string,
-  attributeId: string,
-) {
-  const blocksResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/attributes/${attributeId}/blocks`,
-    {
-      method: "GET",
-    },
-  );
-  if (!blocksResponse.ok) {
-    const error = (await blocksResponse.json()) as unknown;
-    console.error(error);
-    return null;
-  }
-  return (await blocksResponse.json()) as PublicBlock[];
 }
 
 export async function generateMetadata({

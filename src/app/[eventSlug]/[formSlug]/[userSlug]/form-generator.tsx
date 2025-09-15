@@ -2,12 +2,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { ParticipantForm } from "@/components/participant-form";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
-import { getEventBlockAttributeBlocks, submitForm } from "./actions";
+import { submitForm } from "./actions";
 
 export function FormGenerator({
   attributes,
