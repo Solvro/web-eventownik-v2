@@ -1,0 +1,31 @@
+{
+  "Event": {
+    "notFound": "Nie znaleziono wydarzenia 😪",
+    "registration": "Rejestracja na wydarzenie",
+    "fillForm": "Wypełnij formularz, aby się zarejestrować",
+    "addToCalendar": "Dodaj do kalendarza"
+  },
+  "Form": {
+    "invalidEmail": "Nieprawidłowy adres email.",
+    "emailTaken": "Ten adres email jest już zarejestrowany na to wydarzenie.",
+    "emailTakenTitle": "Adres email jest już zajęty",
+    "registrationFailed": "Rejestracja na wydarzenie nie powiodła się.\\nSpróbuj ponownie później",
+    "registrationFailedTitle": "Rejestracja na wydarzenie nie powiodła się",
+    "tryAgainLater": "Spróbuj ponownie później",
+    "serverError": "Błąd serwera",
+    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
+    "successMessage": "Twoja rejestracja przebiegła pomyślnie!",
+    "fillAnotherForm": "Uzupełnij kolejny formularz",
+    "emailPlaceholder": "Podaj swój adres e-mail",
+    "registering": "Rejestrowanie...",
+    "signUp": "Zapisz się",
+    "editSaveFailed": "Zapisanie danych formularza nie powiodło się.\\nSpróbuj ponownie później",
+    "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
+    "editYourResponse": "Edytuj swoją odpowiedź"
+  },
+  "Themes": {
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "System"
+  }
+}

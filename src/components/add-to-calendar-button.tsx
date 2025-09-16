@@ -2,6 +2,7 @@
 
 import { createEvent } from "ics";
 import { CalendarPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import { EventInfoDiv } from "@/components/event-info-div";
@@ -43,6 +44,7 @@ function downloadICSFile(event: Event) {
 }
 
 export function AddToCalendarButton({ event }: { event: Event }) {
+  const t = useTranslations("Event");
   return (
     <EventInfoDiv
       onClick={(event_) => {
@@ -52,7 +54,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
       className="hover:bg-accent/20 cursor-pointer"
     >
       <CalendarPlus size={20} />
-      <span className="hidden md:inline">Dodaj do kalendarza</span>
+      <span className="hidden md:inline"> {t("addToCalendar")}</span>
     </EventInfoDiv>
   );
 }
