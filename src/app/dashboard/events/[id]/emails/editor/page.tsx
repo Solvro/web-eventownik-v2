@@ -1,6 +1,6 @@
 "use client";
 
-import { Drawer, FieldLabel, Puck } from "@measured/puck";
+import { Drawer, FieldLabel, Puck, useGetPuck } from "@measured/puck";
 import type {
   Config,
   Content,
@@ -188,7 +188,11 @@ export const config: Config<Components> = {
               color: typography.color,
             }}
           >
-            <p>{content}</p>
+            {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
+                This is not reflected in the document schema, though it creates a visual mismatch
+                between what you see in the editor and what gets sent to the user
+            */}
+            <p className="p-4">{content}</p>
           </div>
         );
       },
@@ -488,6 +492,31 @@ const overrides: Partial<Overrides> = {
   },
 };
 
+/**
+ * TODO: This is a temporary addition during the development of the editor.
+ * It fails to correctly show the current document schema of the editor, as it
+ * does not get re-rendered on content changes, therefore the hooks and
+ * the values returned by them, including editor state, do not update
+ */
+function SaveButton() {
+  // eslint-disable-next-line no-console
+  console.log("save button re-render");
+  const getPuck = useGetPuck();
+  const { appState } = getPuck();
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        // eslint-disable-next-line no-console
+        console.log(appState.data);
+      }}
+    >
+      <Save />
+      Zapisz
+    </Button>
+  );
+}
+
 // Render Puck editor
 export default function Editor() {
   return (
@@ -514,10 +543,7 @@ export default function Editor() {
       <div className="flex h-[835px] flex-col">
         <div className="mb-2 flex justify-between">
           <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
-          <Button variant="outline">
-            <Save />
-            Zapisz
-          </Button>
+          <SaveButton />
         </div>
         <div className="flex h-[835px] grow flex-col border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
           <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
@@ -638,9 +664,12 @@ export default function Editor() {
               className={cn(
                 "max-h-[724px] w-[234px] overflow-y-auto border-l border-[var(--event-primary-color)]/50",
                 // Each field entry
-                "[&>form>div]:border-[var(--event-primary-color)]/50!",
-                // Field groups wrapper (commons)
+                "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-[var(--event-primary-color)]/50!",
+                // Field groups wrapper (commons - e.g. typography)
                 "[&>form>div:last-of-type>div>div>div:nth-of-type(2)]:border-none! [&>form>div:last-of-type>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+                // "object" type field label (commons)
+                // For each second child div within a div which is a child of form
+                "[&>form>div_div>div]:text-muted-foreground!",
               )}
             >
               <Puck.Fields />
