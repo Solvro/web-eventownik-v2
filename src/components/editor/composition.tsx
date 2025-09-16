@@ -1,0 +1,263 @@
+"use client";
+
+import { Drawer, Puck, usePuck } from "@measured/puck";
+import type { AppState, Config, PuckAction } from "@measured/puck";
+import "@measured/puck/no-external.css";
+import { Save, Sidebar, User, X } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+type PuckDispatch = (action: PuckAction) => void;
+
+/**
+ * NOTE: Temporary addition during the development of the editor.
+ * Used to display current document schema.
+ */
+function SaveButton(appState: AppState) {
+  // eslint-disable-next-line no-console
+  console.log("save button re-render");
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        // eslint-disable-next-line no-console
+        console.log(appState.data);
+      }}
+    >
+      <Save />
+      Zapisz
+    </Button>
+  );
+}
+
+function Toolbar({
+  appState,
+  dispatch,
+}: {
+  appState: AppState;
+  dispatch: PuckDispatch;
+}) {
+  const leftVisible = appState.ui.leftSideBarVisible;
+  const rightVisible = appState.ui.rightSideBarVisible;
+
+  return (
+    <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
+      <div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                dispatch({
+                  type: "setUi",
+                  ui: {
+                    leftSideBarVisible: !leftVisible,
+                  },
+                });
+              }}
+            >
+              <Sidebar />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {leftVisible ? "Ukryj" : "Wyświetl"} lewy panel
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                dispatch({
+                  type: "setUi",
+                  ui: {
+                    rightSideBarVisible: !rightVisible,
+                  },
+                });
+              }}
+            >
+              <Sidebar className="scale-[-1_-1]" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {rightVisible ? "Ukryj" : "Wyświetl"} prawy panel
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </div>
+  );
+}
+
+function BlocksAndSchemaSidebar({
+  config,
+  appState,
+}: {
+  appState: AppState;
+  config: Config;
+}) {
+  return (
+    <div
+      className={cn(
+        "space-y-4 border-r border-[var(--event-primary-color)]/50",
+        appState.ui.leftSideBarVisible ? "block" : "hidden",
+      )}
+    >
+      <h2 className="border-b border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+        Bloki
+      </h2>
+      <Drawer>
+        <Accordion type="multiple" className="px-4">
+          {config.categories === undefined
+            ? null
+            : Object.keys(config.categories).map((category, categoryIndex) => {
+                const categoryLabel =
+                  config.categories === undefined
+                    ? null
+                    : Object.values(config.categories)[categoryIndex].title;
+                const components =
+                  config.categories === undefined
+                    ? []
+                    : (Object.values(config.categories)[categoryIndex]
+                        .components ?? []);
+                return (
+                  <AccordionItem
+                    value={category}
+                    key={category}
+                    className="border-none"
+                  >
+                    <AccordionTrigger className="text-muted-foreground tracking-wider uppercase">
+                      {categoryLabel}
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-2">
+                      {components.map((component) => {
+                        const componentLabel =
+                          config.components[component].label;
+                        return (
+                          <Drawer.Item name={component} key={component}>
+                            {() => (
+                              <Button asChild size="sm" variant="eventDefault">
+                                <div className="w-full py-2">
+                                  {componentLabel}
+                                </div>
+                              </Button>
+                            )}
+                          </Drawer.Item>
+                        );
+                      })}
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+        </Accordion>
+      </Drawer>
+      <h2 className="border-y border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+        Schemat
+      </h2>
+      <div
+        className={cn(
+          // Outline list (ul - "_LayerTree")
+          "[&>div>ul]:px-4!",
+          // Outline list item (outer element - "_Layer")
+          "[&>div>ul>li]:border-[var(--event-primary-color)]/20!",
+          // Outline list item content (root element for each item - "_Layer-inner")
+          "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
+          // Outline list item button (wrapper for items below - "_Layer-clickable")
+          // Icon - "_Layer-icon")
+          "[&>div>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+          // Children of slot type component dropdown (as in layout blocks)
+          "[&>div>ul>li>div:nth-child(2)>ul>li>div]:text-foreground! [&>div>ul>li>div:nth-child(2)>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:nth-child(2)>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
+          "[&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+          // Background of slot type component dropdown ("BLOKI W KONTENERZE")
+          "[&>div>ul>li>div:nth-child(2)]:bg-transparent!",
+        )}
+      >
+        <Puck.Outline />
+      </div>
+    </div>
+  );
+}
+
+function FieldsPanel({ appState }: { appState: AppState }) {
+  return (
+    <div
+      className={cn(
+        "max-h-[724px] w-[234px] overflow-y-auto border-l border-[var(--event-primary-color)]/50",
+        // Each field entry
+        "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-[var(--event-primary-color)]/50!",
+        // Field groups wrapper (commons - e.g. typography)
+        "[&>form>div:last-of-type>div>div>div:nth-of-type(2)]:border-none! [&>form>div:last-of-type>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+        // "object" type field label (commons)
+        // For each second child div within a div which is a child of form
+        "[&>form>div_div>div]:text-muted-foreground!",
+        appState.ui.rightSideBarVisible ? "block" : "hidden",
+      )}
+    >
+      <Puck.Fields />
+    </div>
+  );
+}
+
+/**
+ * Client component containing all of custom Puck editor UI.
+ * It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
+ * This component must be rendered within `<Puck/>` component.
+ */
+function PuckComposition({ config }: { config: Config }) {
+  const { appState, dispatch } = usePuck();
+
+  return (
+    <div className="flex h-[835px] flex-col">
+      <div className="mb-2 flex justify-between">
+        <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
+        <SaveButton {...appState} />
+      </div>
+      <div className="flex h-[835px] grow flex-col border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
+        <Toolbar appState={appState} dispatch={dispatch} />
+        <div
+          className="grid grow gap-4"
+          style={{
+            gridTemplateColumns: `${appState.ui.leftSideBarVisible ? "1fr" : ""} 3fr ${appState.ui.rightSideBarVisible ? "1fr" : ""}`,
+          }}
+        >
+          <BlocksAndSchemaSidebar config={config} appState={appState} />
+          <div className="my-4 flex flex-col gap-2 bg-white font-[system-ui]">
+            <div className="pointer-events-none flex items-center gap-2 px-14 py-2 text-xl text-black">
+              <p>Tytuł wiadomości</p>
+              <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
+                Odebrane <X className="size-3 stroke-3 align-middle" />
+              </div>
+            </div>
+            <div className="pointer-events-none flex items-center gap-2 px-4">
+              <div className="rounded-full bg-slate-200 p-2">
+                <User />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-black">
+                  Nazwa wydarzenia
+                  <span className="text-muted-foreground ml-2 font-normal">
+                    {"<eventownik@solvro.pl>"}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div className="max-w-7xl grow scale-[0.9]">
+              <Puck.Preview />
+            </div>
+          </div>
+          <FieldsPanel appState={appState} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export { PuckComposition };
