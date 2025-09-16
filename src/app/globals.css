@@ -180,11 +180,6 @@
   }
 }
 
-.svg-black {
-  filter: invert(0) sepia(100%) saturate(0%) hue-rotate(0deg) brightness(0%)
-    contrast(100%);
-}
-
 .clip-curve {
   clip-path: ellipse(60% 100% at 50% 0%);
 }
