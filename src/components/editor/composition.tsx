@@ -3,7 +3,7 @@
 import { Drawer, Puck, usePuck } from "@measured/puck";
 import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
-import { Save, Sidebar, User, X } from "lucide-react";
+import { Redo2, Save, Sidebar, Undo2, User, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -42,12 +42,15 @@ function SaveButton(appState: AppState) {
 function Toolbar({
   appState,
   dispatch,
+  history,
 }: {
   appState: AppState;
   dispatch: PuckDispatch;
+  history: ReturnType<typeof usePuck>["history"];
 }) {
   const leftVisible = appState.ui.leftSideBarVisible;
   const rightVisible = appState.ui.rightSideBarVisible;
+  const { back, forward, hasFuture, hasPast } = history;
 
   return (
     <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
@@ -55,7 +58,7 @@ function Toolbar({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
+              variant="eventGhost"
               onClick={() => {
                 dispatch({
                   type: "setUi",
@@ -75,7 +78,7 @@ function Toolbar({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
+              variant="eventGhost"
               onClick={() => {
                 dispatch({
                   type: "setUi",
@@ -91,6 +94,28 @@ function Toolbar({
           <TooltipContent>
             {rightVisible ? "Ukryj" : "Wyświetl"} prawy panel
           </TooltipContent>
+        </Tooltip>
+      </div>
+      <div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="eventGhost" onClick={back} disabled={!hasPast}>
+              <Undo2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Cofnij</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="eventGhost"
+              onClick={forward}
+              disabled={!hasFuture}
+            >
+              <Redo2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Ponów</TooltipContent>
         </Tooltip>
       </div>
     </div>
@@ -212,7 +237,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
  * This component must be rendered within `<Puck/>` component.
  */
 function PuckComposition({ config }: { config: Config }) {
-  const { appState, dispatch } = usePuck();
+  const { appState, dispatch, history } = usePuck();
 
   return (
     <div className="flex h-[835px] flex-col">
@@ -221,7 +246,7 @@ function PuckComposition({ config }: { config: Config }) {
         <SaveButton {...appState} />
       </div>
       <div className="flex h-[835px] grow flex-col border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
-        <Toolbar appState={appState} dispatch={dispatch} />
+        <Toolbar appState={appState} dispatch={dispatch} history={history} />
         <div
           className="grid grow gap-4"
           style={{
