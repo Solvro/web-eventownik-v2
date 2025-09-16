@@ -85,7 +85,7 @@ const asideContents = new Map<string, React.ReactNode>([
       key="instruction"
       className="relative h-96 w-full overflow-visible sm:h-full sm:min-h-160"
     >
-      <div className="absolute top-1/2 left-0 flex w-full -translate-y-1/2 justify-start overflow-visible">
+      <div className="absolute top-1/2 left-0 flex w-full -translate-y-1/2 justify-center overflow-visible xl:justify-start">
         <div className="grid w-full max-w-3xl grid-cols-2 items-center gap-4 overflow-visible px-4 sm:gap-8 sm:px-8">
           <div className="flex flex-col gap-4 overflow-visible sm:gap-8">
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
@@ -201,7 +201,7 @@ const asideContents = new Map<string, React.ReactNode>([
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       key="coorganizers"
-      className="relative flex h-96 w-full flex-col items-start justify-center overflow-hidden p-4 sm:h-192 sm:p-8"
+      className="relative flex h-96 w-full flex-col items-center justify-center overflow-hidden p-4 sm:h-192 sm:p-8 xl:items-start"
     >
       <div className="z-10 flex w-full max-w-3xl -translate-y-3/4 flex-row items-center justify-center drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:-translate-y-3/5">
         <div className="relative flex translate-8 flex-col items-center justify-center">
