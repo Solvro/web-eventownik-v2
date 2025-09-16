@@ -1,7 +1,6 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
-import type { PublicBlock } from "@/types/blocks";
 
 interface ErrorObject {
   rule: string;
