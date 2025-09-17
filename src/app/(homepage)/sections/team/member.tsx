@@ -80,7 +80,9 @@ export function Member({ member }: { member: TeamMember }) {
         target="_blank"
         className="absolute inset-0 z-30 block h-full w-full shrink-0"
         rel="noreferrer noopener"
-      />
+      >
+        <p className="sr-only">{member.name}</p>
+      </a>
     </div>
   );
 }
