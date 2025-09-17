@@ -76,7 +76,6 @@ export function Member({ member }: { member: TeamMember }) {
         ) : null}
       </AnimatePresence>
       <a
-        title={member.name}
         href={member.url}
         target="_blank"
         className="absolute inset-0 z-30 block h-full w-full shrink-0"

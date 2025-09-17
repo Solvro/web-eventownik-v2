@@ -53,7 +53,6 @@ export function HighlightedMember({
         ></span>
       </div>
       <motion.a
-        title={member.name}
         href={member.url}
         target="_blank"
         rel="noreferrer noopener"
