@@ -90,7 +90,7 @@ export function HighlightedMembers({ team }: { team: TeamMember[] }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 1 }}
-      className="flex h-28 w-full flex-row items-end justify-center md:h-32 lg:h-52 xl:h-84"
+      className="flex h-28 w-full flex-row items-end justify-center md:h-32 lg:h-52 xl:h-76"
     >
       <HighlightedMember
         member={team[3]}
