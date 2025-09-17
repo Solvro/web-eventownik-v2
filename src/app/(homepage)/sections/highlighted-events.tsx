@@ -138,7 +138,7 @@ function CarouselImage({
           <Badge>{year}</Badge>
           <h3 className="text-2xl font-semibold sm:text-3xl">{title}</h3>
           {description == null ? null : (
-            <p className="w-5/6 text-xs sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
+            <p className="w-7/8 text-xs sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
               {description}
             </p>
           )}
