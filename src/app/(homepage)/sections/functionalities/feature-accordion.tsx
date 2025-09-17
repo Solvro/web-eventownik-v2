@@ -269,7 +269,7 @@ const asideContents = new Map<string, React.ReactNode>([
     "security",
     <motion.div
       key="security"
-      className="flex h-96 w-full flex-col items-center justify-center p-4 sm:h-full sm:p-16"
+      className="flex h-96 w-full flex-col items-center justify-center p-4 sm:h-full sm:p-16 xl:items-start xl:px-32"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
