@@ -1,6 +1,5 @@
-import { Bug, Star } from "lucide-react";
+import { Bug } from "lucide-react";
 import Link from "next/link";
-import { FaGithub } from "react-icons/fa";
 
 import { ThemeSwitch } from "../../../../components/theme-switch";
 import { Button } from "../../../../components/ui/button";
