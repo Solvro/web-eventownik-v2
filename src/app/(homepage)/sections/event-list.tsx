@@ -98,8 +98,9 @@ function Timeline() {
     <div className="relative flex h-22 w-full flex-col items-center">
       <div className="absolute z-10 flex w-full flex-row justify-between px-8">
         <Button
-          variant={"ghost"}
-          className="aspect-square [&_svg]:size-8"
+          variant={"eventGhost"}
+          size={"icon"}
+          className="hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             setMonth((previous) => Math.max(previous - 1, 0));
           }}
@@ -107,8 +108,9 @@ function Timeline() {
           <ArrowLeftCircle />
         </Button>
         <Button
-          variant={"ghost"}
-          className="aspect-square [&_svg]:size-8"
+          variant={"eventGhost"}
+          size={"icon"}
+          className="hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             setMonth((previous) => Math.min(previous + 1, 11));
           }}
