@@ -175,7 +175,7 @@ export async function Team() {
           Stworzyliśmy go, by ułatwić organizowanie wydarzeń i poznawanie ludzi.
         </p>
       </div>
-      <div className="flex flex-col items-center gap-16 sm:gap-32">
+      <div className="flex flex-col items-center gap-16 lg:gap-32">
         <HighlightedMembers team={team.slice(0, 5)} />
         <div className="flex flex-row flex-wrap items-center justify-center -space-x-4 gap-y-2">
           {team.slice(5).map((member) => (
