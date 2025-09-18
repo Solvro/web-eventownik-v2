@@ -3,7 +3,17 @@
 import { Drawer, Puck, usePuck } from "@measured/puck";
 import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
-import { Redo2, Save, Sidebar, Undo2, User, X } from "lucide-react";
+import {
+  Redo2,
+  Save,
+  Sidebar,
+  Undo2,
+  User,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -39,22 +49,33 @@ function SaveButton(appState: AppState) {
   );
 }
 
+/**
+ * NOTE: Zooming in this component is handled through `useState` instead of hooking into
+ * Puck's API - in this case, `viewport`. Since other components use it (such as undo/redo buttons here), shouldn't
+ * it be utilized here as well? Current implementation seems more straightforward.
+ */
 function Toolbar({
   appState,
   dispatch,
   history,
+  scale,
+  setScale,
 }: {
   appState: AppState;
   dispatch: PuckDispatch;
   history: ReturnType<typeof usePuck>["history"];
+  scale: number;
+  setScale: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const leftVisible = appState.ui.leftSideBarVisible;
   const rightVisible = appState.ui.rightSideBarVisible;
   const { back, forward, hasFuture, hasPast } = history;
+  const minZoom = 0.5;
+  const maxZoom = 1;
 
   return (
-    <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
-      <div>
+    <div className="grid grid-cols-[1fr_3fr_1fr] gap-4 border-b border-[var(--event-primary-color)]/50">
+      <div className="flex justify-center border-r border-[var(--event-primary-color)]/50">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -96,7 +117,44 @@ function Toolbar({
           </TooltipContent>
         </Tooltip>
       </div>
-      <div>
+      <div className="flex items-center justify-center gap-4">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="eventGhost"
+              onClick={() => {
+                setScale(
+                  Number(
+                    (scale === minZoom ? minZoom : scale - 0.1).toFixed(1),
+                  ),
+                );
+              }}
+            >
+              <ZoomOut />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Oddal widok</TooltipContent>
+        </Tooltip>
+        <p className="w-[4ch]">{Math.floor(scale * 100)}%</p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="eventGhost"
+              onClick={() => {
+                setScale(
+                  Number(
+                    (scale === maxZoom ? maxZoom : scale + 0.1).toFixed(1),
+                  ),
+                );
+              }}
+            >
+              <ZoomIn />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Przybliż widok</TooltipContent>
+        </Tooltip>
+      </div>
+      <div className="flex justify-center border-l border-[var(--event-primary-color)]/50">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="eventGhost" onClick={back} disabled={!hasPast}>
@@ -238,6 +296,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
  */
 function PuckComposition({ config }: { config: Config }) {
   const { appState, dispatch, history } = usePuck();
+  const [scale, setScale] = useState(0.9);
 
   return (
     <div className="flex h-[835px] flex-col">
@@ -246,7 +305,13 @@ function PuckComposition({ config }: { config: Config }) {
         <SaveButton {...appState} />
       </div>
       <div className="flex h-[835px] grow flex-col border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
-        <Toolbar appState={appState} dispatch={dispatch} history={history} />
+        <Toolbar
+          appState={appState}
+          dispatch={dispatch}
+          history={history}
+          setScale={setScale}
+          scale={scale}
+        />
         <div
           className="grid grow gap-4"
           style={{
@@ -254,7 +319,10 @@ function PuckComposition({ config }: { config: Config }) {
           }}
         >
           <BlocksAndSchemaSidebar config={config} appState={appState} />
-          <div className="my-4 flex flex-col gap-2 bg-white font-[system-ui]">
+          <div
+            className="my-4 flex flex-col gap-2 bg-white font-[system-ui]"
+            style={{ scale }}
+          >
             <div className="pointer-events-none flex items-center gap-2 px-14 py-2 text-xl text-black">
               <p>Tytuł wiadomości</p>
               <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
@@ -274,7 +342,7 @@ function PuckComposition({ config }: { config: Config }) {
                 </p>
               </div>
             </div>
-            <div className="max-w-7xl grow scale-[0.9]">
+            <div className="max-w-7xl grow px-4">
               <Puck.Preview />
             </div>
           </div>
