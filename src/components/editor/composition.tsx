@@ -197,8 +197,9 @@ function BlocksAndSchemaSidebar({
       </h2>
       <div
         className={cn(
+          "max-h-[264px] overflow-y-auto",
           // Outline list (ul - "_LayerTree")
-          "[&>div>ul]:px-4!",
+          "[&>div>ul]:space-y-2 [&>div>ul]:px-4!",
           // Outline list item (outer element - "_Layer")
           "[&>div>ul>li]:border-[var(--event-primary-color)]/20!",
           // Outline list item content (root element for each item - "_Layer-inner")
@@ -262,7 +263,7 @@ function PuckComposition({ config }: { config: Config }) {
           }}
         >
           <BlocksAndSchemaSidebar config={config} appState={appState} />
-          <div className="flex flex-col gap-2 bg-white font-[system-ui]">
+          <div className="flex max-h-[724px] flex-col gap-2 bg-white font-[system-ui]">
             <div className="pointer-events-none flex items-center gap-2 px-14 py-2 text-xl text-black">
               <p>Tytuł wiadomości</p>
               <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
