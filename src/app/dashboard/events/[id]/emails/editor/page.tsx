@@ -130,7 +130,7 @@ export const config: Config<Components> = {
           fontWeight: "700",
           textAlign: "left",
           fontSize: 24,
-          color: "#000000",
+          color: "inherit",
         },
       },
       render: ({ level, title, typography }) => {
@@ -166,7 +166,7 @@ export const config: Config<Components> = {
           fontWeight: "400",
           textAlign: "left",
           fontSize: 16,
-          color: "#000000",
+          color: "inherit",
         },
       },
       render: ({ content, typography }) => {
@@ -178,12 +178,13 @@ export const config: Config<Components> = {
               fontSize: typography.fontSize,
               color: typography.color,
             }}
+            className="p-4 text-inherit"
           >
             {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
                 This is not reflected in the document schema, though it creates a visual mismatch
                 between what you see in the editor and what gets sent to the user
             */}
-            <p className="p-4">{content}</p>
+            <p className="text-inherit">{content}</p>
           </div>
         );
       },
