@@ -255,12 +255,13 @@ function FieldsPanel({ appState }: { appState: AppState }) {
     <div
       className={cn(
         "max-h-[724px] w-[234px] overflow-y-auto border-l border-[var(--event-primary-color)]/50",
-        // Each field entry
+        // Each field entry - outside of field groups, exclusive to block (e.g. no. of columns in grid)
         "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-[var(--event-primary-color)]/50!",
-        // Field groups wrapper (commons - e.g. typography)
-        "[&>form>div:last-of-type>div>div>div:nth-of-type(2)]:border-none! [&>form>div:last-of-type>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
-        // "object" type field label (commons)
-        // For each second child div within a div which is a child of form
+        // All field groups containers (as in commons - e.g. the div holding font size field in case of typography)
+        "[&>form_div>div>div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+        // Nested field groups containers (in case of an object field within another object field - e.g. background image in appearance)
+        "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+        // Labels of field groups
         "[&>form>div_div>div]:text-muted-foreground!",
         appState.ui.rightSideBarVisible ? "block" : "hidden",
       )}
