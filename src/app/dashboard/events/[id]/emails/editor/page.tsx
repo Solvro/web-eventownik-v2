@@ -21,10 +21,12 @@ import {
 
 import {
   PUCK_ICON_CLASSNAME,
+  withAppearance,
   withLayout,
   withTypography,
 } from "@/components/editor/common";
 import type {
+  AppearanceFields,
   LayoutFields,
   TypographyFields,
 } from "@/components/editor/common";
@@ -49,7 +51,7 @@ interface ParagraphFields extends TypographyFields {
   content: string;
 }
 
-interface GridFields extends LayoutFields {
+interface GridFields extends LayoutFields, AppearanceFields {
   content: Content;
   columns: number;
   columnGap: number;
@@ -57,7 +59,7 @@ interface GridFields extends LayoutFields {
   rowGap: number;
 }
 
-interface FlexFields extends LayoutFields {
+interface FlexFields extends LayoutFields, AppearanceFields {
   content: Content;
   direction: "row" | "column";
   align: "start" | "center" | "end" | "stretch";
@@ -220,6 +222,7 @@ export const config: Config<Components> = {
           max: 100,
         },
         ...withLayout,
+        ...withAppearance,
       },
       render: ({
         content: Content,
@@ -227,13 +230,16 @@ export const config: Config<Components> = {
         columnGap,
         rows,
         rowGap,
-        layout: {
+        layout: { width, height, margin, padding },
+        appearance: {
+          color,
           backgroundColor,
-          backgroundImage,
-          width,
-          height,
-          margin,
-          padding,
+          image: {
+            backgroundImage,
+            backgroundPosition,
+            backgroundSize,
+            backgroundRepeat,
+          },
         },
       }) => {
         return (
@@ -244,11 +250,12 @@ export const config: Config<Components> = {
               columnGap,
               gridTemplateRows: "1fr ".repeat(rows),
               rowGap,
+              color,
               backgroundColor,
               backgroundImage: `url('${backgroundImage}')`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
               width: `${width}px`,
               height: `${height}px`,
               margin: `${margin}px`,
@@ -264,12 +271,20 @@ export const config: Config<Components> = {
         rowGap: 16,
         content: [],
         layout: {
-          backgroundColor: "#FFFFFF",
-          backgroundImage: "",
           width: "auto",
           height: "auto",
           margin: "0",
           padding: "0",
+        },
+        appearance: {
+          color: "#000000",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage: "",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
         },
       },
     },
@@ -319,6 +334,7 @@ export const config: Config<Components> = {
           max: 100,
         },
         ...withLayout,
+        ...withAppearance,
       },
       defaultProps: {
         direction: "row",
@@ -327,12 +343,20 @@ export const config: Config<Components> = {
         gap: 16,
         content: [],
         layout: {
-          backgroundColor: "#FFFFFF",
-          backgroundImage: "",
           width: "auto",
           height: "auto",
           margin: "0",
           padding: "0",
+        },
+        appearance: {
+          color: "#000000",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage: "",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
         },
       },
       render: ({
@@ -341,13 +365,16 @@ export const config: Config<Components> = {
         align,
         justify,
         gap,
-        layout: {
+        layout: { width, height, margin, padding },
+        appearance: {
+          color,
           backgroundColor,
-          backgroundImage,
-          width,
-          height,
-          margin,
-          padding,
+          image: {
+            backgroundImage,
+            backgroundPosition,
+            backgroundSize,
+            backgroundRepeat,
+          },
         },
       }) => {
         return (
@@ -358,11 +385,12 @@ export const config: Config<Components> = {
               alignItems: align,
               justifyContent: justify,
               gap,
+              color,
               backgroundColor,
               backgroundImage: `url('${backgroundImage}')`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
               width: `${width}px`,
               height: `${height}px`,
               margin: `${margin}px`,
