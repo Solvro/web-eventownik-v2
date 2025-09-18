@@ -39,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 
 // Definiuje pola dla tego komponentu i ich typy
@@ -204,8 +205,8 @@ export const config: Config<Components> = {
           max: 6,
         },
         columnGap: {
-          type: "text",
-          label: "Odstęp - kolumny",
+          type: "number",
+          label: "Odstęp kolumn",
           labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
         },
         rows: {
@@ -217,7 +218,7 @@ export const config: Config<Components> = {
         },
         rowGap: {
           type: "number",
-          label: "Odstęp - rzędy",
+          label: "Odstęp rzędów",
           labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           min: 0,
           max: 100,
@@ -451,18 +452,17 @@ const overrides: Partial<Overrides> = {
             label={typedField.label ?? name}
             icon={typedField.labelIcon}
           />
-          <Input
-            type="number"
-            value={String(value ?? "")}
-            // <input type="number"/> value is a string but Puck's API still expects a number
-            onChange={(event) => {
-              const next = event.currentTarget.value;
-              onChange(next === "" ? undefined : Number(next));
-            }}
-            max={typedField.max}
-            min={typedField.min}
-            className="text-foreground"
-          />
+          <div className="mt-4 mb-8">
+            <Slider
+              defaultValue={[value]}
+              min={typedField.min}
+              max={typedField.max}
+              step={typedField.step}
+              onValueChange={(changedValue) => {
+                onChange(changedValue[0]);
+              }}
+            />
+          </div>
         </>
       );
     },

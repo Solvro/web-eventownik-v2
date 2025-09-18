@@ -138,7 +138,7 @@ function ColorPicker({
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          Element przybierze kolor tekstu ustawiony w elemencie nadrzędnym
+          Element przybierze kolor ustawiony w elemencie nadrzędnym
         </TooltipContent>
       </Tooltip>
       <label
