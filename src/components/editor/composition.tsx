@@ -3,8 +3,20 @@
 import { Drawer, Puck, usePuck } from "@measured/puck";
 import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
-import { Redo2, Save, Sidebar, Undo2, User, X } from "lucide-react";
+import {
+  Container,
+  Grid,
+  Heading,
+  Redo2,
+  Save,
+  Sidebar,
+  Type,
+  Undo2,
+  User,
+  X,
+} from "lucide-react";
 
+import type { config } from "@/app/dashboard/events/[id]/emails/editor/page";
 import { cn } from "@/lib/utils";
 
 import {
@@ -15,8 +27,16 @@ import {
 } from "../ui/accordion";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { PUCK_ICON_CLASSNAME } from "./common";
 
 type PuckDispatch = (action: PuckAction) => void;
+
+const COMPONENT_ICONS = {
+  Heading: <Heading className={PUCK_ICON_CLASSNAME} />,
+  Paragraph: <Type className={PUCK_ICON_CLASSNAME} />,
+  Grid: <Grid className={PUCK_ICON_CLASSNAME} />,
+  Flex: <Container className={PUCK_ICON_CLASSNAME} />,
+} satisfies Record<keyof typeof config.components, React.ReactElement>;
 
 /**
  * NOTE: Temporary addition during the development of the editor.
@@ -177,8 +197,18 @@ function BlocksAndSchemaSidebar({
                         return (
                           <Drawer.Item name={component} key={component}>
                             {() => (
-                              <Button asChild size="sm" variant="eventDefault">
-                                <div className="w-full py-2">
+                              <Button
+                                asChild
+                                size="sm"
+                                variant="eventDefault"
+                                className="flex w-full items-center justify-between gap-2 py-2"
+                              >
+                                <div>
+                                  {
+                                    COMPONENT_ICONS[
+                                      component as keyof typeof COMPONENT_ICONS
+                                    ]
+                                  }
                                   {componentLabel}
                                 </div>
                               </Button>
