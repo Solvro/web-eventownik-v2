@@ -416,7 +416,7 @@ export function AttributesForm({
           image: "",
           color: "#3672fd",
           participantsNumber: 1,
-          links: [],
+          socialMediaLinks: [],
           slug: "",
           coorganizers: [],
           attributes: [],

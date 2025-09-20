@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import React from "react";
+import sanitizeHtml from "sanitize-html";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { API_URL, PHOTO_URL } from "@/lib/api";
@@ -35,7 +36,7 @@ export async function generateMetadata({
 
   return {
     title: event.name,
-    description: `${event.description ?? event.name} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
+    description: `${event.description == null ? event.name : sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} })} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
       images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },

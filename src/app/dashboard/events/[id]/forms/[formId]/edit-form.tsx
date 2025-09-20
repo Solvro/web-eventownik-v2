@@ -146,7 +146,7 @@ function EventFormEditForm({
               )}
             />
             <div className="space-y-2">
-              <FormLabel>Data i godzina</FormLabel>
+              <FormLabel>Data i godzina otwarcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -210,6 +210,7 @@ function EventFormEditForm({
               </div>
             </div>
             <div className="space-y-2">
+              <FormLabel>Data i godzina zamknięcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
