@@ -99,7 +99,7 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden min-w-[240px] flex-col gap-6 border-r pr-8 sm:flex">
+      <nav className="border-muted hidden min-w-[240px] shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),

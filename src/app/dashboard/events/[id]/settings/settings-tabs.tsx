@@ -132,6 +132,7 @@ export function EventSettingsTabs({
         title: "Nie udało się zapisać wydarzenia!",
         description: "Popraw błędy w formularzu, aby kontynuować",
       });
+      setIsSaving(false);
       return;
     }
     setEvent(newEvent);

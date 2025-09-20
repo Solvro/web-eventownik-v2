@@ -109,8 +109,8 @@ export function General({ event, saveFormRef }: TabProps) {
 
   return (
     <Form {...form}>
-      <form className="flex w-full flex-row flex-wrap gap-4">
-        <div className="w-full space-y-4 sm:w-auto sm:min-w-80">
+      <form className="flex w-full flex-col flex-wrap gap-4">
+        <div className="w-full space-y-4 sm:w-100">
           <FormField
             name="name"
             control={form.control}
@@ -132,7 +132,7 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
           <div className="space-y-2">
-            <FormLabel>Data i godzina</FormLabel>
+            <FormLabel>Data i godzina rozpoczęcia</FormLabel>
             <div className="flex flex-row flex-wrap gap-2">
               <FormField
                 control={form.control}
@@ -187,6 +187,7 @@ export function General({ event, saveFormRef }: TabProps) {
             </div>
           </div>
           <div className="space-y-2">
+            <FormLabel>Data i godzina zakończenia</FormLabel>
             <div className="flex flex-row flex-wrap gap-2">
               <FormField
                 control={form.control}
@@ -289,24 +290,22 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
-        <div className="w-full space-y-4 sm:w-auto sm:min-w-80">
-          <FormField
-            name="description"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
-                <FormLabel>Opis</FormLabel>
-                <WysiwygEditor
-                  content={form.getValues("description") ?? "<p></p>"}
-                  onChange={field.onChange}
-                />
-                <FormMessage>
-                  {form.formState.errors.description?.message}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          name="description"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-2">
+              <FormLabel>Opis</FormLabel>
+              <WysiwygEditor
+                content={form.getValues("description") ?? "<p></p>"}
+                onChange={field.onChange}
+              />
+              <FormMessage>
+                {form.formState.errors.description?.message}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
       </form>
     </Form>
   );
