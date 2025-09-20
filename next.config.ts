@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.gravatar.com",
       },
+      // for contributors
+      {
+        protocol: "https",
+        hostname: "cms.solvro.pl",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
     ],
   },
   // eslint-disable-next-line @typescript-eslint/require-await
