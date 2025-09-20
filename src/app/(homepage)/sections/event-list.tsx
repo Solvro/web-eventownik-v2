@@ -167,13 +167,13 @@ function Event({
   return (
     <div
       className={cn(
-        "group flex w-full justify-center bg-white px-4 py-8 text-black transition hover:bg-[#b7cdff] lg:px-8",
+        "group flex w-full justify-center px-4 py-8 text-black transition hover:bg-[#4473E1]/10 lg:px-8 dark:text-white",
       )}
     >
       <div className="divide-input container flex flex-col gap-12 lg:flex-row lg:gap-16">
         {/* Desktop view only */}
         <div className="hidden w-1/3 flex-col items-center gap-4 lg:flex">
-          <p className="text-center text-5xl font-extrabold text-[#274276]">
+          <p className="text-center text-5xl font-extrabold text-[#274276] dark:text-[#4473E1]">
             {`${dateParts[0]}.${dateParts[1]}`}
             <br />
             {dateParts[2]}
@@ -226,7 +226,7 @@ function Event({
           <Image
             src={imageSource}
             alt={imageAlt}
-            className="hidden aspect-video w-xl rounded-4xl object-cover shadow-lg lg:block"
+            className="hidden aspect-video w-xl rounded-4xl object-cover shadow-lg transition group-hover:-translate-x-36 lg:block"
             width={1280}
             height={720}
           />
@@ -238,7 +238,7 @@ function Event({
 
 function Events() {
   return (
-    <section className="flex flex-col">
+    <section className="flex flex-col bg-white dark:bg-[#101011]">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b">
         <Event
           title="Tytuł wydarzenia"
@@ -265,10 +265,10 @@ function Events() {
           imageAlt={"Event placeholder"}
         />
       </div>
-      <div className="clip-curve flex w-full flex-col items-center justify-center bg-white p-4">
+      <div className="clip-curve flex w-full flex-col items-center justify-center p-4">
         <Button
           variant={"outline"}
-          className="rounded-full border-black bg-transparent text-black hover:bg-[#d6d6d6]/50 hover:text-black"
+          className="rounded-full border-black bg-transparent text-black transition hover:bg-[#d6d6d6]/50 hover:text-black dark:border-white dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
         >
           <CircleChevronDown />
           Pokaż więcej
