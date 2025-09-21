@@ -178,7 +178,7 @@ function Event({
             <br />
             {dateParts[2]}
           </p>
-          <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold text-[#5E941C]">
+          <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]">
             Dostępna rejestracja
           </p>
         </div>
@@ -193,7 +193,7 @@ function Event({
           />
           {/* Text overlay */}
           <div className="absolute inset-0 flex flex-col items-start justify-between rounded-4xl bg-gradient-to-r from-black/60 to-transparent p-6 text-white">
-            <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center text-sm font-extrabold text-[#5E941C] sm:text-base">
+            <p className="rounded-full bg-[#88FC61] px-5 py-2 text-center text-sm font-extrabold text-[#487115] sm:text-base dark:bg-[#88FC61]/20 dark:text-[#88FC61]">
               Dostępna rejestracja
             </p>
             <p className="text-left text-4xl font-semibold sm:text-5xl">
