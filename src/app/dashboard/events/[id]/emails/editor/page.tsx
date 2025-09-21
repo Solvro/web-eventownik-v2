@@ -14,10 +14,14 @@ import {
   ChevronsRightLeft,
   ChevronsUpDown,
   Columns3,
+  DotSquare,
+  ImageUpscale,
+  LinkIcon,
   Mail,
   Rows3,
   Type,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 
 import {
   PUCK_ICON_CLASSNAME,
@@ -68,11 +72,27 @@ interface FlexFields extends LayoutFields, AppearanceFields {
   gap: number;
 }
 
+interface ImageFields extends LayoutFields {
+  src: string;
+  alt: string;
+  objectFit: CSSProperties["objectFit"];
+}
+
+interface UnorderedListFields extends TypographyFields {
+  items: Record<"content", string>[];
+  listStyleType: string;
+}
+
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
+  UnorderedList: UnorderedListFields;
   Grid: GridFields;
   Flex: FlexFields;
+  Divider: {
+    height: string;
+  } & AppearanceFields;
+  Image: ImageFields;
 }
 
 function HeadingComponent({ title, level }: { title: string; level: number }) {
@@ -188,6 +208,66 @@ export const config: Config<Components> = {
             <p className="text-inherit">{content}</p>
           </div>
         );
+      },
+    },
+    UnorderedList: {
+      label: "Lista nieuporządkowana",
+      fields: {
+        items: {
+          type: "array",
+          label: "Elementy listy",
+          arrayFields: {
+            content: { label: "Treść punktu", type: "textarea" },
+          },
+          getItemSummary: (_, index) =>
+            `Element #${((index ?? 0) + 1).toString()}`,
+        },
+        listStyleType: {
+          type: "select",
+          label: "Rodzaj punktorów",
+          labelIcon: <DotSquare className={PUCK_ICON_CLASSNAME} />,
+          options: [
+            { label: "Kółko", value: "disc" },
+            { label: "Okrąg", value: "circle" },
+            { label: "Kwadrat", value: "square" },
+            { label: "Cyfry", value: "decimal" },
+            { label: "Małe litery", value: "lower-alpha" },
+            { label: "Wielkie litery", value: "upper-alpha" },
+          ],
+        },
+        ...withTypography,
+      },
+      render({
+        items,
+        listStyleType,
+        typography: { fontWeight, textAlign, fontSize, color },
+      }) {
+        return (
+          <ul
+            style={{
+              listStyleType,
+              fontWeight,
+              textAlign,
+              fontSize,
+              color,
+              marginLeft: 18,
+            }}
+          >
+            {items.map(({ content }) => (
+              <li key={content}>{content}</li>
+            ))}
+          </ul>
+        );
+      },
+      defaultProps: {
+        typography: {
+          fontWeight: "400",
+          textAlign: "left",
+          fontSize: 16,
+          color: "inherit",
+        },
+        items: [],
+        listStyleType: "disc",
       },
     },
     Grid: {
@@ -402,15 +482,113 @@ export const config: Config<Components> = {
         );
       },
     },
+    Divider: {
+      label: "Odstęp",
+      fields: {
+        height: {
+          type: "number",
+          label: "Wysokość",
+          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+        },
+        ...withAppearance,
+      },
+      defaultProps: {
+        height: "16",
+        appearance: {
+          color: "#000000",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage: "",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
+        },
+      },
+      render({ height, appearance: { color, backgroundColor } }) {
+        return (
+          <div
+            style={{
+              height: `${height}px`,
+              backgroundColor,
+              color,
+            }}
+          />
+        );
+      },
+    },
+    Image: {
+      label: "Obraz",
+      fields: {
+        src: {
+          type: "text",
+          label: "Adres URL",
+          labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+        },
+        alt: {
+          type: "text",
+          label: "Tekst alternatywny",
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+        },
+        objectFit: {
+          type: "select",
+          label: "Dopasowanie",
+          labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
+          options: [
+            { label: "Brak", value: "none" },
+            { label: "Dopasuj", value: "contain" },
+            { label: "Wypełnij", value: "cover" },
+            { label: "Pomniejsz", value: "scale-down" },
+          ],
+        },
+        ...withLayout,
+      },
+      defaultProps: {
+        src: "",
+        alt: "",
+        objectFit: "contain",
+        layout: {
+          width: "128",
+          height: "128",
+          margin: "0",
+          padding: "0",
+        },
+      },
+      render({
+        src,
+        alt,
+        objectFit,
+        layout: { width, height, margin, padding },
+      }) {
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src === "" ? `/editor-image-placeholder.png` : src}
+            alt={alt}
+            style={{
+              objectFit,
+              width: `${width}px`,
+              height: `${height}px`,
+              margin: `${margin}px`,
+              padding: `${padding}px`,
+            }}
+          />
+        );
+      },
+    },
   },
   categories: {
     typography: {
       title: "Tekst",
-      components: ["Heading", "Paragraph"],
+      components: ["Heading", "Paragraph", "UnorderedList"],
     },
-    withLayout: {
+    layout: {
       title: "Układ",
-      components: ["Grid", "Flex"],
+      components: ["Grid", "Flex", "Divider"],
+    },
+    media: {
+      title: "Media",
+      components: ["Image"],
     },
   },
   root: {

@@ -5,8 +5,11 @@ import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
 import {
   Container,
+  FoldVertical,
   Grid,
   Heading,
+  Image,
+  List,
   Redo2,
   Save,
   Sidebar,
@@ -36,6 +39,9 @@ const COMPONENT_ICONS = {
   Paragraph: <Type className={PUCK_ICON_CLASSNAME} />,
   Grid: <Grid className={PUCK_ICON_CLASSNAME} />,
   Flex: <Container className={PUCK_ICON_CLASSNAME} />,
+  Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
+  Image: <Image className={PUCK_ICON_CLASSNAME} />,
+  UnorderedList: <List className={PUCK_ICON_CLASSNAME} />,
 } satisfies Record<keyof typeof config.components, React.ReactElement>;
 
 /**
@@ -187,7 +193,7 @@ function BlocksAndSchemaSidebar({
                     key={category}
                     className="border-none"
                   >
-                    <AccordionTrigger className="text-muted-foreground tracking-wider uppercase">
+                    <AccordionTrigger className="text-muted-foreground">
                       {categoryLabel}
                     </AccordionTrigger>
                     <AccordionContent className="space-y-2">
@@ -263,6 +269,10 @@ function FieldsPanel({ appState }: { appState: AppState }) {
         "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
         // Labels of field groups
         "[&>form>div_div>div]:text-muted-foreground!",
+        // Fields of type "array"
+        "[&>form>div_div>div>div>div>div_button>svg]:stroke-foreground! [&>form_fieldset]:border-none! [&>form>div_div]:border-[var(--event-primary-color)]/20! [&>form>div_div>div>div>div>div]:bg-[var(--event-primary-color)]/10! [&>form>div_div>div>div>div>div_button]:bg-transparent! [&>form>div_div>div>div>div>div_button]:hover:bg-[var(--event-primary-color)]! [&>form>div_div>div>div>div>div>div>div]:bg-transparent!",
+        // 'Add item to array field' button
+        "[&>form>div>div>div>div>button]:border-[var(--event-primary-color)]/20! [&>form>div>div>div>div>button]:bg-[var(--event-primary-color)]/20! [&>form>div>div>div>div>button_svg]:stroke-[var(--event-primary-color)]!",
         appState.ui.rightSideBarVisible ? "block" : "hidden",
       )}
     >
@@ -277,6 +287,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
  * This component must be rendered within `<Puck/>` component.
  */
 function PuckComposition({ config }: { config: Config }) {
+  // TODO(refactor): Suboptimal for performance
   const { appState, dispatch, history } = usePuck();
 
   return (
@@ -285,7 +296,7 @@ function PuckComposition({ config }: { config: Config }) {
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <SaveButton {...appState} />
       </div>
-      <div className="flex h-[835px] grow flex-col border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
+      <div className="flex h-[835px] grow flex-col rounded-xl border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
         <Toolbar appState={appState} dispatch={dispatch} history={history} />
         <div
           className="grid grow"
