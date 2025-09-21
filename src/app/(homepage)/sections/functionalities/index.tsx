@@ -215,18 +215,18 @@ export function Functionalities() {
             </div>
             {/* Step 2 */}
             <div className="z-20 grid w-full grid-cols-1 gap-8 bg-white p-4 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
-              <div className="grid grid-cols-2 gap-4 sm:gap-8">
+              <div className="grid grid-cols-2 items-center gap-4 sm:gap-8">
                 <Image
                   src="/assets/landing/functionalities/form.png"
                   alt="Widok formularza"
-                  className="h-full rounded-3xl object-contain"
+                  className="h-auto w-full rounded-3xl"
                   width={500}
                   height={1000}
                 />
                 <Image
                   src="/assets/landing/functionalities/signup.png"
                   alt="Widok zapisów"
-                  className="h-full rounded-3xl object-contain"
+                  className="h-auto w-full rounded-3xl"
                   width={500}
                   height={1000}
                 />
