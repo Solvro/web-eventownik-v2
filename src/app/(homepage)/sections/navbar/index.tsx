@@ -1,4 +1,3 @@
-import { Bug } from "lucide-react";
 import Link from "next/link";
 
 import { ThemeSwitch } from "../../../../components/theme-switch";
