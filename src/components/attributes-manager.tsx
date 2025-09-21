@@ -18,7 +18,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -115,11 +114,7 @@ function AttributesReorder({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = typeof window !== "undefined";
 
   const isIncluded = (attributeId: number) => {
     return includedAttributes.some((attribute) => attribute.id === attributeId);
@@ -191,7 +186,7 @@ function AttributesReorder({
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-4">
-        {isMounted ? ( // Only render SortableContext when mounted
+        {isMounted ? (
           <SortableContext items={includedAttributes}>
             <div className="space-y-2">
               <h2 className="text-sm">Wybrane atrybuty</h2>
@@ -222,7 +217,6 @@ function AttributesReorder({
             </div>
           </SortableContext>
         ) : (
-          // Server fallback without drag-and-drop features
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
               Ładowanie atrybutów...

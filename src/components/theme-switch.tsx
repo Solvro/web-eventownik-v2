@@ -4,7 +4,6 @@ import type { VariantProps } from "class-variance-authority";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 import type { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
@@ -31,11 +30,7 @@ function ThemeSwitch({
   const { resolvedTheme, theme, setTheme } = useTheme();
   const t = useTranslations("Themes");
 
-  const [mounted, setMounted] = useState<boolean>(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = typeof window !== "undefined";
 
   return mounted ? (
     <DropdownMenu>

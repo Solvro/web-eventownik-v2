@@ -71,8 +71,6 @@ export function EventSettingsTabs({
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
-  const [event, setEvent] = useState(unmodifiedEvent);
-
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
 
   const [coOrganizersChanges, setCoOrganizersChanges] = useState({
@@ -97,9 +95,8 @@ export function EventSettingsTabs({
 
   const saveFormRef = useRef<
     () => Promise<{ success: boolean; event: Event | null }>
-    // eslint-disable-next-line @typescript-eslint/require-await
   >(async () => {
-    return { success: true, event };
+    return await Promise.resolve({ success: true, event: unmodifiedEvent });
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -108,18 +105,13 @@ export function EventSettingsTabs({
   const setIsDirty = useSetAtom(areSettingsDirty);
 
   useEffect(() => {
-    setEvent(unmodifiedEvent);
-    return () => {
-      setEventPrimaryColors(unmodifiedEvent.primaryColor);
-    };
-  }, [unmodifiedEvent]);
+    setEventPrimaryColors(unmodifiedEvent.primaryColor);
+  }, [unmodifiedEvent.primaryColor]);
 
   const handleTabChange = async (newValue: string) => {
-    // Check if form validation passes before allowing tab change
     const { success, event: newEvent } = await saveFormRef.current();
     if (success && newEvent != null) {
       setActiveTabValue(newValue);
-      setEvent(newEvent);
     }
   };
 
@@ -134,10 +126,9 @@ export function EventSettingsTabs({
       });
       return;
     }
-    setEvent(newEvent);
     try {
       const base64Image =
-        newEvent.photoUrl?.startsWith("blob:") === true // Check if image is a blob
+        newEvent.photoUrl?.startsWith("blob:") === true
           ? await getBase64FromUrl(newEvent.photoUrl)
           : newEvent.photoUrl;
       const eventResult = await updateEvent(
@@ -240,7 +231,7 @@ export function EventSettingsTabs({
         {TABS.map((tab) => (
           <Tabs.Content key={tab.value} value={tab.value}>
             {tab.component({
-              event,
+              event: unmodifiedEvent,
               saveFormRef,
               coOrganizers,
               setCoOrganizers,

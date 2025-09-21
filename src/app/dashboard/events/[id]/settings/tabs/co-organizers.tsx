@@ -135,7 +135,7 @@ const CoOrganizerItem = memo(
                     onCheckedChange={() => {
                       onPermissionToggle(permission);
                     }}
-                    disabled={true} // temporary disabled
+                    disabled={true}
                   />
                   <Label
                     htmlFor={`permission-${permission.id.toString()}`}
@@ -256,7 +256,7 @@ export function CoOrganizers({
       });
       setIsDirty(true);
     },
-    [setCoOrganizers, setCoOrganizersChanges],
+    [setCoOrganizers, setCoOrganizersChanges, setIsDirty],
   );
 
   return (
@@ -328,7 +328,7 @@ export function CoOrganizers({
                             );
                           }
                         }}
-                        disabled={true} // temporary disabled
+                        disabled={true}
                       />
                       <Label
                         htmlFor={`permission-${permission.id.toString()}-new`}

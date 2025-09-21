@@ -9,6 +9,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
+    "lintfix": "eslint . --fix",
     "prepare": "husky || true",
     "start": "next start",
     "test": "vitest",
