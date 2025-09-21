@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { AppLogo } from "../app-logo";
 
-export function MobileNavbar() {
+export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <div className="flex w-full flex-col items-center gap-4">
@@ -73,9 +73,7 @@ export function MobileNavbar() {
                 </Button>
                 <ThemeSwitch />
               </div>
-              <Button asChild className="w-full">
-                <Link href="/auth/login">Zaloguj się</Link>
-              </Button>
+              {authButton}
             </div>
           </motion.div>
         ) : null}

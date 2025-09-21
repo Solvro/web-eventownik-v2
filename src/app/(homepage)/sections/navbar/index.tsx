@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { AuthButton } from "@/components/auth-button";
+
 import { ThemeSwitch } from "../../../../components/theme-switch";
-import { Button } from "../../../../components/ui/button";
 import { AppLogo } from "../app-logo";
 import { MobileNavbar } from "./mobile-navbar";
 
@@ -9,7 +10,9 @@ export function Navbar() {
   return (
     <div className="flex w-full flex-col items-center px-4">
       {/* Mobile Navbar */}
-      <MobileNavbar />
+      <MobileNavbar
+        authButton={<AuthButton variant="default" className="w-full" />}
+      />
       {/* Desktop Navbar */}
       <header className="bg-background border-border container hidden w-full flex-row items-center justify-between gap-4 rounded-2xl border p-3 lg:flex xl:max-w-6xl">
         <div className="flex items-center gap-8 uppercase">
@@ -21,9 +24,7 @@ export function Navbar() {
         </div>
         <div className="flex items-center gap-4">
           <ThemeSwitch />
-          <Button asChild>
-            <Link href="/auth/login">Zaloguj się</Link>
-          </Button>
+          <AuthButton variant="default" />
         </div>
       </header>
     </div>
