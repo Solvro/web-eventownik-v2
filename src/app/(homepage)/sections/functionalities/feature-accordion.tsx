@@ -333,9 +333,13 @@ export function FeatureAccordion() {
                   variant="link"
                   className="p-0 text-xl font-medium text-[#6583c8]"
                 >
-                  <Link href="/">
+                  <a
+                    href="https://docs.solvro.pl/projects/eventownik/handbook/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Zapoznaj się z instrukcją <ArrowRight />
-                  </Link>
+                  </a>
                 </Button>
               </CustomAccordionItem>
               <CustomAccordionItem
