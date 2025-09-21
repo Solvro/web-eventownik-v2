@@ -2,6 +2,7 @@
 
 import { CalendarPlus } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
@@ -45,15 +46,21 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.24, duration: 0.3, ease: "easeOut" }}
       >
-        <Button className="w-full rounded-full bg-[#6583C8] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg">
-          <CalendarPlus />
-          Stwórz wydarzenie
+        <Button
+          className="w-full rounded-full bg-[#6583C8] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
+          asChild
+        >
+          <Link href="/dashboard">
+            <CalendarPlus />
+            Organizuj wydarzenia
+          </Link>
         </Button>
         <Button
           className="w-full rounded-full border-2 border-black bg-transparent px-5 py-4 text-base font-medium sm:w-auto sm:text-lg dark:border-white"
           variant={"outline"}
+          asChild
         >
-          Przeglądaj wydarzenia
+          <Link href="#events">Przeglądaj wydarzenia</Link>
         </Button>
       </motion.div>
     </motion.div>
