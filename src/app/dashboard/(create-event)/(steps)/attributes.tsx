@@ -357,8 +357,9 @@ export function AttributesForm({
           options: [],
           rootBlockId: undefined,
           showInList: true,
-          createdAt: "", // set it to empty string to avoid type error
-          updatedAt: "", // set it to empty string to avoid type error
+          order: _event.attributes.length,
+          createdAt: "",
+          updatedAt: "",
         },
       ],
     }));

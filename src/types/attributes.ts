@@ -7,6 +7,7 @@ export interface EventAttribute {
   eventId: number;
   options: string[] | null;
   type: string;
+  order: number | null;
   rootBlockId: number | undefined;
   showInList: boolean;
   createdAt: string;
