@@ -40,7 +40,13 @@ export function Footer() {
               Regulamin
             </a>
             <Link href="/">Polityka prywatności</Link>
-            <Link href="/">Pliki Cookies</Link>
+            <a
+              target="_blank"
+              href="https://solvro.pwr.edu.pl/contact/"
+              rel="noreferrer noopener"
+            >
+              Zgłoś błąd
+            </a>
             <Link href="/">RODO</Link>
           </div>
           <div className="flex w-full flex-col items-center justify-between gap-8 sm:flex-row">
