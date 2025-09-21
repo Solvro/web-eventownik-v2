@@ -238,8 +238,8 @@ function Event({
 
 function Events() {
   return (
-    <section id="events" className="flex flex-col bg-white dark:bg-[#101011]">
-      <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b">
+    <section id="events" className="flex flex-col">
+      <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b bg-white dark:bg-[#101011]">
         <Event
           title="Tytuł wydarzenia"
           organizer="Organizator"
@@ -265,7 +265,7 @@ function Events() {
           imageAlt={"Event placeholder"}
         />
       </div>
-      <div className="clip-curve flex w-full flex-col items-center justify-center p-4">
+      <div className="clip-curve flex w-full flex-col items-center justify-center bg-white p-4 dark:bg-[#101011]">
         <Button
           variant={"outline"}
           className="rounded-full border-black bg-transparent text-black transition hover:bg-[#d6d6d6]/50 hover:text-black dark:border-white dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
