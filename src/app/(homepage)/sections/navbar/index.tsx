@@ -16,21 +16,11 @@ export function Navbar() {
         <div className="flex items-center gap-8 uppercase">
           <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
-          <Link href="/">Wydarzenia</Link>
-          <Link href="/">Funkcjonalności</Link>
-          <Link href="/">FAQ</Link>
+          <Link href="#events">Wydarzenia</Link>
+          <Link href="#functionalities">Funkcjonalności</Link>
+          <Link href="#faq">FAQ</Link>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" asChild>
-            <a
-              target="_blank"
-              href="https://solvro.pwr.edu.pl/contact/"
-              rel="noreferrer noopener"
-            >
-              <Bug />
-              Zgłoś błąd
-            </a>
-          </Button>
           <ThemeSwitch />
           <Button asChild>
             <Link href="/auth/login">Zaloguj się</Link>

@@ -64,8 +64,11 @@ export function Functionalities() {
   const scale = useTransform(scrollYProgress, [0.1, 0.6], [1, 0.5]);
 
   return (
-    <section className="flex w-full flex-col items-center">
-      <div className="flex flex-col items-center px-4 pt-24 sm:pt-48">
+    <div className="flex w-full flex-col items-center">
+      <section
+        id="functionalities"
+        className="flex flex-col items-center px-4 pt-24 sm:pt-48"
+      >
         {/* This will get covered */}
         <motion.div
           style={{ opacity, y, scale }}
@@ -250,8 +253,8 @@ export function Functionalities() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
       <FeatureAccordion />
-    </section>
+    </div>
   );
 }

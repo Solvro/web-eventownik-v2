@@ -238,7 +238,7 @@ function Event({
 
 function Events() {
   return (
-    <section className="flex flex-col bg-white dark:bg-[#101011]">
+    <section id="events" className="flex flex-col bg-white dark:bg-[#101011]">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b">
         <Event
           title="Tytuł wydarzenia"

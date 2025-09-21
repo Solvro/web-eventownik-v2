@@ -288,7 +288,10 @@ const asideContents = new Map<string, React.ReactNode>([
 export function FeatureAccordion() {
   const [selectedAside, setSelectedAside] = useState<string>("contact");
   return (
-    <div className="border-input z-20 flex w-full flex-col items-center overflow-hidden border-t border-dashed bg-white dark:bg-[#101011]">
+    <section
+      id="faq"
+      className="border-input z-20 flex w-full flex-col items-center overflow-hidden border-t border-dashed bg-white dark:bg-[#101011]"
+    >
       <div className="grid w-full grid-cols-1 items-center justify-center xl:grid-cols-2">
         <div className="z-10 flex h-full w-full items-center justify-center bg-white xl:justify-end dark:bg-[#101011]">
           <div className="w-full space-y-2 p-16 xl:max-w-3xl">
@@ -386,6 +389,6 @@ export function FeatureAccordion() {
           </AnimatePresence>
         </aside>
       </div>
-    </div>
+    </section>
   );
 }
