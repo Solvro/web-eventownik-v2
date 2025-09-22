@@ -19,6 +19,7 @@ import {
   LinkIcon,
   Mail,
   Rows3,
+  Tag,
   Type,
 } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -45,6 +46,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { EMAIL_TAGS } from "@/lib/emails";
 
 // Definiuje pola dla tego komponentu i ich typy
 interface HeadingFields extends TypographyFields {
@@ -83,9 +85,14 @@ interface UnorderedListFields extends TypographyFields {
   listStyleType: string;
 }
 
+interface TagFields extends TypographyFields {
+  type: (typeof EMAIL_TAGS)[number]["title"];
+}
+
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
+  Tag: TagFields;
   UnorderedList: UnorderedListFields;
   Grid: GridFields;
   Flex: FlexFields;
@@ -158,12 +165,12 @@ export const config: Config<Components> = {
         return (
           <div
             style={{
-              padding: 16,
               textAlign: typography.textAlign,
               fontWeight: typography.fontWeight,
               fontSize: typography.fontSize,
               color: typography.color,
             }}
+            className="p-4 text-inherit"
           >
             <HeadingComponent level={level} title={title} />
           </div>
@@ -206,6 +213,49 @@ export const config: Config<Components> = {
                 between what you see in the editor and what gets sent to the user
             */}
             <p className="text-inherit">{content}</p>
+          </div>
+        );
+      },
+    },
+    Tag: {
+      label: "Znacznik",
+      fields: {
+        type: {
+          type: "select",
+          label: "Rodzaj znacznika",
+          labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
+          options: EMAIL_TAGS.map((tag) => {
+            return {
+              label: tag.title,
+              value: tag.title,
+            };
+          }),
+        },
+        ...withTypography,
+      },
+      defaultProps: {
+        type: EMAIL_TAGS[0].title,
+        typography: {
+          fontWeight: "400",
+          textAlign: "left",
+          fontSize: 16,
+          color: "inherit",
+        },
+      },
+      render({ type, typography: { fontWeight, textAlign, fontSize, color } }) {
+        return (
+          <div
+            style={{
+              fontSize,
+              fontWeight,
+              textAlign,
+              color,
+              backgroundColor: `${color}30`,
+            }}
+            className="flex items-center gap-2 rounded-lg p-4 text-inherit"
+          >
+            <Tag className="size-4" />
+            {type}
           </div>
         );
       },
@@ -580,7 +630,7 @@ export const config: Config<Components> = {
   categories: {
     typography: {
       title: "Tekst",
-      components: ["Heading", "Paragraph", "UnorderedList"],
+      components: ["Heading", "Paragraph", "Tag", "UnorderedList"],
     },
     layout: {
       title: "Układ",

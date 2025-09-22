@@ -13,6 +13,7 @@ import {
   Redo2,
   Save,
   Sidebar,
+  Tag,
   Type,
   Undo2,
   User,
@@ -43,6 +44,7 @@ const COMPONENT_ICONS = {
   Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
   Image: <Image className={PUCK_ICON_CLASSNAME} />,
   UnorderedList: <List className={PUCK_ICON_CLASSNAME} />,
+  Tag: <Tag className={PUCK_ICON_CLASSNAME} />,
 } satisfies Record<keyof typeof config.components, React.ReactElement>;
 
 /**
@@ -271,7 +273,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
     >
       <div
         className={cn(
-          "overflow-y-auto border-l border-[var(--event-primary-color)]/50",
+          "overflow-y-auto border-l border-[var(--event-primary-color)]/50 [&>form]:w-[234px]",
           // Each field entry - outside of field groups, exclusive to block (e.g. no. of columns in grid)
           "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-[var(--event-primary-color)]/50!",
           // All field groups containers (as in commons - e.g. the div holding font size field in case of typography)
