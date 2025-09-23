@@ -30,6 +30,8 @@ const team: TeamMember[] = [
   {
     name: "Szymon Stępień",
     roles: ["Backend Techlead"],
+    image:
+      "https://cms.solvro.pl/assets/b9ac68b4-4f97-4cfa-a6f9-f24142050b35?key=member",
     url: "https://github.com/GOLDER303",
   },
   {
@@ -54,6 +56,8 @@ const team: TeamMember[] = [
   {
     name: "Przemysław Bilski",
     roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/61d09895-a511-478c-aa5a-b144fa0d1278?key=member",
     url: "https://github.com/pb3dpb3d",
   },
   {
@@ -65,6 +69,8 @@ const team: TeamMember[] = [
   {
     name: "Piotr Hirkyj",
     roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/fd7080a2-801d-40a9-9c65-f7fdfcfcd711?key=member",
     url: "https://github.com/ibtyog",
   },
   {
@@ -83,6 +89,8 @@ const team: TeamMember[] = [
   {
     name: "Maciej Król",
     roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/dfa1ac3b-c112-43e3-9004-ced678d91903?key=member",
     url: "https://github.com/maciejkrol18",
   },
   {
