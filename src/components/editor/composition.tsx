@@ -20,7 +20,7 @@ import {
   X,
 } from "lucide-react";
 
-import type { config } from "@/app/dashboard/events/[id]/emails/editor/page";
+import type { puckConfig } from "@/components/editor/config";
 import { cn } from "@/lib/utils";
 
 import {
@@ -45,7 +45,10 @@ const COMPONENT_ICONS = {
   Image: <Image className={PUCK_ICON_CLASSNAME} />,
   UnorderedList: <List className={PUCK_ICON_CLASSNAME} />,
   Tag: <Tag className={PUCK_ICON_CLASSNAME} />,
-} satisfies Record<keyof typeof config.components, React.ReactElement>;
+} as const satisfies Record<
+  keyof typeof puckConfig.components,
+  React.ReactElement
+>;
 
 /**
  * NOTE: Temporary addition during the development of the editor.
