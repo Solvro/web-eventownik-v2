@@ -9,7 +9,7 @@ import { buttonVariants } from "../../../components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="flex w-full flex-col items-center">
+    <footer className="z-10 flex w-full flex-col items-center bg-white dark:bg-[#101011]">
       <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 pt-16 pb-8 sm:gap-32 sm:py-16 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
           <p>Zostań na bieżąco z Eventownikiem Solvro</p>
