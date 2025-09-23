@@ -63,7 +63,7 @@ const team: TeamMember[] = [
   {
     name: "Kamil Ramocki",
     roles: ["Backend Developer"],
-    image: "https://avatars.githubusercontent.com/u/93339268?v=4",
+    image: "/assets/landing/team/kamil-ramocki.jpg",
     url: "https://github.com/kamilramocki",
   },
   {
