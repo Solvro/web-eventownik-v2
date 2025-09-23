@@ -1,3 +1,5 @@
+"use client";
+
 import type { Config, Content } from "@measured/puck";
 import {
   ALargeSmall,
@@ -18,7 +20,9 @@ import { EMAIL_TAGS } from "@/lib/emails";
 
 import type {
   AppearanceFields,
+  EventData,
   LayoutFields,
+  PuckGlobalMetadata,
   TypographyFields,
 } from "./common";
 import {
@@ -66,7 +70,7 @@ interface UnorderedListFields extends TypographyFields {
 }
 
 export interface TagFields extends TypographyFields {
-  type: (typeof EMAIL_TAGS)[number]["value"];
+  type: string;
 }
 
 interface Components {
@@ -99,574 +103,607 @@ function HeadingComponent({ title, level }: { title: string; level: number }) {
   }
 }
 
-export const puckConfig: Config<Components> = {
-  components: {
-    Heading: {
-      label: "Nagłówek",
-      fields: {
-        title: {
-          type: "textarea",
-          contentEditable: true,
-          label: "Treść",
-          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+export const getPuckConfig = (eventData: EventData): Config<Components> => {
+  const allTags = [
+    ...EMAIL_TAGS.map((tag) => {
+      return {
+        label: tag.title,
+        value: tag.value,
+      };
+    }),
+    ...eventData.attributes.map((attribute) => {
+      return {
+        label: attribute.name,
+        value: `participant_${attribute.slug ?? ""}`,
+      };
+    }),
+  ];
+  return {
+    components: {
+      Heading: {
+        label: "Nagłówek",
+        fields: {
+          title: {
+            type: "textarea",
+            contentEditable: true,
+            label: "Treść",
+            labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+          },
+          level: {
+            type: "select",
+            label: "Stopień",
+            labelIcon: <ALargeSmall className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              {
+                label: "1",
+                value: 1,
+              },
+              {
+                label: "2",
+                value: 2,
+              },
+              {
+                label: "3",
+                value: 3,
+              },
+            ],
+          },
+          ...withTypography,
         },
-        level: {
-          type: "select",
-          label: "Stopień",
-          labelIcon: <ALargeSmall className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            {
-              label: "1",
-              value: 1,
-            },
-            {
-              label: "2",
-              value: 2,
-            },
-            {
-              label: "3",
-              value: 3,
-            },
-          ],
+        defaultProps: {
+          title: "Nagłówek",
+          level: 1,
+          typography: {
+            fontWeight: "700",
+            textAlign: "left",
+            fontSize: 24,
+            color: "inherit",
+          },
         },
-        ...withTypography,
-      },
-      defaultProps: {
-        title: "Nagłówek",
-        level: 1,
-        typography: {
-          fontWeight: "700",
-          textAlign: "left",
-          fontSize: 24,
-          color: "inherit",
-        },
-      },
-      render: ({ level, title, typography }) => {
-        return (
-          <div
-            style={{
-              textAlign: typography.textAlign,
-              fontWeight: typography.fontWeight,
-              fontSize: typography.fontSize,
-              color: typography.color,
-            }}
-            className="p-4 text-inherit"
-          >
-            <HeadingComponent level={level} title={title} />
-          </div>
-        );
-      },
-    },
-    Paragraph: {
-      label: "Akapit",
-      fields: {
-        content: {
-          type: "textarea",
-          contentEditable: true,
-          label: "Treść",
-          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
-        },
-        ...withTypography,
-      },
-      defaultProps: {
-        content: "Lorem ipsum dolor sit amet",
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-      },
-      render: ({ content, typography }) => {
-        return (
-          <div
-            style={{
-              textAlign: typography.textAlign,
-              fontWeight: typography.fontWeight,
-              fontSize: typography.fontSize,
-              color: typography.color,
-            }}
-            className="p-4 text-inherit"
-          >
-            {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
-                This is not reflected in the document schema, though it creates a visual mismatch
-                between what you see in the editor and what gets sent to the user
-            */}
-            <p className="text-inherit">{content}</p>
-          </div>
-        );
-      },
-    },
-    Tag: {
-      label: "Znacznik",
-      fields: {
-        type: {
-          type: "select",
-          label: "Rodzaj znacznika",
-          labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
-          options: EMAIL_TAGS.map((tag) => {
-            return {
-              label: tag.title,
-              value: tag.value,
-            };
-          }),
-        },
-        ...withTypography,
-      },
-      defaultProps: {
-        type: EMAIL_TAGS[0].value,
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-      },
-      render({
-        puck,
-        type,
-        typography: { fontWeight, textAlign, fontSize, color },
-      }) {
-        const tagLabel =
-          EMAIL_TAGS.find((tag) => tag.value === type)?.title ??
-          "Nieznany znacznik";
-
-        if (puck.metadata.isPreview as boolean) {
-          const tagMap = new Map<
-            (typeof EMAIL_TAGS)[number]["value"],
-            string
-          >();
-          tagMap.set(EMAIL_TAGS[0].value, "Wydarzenie XYZ");
-          tagMap.set(EMAIL_TAGS[1].value, "14 listopada 2025");
-          tagMap.set(EMAIL_TAGS[2].value, "16 listopada 2025");
-          tagMap.set(EMAIL_TAGS[3].value, "wydarzenie_xyz");
-          tagMap.set(EMAIL_TAGS[4].value, "#ff0000");
-          tagMap.set(EMAIL_TAGS[5].value, "uczestnik@gmail.com");
-          tagMap.set(EMAIL_TAGS[6].value, "13");
-          tagMap.set(EMAIL_TAGS[7].value, "djUmEdS34asxZ");
-          tagMap.set(EMAIL_TAGS[8].value, "10 listopada 2025");
-
-          return (
-            <p
-              style={{
-                fontWeight,
-                textAlign,
-                fontSize,
-                color,
-              }}
-            >
-              {tagMap.get(type)}
-            </p>
-          );
-        } else {
+        render: ({ level, title, typography }) => {
           return (
             <div
               style={{
-                fontSize,
-                fontWeight,
-                textAlign,
-                color,
-                backgroundColor: `${color}30`,
+                textAlign: typography.textAlign,
+                fontWeight: typography.fontWeight,
+                fontSize: typography.fontSize,
+                color: typography.color,
               }}
-              className="flex items-center gap-2 rounded-lg p-4 text-inherit"
-              data-tag={type}
+              className="p-4 text-inherit"
             >
-              <Tag className="size-4" />
-              {tagLabel}
+              <HeadingComponent level={level} title={title} />
             </div>
           );
-        }
+        },
       },
-    },
-    UnorderedList: {
-      label: "Lista nieuporządkowana",
-      fields: {
-        items: {
-          type: "array",
-          label: "Elementy listy",
-          arrayFields: {
-            content: { label: "Treść punktu", type: "textarea" },
+      Paragraph: {
+        label: "Akapit",
+        fields: {
+          content: {
+            type: "textarea",
+            contentEditable: true,
+            label: "Treść",
+            labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
           },
-          getItemSummary: (_, index) =>
-            `Element #${((index ?? 0) + 1).toString()}`,
+          ...withTypography,
         },
-        listStyleType: {
-          type: "select",
-          label: "Rodzaj punktorów",
-          labelIcon: <DotSquare className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Kółko", value: "disc" },
-            { label: "Okrąg", value: "circle" },
-            { label: "Kwadrat", value: "square" },
-            { label: "Cyfry", value: "decimal" },
-            { label: "Małe litery", value: "lower-alpha" },
-            { label: "Wielkie litery", value: "upper-alpha" },
-          ],
-        },
-        ...withTypography,
-      },
-      render({
-        items,
-        listStyleType,
-        typography: { fontWeight, textAlign, fontSize, color },
-      }) {
-        return (
-          <ul
-            style={{
-              listStyleType,
-              fontWeight,
-              textAlign,
-              fontSize,
-              color,
-              marginLeft: 18,
-            }}
-          >
-            {items.map(({ content }) => (
-              <li key={content}>{content}</li>
-            ))}
-          </ul>
-        );
-      },
-      defaultProps: {
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-        items: [],
-        listStyleType: "disc",
-      },
-    },
-    Grid: {
-      label: "Siatka",
-      fields: {
-        content: {
-          type: "slot",
-          label: "Bloki w kontenerze",
-        },
-        columns: {
-          type: "number",
-          label: "Kolumny",
-          labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
-          min: 1,
-          max: 6,
-        },
-        columnGap: {
-          type: "number",
-          label: "Odstęp kolumn",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-        },
-        rows: {
-          type: "number",
-          label: "Rzędy",
-          labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
-          min: 1,
-          max: 6,
-        },
-        rowGap: {
-          type: "number",
-          label: "Odstęp rzędów",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          min: 0,
-          max: 100,
-        },
-        ...withLayout,
-        ...withAppearance,
-      },
-      render: ({
-        content: Content,
-        columns,
-        columnGap,
-        rows,
-        rowGap,
-        layout: { width, height, margin, padding },
-        appearance: {
-          color,
-          backgroundColor,
-          image: {
-            backgroundImage,
-            backgroundPosition,
-            backgroundSize,
-            backgroundRepeat,
+        defaultProps: {
+          content: "Lorem ipsum dolor sit amet",
+          typography: {
+            fontWeight: "400",
+            textAlign: "left",
+            fontSize: 16,
+            color: "inherit",
           },
         },
-      }) => {
-        return (
-          <Content
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr ".repeat(columns),
-              columnGap,
-              gridTemplateRows: "1fr ".repeat(rows),
-              rowGap,
-              color,
-              backgroundColor,
-              backgroundImage: `url('${backgroundImage}')`,
+        render: ({ content, typography }) => {
+          return (
+            <div
+              style={{
+                textAlign: typography.textAlign,
+                fontWeight: typography.fontWeight,
+                fontSize: typography.fontSize,
+                color: typography.color,
+              }}
+              className="p-4 text-inherit"
+            >
+              {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
+                This is not reflected in the document schema, though it creates a visual mismatch
+                between what you see in the editor and what gets sent to the user
+            */}
+              <p className="text-inherit">{content}</p>
+            </div>
+          );
+        },
+      },
+      Tag: {
+        label: "Znacznik",
+        fields: {
+          type: {
+            type: "select",
+            label: "Rodzaj znacznika",
+            labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
+            options: allTags,
+          },
+          ...withTypography,
+        },
+        defaultProps: {
+          type: EMAIL_TAGS[0].value,
+          typography: {
+            fontWeight: "400",
+            textAlign: "left",
+            fontSize: 16,
+            color: "inherit",
+          },
+        },
+        render({
+          puck,
+          type,
+          typography: { fontWeight, textAlign, fontSize, color },
+        }) {
+          const metadata = puck.metadata as PuckGlobalMetadata;
+
+          const tagLabel =
+            allTags.find((tag) => tag.value === type)?.label ??
+            "Nieznany znacznik";
+
+          if (metadata.isPreview) {
+            const tagMap = new Map<string, string>();
+            tagMap.set(EMAIL_TAGS[0].value, eventData.event.name);
+            tagMap.set(EMAIL_TAGS[1].value, eventData.event.startDate);
+            tagMap.set(EMAIL_TAGS[2].value, eventData.event.endDate);
+            tagMap.set(EMAIL_TAGS[3].value, eventData.event.slug);
+            tagMap.set(EMAIL_TAGS[4].value, eventData.event.primaryColor);
+            tagMap.set(
+              EMAIL_TAGS[5].value,
+              metadata.targetPreviewParticipant.email,
+            );
+            tagMap.set(
+              EMAIL_TAGS[6].value,
+              metadata.targetPreviewParticipant.id.toString(),
+            );
+            tagMap.set(
+              EMAIL_TAGS[7].value,
+              metadata.targetPreviewParticipant.slug,
+            );
+            tagMap.set(
+              EMAIL_TAGS[8].value,
+              metadata.targetPreviewParticipant.createdAt,
+            );
+            for (const attribute of eventData.attributes) {
+              const seekedAttribute =
+                metadata.targetPreviewParticipant.attributes.find(
+                  (participantAttribute) =>
+                    participantAttribute.id === attribute.id,
+                );
+              tagMap.set(
+                `participant_${attribute.slug ?? ""}`,
+                seekedAttribute?.value ?? "",
+              );
+            }
+
+            return (
+              <p
+                style={{
+                  fontWeight,
+                  textAlign,
+                  fontSize,
+                  color,
+                }}
+              >
+                {tagMap.get(type)}
+              </p>
+            );
+          } else {
+            return (
+              <div
+                style={{
+                  fontSize,
+                  fontWeight,
+                  textAlign,
+                  color,
+                  backgroundColor: `${color}30`,
+                }}
+                className="flex items-center gap-2 rounded-lg p-4 text-inherit"
+                data-tag={type}
+              >
+                <Tag className="size-4" />
+                {tagLabel}
+              </div>
+            );
+          }
+        },
+      },
+      UnorderedList: {
+        label: "Lista nieuporządkowana",
+        fields: {
+          items: {
+            type: "array",
+            label: "Elementy listy",
+            arrayFields: {
+              content: { label: "Treść punktu", type: "textarea" },
+            },
+            getItemSummary: (_, index) =>
+              `Element #${((index ?? 0) + 1).toString()}`,
+          },
+          listStyleType: {
+            type: "select",
+            label: "Rodzaj punktorów",
+            labelIcon: <DotSquare className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Kółko", value: "disc" },
+              { label: "Okrąg", value: "circle" },
+              { label: "Kwadrat", value: "square" },
+              { label: "Cyfry", value: "decimal" },
+              { label: "Małe litery", value: "lower-alpha" },
+              { label: "Wielkie litery", value: "upper-alpha" },
+            ],
+          },
+          ...withTypography,
+        },
+        render({
+          items,
+          listStyleType,
+          typography: { fontWeight, textAlign, fontSize, color },
+        }) {
+          return (
+            <ul
+              style={{
+                listStyleType,
+                fontWeight,
+                textAlign,
+                fontSize,
+                color,
+                marginLeft: 18,
+              }}
+            >
+              {items.map(({ content }) => (
+                <li key={content}>{content}</li>
+              ))}
+            </ul>
+          );
+        },
+        defaultProps: {
+          typography: {
+            fontWeight: "400",
+            textAlign: "left",
+            fontSize: 16,
+            color: "inherit",
+          },
+          items: [],
+          listStyleType: "disc",
+        },
+      },
+      Grid: {
+        label: "Siatka",
+        fields: {
+          content: {
+            type: "slot",
+            label: "Bloki w kontenerze",
+          },
+          columns: {
+            type: "number",
+            label: "Kolumny",
+            labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
+            min: 1,
+            max: 6,
+          },
+          columnGap: {
+            type: "number",
+            label: "Odstęp kolumn",
+            labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+          },
+          rows: {
+            type: "number",
+            label: "Rzędy",
+            labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
+            min: 1,
+            max: 6,
+          },
+          rowGap: {
+            type: "number",
+            label: "Odstęp rzędów",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            min: 0,
+            max: 100,
+          },
+          ...withLayout,
+          ...withAppearance,
+        },
+        render: ({
+          content: Content,
+          columns,
+          columnGap,
+          rows,
+          rowGap,
+          layout: { width, height, margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
               backgroundPosition,
               backgroundSize,
               backgroundRepeat,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
-            }}
-          />
-        );
-      },
-      defaultProps: {
-        columns: 2,
-        columnGap: 16,
-        rows: 1,
-        rowGap: 16,
-        content: [],
-        layout: {
-          width: "auto",
-          height: "auto",
-          margin: "0",
-          padding: "0",
+            },
+          },
+        }) => {
+          return (
+            <Content
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr ".repeat(columns),
+                columnGap,
+                gridTemplateRows: "1fr ".repeat(rows),
+                rowGap,
+                color,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                width: `${width}px`,
+                height: `${height}px`,
+                margin: `${margin}px`,
+                padding: `${padding}px`,
+              }}
+            />
+          );
         },
-        appearance: {
-          color: "#000000",
-          backgroundColor: "#FFFFFF",
-          image: {
-            backgroundImage: "",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
+        defaultProps: {
+          columns: 2,
+          columnGap: 16,
+          rows: 1,
+          rowGap: 16,
+          content: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
           },
         },
       },
-    },
-    Flex: {
-      label: "Flex",
-      fields: {
-        content: {
-          type: "slot",
-          label: "Bloki w kontenerze",
+      Flex: {
+        label: "Flex",
+        fields: {
+          content: {
+            type: "slot",
+            label: "Bloki w kontenerze",
+          },
+          direction: {
+            type: "select",
+            label: "Kierunek",
+            labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "W prawo", value: "row" },
+              { label: "W dół", value: "column" },
+            ],
+          },
+          align: {
+            type: "select",
+            label: "Wyrównanie na osi głównej",
+            labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Do lewej", value: "start" },
+              { label: "Do środka", value: "center" },
+              { label: "Do prawej", value: "end" },
+              { label: "Do środka", value: "stretch" },
+            ],
+          },
+          justify: {
+            type: "select",
+            label: "Wyrównanie na osi drugorzędnej",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Do góry", value: "start" },
+              { label: "Do środka", value: "center" },
+              { label: "Do dołu", value: "end" },
+              { label: "Do środka", value: "stretch" },
+            ],
+          },
+          gap: {
+            type: "number",
+            label: "Odstęp między elementami",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            min: 0,
+            max: 100,
+          },
+          ...withLayout,
+          ...withAppearance,
         },
-        direction: {
-          type: "select",
-          label: "Kierunek",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "W prawo", value: "row" },
-            { label: "W dół", value: "column" },
-          ],
-        },
-        align: {
-          type: "select",
-          label: "Wyrównanie na osi głównej",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Do lewej", value: "start" },
-            { label: "Do środka", value: "center" },
-            { label: "Do prawej", value: "end" },
-            { label: "Do środka", value: "stretch" },
-          ],
-        },
-        justify: {
-          type: "select",
-          label: "Wyrównanie na osi drugorzędnej",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Do góry", value: "start" },
-            { label: "Do środka", value: "center" },
-            { label: "Do dołu", value: "end" },
-            { label: "Do środka", value: "stretch" },
-          ],
-        },
-        gap: {
-          type: "number",
-          label: "Odstęp między elementami",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          min: 0,
-          max: 100,
-        },
-        ...withLayout,
-        ...withAppearance,
-      },
-      defaultProps: {
-        direction: "row",
-        align: "start",
-        justify: "start",
-        gap: 16,
-        content: [],
-        layout: {
-          width: "auto",
-          height: "auto",
-          margin: "0",
-          padding: "0",
-        },
-        appearance: {
-          color: "#000000",
-          backgroundColor: "#FFFFFF",
-          image: {
-            backgroundImage: "",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
+        defaultProps: {
+          direction: "row",
+          align: "start",
+          justify: "start",
+          gap: 16,
+          content: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
           },
         },
-      },
-      render: ({
-        content: Content,
-        direction,
-        align,
-        justify,
-        gap,
-        layout: { width, height, margin, padding },
-        appearance: {
-          color,
-          backgroundColor,
-          image: {
-            backgroundImage,
-            backgroundPosition,
-            backgroundSize,
-            backgroundRepeat,
-          },
-        },
-      }) => {
-        return (
-          <Content
-            style={{
-              display: "flex",
-              flexDirection: direction,
-              alignItems: align,
-              justifyContent: justify,
-              gap,
-              color,
-              backgroundColor,
-              backgroundImage: `url('${backgroundImage}')`,
+        render: ({
+          content: Content,
+          direction,
+          align,
+          justify,
+          gap,
+          layout: { width, height, margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
               backgroundPosition,
               backgroundSize,
               backgroundRepeat,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
-            }}
-          />
-        );
-      },
-    },
-    Divider: {
-      label: "Odstęp",
-      fields: {
-        height: {
-          type: "number",
-          label: "Wysokość",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            },
+          },
+        }) => {
+          return (
+            <Content
+              style={{
+                display: "flex",
+                flexDirection: direction,
+                alignItems: align,
+                justifyContent: justify,
+                gap,
+                color,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                width: `${width}px`,
+                height: `${height}px`,
+                margin: `${margin}px`,
+                padding: `${padding}px`,
+              }}
+            />
+          );
         },
-        ...withAppearance,
       },
-      defaultProps: {
-        height: "16",
-        appearance: {
-          color: "#000000",
-          backgroundColor: "#FFFFFF",
-          image: {
-            backgroundImage: "",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
+      Divider: {
+        label: "Odstęp",
+        fields: {
+          height: {
+            type: "number",
+            label: "Wysokość",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+          },
+          ...withAppearance,
+        },
+        defaultProps: {
+          height: "16",
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
           },
         },
+        render({ height, appearance: { color, backgroundColor } }) {
+          return (
+            <div
+              style={{
+                height: `${height}px`,
+                backgroundColor,
+                color,
+              }}
+            />
+          );
+        },
       },
-      render({ height, appearance: { color, backgroundColor } }) {
-        return (
-          <div
-            style={{
-              height: `${height}px`,
-              backgroundColor,
-              color,
-            }}
-          />
-        );
+      Image: {
+        label: "Obraz",
+        fields: {
+          src: {
+            type: "text",
+            label: "Adres URL",
+            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+          },
+          alt: {
+            type: "text",
+            label: "Tekst alternatywny",
+            labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+          },
+          objectFit: {
+            type: "select",
+            label: "Dopasowanie",
+            labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Brak", value: "none" },
+              { label: "Dopasuj", value: "contain" },
+              { label: "Wypełnij", value: "cover" },
+              { label: "Pomniejsz", value: "scale-down" },
+            ],
+          },
+          ...withLayout,
+        },
+        defaultProps: {
+          src: "",
+          alt: "",
+          objectFit: "contain",
+          layout: {
+            width: "128",
+            height: "128",
+            margin: "0",
+            padding: "0",
+          },
+        },
+        render({
+          src,
+          alt,
+          objectFit,
+          layout: { width, height, margin, padding },
+        }) {
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src === "" ? `/editor-image-placeholder.png` : src}
+              alt={alt}
+              style={{
+                objectFit,
+                width: `${width}px`,
+                height: `${height}px`,
+                margin: `${margin}px`,
+                padding: `${padding}px`,
+              }}
+            />
+          );
+        },
       },
     },
-    Image: {
-      label: "Obraz",
+    categories: {
+      typography: {
+        title: "Tekst",
+        components: ["Heading", "Paragraph", "Tag", "UnorderedList"],
+      },
+      layout: {
+        title: "Układ",
+        components: ["Grid", "Flex", "Divider"],
+      },
+      media: {
+        title: "Media",
+        components: ["Image"],
+      },
+    },
+    root: {
+      label: "Szablon",
       fields: {
-        src: {
+        name: {
           type: "text",
-          label: "Adres URL",
-          labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
-        },
-        alt: {
-          type: "text",
-          label: "Tekst alternatywny",
-          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
-        },
-        objectFit: {
-          type: "select",
-          label: "Dopasowanie",
-          labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Brak", value: "none" },
-            { label: "Dopasuj", value: "contain" },
-            { label: "Wypełnij", value: "cover" },
-            { label: "Pomniejsz", value: "scale-down" },
-          ],
-        },
-        ...withLayout,
-      },
-      defaultProps: {
-        src: "",
-        alt: "",
-        objectFit: "contain",
-        layout: {
-          width: "128",
-          height: "128",
-          margin: "0",
-          padding: "0",
+          label: "Nazwa szablonu",
+          labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
         },
       },
-      render({
-        src,
-        alt,
-        objectFit,
-        layout: { width, height, margin, padding },
-      }) {
-        return (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={src === "" ? `/editor-image-placeholder.png` : src}
-            alt={alt}
-            style={{
-              objectFit,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
-            }}
-          />
-        );
-      },
     },
-  },
-  categories: {
-    typography: {
-      title: "Tekst",
-      components: ["Heading", "Paragraph", "Tag", "UnorderedList"],
-    },
-    layout: {
-      title: "Układ",
-      components: ["Grid", "Flex", "Divider"],
-    },
-    media: {
-      title: "Media",
-      components: ["Image"],
-    },
-  },
-  root: {
-    label: "Szablon",
-    fields: {
-      name: {
-        type: "text",
-        label: "Nazwa szablonu",
-        labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
-      },
-    },
-  },
+  };
 };

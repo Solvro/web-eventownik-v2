@@ -1,131 +1,74 @@
-"use client";
-
-import { FieldLabel, Puck } from "@measured/puck";
-import type { NumberField, Overrides, SelectField } from "@measured/puck";
 import "@measured/puck/no-external.css";
+import { notFound, redirect } from "next/navigation";
 
-import { PuckComposition } from "@/components/editor/composition";
-import { puckConfig } from "@/components/editor/config";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
+import { EmailEditor } from "@/components/editor/index";
+import { API_URL } from "@/lib/api";
+import { verifySession } from "@/lib/session";
+import type { EventAttribute } from "@/types/attributes";
+import type { Event } from "@/types/event";
+import type { Participant } from "@/types/participant";
 
-// Describe the initial data
-const initialData = {};
-
-// Component overrides
-const overrides: Partial<Overrides> = {
-  fieldTypes: {
-    text: ({ onChange, name, value, field }) => (
-      <>
-        <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-        <Input
-          type="text"
-          value={value as string}
-          onChange={(event) => {
-            onChange(event.currentTarget.value);
-          }}
-          className="text-foreground"
-        />
-      </>
-    ),
-    number: ({ onChange, name, value, field }) => {
-      const typedField = field as NumberField;
-      return (
-        <>
-          <FieldLabel
-            label={typedField.label ?? name}
-            icon={typedField.labelIcon}
-          />
-          <div className="mt-4 mb-8">
-            <Slider
-              defaultValue={[value]}
-              min={typedField.min}
-              max={typedField.max}
-              step={typedField.step}
-              onValueChange={(changedValue) => {
-                onChange(changedValue[0]);
-              }}
-            />
-          </div>
-        </>
-      );
+async function getEventData(bearerToken: string, id: string) {
+  const response = await fetch(`${API_URL}/events/${id}`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
     },
-    select: ({ onChange, name, value, field }) => {
-      const typedField = field as SelectField;
-      return (
-        <>
-          <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-          <Select
-            onValueChange={(selectValue) => {
-              onChange(selectValue);
-            }}
-            defaultValue={value as string}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Wybierz opcję" />
-            </SelectTrigger>
-            <SelectContent>
-              {typedField.options.map((option) => (
-                <SelectItem
-                  key={option.value as string}
-                  // eslint-disable-next-line @typescript-eslint/no-base-to-string
-                  value={option.value?.toString() ?? ""}
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </>
-      );
+  });
+
+  if (!response.ok) {
+    notFound();
+  }
+
+  const event = (await response.json()) as Event;
+  return event;
+}
+
+async function getParticipantData(bearerToken: string, id: string) {
+  const response = await fetch(`${API_URL}/events/${id}/participants`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
     },
-    textarea: ({ onChange, name, value, field }) => (
-      <>
-        <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-        <Textarea
-          value={value as string}
-          onChange={(event) => {
-            onChange(event.currentTarget.value);
-          }}
-          className="text-foreground"
-        />
-      </>
-    ),
-  },
-};
+  });
+
+  if (!response.ok) {
+    notFound();
+  }
+
+  const participants = (await response.json()) as Participant[];
+  return participants;
+}
+
+async function getAttributesData(bearerToken: string, id: string) {
+  const response = await fetch(`${API_URL}/events/${id}/attributes`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    notFound();
+  }
+
+  const attributes = (await response.json()) as EventAttribute[];
+  return attributes;
+}
 
 // Render Puck editor
-export default function Editor() {
-  return (
-    <Puck
-      config={puckConfig}
-      data={initialData}
-      overrides={{
-        ...overrides,
-        iframe: ({ children, document }) => {
-          if (document !== undefined) {
-            document.body.style.backgroundColor = "white";
-            document.body.style.color = "black";
-            document.body.style.fontFamily = "Arial, system-ui, sans-serif";
-          }
-          // eslint-disable-next-line react/jsx-no-useless-fragment
-          return <>{children}</>;
-        },
-      }}
-      onPublish={(test) => {
-        // eslint-disable-next-line no-console
-        console.log(test);
-      }}
-    >
-      <PuckComposition config={puckConfig} />
-    </Puck>
-  );
+export default async function EmailEditorPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+  const { bearerToken } = session;
+  const { id } = await params;
+
+  const event = await getEventData(bearerToken, id);
+  const participants = await getParticipantData(bearerToken, id);
+  const attributes = await getAttributesData(bearerToken, id);
+
+  return <EmailEditor eventData={{ event, participants, attributes }} />;
 }

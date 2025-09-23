@@ -1,3 +1,5 @@
+"use client";
+
 import { FieldLabel } from "@measured/puck";
 import type {
   CustomField,
@@ -28,6 +30,9 @@ import {
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
+import type { EventAttribute } from "@/types/attributes";
+import type { Event } from "@/types/event";
+import type { Participant } from "@/types/participant";
 import type { LooseAutocomplete } from "@/types/utils";
 
 import { Button } from "../ui/button";
@@ -36,6 +41,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { HybridInput } from "./hybrid-input";
 
 export const PUCK_ICON_CLASSNAME = "mr-1 size-5";
+
+export interface EventData {
+  event: Event;
+  participants: Participant[];
+  attributes: EventAttribute[];
+}
+
+export interface PuckGlobalMetadata {
+  isPreview: boolean;
+  targetPreviewParticipant: Participant;
+}
 
 type TypedObjectField = Omit<ObjectField, "objectFields"> & {
   objectFields: Partial<

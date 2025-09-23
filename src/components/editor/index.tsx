@@ -1,12 +1,7 @@
 "use client";
 
 import { Drawer, Puck, Render, useGetPuck, usePuck } from "@measured/puck";
-import type {
-  AppState,
-  Config,
-  PuckAction,
-  PuckComponent,
-} from "@measured/puck";
+import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
 import {
   Container,
@@ -25,10 +20,11 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useState } from "react";
 
-import { type TagFields, puckConfig } from "@/components/editor/config";
-import { EMAIL_TAGS } from "@/lib/emails";
+import { getPuckConfig } from "@/components/editor/config";
 import { cn } from "@/lib/utils";
+import type { Participant } from "@/types/participant";
 
 import {
   Accordion,
@@ -41,14 +37,22 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { PUCK_ICON_CLASSNAME } from "./common";
+import type { EventData } from "./common";
+import { overrides } from "./overrides";
 
 type PuckDispatch = (action: PuckAction) => void;
 
@@ -62,7 +66,7 @@ const COMPONENT_ICONS = {
   UnorderedList: <List className={PUCK_ICON_CLASSNAME} />,
   Tag: <Tag className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<
-  keyof typeof puckConfig.components,
+  keyof ReturnType<typeof getPuckConfig>["components"],
   React.ReactElement
 >;
 
@@ -308,9 +312,27 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   );
 }
 
-function PreviewDialog() {
+function PreviewDialog({
+  eventData,
+  config,
+}: {
+  eventData: EventData;
+  config: Config;
+}) {
   const getPuck = useGetPuck();
   const puck = getPuck();
+
+  const [selectedParticipant, setSelectedParticipant] =
+    useState<Participant | null>(eventData.participants[0] ?? null);
+
+  const handleParticipantChange = (id: string) => {
+    setSelectedParticipant(
+      eventData.participants.find(
+        (participant) => participant.id.toString() === id,
+      ) ?? null,
+    );
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -320,22 +342,41 @@ function PreviewDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="space-y-4">
-        <div className="space-y-2">
-          <DialogTitle>Podgląd</DialogTitle>
-          <DialogDescription>
-            Rzeczywisty email może różnić się odrobinę od szablonu, który
-            widzisz bezpośrednio w edytorze. Poniższy podgląd pozwala na
-            dokładniejszy wgląd w ostateczny wygląd wiadomości.
-          </DialogDescription>
-        </div>
-        <div className="bg-white font-[system-ui] text-black">
-          <Render
-            metadata={{
-              isPreview: true,
-            }}
-            data={puck.appState.data}
-            config={puckConfig}
-          />
+        <DialogTitle>Podgląd</DialogTitle>
+        <div className="flex gap-2">
+          <div className="bg-muted/30 w-[220px] space-y-4 rounded-xl p-4">
+            <p>Ustawienia podglądu</p>
+            <p className="text-foreground-muted text-sm">Wyświetl jako...</p>
+            <Select
+              onValueChange={(value) => {
+                handleParticipantChange(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Wybierz uczestnika" />
+              </SelectTrigger>
+              <SelectContent>
+                {eventData.participants.map((participant) => (
+                  <SelectItem
+                    key={participant.id}
+                    value={participant.id.toString()}
+                  >
+                    {participant.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <ScrollArea className="mx-auto h-128 w-2xl bg-white px-6 font-[system-ui] text-black">
+            <Render
+              metadata={{
+                isPreview: true,
+                targetPreviewParticipant: selectedParticipant,
+              }}
+              data={puck.appState.data}
+              config={config}
+            />
+          </ScrollArea>
         </div>
         <DialogFooter>
           <DialogClose asChild>
@@ -348,11 +389,16 @@ function PreviewDialog() {
 }
 
 /**
- * Client component containing all of custom Puck editor UI.
- * It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
- * This component must be rendered within `<Puck/>` component.
+ * Client component containing all of custom compositional Puck editor UI. It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
+ * This component must be rendered within `<Puck/>` component, so we use it within the "root" `<EmailEditor/>` component as a child of `<Puck/>`
  */
-function PuckComposition({ config }: { config: Config }) {
+function PuckComposition({
+  config,
+  eventData,
+}: {
+  config: Config;
+  eventData: EventData;
+}) {
   // TODO(refactor): Suboptimal for performance
   const { appState, dispatch, history } = usePuck();
 
@@ -361,7 +407,7 @@ function PuckComposition({ config }: { config: Config }) {
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <div className="flex gap-2">
-          <PreviewDialog />
+          <PreviewDialog eventData={eventData} config={config} />
           <SaveButton {...appState} />
         </div>
       </div>
@@ -402,4 +448,320 @@ function PuckComposition({ config }: { config: Config }) {
   );
 }
 
-export { PuckComposition };
+const data = {
+  root: {
+    props: {},
+  },
+  content: [
+    {
+      type: "Flex",
+      props: {
+        content: [
+          {
+            type: "Heading",
+            props: {
+              id: "Heading-30c77aea-4bc0-4a3e-ab9f-6d2d2dfde3b4",
+              title: "Rekrutacja do koła naukowego XYZ",
+              level: 1,
+              typography: {
+                fontWeight: "700",
+                textAlign: "left",
+                fontSize: 24,
+                color: "inherit",
+              },
+            },
+          },
+        ],
+        direction: "row",
+        align: "center",
+        justify: "center",
+        gap: 16,
+        layout: {
+          width: "auto",
+          height: "auto",
+          margin: "0",
+          padding: "0",
+        },
+        appearance: {
+          color: "#ffffff",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage:
+              "https://media.istockphoto.com/id/2157501069/photo/abstract-dynamic-background-with-bokeh-light.jpg?b=1&s=612x612&w=0&k=20&c=CgyjnlT757M70tG06ve5qlb7ckbQQ-Wp1SqRFHzbwhM=",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
+        },
+        id: "Flex-8c7a7afc-7865-49b2-8c0b-b4c69b2f4da9",
+      },
+    },
+    {
+      type: "Paragraph",
+      props: {
+        content: "Serdecznie zapraszamy do naszego koła naukowego!",
+        typography: {
+          fontWeight: "700",
+          textAlign: "center",
+          fontSize: 16,
+          color: "inherit",
+        },
+        id: "Paragraph-a347e3aa-e923-4fb1-958d-bb67ba23dfae",
+      },
+    },
+    {
+      type: "Paragraph",
+      props: {
+        content:
+          "Hej! 👋 Dołącz do naszego Koła Naukowego i zdobądź praktyczne doświadczenie w fascynujących eksperymentach oraz projektach. To świetna okazja, by rozwijać swoje zainteresowania naukowe w przyjaznym i inspirującym środowisku. Poznasz nowych ludzi, którzy podzielają Twoją ciekawość świata i pasję do odkrywania.\n\nNiezależnie od tego, czy dopiero zaczynasz swoją przygodę z nauką, czy jesteś już zaprawionym eksperymentatorem, znajdziesz u nas coś dla siebie. Nasze spotkania łączą naukę z dobrą zabawą i możliwością pracy zespołowej. Nie przegap szansy, by dołączyć do społeczności pełnej ciekawych umysłów i ekscytujących projektów!\n",
+        typography: {
+          fontWeight: "400",
+          textAlign: "left",
+          fontSize: 14,
+          color: "inherit",
+        },
+        id: "Paragraph-75e2eb9a-edce-4132-a1bb-a5cf5cf6c2c2",
+      },
+    },
+    {
+      type: "Paragraph",
+      props: {
+        content: "Co da ci dołączenie do naszego koła?",
+        typography: {
+          fontWeight: "700",
+          textAlign: "center",
+          fontSize: 16,
+          color: "inherit",
+        },
+        id: "Paragraph-34045ad2-6b09-4aa0-80bd-5b1f065c7923",
+      },
+    },
+    {
+      type: "Grid",
+      props: {
+        content: [
+          {
+            type: "Flex",
+            props: {
+              content: [
+                {
+                  type: "Image",
+                  props: {
+                    id: "Image-fdac14e4-30d3-4d34-8ff6-f544491a3b1c",
+                    src: "https://media.istockphoto.com/id/1136617599/photo/old-friends-meeting-three-friends-meet-in-pub.jpg?s=612x612&w=0&k=20&c=PuF3h32kZbeDzvqdU1hqBBJna7Np3kCrFr18MzMJVcU=",
+                    alt: "",
+                    objectFit: "contain",
+                    layout: {
+                      width: "128",
+                      height: "128",
+                      margin: "0",
+                      padding: "0",
+                    },
+                  },
+                },
+                {
+                  type: "Paragraph",
+                  props: {
+                    id: "Paragraph-7acfd45e-9c0e-4afd-8778-f1e9058aaa8b",
+                    content: "Poznanie nowych osób",
+                    typography: {
+                      fontWeight: "400",
+                      textAlign: "left",
+                      fontSize: 16,
+                      color: "inherit",
+                    },
+                  },
+                },
+              ],
+              id: "Flex-3e83352b-d6d7-493c-91aa-dfe9fa8ad72d",
+              direction: "column",
+              align: "center",
+              justify: "center",
+              gap: 16,
+              layout: {
+                width: "auto",
+                height: "auto",
+                margin: "0",
+                padding: "0",
+              },
+              appearance: {
+                color: "#000000",
+                backgroundColor: "#b8bafa",
+                image: {
+                  backgroundImage: "",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                },
+              },
+            },
+          },
+          {
+            type: "Flex",
+            props: {
+              content: [
+                {
+                  type: "Image",
+                  props: {
+                    id: "Image-ca97bdf2-4e06-4708-aa5a-c225dac8a5fe",
+                    src: "https://media.istockphoto.com/id/1395838918/photo/colleague-mentoring-younger-associate-in-business-office-while-pointing-at-data-on-computer.jpg?s=612x612&w=0&k=20&c=9tllwSQdSs955_6LJ3pivudXSRdc1ydXAjdtmRzolm4=",
+                    alt: "",
+                    objectFit: "contain",
+                    layout: {
+                      width: "128",
+                      height: "128",
+                      margin: "0",
+                      padding: "0",
+                    },
+                  },
+                },
+                {
+                  type: "Paragraph",
+                  props: {
+                    id: "Paragraph-920407dc-43ac-44d8-aedb-a51a56a36c32",
+                    content: "Praktyczne doświadczenie",
+                    typography: {
+                      fontWeight: "400",
+                      textAlign: "left",
+                      fontSize: 16,
+                      color: "inherit",
+                    },
+                  },
+                },
+              ],
+              id: "Flex-7df19fff-8100-42f8-aaf7-60eb01273c6b",
+              direction: "column",
+              align: "center",
+              justify: "center",
+              gap: 16,
+              layout: {
+                width: "auto",
+                height: "auto",
+                margin: "0",
+                padding: "0",
+              },
+              appearance: {
+                color: "#000000",
+                backgroundColor: "#b8bafa",
+                image: {
+                  backgroundImage: "",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                },
+              },
+            },
+          },
+          {
+            type: "Flex",
+            props: {
+              content: [
+                {
+                  type: "Image",
+                  props: {
+                    id: "Image-b3d1a1c7-5c96-49ee-aa15-f01a932bc887",
+                    src: "https://media.istockphoto.com/id/1136617599/photo/old-friends-meeting-three-friends-meet-in-pub.jpg?s=612x612&w=0&k=20&c=PuF3h32kZbeDzvqdU1hqBBJna7Np3kCrFr18MzMJVcU=",
+                    alt: "",
+                    objectFit: "contain",
+                    layout: {
+                      width: "128",
+                      height: "128",
+                      margin: "0",
+                      padding: "0",
+                    },
+                  },
+                },
+                {
+                  type: "Paragraph",
+                  props: {
+                    id: "Paragraph-cc952de2-c767-4aa7-97cb-a2cf572a22e8",
+                    content: "Poznanie nowych osób",
+                    typography: {
+                      fontWeight: "400",
+                      textAlign: "left",
+                      fontSize: 16,
+                      color: "inherit",
+                    },
+                  },
+                },
+              ],
+              id: "Flex-8879c62f-cbe8-4104-98f2-6434de198e47",
+              direction: "column",
+              align: "center",
+              justify: "center",
+              gap: 16,
+              layout: {
+                width: "auto",
+                height: "auto",
+                margin: "0",
+                padding: "0",
+              },
+              appearance: {
+                color: "#000000",
+                backgroundColor: "#b8bafa",
+                image: {
+                  backgroundImage: "",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                },
+              },
+            },
+          },
+        ],
+        columns: 3,
+        columnGap: 16,
+        rows: 1,
+        rowGap: 16,
+        layout: {
+          width: "auto",
+          height: "auto",
+          margin: "0",
+          padding: "0",
+        },
+        appearance: {
+          color: "#000000",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage: "",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
+        },
+        id: "Grid-e7a89bf1-3d64-4c8b-ab41-7b80df9ff974",
+      },
+    },
+  ],
+  zones: {},
+};
+
+function EmailEditor({ eventData }: { eventData: EventData }) {
+  const config = getPuckConfig(eventData);
+  return (
+    <Puck
+      config={config}
+      data={data}
+      overrides={{
+        ...overrides,
+        iframe: ({ children, document }) => {
+          if (document !== undefined) {
+            document.body.style.backgroundColor = "white";
+            document.body.style.color = "black";
+            document.body.style.fontFamily = "Arial, system-ui, sans-serif";
+          }
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          return <>{children}</>;
+        },
+      }}
+      onPublish={(test) => {
+        // eslint-disable-next-line no-console
+        console.log(test);
+      }}
+    >
+      <PuckComposition config={config} eventData={eventData} />
+    </Puck>
+  );
+}
+
+export { EmailEditor };
