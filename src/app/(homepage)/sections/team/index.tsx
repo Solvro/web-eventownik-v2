@@ -37,8 +37,7 @@ const team: TeamMember[] = [
   {
     name: "Maciej Talarczyk",
     roles: ["UI/UX Designer"],
-    image:
-      "https://cms.solvro.pl/assets/527f6108-e95b-4d64-b725-1b054b949d9f?key=member",
+    image: "/assets/landing/team/maciej-talarczyk.jpg",
     url: "https://github.com/muclx",
   },
   {
@@ -51,6 +50,7 @@ const team: TeamMember[] = [
   {
     name: "Marek Kocik",
     roles: ["Backend Developer"],
+    image: "/assets/landing/team/marek-kocik.jpg",
     url: "https://github.com/huskyybtw",
   },
   {
@@ -108,11 +108,6 @@ const team: TeamMember[] = [
     url: "https://github.com/mejsiejdev",
   },
   {
-    name: "Jakub Karbowski",
-    roles: ["Frontend Developer"],
-    url: "https://github.com/karbowskijakub",
-  },
-  {
     name: "Szymon Szymczewski",
     roles: ["Frontend Developer"],
     image:
@@ -150,16 +145,19 @@ const team: TeamMember[] = [
   {
     name: "Bartek Płochocki",
     roles: ["Devops Engineer"],
+    image: "/assets/landing/team/bartek-plochocki.jpg",
     url: "https://github.com/Bartkooo",
   },
   {
     name: "Jeremiasz Lizak",
     roles: ["Devops Engineer"],
+    image: "/assets/landing/team/jeremiasz-lizak.jpg",
     url: "https://github.com/JLizak",
   },
   {
     name: "Daria Totoszko",
     roles: ["Marketing Coordinator"],
+    image: "/assets/landing/team/daria-totoszko.jpg",
     url: "https://github.com/DariaTotoszko",
   },
 ];
