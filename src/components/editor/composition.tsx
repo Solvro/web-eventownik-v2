@@ -1,10 +1,16 @@
 "use client";
 
-import { Drawer, Puck, usePuck } from "@measured/puck";
-import type { AppState, Config, PuckAction } from "@measured/puck";
+import { Drawer, Puck, Render, useGetPuck, usePuck } from "@measured/puck";
+import type {
+  AppState,
+  Config,
+  PuckAction,
+  PuckComponent,
+} from "@measured/puck";
 import "@measured/puck/no-external.css";
 import {
   Container,
+  Eye,
   FoldVertical,
   Grid,
   Heading,
@@ -20,7 +26,8 @@ import {
   X,
 } from "lucide-react";
 
-import type { puckConfig } from "@/components/editor/config";
+import { type TagFields, puckConfig } from "@/components/editor/config";
+import { EMAIL_TAGS } from "@/lib/emails";
 import { cn } from "@/lib/utils";
 
 import {
@@ -30,6 +37,15 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { PUCK_ICON_CLASSNAME } from "./common";
@@ -71,11 +87,6 @@ function SaveButton(appState: AppState) {
   );
 }
 
-/**
- * NOTE: Zooming in this component is handled through `useState` instead of hooking into
- * Puck's API - in this case, `viewport`. Since other components use it (such as undo/redo buttons here), shouldn't
- * it be utilized here as well? Current implementation seems more straightforward.
- */
 function Toolbar({
   appState,
   dispatch,
@@ -297,6 +308,45 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   );
 }
 
+function PreviewDialog() {
+  const getPuck = useGetPuck();
+  const puck = getPuck();
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Eye />
+          Podgląd
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="space-y-4">
+        <div className="space-y-2">
+          <DialogTitle>Podgląd</DialogTitle>
+          <DialogDescription>
+            Rzeczywisty email może różnić się odrobinę od szablonu, który
+            widzisz bezpośrednio w edytorze. Poniższy podgląd pozwala na
+            dokładniejszy wgląd w ostateczny wygląd wiadomości.
+          </DialogDescription>
+        </div>
+        <div className="bg-white font-[system-ui] text-black">
+          <Render
+            metadata={{
+              isPreview: true,
+            }}
+            data={puck.appState.data}
+            config={puckConfig}
+          />
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Zamknij</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /**
  * Client component containing all of custom Puck editor UI.
  * It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
@@ -310,7 +360,10 @@ function PuckComposition({ config }: { config: Config }) {
     <div className="flex h-[835px] flex-col">
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
-        <SaveButton {...appState} />
+        <div className="flex gap-2">
+          <PreviewDialog />
+          <SaveButton {...appState} />
+        </div>
       </div>
       <div className="flex h-[835px] grow flex-col rounded-xl border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
         <Toolbar appState={appState} dispatch={dispatch} history={history} />

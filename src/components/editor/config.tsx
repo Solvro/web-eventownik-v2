@@ -65,8 +65,8 @@ interface UnorderedListFields extends TypographyFields {
   listStyleType: string;
 }
 
-interface TagFields extends TypographyFields {
-  type: (typeof EMAIL_TAGS)[number]["title"];
+export interface TagFields extends TypographyFields {
+  type: (typeof EMAIL_TAGS)[number]["value"];
 }
 
 interface Components {
@@ -207,14 +207,14 @@ export const puckConfig: Config<Components> = {
           options: EMAIL_TAGS.map((tag) => {
             return {
               label: tag.title,
-              value: tag.title,
+              value: tag.value,
             };
           }),
         },
         ...withTypography,
       },
       defaultProps: {
-        type: EMAIL_TAGS[0].title,
+        type: EMAIL_TAGS[0].value,
         typography: {
           fontWeight: "400",
           textAlign: "left",
@@ -222,22 +222,60 @@ export const puckConfig: Config<Components> = {
           color: "inherit",
         },
       },
-      render({ type, typography: { fontWeight, textAlign, fontSize, color } }) {
-        return (
-          <div
-            style={{
-              fontSize,
-              fontWeight,
-              textAlign,
-              color,
-              backgroundColor: `${color}30`,
-            }}
-            className="flex items-center gap-2 rounded-lg p-4 text-inherit"
-          >
-            <Tag className="size-4" />
-            {type}
-          </div>
-        );
+      render({
+        puck,
+        type,
+        typography: { fontWeight, textAlign, fontSize, color },
+      }) {
+        const tagLabel =
+          EMAIL_TAGS.find((tag) => tag.value === type)?.title ??
+          "Nieznany znacznik";
+
+        if (puck.metadata.isPreview as boolean) {
+          const tagMap = new Map<
+            (typeof EMAIL_TAGS)[number]["value"],
+            string
+          >();
+          tagMap.set(EMAIL_TAGS[0].value, "Wydarzenie XYZ");
+          tagMap.set(EMAIL_TAGS[1].value, "14 listopada 2025");
+          tagMap.set(EMAIL_TAGS[2].value, "16 listopada 2025");
+          tagMap.set(EMAIL_TAGS[3].value, "wydarzenie_xyz");
+          tagMap.set(EMAIL_TAGS[4].value, "#ff0000");
+          tagMap.set(EMAIL_TAGS[5].value, "uczestnik@gmail.com");
+          tagMap.set(EMAIL_TAGS[6].value, "13");
+          tagMap.set(EMAIL_TAGS[7].value, "djUmEdS34asxZ");
+          tagMap.set(EMAIL_TAGS[8].value, "10 listopada 2025");
+
+          return (
+            <p
+              style={{
+                fontWeight,
+                textAlign,
+                fontSize,
+                color,
+              }}
+            >
+              {tagMap.get(type)}
+            </p>
+          );
+        } else {
+          return (
+            <div
+              style={{
+                fontSize,
+                fontWeight,
+                textAlign,
+                color,
+                backgroundColor: `${color}30`,
+              }}
+              className="flex items-center gap-2 rounded-lg p-4 text-inherit"
+              data-tag={type}
+            >
+              <Tag className="size-4" />
+              {tagLabel}
+            </div>
+          );
+        }
       },
     },
     UnorderedList: {

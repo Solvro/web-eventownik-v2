@@ -43,14 +43,14 @@ type TypedObjectField = Omit<ObjectField, "objectFields"> & {
   >;
 };
 
-export type AllowedFields =
+type AllowedFields =
   | CustomField<string>
   | NumberField
   | TypedObjectField
   | SelectField
   | TextField;
 
-export type CommonFieldsSchema = Record<string, TypedObjectField>;
+type CommonFieldsSchema = Record<string, TypedObjectField>;
 
 export const withTypography = {
   typography: {
