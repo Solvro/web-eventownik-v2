@@ -115,6 +115,8 @@ const team: TeamMember[] = [
   {
     name: "Szymon Szymczewski",
     roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/a172cf47-33cb-481a-ad3f-118363286b5c?key=member",
     url: "https://github.com/Szymczek",
   },
   {
