@@ -19,8 +19,8 @@ function FeatureTile({
   icon: JSX.Element;
 }) {
   return (
-    <div className="flex max-w-80 flex-col gap-8">
-      <div className="w-min rounded-2xl bg-[#3672FD]/15 p-4 text-[#3672FD]">
+    <div className="flex max-w-80 flex-row gap-4 sm:flex-col sm:gap-8">
+      <div className="h-min w-min rounded-xl bg-[#3672FD]/15 p-2 text-[#3672FD] sm:rounded-2xl sm:p-4 [&>svg]:size-5 sm:[&>svg]:size-6">
         {icon}
       </div>
       <div className="space-y-1.5">

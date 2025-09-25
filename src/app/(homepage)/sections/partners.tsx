@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 export function Partners() {
   return (
     <section
@@ -12,36 +14,39 @@ export function Partners() {
             Zaufani partnerzy
           </p>
         </div>
-        <div className="flex w-full flex-col items-center justify-evenly gap-16 px-16 py-8 lg:flex-row">
-          <Image
-            src={"/assets/logo/pwr.png"}
-            alt={"Politechnika Wrocławska"}
-            width={300}
-            height={300}
-            className="max-h-12 w-auto dark:invert"
-          />
-          <Image
-            src={"/assets/logo/solvro_black.png"}
-            alt={"Koło Naukowe Solvro"}
-            width={300}
-            height={300}
-            className="max-h-12 w-auto dark:invert"
-          />
-          <Image
-            src={"/assets/logo/wuzetka.png"}
-            alt={"Samorząd Studencki Wydziału Zarządzania"}
-            width={300}
-            height={300}
-            className="max-h-12 w-auto dark:invert"
-          />
-          <Image
-            src={"/assets/logo/seohost.svg"}
-            alt={"Seohost"}
-            width={300}
-            height={300}
-            className="max-h-12 w-auto dark:invert"
-          />
-        </div>
+        <ScrollArea>
+          <div className="flex w-full flex-col items-center justify-evenly gap-16 px-16 py-8 lg:flex-row">
+            <Image
+              src={"/assets/logo/pwr.png"}
+              alt={"Politechnika Wrocławska"}
+              width={300}
+              height={300}
+              className="max-h-12 w-auto dark:invert"
+            />
+            <Image
+              src={"/assets/logo/solvro_black.png"}
+              alt={"Koło Naukowe Solvro"}
+              width={300}
+              height={300}
+              className="max-h-12 w-auto dark:invert"
+            />
+            <Image
+              src={"/assets/logo/wuzetka.png"}
+              alt={"Samorząd Studencki Wydziału Zarządzania"}
+              width={300}
+              height={300}
+              className="max-h-12 w-auto dark:invert"
+            />
+            <Image
+              src={"/assets/logo/seohost.svg"}
+              alt={"Seohost"}
+              width={300}
+              height={300}
+              className="max-h-12 w-auto dark:invert"
+            />
+          </div>{" "}
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </section>
   );

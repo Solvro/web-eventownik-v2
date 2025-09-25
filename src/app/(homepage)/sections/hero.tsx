@@ -50,7 +50,7 @@ export function Hero() {
           className="w-full rounded-full bg-[#6583C8] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
           asChild
         >
-          <Link href="/dashboard">
+          <Link href="/dashboard/events">
             <CalendarPlus />
             Organizuj wydarzenia
           </Link>

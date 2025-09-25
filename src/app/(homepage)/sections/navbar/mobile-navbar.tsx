@@ -1,6 +1,6 @@
 "use client";
 
-import { Bug, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -54,23 +54,34 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Button>
               </div>
               <div className="flex flex-col gap-4 text-3xl font-medium uppercase">
-                <Link href="/">Wydarzenia</Link>
-                <Link href="/">Funkcjonalności</Link>
-                <Link href="/">FAQ</Link>
+                <Link
+                  href="#events"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  Wydarzenia
+                </Link>
+                <Link
+                  href="#functionalities"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  Funkcjonalności
+                </Link>
+                <Link
+                  href="#faq"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  FAQ
+                </Link>
               </div>
             </div>
             <div className="flex w-full flex-col items-center gap-4">
-              <div className="flex w-full items-center justify-between gap-4">
-                <Button variant="outline" asChild>
-                  <a
-                    target="_blank"
-                    href="https://solvro.pwr.edu.pl/contact/"
-                    rel="noreferrer noopener"
-                  >
-                    <Bug />
-                    Zgłoś błąd
-                  </a>
-                </Button>
+              <div className="flex w-full items-center justify-end gap-4">
                 <ThemeSwitch />
               </div>
               {authButton}
