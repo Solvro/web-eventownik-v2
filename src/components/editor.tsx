@@ -66,7 +66,7 @@ function WysiwygEditor({
   return (
     <div
       className={cn(
-        "border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         disabled === undefined || !disabled
           ? ""
           : "pointer-events-none cursor-not-allowed opacity-50",

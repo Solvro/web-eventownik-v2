@@ -117,7 +117,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 )}
               />
               <div className="space-y-2">
-                <FormLabel>Data i godzina</FormLabel>
+                <FormLabel>Data i godzina otwarcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -177,6 +177,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormMessage>
               </div>
               <div className="space-y-2">
+                <FormLabel>Data i godzina zamknięcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}

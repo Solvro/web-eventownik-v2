@@ -34,6 +34,7 @@ function ThemeSwitch({
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-initialize-state
     setMounted(true);
   }, []);
 
