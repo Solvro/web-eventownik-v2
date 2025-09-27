@@ -346,7 +346,7 @@ export function AttributesForm({
       attributes: [
         ..._event.attributes,
         {
-          id: event.attributes.length + 1,
+          id: _event.attributes.length + 1,
           name: data.name,
           type: data.type,
           slug: data.name
@@ -357,8 +357,9 @@ export function AttributesForm({
           options: [],
           rootBlockId: undefined,
           showInList: true,
-          createdAt: "", // set it to empty string to avoid type error
-          updatedAt: "", // set it to empty string to avoid type error
+          order: _event.attributes.length,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ],
     }));

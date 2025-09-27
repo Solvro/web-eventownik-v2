@@ -7,13 +7,17 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  restrictToHorizontalAxis,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
 import {
   SortableContext,
   arrayMove,
   horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useSetAtom } from "jotai";
@@ -37,7 +41,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { JSX } from "react";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -168,14 +172,9 @@ interface SortableOptionProps {
 
 const SortableOption = memo(({ option, onRemove }: SortableOptionProps) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: option,
-    });
+    useSortable({ id: option });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
     <div
@@ -204,32 +203,6 @@ const AttributeItem = memo(
   ({ attribute, onUpdate, onRemove, allAttributes }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
-
-    useEffect(() => {
-      if (attribute.type === "block" && Array.isArray(attribute.options)) {
-        const validOptions = new Set([
-          "email",
-          ...allAttributes
-            .filter(
-              (attribute_) =>
-                attribute_.id !== attribute.id &&
-                typeof attribute_.slug === "string",
-            )
-            .map((attribute_) => attribute_.slug),
-        ]);
-
-        const validSelectedOptions = attribute.options.filter((option) =>
-          validOptions.has(option),
-        );
-
-        if (validSelectedOptions.length !== attribute.options.length) {
-          onUpdate({
-            ...attribute,
-            options: validSelectedOptions,
-          });
-        }
-      }
-    }, [attribute, allAttributes, onUpdate]);
 
     const sensors = useSensors(
       useSensor(PointerSensor),
@@ -275,13 +248,10 @@ const AttributeItem = memo(
         } else if (value.length < 3) {
           setSlugError("Slug musi mieć co najmniej 3 znaki");
         } else if (
-          allAttributes.some(
-            (attribute_) =>
-              attribute_.id !== attribute.id && attribute_.slug === value,
-          )
+          allAttributes.some((a) => a.id !== attribute.id && a.slug === value)
         ) {
           setSlugError(
-            `Slug jest już używany (pole: "${allAttributes.find((attribute_) => attribute_.slug === value)?.name ?? "?"}")`,
+            `Slug jest już używany (pole: "${allAttributes.find((a) => a.slug === value)?.name ?? "?"}")`,
           );
         } else {
           setSlugError("");
@@ -324,7 +294,7 @@ const AttributeItem = memo(
     );
 
     return (
-      <div className="mb-2 flex gap-2 rounded-lg p-2">
+      <div className="flex items-center justify-center gap-2 rounded-lg p-2">
         <Button
           variant="eventGhost"
           size="icon"
@@ -338,8 +308,8 @@ const AttributeItem = memo(
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               value={attribute.name}
-              onChange={(event_) => {
-                onUpdate({ ...attribute, name: event_.target.value });
+              onChange={(event) => {
+                onUpdate({ ...attribute, name: event.target.value });
               }}
               placeholder="Attribute label"
               className="flex-1"
@@ -366,8 +336,8 @@ const AttributeItem = memo(
                     .replaceAll(/[^a-z0-9]+/g, "-")
                     .replaceAll(/^-|-$/g, "")
                 }
-                onChange={(event_) => {
-                  handleSlugChange(event_.target.value);
+                onChange={(event) => {
+                  handleSlugChange(event.target.value);
                 }}
                 placeholder="slug"
                 className={`flex-1 ${slugError ? "border-destructive" : ""}`}
@@ -397,12 +367,14 @@ const AttributeItem = memo(
               <div className="flex gap-2">
                 <Input
                   value={optionsInput}
-                  onChange={(event_) => {
-                    setOptionsInput(event_.target.value);
+                  onChange={(event) => {
+                    setOptionsInput(event.target.value);
                   }}
                   placeholder="Nowa opcja"
-                  onKeyDown={(event_) => {
-                    event_.key === "Enter" && addOption();
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      addOption();
+                    }
                   }}
                 />
                 <Button variant="outline" onClick={addOption}>
@@ -467,8 +439,36 @@ const AttributeItem = memo(
     );
   },
 );
-
 AttributeItem.displayName = "AttributeItem";
+
+function SortableAttributeItem({
+  attribute,
+  onUpdate,
+  onRemove,
+  allAttributes,
+}: AttributeItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: attribute.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 rounded"
+    >
+      <span className="cursor-move" {...attributes} {...listeners}>
+        <GripVertical size={16} />
+      </span>
+      <AttributeItem
+        attribute={attribute}
+        onUpdate={onUpdate}
+        onRemove={onRemove}
+        allAttributes={allAttributes}
+      />
+    </div>
+  );
+}
 
 export function Attributes({
   attributes,
@@ -477,6 +477,13 @@ export function Attributes({
 }: TabProps) {
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
   const setIsDirty = useSetAtom(areSettingsDirty);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const handleAddAttribute = useCallback(() => {
     if (!newAttributeLabel.trim()) {
@@ -487,7 +494,6 @@ export function Attributes({
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, "-")
       .replaceAll(/^-|-$/g, "");
-
     const newAttribute: EventAttribute = {
       id: -Date.now(),
       name: newAttributeLabel.trim(),
@@ -496,6 +502,7 @@ export function Attributes({
       showInList: true,
       options: [],
       type: "text",
+      order: attributes.length,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       rootBlockId: undefined,
@@ -508,39 +515,115 @@ export function Attributes({
     }));
     setNewAttributeLabel("");
     setIsDirty(true);
-  }, [newAttributeLabel, setAttributes, setAttributesChanges, setIsDirty]);
+  }, [
+    newAttributeLabel,
+    attributes,
+    setAttributes,
+    setAttributesChanges,
+    setIsDirty,
+  ]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
+      let attributeToUpdate = updatedAttribute;
+      if (
+        updatedAttribute.type === "block" &&
+        Array.isArray(updatedAttribute.options)
+      ) {
+        const validOptions = new Set([
+          "email",
+          ...attributes
+            .filter(
+              (a) => a.id !== updatedAttribute.id && typeof a.slug === "string",
+            )
+            .map((a) => a.slug),
+        ]);
+        const validSelectedOptions = updatedAttribute.options.filter((option) =>
+          validOptions.has(option),
+        );
+        if (validSelectedOptions.length !== updatedAttribute.options.length) {
+          attributeToUpdate = {
+            ...updatedAttribute,
+            options: validSelectedOptions,
+          };
+        }
+      }
+
       setAttributes((previous) =>
-        previous.map((attribute) =>
-          attribute.id === updatedAttribute.id ? updatedAttribute : attribute,
+        previous.map((a) =>
+          a.id === attributeToUpdate.id ? attributeToUpdate : a,
         ),
       );
       setAttributesChanges((previous) => ({
         ...previous,
-        updated: previous.updated.some((a) => a.id === updatedAttribute.id)
+        updated: previous.updated.some((a) => a.id === attributeToUpdate.id)
           ? previous.updated.map((a) =>
-              a.id === updatedAttribute.id ? updatedAttribute : a,
+              a.id === attributeToUpdate.id ? attributeToUpdate : a,
             )
-          : [...previous.updated, updatedAttribute],
+          : [...previous.updated, attributeToUpdate],
       }));
       setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges, setIsDirty],
+    [setAttributes, setAttributesChanges, setIsDirty, attributes],
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (over == null || active.id === over.id) {
+        return;
+      }
+
+      const oldIndex = attributes.findIndex((a) => a.id === active.id);
+      const newIndex = attributes.findIndex((a) => a.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newAttributes = arrayMove(attributes, oldIndex, newIndex).map(
+          (attribute, index) => ({
+            ...attribute,
+            order: index,
+          }),
+        );
+
+        setAttributes(newAttributes);
+
+        const changed = newAttributes.filter(
+          (a, index) => a.order !== attributes[index]?.order,
+        );
+
+        if (changed.length > 0) {
+          setAttributesChanges((previous) => ({
+            ...previous,
+            updated: [
+              ...previous.updated.filter(
+                (a) => !changed.some((c) => c.id === a.id),
+              ),
+              ...changed,
+            ],
+          }));
+          setIsDirty(true);
+        }
+      }
+    },
+    [attributes, setAttributes, setAttributesChanges, setIsDirty],
   );
 
   const handleRemoveAttribute = useCallback(
     (attributeId: number) => {
-      setAttributes((previous) => {
-        const removedAttribute = previous.find((a) => a.id === attributeId);
-        if (removedAttribute != null) {
-          setAttributesChanges((previousChanges) => ({
-            ...previousChanges,
-            deleted: [...previousChanges.deleted, removedAttribute],
-          }));
-        }
-        return previous.filter((a) => a.id !== attributeId);
+      setAttributes((previous) => previous.filter((a) => a.id !== attributeId));
+      setAttributesChanges((previous) => {
+        const deletedAttribute = previous.added.find(
+          (a) => a.id === attributeId,
+        );
+        return {
+          ...previous,
+          deleted:
+            deletedAttribute === undefined
+              ? previous.deleted
+              : [...previous.deleted, deletedAttribute],
+          updated: previous.updated.filter((a) => a.id !== attributeId),
+          added: previous.added.filter((a) => a.id !== attributeId),
+        };
       });
       setIsDirty(true);
     },
@@ -549,11 +632,19 @@ export function Attributes({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex flex-col">
-        <p className="mb-4 text-sm font-medium">Event Attributes</p>
-        <div className="space-y-4">
+      <p className="mb-4 text-sm font-medium">Event Attributes</p>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
+      >
+        <SortableContext
+          items={attributes.map((a) => a.id)}
+          strategy={verticalListSortingStrategy}
+        >
           {attributes.map((attribute) => (
-            <AttributeItem
+            <SortableAttributeItem
               key={attribute.id}
               attribute={attribute}
               onUpdate={handleUpdateAttribute}
@@ -563,29 +654,26 @@ export function Attributes({
               allAttributes={attributes}
             />
           ))}
-          <div className="flex items-center gap-2">
-            <Input
-              value={newAttributeLabel}
-              onChange={(event_) => {
-                setNewAttributeLabel(event_.target.value);
-              }}
-              placeholder="Nazwa nowego atrybutu"
-              className="flex-1"
-              onKeyDown={(event_) => {
-                event_.key === "Enter" && handleAddAttribute();
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="gap-2"
-              onClick={handleAddAttribute}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Nowy atrybut
-            </Button>
-          </div>
-        </div>
+        </SortableContext>
+      </DndContext>
+
+      <div className="flex items-center gap-2">
+        <Input
+          value={newAttributeLabel}
+          onChange={(event) => {
+            setNewAttributeLabel(event.target.value);
+          }}
+          placeholder="Nazwa nowego atrybutu"
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleAddAttribute();
+            }
+          }}
+        />
+        <Button onClick={handleAddAttribute}>
+          <PlusIcon className="h-4 w-4" />
+          Dodaj atrybut
+        </Button>
       </div>
     </div>
   );
