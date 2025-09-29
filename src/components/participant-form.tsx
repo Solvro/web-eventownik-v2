@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { getAttributeLabel } from "@/app/[eventSlug]/utils";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { cn, getSchemaObjectForAttributes } from "@/lib/utils";
+import {
+  cn,
+  getAttributeLabel,
+  getSchemaObjectForAttributes,
+} from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -88,7 +90,8 @@ export function ParticipantForm({
 
   const { toast } = useToast();
 
-  useUnsavedForm(form.formState.isDirty);
+  // temporarily disabled to avoid issues with dirty state not reseting after clearing values
+  // useUnsavedForm(form.formState.isDirty);
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     try {

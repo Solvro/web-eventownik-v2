@@ -1,3 +1,5 @@
+import { NextIntlClientProvider } from "next-intl";
+
 import { Toaster } from "@/components/ui/toaster";
 
 export function Providers({
@@ -6,9 +8,9 @@ export function Providers({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <NextIntlClientProvider locale="pl" messages={{}}>
       <Toaster />
       {children}
-    </>
+    </NextIntlClientProvider>
   );
 }
