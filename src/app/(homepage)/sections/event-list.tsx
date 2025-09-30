@@ -191,7 +191,7 @@ function Event({
   function getEventStatus() {
     const now = new Date();
     if (now < startDate) {
-      return "Dostępna rejestracja";
+      return "Nadchodzące";
     } else if (now >= startDate && now <= endDate) {
       return "W trakcie";
     } else {
@@ -245,7 +245,9 @@ function Event({
                 className={
                   eventStatus === "W trakcie"
                     ? "rounded-full bg-[#4473E1]/20 px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#4473E1] dark:text-[#84a9ff]"
-                    : "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]"
+                    : eventStatus === "Przeszłe"
+                      ? "rounded-full bg-gray-300 px-5 py-2 text-center font-extrabold whitespace-nowrap text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                      : "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]"
                 }
               >
                 {eventStatus}
@@ -287,22 +289,22 @@ const events: EventType[] = [
   {
     id: 1,
     organizerId: 1,
-    name: "Dni Zero 2025 – Od skrzata do studenta",
+    name: 'Neurohackathon "Heroes of the Brain" 2025',
     description:
-      "Ahhh… Jak dobrze Was widzieć! ☺️ Przyszliście tu poczytać, czym są te całe „Dni Zero”? Otóż, po pierwsze, poznacie kolegów i koleżanki, z którymi będziecie studiować. Po drugie, jako starsze rodzeństwo oprowadzimy Was po najlepszych zakątkach Wrocławia. Dalej - poopowiadamy Wam o studiowaniu, a na koniec razem udamy się na imprezę! A że mamy we Wrocławiu rzekę, to impreza na pewno będzie miała z nią coś wspólnego. 😏 ZAPISY ZAMKNIĘTE! 👋",
-    slug: "dni-zero-2025",
-    startDate: "2025-09-24T00:00:00.000Z",
-    endDate: "2025-09-25T23:59:59.000Z",
+      "Heroes of the Brain is a 24-hour programming marathon organized by the Scientific Research Group Neuron and the WIT Faculty Students Union, bringing together enthusiasts of neuroinformatics and artificial intelligence. 🧠🤖 Teams participating in the event will have to create a solution using brain-computer interfaces (BCI), related to one of the topics prepared by the organizers. After the event, the best implementations will be selected, and prizes will await the winners!",
+    slug: "neurohackaton-2025",
+    startDate: "2025-11-29T00:00:00.000Z",
+    endDate: "2025-11-30T11:59:59.000Z",
     firstFormId: 1,
     location: "Wrocław",
     primaryColor: "#3458ae",
-    organizer: "Samorząd Studencki Politechniki Wrocławskiej",
+    organizer: "KN Neuron, WRSS W4",
     participantsCount: 0,
     contactEmail: null,
     socialMediaLinks: null,
     createdAt: "",
     updatedAt: "",
-    photoUrl: "/assets/landing/event-list/dni-zero.png",
+    photoUrl: "/assets/landing/event-list/neurohackathon-2025.png",
     firstForm: null,
   },
   {
@@ -313,7 +315,7 @@ const events: EventType[] = [
       "Wakacyjne Wyzwanie Solvro - znajdź dobre połączenie! • 📆 Czas trwania: 8 tygodni (08-09.2025) • 💻 Forma: online – cotygodniowe spotkania + praktyczne zadania • 🎯 Dla kogo: studenci i licealiści • 🧩 Liczba ścieżek: 8 • 🆓 Udział: całkowicie darmowy",
     slug: "wakacyjne-wyzwanie-solvro",
     startDate: "2025-08-01T00:00:00.000Z",
-    endDate: "2025-10-22T23:59:59.000Z",
+    endDate: "2025-10-14T11:59:59.000Z",
     firstFormId: 1,
     location: "Wrocław",
     primaryColor: "#3458ae",
@@ -326,13 +328,34 @@ const events: EventType[] = [
     photoUrl: "/assets/landing/event-list/wakacyjne-wyzwanie.png",
     firstForm: null,
   },
+  {
+    id: 1,
+    organizerId: 1,
+    name: "Dni Zero 2025 – Od skrzata do studenta",
+    description:
+      "Ahhh… Jak dobrze Was widzieć! ☺️ Przyszliście tu poczytać, czym są te całe „Dni Zero”? Otóż, po pierwsze, poznacie kolegów i koleżanki, z którymi będziecie studiować. Po drugie, jako starsze rodzeństwo oprowadzimy Was po najlepszych zakątkach Wrocławia. Dalej - poopowiadamy Wam o studiowaniu, a na koniec razem udamy się na imprezę! A że mamy we Wrocławiu rzekę, to impreza na pewno będzie miała z nią coś wspólnego. 😏 ZAPISY ZAMKNIĘTE! 👋",
+    slug: "dni-zero-2025",
+    startDate: "2025-09-24T00:00:00.000Z",
+    endDate: "2025-09-25T11:59:59.000Z",
+    firstFormId: 1,
+    location: "Wrocław",
+    primaryColor: "#3458ae",
+    organizer: "Samorząd Studencki Politechniki Wrocławskiej",
+    participantsCount: 0,
+    contactEmail: null,
+    socialMediaLinks: null,
+    createdAt: "",
+    updatedAt: "",
+    photoUrl: "/assets/landing/event-list/dni-zero.png",
+    firstForm: null,
+  },
 ];
 
 function Events({ selectedMonth }: { selectedMonth: number }) {
   // Filter events based on selected month
   const filteredEvents = events.filter((event) => {
-    const eventStartMonth = new Date(event.startDate).getMonth();
-    const eventEndMonth = new Date(event.endDate).getMonth();
+    const eventStartMonth = new Date(event.startDate).getUTCMonth();
+    const eventEndMonth = new Date(event.endDate).getUTCMonth();
 
     // Show event if it starts, ends, or spans through the selected month
     return (
