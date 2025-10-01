@@ -283,6 +283,9 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 render={({ field }) => (
                   <FormItem className="flex w-fit flex-col">
                     <FormLabel>Włączony?</FormLabel>
+                    <FormDescription>
+                      Określa, czy formularz przyjmuje nowe zgłoszenia
+                    </FormDescription>
                     <FormControl>
                       <Switch
                         checked={field.value}
