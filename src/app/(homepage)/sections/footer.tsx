@@ -85,6 +85,18 @@ export function Footer() {
                 <FaGithub />
               </a>
               <a
+                title="Profil Koła Naukowego Solvro na Instagramie"
+                href="https://www.instagram.com/knsolvro/"
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "aspect-square rounded-full p-2",
+                )}
+                rel="noopener noreferrer"
+              >
+                <FaFacebook />
+              </a>
+              <a
                 title="Profil Koła Naukowego Solvro na Facebooku"
                 href="https://www.facebook.com/knsolvro"
                 target="_blank"
