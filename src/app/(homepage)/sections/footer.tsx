@@ -1,7 +1,7 @@
 import { ArrowRight, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 
@@ -94,7 +94,7 @@ export function Footer() {
                 )}
                 rel="noopener noreferrer"
               >
-                <FaFacebook />
+                <FaInstagram />
               </a>
               <a
                 title="Profil Koła Naukowego Solvro na Facebooku"
