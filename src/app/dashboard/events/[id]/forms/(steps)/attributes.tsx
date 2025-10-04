@@ -118,7 +118,7 @@ function AttributesForm({
             onClick={goToPreviousStep}
             disabled={isSubmitting}
           >
-            <ArrowLeft /> Zapisz
+            <ArrowLeft /> Wróć
           </Button>
           <Button type="submit" variant="eventDefault" disabled={isSubmitting}>
             {isSubmitting ? (

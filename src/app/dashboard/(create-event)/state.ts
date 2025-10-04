@@ -33,7 +33,7 @@ export interface Event {
   image: string;
   color: string;
   participantsNumber: number;
-  links: string[];
+  socialMediaLinks: { label?: string; link: string }[];
   slug: string;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
@@ -51,7 +51,7 @@ export const eventAtom = atom<Event>({
   image: "",
   color: "#3672fd",
   participantsNumber: 1,
-  links: [],
+  socialMediaLinks: [],
   slug: "",
   coorganizers: [],
   attributes: [],

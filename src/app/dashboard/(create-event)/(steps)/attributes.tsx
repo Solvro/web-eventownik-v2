@@ -324,8 +324,10 @@ AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm({
   goToPreviousStep,
+  disableNavguard,
 }: {
   goToPreviousStep: () => void;
+  disableNavguard: () => void;
 }) {
   const [event, setEvent] = useAtom(eventAtom);
   const [loading, setLoading] = useState(false);
@@ -414,12 +416,14 @@ export function AttributesForm({
           image: "",
           color: "#3672fd",
           participantsNumber: 1,
-          links: [],
+          socialMediaLinks: [],
           slug: "",
           coorganizers: [],
           attributes: [],
           termsLink: "",
         });
+
+        disableNavguard();
 
         setTimeout(() => {
           router.push(`/dashboard/events/${result.id}`);

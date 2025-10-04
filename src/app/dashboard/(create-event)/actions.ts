@@ -40,6 +40,14 @@ export async function saveEvent(event: Event) {
   formData.append("primaryColor", event.color);
   formData.append("participantsCount", event.participantsNumber.toString());
 
+  for (const _link of event.socialMediaLinks) {
+    if (_link.link) {
+      const value =
+        _link.label == null ? _link.link : `[${_link.label}](${_link.link})`;
+      formData.append("socialMediaLinks[]", value);
+    }
+  }
+
   if (event.image) {
     const photo = await fetch(event.image)
       .then(async (response) => response.blob())
