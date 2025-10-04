@@ -1,6 +1,6 @@
 "use client";
 
-import type { Config, Content } from "@measured/puck";
+import type { Config, Content, PuckContext } from "@measured/puck";
 import {
   ALargeSmall,
   ChevronsRightLeft,
@@ -14,6 +14,7 @@ import {
   Tag,
   Type,
 } from "lucide-react";
+import { cloneElement, isValidElement } from "react";
 import type { CSSProperties } from "react";
 
 import { EMAIL_TAGS } from "@/lib/emails";
@@ -86,22 +87,55 @@ interface Components {
   Image: ImageFields;
 }
 
-function HeadingComponent({ title, level }: { title: string; level: number }) {
+function HeadingComponent({
+  title,
+  level,
+  style,
+}: {
+  title: string;
+  level: number;
+  style?: CSSProperties;
+}) {
   switch (level) {
     case 1: {
-      return <h1>{title}</h1>;
+      return <h1 style={style}>{title}</h1>;
     }
     case 2: {
-      return <h2>{title}</h2>;
+      return <h2 style={style}>{title}</h2>;
     }
     case 3: {
-      return <h3>{title}</h3>;
+      return <h3 style={style}>{title}</h3>;
     }
     default: {
-      return <h1>{title}</h1>;
+      return <h1 style={style}>{title}</h1>;
     }
   }
 }
+
+const previewAwareRender = ({
+  puck,
+  element,
+  styles,
+}: {
+  puck: PuckContext;
+  element: React.ReactElement<{ style?: CSSProperties }>;
+  styles: CSSProperties;
+}) => {
+  if (isValidElement(element)) {
+    const metadata = puck.metadata as PuckGlobalMetadata;
+
+    if (metadata.isPreview) {
+      const component = cloneElement(element, {
+        style: { ...styles, ...element.props.style },
+      });
+      return component;
+    } else {
+      return <div style={{ padding: "16px", ...styles }}>{element}</div>;
+    }
+  } else {
+    return <p>Encountered invalid element</p>;
+  }
+};
 
 export const getPuckConfig = (eventData: EventData): Config<Components> => {
   const allTags = [
@@ -160,20 +194,17 @@ export const getPuckConfig = (eventData: EventData): Config<Components> => {
             color: "inherit",
           },
         },
-        render: ({ level, title, typography }) => {
-          return (
-            <div
-              style={{
-                textAlign: typography.textAlign,
-                fontWeight: typography.fontWeight,
-                fontSize: typography.fontSize,
-                color: typography.color,
-              }}
-              className="p-4 text-inherit"
-            >
-              <HeadingComponent level={level} title={title} />
-            </div>
-          );
+        render: ({ puck, level, title, typography }) => {
+          return previewAwareRender({
+            puck,
+            element: <HeadingComponent level={level} title={title} />,
+            styles: {
+              textAlign: typography.textAlign,
+              fontWeight: typography.fontWeight,
+              fontSize: typography.fontSize,
+              color: typography.color,
+            },
+          });
         },
       },
       Paragraph: {
@@ -196,24 +227,17 @@ export const getPuckConfig = (eventData: EventData): Config<Components> => {
             color: "inherit",
           },
         },
-        render: ({ content, typography }) => {
-          return (
-            <div
-              style={{
-                textAlign: typography.textAlign,
-                fontWeight: typography.fontWeight,
-                fontSize: typography.fontSize,
-                color: typography.color,
-              }}
-              className="p-4 text-inherit"
-            >
-              {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
-                This is not reflected in the document schema, though it creates a visual mismatch
-                between what you see in the editor and what gets sent to the user
-            */}
-              <p className="text-inherit">{content}</p>
-            </div>
-          );
+        render: ({ puck, content, typography }) => {
+          return previewAwareRender({
+            puck,
+            element: <p>{content}</p>,
+            styles: {
+              textAlign: typography.textAlign,
+              fontWeight: typography.fontWeight,
+              fontSize: typography.fontSize,
+              color: typography.color === "" ? "inherit" : typography.color,
+            },
+          });
         },
       },
       Tag: {
