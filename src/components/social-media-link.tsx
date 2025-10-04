@@ -43,7 +43,7 @@ export function SocialMediaLink({
   return (
     <Tooltip key={link} delayDuration={0}>
       <TooltipTrigger asChild>
-        <Link href={link} target="_blank">
+        <Link href={url} target="_blank">
           <EventInfoDiv className={className}>
             {url.includes("facebook.com") || url.includes("fb.me") ? (
               <FaFacebookF size={20} />

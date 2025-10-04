@@ -1,16 +1,6 @@
 import { API_URL } from "@/lib/api";
 import type { PublicBlock } from "@/types/blocks";
 
-export function getAttributeLabel(name: string, language: string) {
-  try {
-    const parsed = JSON.parse(name) as Record<string, string>;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return parsed[language] ?? parsed.pl ?? Object.values(parsed)[0] ?? name;
-  } catch {
-    return name;
-  }
-}
-
 export async function getEventBlockAttributeBlocks(
   eventSlug: string,
   attributeId: string,

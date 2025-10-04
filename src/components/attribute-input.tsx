@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useLocale } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute, FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -29,6 +31,7 @@ export function AttributeInput({
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
 }) {
+  const locale = useLocale();
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
@@ -55,7 +58,7 @@ export function AttributeInput({
         >
           <SelectTrigger id={attribute.id.toString()}>
             <SelectValue
-              placeholder={`Wybierz ${attribute.name.toLowerCase()}`}
+              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
             />
           </SelectTrigger>
           <SelectContent>
