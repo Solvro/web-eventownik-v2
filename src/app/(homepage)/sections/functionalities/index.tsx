@@ -100,8 +100,9 @@ export function Functionalities() {
                   <FeatureTitle>Tworzenie i konfiguracja wydarzeń</FeatureTitle>
                 </div>
                 <FeatureDescription>
-                  Zakładanie wydarzeń przez organizatora, ustawianie atrybutów
-                  uczestników oraz dodawanie współorganizatorów.
+                  Zakładanie wydarzenia oraz uzupełnianie podstawowych
+                  informacji o nim, w tym ustawianie atrybutów uczestników i
+                  dodawanie współorganizatorów.
                 </FeatureDescription>
                 <FeatureTile
                   name={"Personalizacja wydarzenia"}
