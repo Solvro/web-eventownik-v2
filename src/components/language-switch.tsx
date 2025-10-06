@@ -1,7 +1,7 @@
 "use client";
 
 import type { VariantProps } from "class-variance-authority";
-import { PL, US } from "country-flag-icons/react/3x2";
+import { GB, PL } from "country-flag-icons/react/3x2";
 import Cookies from "js-cookie";
 import { Languages } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 const languages = [
   { code: "pl", name: "Polski", icon: PL },
-  { code: "en", name: "English", icon: US },
+  { code: "en", name: "English", icon: GB },
 ];
 
 export function LanguageSwitch({
