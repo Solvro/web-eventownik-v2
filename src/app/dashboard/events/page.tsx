@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import {
   AlertCircle,
+  AlertCircleIcon,
   Calendar1,
   CalendarDays,
   CircleHelpIcon,
@@ -55,10 +56,23 @@ export default async function EventListPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
-        <div className="flex justify-between">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-3xl font-bold">Moje wydarzenia</h1>
           <CreateEventForm />
         </div>
+        <Alert>
+          <AlertCircleIcon />
+          <AlertTitle className="line-clamp-0">
+            Oficjalna premiera Eventownika już wkrótce!
+          </AlertTitle>
+          <AlertDescription className="text-foreground inline">
+            Jeśli chcesz stworzyć i udostępnić wydarzenie już teraz - odezwij
+            się do nas:{" "}
+            <a href="mailto:eventownik@pwr.edu.pl" className="hover:underline">
+              eventownik@pwr.edu.pl
+            </a>
+          </AlertDescription>
+        </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
             events.map((event) => (
