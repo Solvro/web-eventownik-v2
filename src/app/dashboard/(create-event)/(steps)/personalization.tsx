@@ -115,7 +115,7 @@ export function PersonalizationForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex w-full flex-col gap-4"
         >
-          <div className="grid w-full grid-cols-2 gap-4">
+          <div className="grid w-full gap-4 sm:grid-cols-2">
             <FormField
               name="image"
               control={form.control}
@@ -128,7 +128,7 @@ export function PersonalizationForm({
                       htmlFor={fileInputId}
                       className={cn(
                         buttonVariants({ variant: "outline" }),
-                        "border-box flex aspect-square h-min w-full max-w-xs cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
+                        "border-box flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 sm:max-w-xs",
                         event.image !== "" && "overflow-hidden p-0",
                       )}
                     >
