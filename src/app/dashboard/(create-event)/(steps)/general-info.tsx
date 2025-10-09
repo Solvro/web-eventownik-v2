@@ -119,7 +119,7 @@ export function GeneralInfoForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex w-full flex-col items-end gap-4"
         >
-          <div className="grid w-full grid-cols-2 gap-4">
+          <div className="grid w-full gap-4 sm:grid-cols-2">
             <div className="w-full space-y-4">
               <FormField
                 name="name"
