@@ -49,7 +49,7 @@ function CreateEventFormForm({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-auto">
+        <Button variant="outline" className="w-full sm:w-fit">
           <SquarePlus className="h-6 w-6" /> Stwórz formularz
         </Button>
       </DialogTrigger>

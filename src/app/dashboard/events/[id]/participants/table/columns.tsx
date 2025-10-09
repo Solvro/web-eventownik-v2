@@ -5,6 +5,7 @@ import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -131,7 +132,9 @@ export function generateColumns(
                 column={column}
               />
               <SortButton column={column}>
-                <span className="max-w-sm truncate">{attribute.name}</span>
+                <span className="max-w-sm truncate">
+                  {getAttributeLabel(attribute.name, "pl")}
+                </span>
               </SortButton>
               <SortIcon sortingDirection={sortingDirection} />
             </div>
