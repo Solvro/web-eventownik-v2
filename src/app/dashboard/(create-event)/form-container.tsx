@@ -12,7 +12,7 @@ export function FormContainer({
   icon: Readonly<React.ReactNode>;
 }) {
   return (
-    <div className="flex max-h-200 w-full flex-col gap-12">
+    <div className="flex w-full flex-col gap-12 sm:max-h-200">
       <p className="absolute -mt-0.5 text-sm">{step}</p>
       <div className="flex w-full flex-col items-center gap-4">
         <div className="flex rounded-full border border-neutral-300 p-3">
