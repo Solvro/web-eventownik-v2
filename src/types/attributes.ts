@@ -9,6 +9,7 @@ export interface EventAttribute {
   type: string;
   rootBlockId: number | undefined;
   showInList: boolean;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +29,7 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   showInList: boolean;
   options: string[] | null;
   type: AttributeType;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
 }
