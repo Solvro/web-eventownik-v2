@@ -78,6 +78,14 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 >
                   FAQ
                 </Link>
+                <Link
+                  href="#team"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  Zespół
+                </Link>
               </div>
             </div>
             <div className="flex w-full flex-col items-center gap-4">

@@ -31,7 +31,7 @@ export function Footer() {
           */}
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
-          <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-start sm:gap-12">
+          <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-end sm:gap-12">
             <a
               href="/documents/regulamin.pdf"
               target="_blank"

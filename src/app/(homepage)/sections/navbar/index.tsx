@@ -21,6 +21,7 @@ export function Navbar() {
           <Link href="#events">Wydarzenia</Link>
           <Link href="#functionalities">Funkcjonalności</Link>
           <Link href="#faq">FAQ</Link>
+          <Link href="#team">Zespół</Link>
         </div>
         <div className="flex items-center gap-4">
           <ThemeSwitch />
