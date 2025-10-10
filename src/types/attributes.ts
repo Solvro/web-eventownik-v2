@@ -1,4 +1,4 @@
-import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
+import type { AttributeTypes } from "@/app/dashboard/(create-event)/event-state";
 
 export interface EventAttribute {
   id: number;

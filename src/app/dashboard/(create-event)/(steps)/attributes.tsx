@@ -26,7 +26,6 @@ import {
   Loader,
   PlusIcon,
   SquarePlus,
-  TextIcon,
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -63,8 +62,7 @@ import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import { saveEvent } from "../actions";
-import { FormContainer } from "../form-container";
-import { AttributeTypes, eventAtom } from "../state";
+import { AttributeTypes, eventAtom } from "../event-state";
 
 const EventAttributesFormSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta"),
@@ -454,98 +452,84 @@ export function AttributesForm({
   }, [form.formState.isSubmitSuccessful]);
 
   return (
-    <FormContainer
-      step="4/4"
-      title="Krok 4"
-      description="Dodaj atrybuty"
-      icon={<TextIcon />}
-    >
-      <div className="flex w-full flex-col items-center">
-        <div className="w-full space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              {event.attributes.length > 0 && (
-                <p className="text-sm font-medium">Atrybuty</p>
-              )}
-              {event.attributes.map((attribute) => (
-                <AttributeItem
-                  key={attribute.id}
-                  attribute={attribute}
-                  onUpdate={handleUpdateAttribute}
-                  onRemove={() => {
-                    handleRemoveAttribute(attribute.id);
-                  }}
+    <div className="flex w-full flex-col items-center">
+      <div className="w-full space-y-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {event.attributes.length > 0 && (
+              <p className="text-sm font-medium">Atrybuty</p>
+            )}
+            {event.attributes.map((attribute) => (
+              <AttributeItem
+                key={attribute.id}
+                attribute={attribute}
+                onUpdate={handleUpdateAttribute}
+                onRemove={() => {
+                  handleRemoveAttribute(attribute.id);
+                }}
+              />
+            ))}
+          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormLabel>Dodaj atrybut</FormLabel>
+              <div className="flex flex-row items-center gap-2">
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      placeholder="Nazwa"
+                      disabled={form.formState.isSubmitting}
+                    />
+                  )}
                 />
-              ))}
-            </div>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-2"
-              >
-                <FormLabel>Dodaj atrybut</FormLabel>
-                <div className="flex flex-row items-center gap-2">
-                  <FormField
-                    name="name"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder="Nazwa"
-                        disabled={form.formState.isSubmitting}
-                      />
-                    )}
-                  />
-                  <FormField
-                    name="type"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger
-                              className="w-[180px]"
-                              disabled={form.formState.isSubmitting}
-                            >
-                              <SelectValue placeholder="Wybierz typ atrybutu" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <AttributeTypeOptions />
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                    variant="outline"
-                  >
-                    <PlusIcon />
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-          <div className="flex w-full flex-row justify-between gap-4">
-            <Button
-              variant="ghost"
-              onClick={goToPreviousStep}
-              disabled={loading}
-            >
-              <ArrowLeft /> Wróć
-            </Button>
-            <Button className="w-min" onClick={createEvent} disabled={loading}>
-              {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
-              Dodaj wydarzenie
-            </Button>
-          </div>
+                <FormField
+                  name="type"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            className="w-[180px]"
+                            disabled={form.formState.isSubmitting}
+                          >
+                            <SelectValue placeholder="Wybierz typ atrybutu" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <AttributeTypeOptions />
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  disabled={form.formState.isSubmitting}
+                  type="submit"
+                  variant="outline"
+                >
+                  <PlusIcon />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+        <div className="flex w-full flex-row justify-between gap-4">
+          <Button variant="ghost" onClick={goToPreviousStep} disabled={loading}>
+            <ArrowLeft /> Wróć
+          </Button>
+          <Button className="w-min" onClick={createEvent} disabled={loading}>
+            {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
+            Dodaj wydarzenie
+          </Button>
         </div>
       </div>
-    </FormContainer>
+    </div>
   );
 }

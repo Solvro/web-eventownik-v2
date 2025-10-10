@@ -9,7 +9,6 @@ import {
   Loader2,
   Plus,
   UserRoundMinus,
-  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -34,8 +33,7 @@ import {
 } from "@/components/ui/popover";
 import type { Permission } from "@/types/co-organizer";
 
-import { FormContainer } from "../form-container";
-import { eventAtom } from "../state";
+import { eventAtom } from "../event-state";
 
 const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
   {
@@ -112,75 +110,68 @@ export function CoorganizersForm({
   }
 
   return (
-    <FormContainer
-      step="3/4"
-      title="Krok 3"
-      description="Dodaj współorganizatorów"
-      icon={<Users />}
-    >
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4">
-          <p>Współorganizatorzy</p>
-          {event.coorganizers.map((coorganizer) => (
-            <div
-              key={coorganizer.email}
-              className="flex w-full flex-row items-center justify-between gap-2"
-            >
-              <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
-                {coorganizer.email}
-              </p>
-              <EditCoOrganizer
-                permissions={coorganizer.permissions}
-                onRemove={() => {
-                  setEvent((_event) => ({
-                    ..._event,
-                    coorganizers: _event.coorganizers.filter(
-                      (co) => co.email !== coorganizer.email,
-                    ),
-                  }));
-                }}
-              />
-            </div>
-          ))}
-          <Form {...form}>
-            <div className="flex flex-row gap-2">
-              <NewCoOrganizer
-                form={form}
-                onSubmit={form.handleSubmit(onSubmit)}
-              />
-            </div>
-          </Form>
-          <span className="text-muted-foreground text-sm leading-none font-medium">
-            Możesz dodać tylko osoby, które mają konto w Eventowniku
-          </span>
-        </div>
-        <div className="flex flex-row items-center justify-between gap-4">
-          <Button
-            variant="ghost"
-            onClick={goToPreviousStep}
-            disabled={form.formState.isSubmitting}
+        <p>Współorganizatorzy</p>
+        {event.coorganizers.map((coorganizer) => (
+          <div
+            key={coorganizer.email}
+            className="flex w-full flex-row items-center justify-between gap-2"
           >
-            <ArrowLeft /> Wróć
-          </Button>
-          <Button
-            className="w-min"
-            variant="ghost"
-            disabled={form.formState.isSubmitting}
-            onClick={goToNextStep}
-          >
-            {form.formState.isSubmitting ? (
-              <>
-                Zapisywanie danych... <Loader2 className="animate-spin" />
-              </>
-            ) : (
-              <>
-                Dalej <ArrowRight />
-              </>
-            )}
-          </Button>
-        </div>
+            <p className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-hidden md:text-sm">
+              {coorganizer.email}
+            </p>
+            <EditCoOrganizer
+              permissions={coorganizer.permissions}
+              onRemove={() => {
+                setEvent((_event) => ({
+                  ..._event,
+                  coorganizers: _event.coorganizers.filter(
+                    (co) => co.email !== coorganizer.email,
+                  ),
+                }));
+              }}
+            />
+          </div>
+        ))}
+        <Form {...form}>
+          <div className="flex flex-row gap-2">
+            <NewCoOrganizer
+              form={form}
+              onSubmit={form.handleSubmit(onSubmit)}
+            />
+          </div>
+        </Form>
+        <span className="text-muted-foreground text-sm leading-none font-medium">
+          Możesz dodać tylko osoby, które mają konto w Eventowniku
+        </span>
       </div>
-    </FormContainer>
+      <div className="flex flex-row items-center justify-between gap-4">
+        <Button
+          variant="ghost"
+          onClick={goToPreviousStep}
+          disabled={form.formState.isSubmitting}
+        >
+          <ArrowLeft /> Wróć
+        </Button>
+        <Button
+          className="w-min"
+          variant="ghost"
+          disabled={form.formState.isSubmitting}
+          onClick={goToNextStep}
+        >
+          {form.formState.isSubmitting ? (
+            <>
+              Zapisywanie danych... <Loader2 className="animate-spin" />
+            </>
+          ) : (
+            <>
+              Dalej <ArrowRight />
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
   );
 }
 
