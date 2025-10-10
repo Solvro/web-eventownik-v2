@@ -1,6 +1,8 @@
 import { format } from "date-fns";
+import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import React from "react";
 import sanitizeHtml from "sanitize-html";
 
@@ -64,6 +66,35 @@ export default async function EventPage({ params }: EventPageProps) {
       </h2>
       <p className="mb-8">{t("fillForm")}</p>
       <RegisterParticipantForm event={event} />
+      <div className="text-muted-foreground my-4 flex flex-col items-center justify-center gap-2 text-center text-sm">
+        <Info className="size-6" />
+        <p>
+          Kontynuując zgadzasz się na warunki zawarte w<br />
+          <Link
+            href={`/${event.slug}/privacy`}
+            className="text-[var(--event-primary-color)]/90"
+            target="_blank"
+          >
+            polityce prywatności
+          </Link>
+          {event.termsLink === null ? (
+            <span> wydarzenia</span>
+          ) : (
+            <>
+              {" "}
+              oraz{" "}
+              <Link
+                href={event.termsLink}
+                className="text-[var(--event-primary-color)]/90"
+                target="_blank"
+              >
+                regulaminie
+              </Link>{" "}
+              wydarzenia
+            </>
+          )}
+        </p>
+      </div>
     </EventPageLayout>
   );
 }
