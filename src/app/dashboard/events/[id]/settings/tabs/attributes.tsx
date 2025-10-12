@@ -343,7 +343,7 @@ const AttributeItem = memo(
         </Button>
 
         <div className="flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 lg:flex-row">
             <Input
               value={attribute.name}
               onChange={(event_) => {
@@ -491,9 +491,9 @@ const SortableAttributeItem = memo((props: SortableAttributeItemProps) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div className="mb-2 flex gap-2 rounded-lg p-2">
+      <div className="flex gap-2 rounded-lg p-2">
         <div
-          className="my-2 flex cursor-move items-center px-1"
+          className="my-2 hidden h-9 w-9 cursor-move items-center justify-center lg:inline-flex"
           {...attributes}
           {...listeners}
         >
@@ -663,7 +663,6 @@ export function Attributes({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col">
-        <p className="mb-4 text-sm font-medium">Event Attributes</p>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -674,7 +673,7 @@ export function Attributes({
             items={sortedAttributes.map((attribute) => attribute.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-4">
+            <div className="space-y-2">
               {sortedAttributes.map((attribute) => (
                 <SortableAttributeItem
                   key={attribute.id}
