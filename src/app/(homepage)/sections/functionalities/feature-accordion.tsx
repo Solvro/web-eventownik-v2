@@ -214,7 +214,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#ffc94b]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member"
+            src="/assets/landing/functionalities/organizer-1.jpg"
             alt=""
             width={200}
             height={200}
@@ -231,7 +231,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#fd36fa]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/8b57e57a-e701-4d9a-88e5-c254e9299fee?key=member"
+            src="/assets/landing/functionalities/organizer-2.jpg"
             alt=""
             width={200}
             height={200}
@@ -248,7 +248,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#3089dc]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/77255d90-0ec0-4219-9c81-707cc50babc4?key=member"
+            src="/assets/landing/functionalities/organizer-3.jpg"
             alt=""
             width={200}
             height={200}
