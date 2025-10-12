@@ -7,13 +7,17 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  restrictToHorizontalAxis,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
 import {
   SortableContext,
   arrayMove,
   horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useSetAtom } from "jotai";
@@ -159,6 +163,10 @@ interface AttributeItemProps {
   onUpdate: (updatedAttribute: EventAttribute) => void;
   onRemove: () => void;
   allAttributes: EventAttribute[];
+}
+
+interface SortableAttributeItemProps extends AttributeItemProps {
+  id: number;
 }
 
 interface SortableOptionProps {
@@ -324,7 +332,7 @@ const AttributeItem = memo(
     );
 
     return (
-      <div className="mb-2 flex gap-2 rounded-lg p-2">
+      <>
         <Button
           variant="eventGhost"
           size="icon"
@@ -335,7 +343,7 @@ const AttributeItem = memo(
         </Button>
 
         <div className="flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 lg:flex-row">
             <Input
               value={attribute.name}
               onChange={(event_) => {
@@ -463,12 +471,41 @@ const AttributeItem = memo(
             </div>
           )}
         </div>
-      </div>
+      </>
     );
   },
 );
 
 AttributeItem.displayName = "AttributeItem";
+
+const SortableAttributeItem = memo((props: SortableAttributeItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: props.id,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div className="flex gap-2 rounded-lg p-2">
+        <div
+          className="my-2 hidden h-9 w-9 cursor-move items-center justify-center lg:inline-flex"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="text-muted-foreground h-4 w-4" />
+        </div>
+        <AttributeItem {...props} />
+      </div>
+    </div>
+  );
+});
+
+SortableAttributeItem.displayName = "SortableAttributeItem";
 
 export function Attributes({
   attributes,
@@ -477,6 +514,73 @@ export function Attributes({
 }: TabProps) {
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
   const setIsDirty = useSetAtom(areSettingsDirty);
+
+  // Sort attributes by order
+  const sortedAttributes = useMemo(() => {
+    return [...attributes].sort((a, b) => {
+      const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+      const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+      return orderA - orderB;
+    });
+  }, [attributes]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (over != null && active.id !== over.id) {
+        const oldIndex = sortedAttributes.findIndex(
+          (attribute) => attribute.id === active.id,
+        );
+        const newIndex = sortedAttributes.findIndex(
+          (attribute) => attribute.id === over.id,
+        );
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const reorderedAttributes = arrayMove(
+            sortedAttributes,
+            oldIndex,
+            newIndex,
+          );
+
+          // Update order values
+          const updatedAttributes = reorderedAttributes.map(
+            (attribute, index) => ({
+              ...attribute,
+              order: index,
+            }),
+          );
+
+          setAttributes(updatedAttributes);
+
+          // Mark all reordered attributes as updated
+          setAttributesChanges((previous) => {
+            const updatedSet = new Set(previous.updated.map((a) => a.id));
+            const newUpdated = updatedAttributes.filter(
+              (attribute) => attribute.id > 0 || updatedSet.has(attribute.id),
+            );
+            return {
+              ...previous,
+              updated: [
+                ...previous.updated.filter(
+                  (a) => !newUpdated.some((nu) => nu.id === a.id),
+                ),
+                ...newUpdated,
+              ],
+            };
+          });
+          setIsDirty(true);
+        }
+      }
+    },
+    [sortedAttributes, setAttributes, setAttributesChanges, setIsDirty],
+  );
 
   const handleAddAttribute = useCallback(() => {
     if (!newAttributeLabel.trim()) {
@@ -488,6 +592,8 @@ export function Attributes({
       .replaceAll(/[^a-z0-9]+/g, "-")
       .replaceAll(/^-|-$/g, "");
 
+    const maxOrder = Math.max(...attributes.map((a) => a.order ?? 0), -1);
+
     const newAttribute: EventAttribute = {
       id: -Date.now(),
       name: newAttributeLabel.trim(),
@@ -496,6 +602,7 @@ export function Attributes({
       showInList: true,
       options: [],
       type: "text",
+      order: maxOrder + 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       rootBlockId: undefined,
@@ -508,7 +615,13 @@ export function Attributes({
     }));
     setNewAttributeLabel("");
     setIsDirty(true);
-  }, [newAttributeLabel, setAttributes, setAttributesChanges, setIsDirty]);
+  }, [
+    newAttributeLabel,
+    attributes,
+    setAttributes,
+    setAttributesChanges,
+    setIsDirty,
+  ]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
@@ -550,41 +663,53 @@ export function Attributes({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col">
-        <p className="mb-4 text-sm font-medium">Event Attributes</p>
-        <div className="space-y-4">
-          {attributes.map((attribute) => (
-            <AttributeItem
-              key={attribute.id}
-              attribute={attribute}
-              onUpdate={handleUpdateAttribute}
-              onRemove={() => {
-                handleRemoveAttribute(attribute.id);
-              }}
-              allAttributes={attributes}
-            />
-          ))}
-          <div className="flex items-center gap-2">
-            <Input
-              value={newAttributeLabel}
-              onChange={(event_) => {
-                setNewAttributeLabel(event_.target.value);
-              }}
-              placeholder="Nazwa nowego atrybutu"
-              className="flex-1"
-              onKeyDown={(event_) => {
-                event_.key === "Enter" && handleAddAttribute();
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="gap-2"
-              onClick={handleAddAttribute}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Nowy atrybut
-            </Button>
-          </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
+        >
+          <SortableContext
+            items={sortedAttributes.map((attribute) => attribute.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {sortedAttributes.map((attribute) => (
+                <SortableAttributeItem
+                  key={attribute.id}
+                  id={attribute.id}
+                  attribute={attribute}
+                  onUpdate={handleUpdateAttribute}
+                  onRemove={() => {
+                    handleRemoveAttribute(attribute.id);
+                  }}
+                  allAttributes={attributes}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+        <div className="mt-4 flex items-center gap-2">
+          <Input
+            value={newAttributeLabel}
+            onChange={(event_) => {
+              setNewAttributeLabel(event_.target.value);
+            }}
+            placeholder="Nazwa nowego atrybutu"
+            className="flex-1"
+            onKeyDown={(event_) => {
+              event_.key === "Enter" && handleAddAttribute();
+            }}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2"
+            onClick={handleAddAttribute}
+          >
+            <PlusIcon className="h-4 w-4" />
+            Nowy atrybut
+          </Button>
         </div>
       </div>
     </div>
