@@ -20,14 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import {
-  ArrowLeft,
-  GripVertical,
-  Loader,
-  PlusIcon,
-  SquarePlus,
-  Trash2,
-} from "lucide-react";
+import { GripVertical, PlusIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -62,7 +55,7 @@ import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import { saveEvent } from "../actions";
-import { AttributeTypes, eventAtom } from "../event-state";
+import { AttributeTypes, eventAtom } from "../state";
 
 const EventAttributesFormSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta"),
@@ -321,10 +314,8 @@ const AttributeItem = memo(
 AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm({
-  goToPreviousStep,
   disableNavguard,
 }: {
-  goToPreviousStep: () => void;
   disableNavguard: () => void;
 }) {
   const [event, setEvent] = useAtom(eventAtom);
@@ -519,15 +510,6 @@ export function AttributesForm({
               </div>
             </form>
           </Form>
-        </div>
-        <div className="flex w-full flex-row justify-between gap-4">
-          <Button variant="ghost" onClick={goToPreviousStep} disabled={loading}>
-            <ArrowLeft /> Wróć
-          </Button>
-          <Button className="w-min" onClick={createEvent} disabled={loading}>
-            {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
-            Dodaj wydarzenie
-          </Button>
         </div>
       </div>
     </div>

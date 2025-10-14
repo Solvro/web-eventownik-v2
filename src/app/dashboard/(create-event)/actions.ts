@@ -5,7 +5,7 @@ import { formatISO9075 } from "date-fns";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 
-import type { Event } from "./event-state";
+import type { Event } from "./state";
 
 export async function isSlugTaken(slug: string) {
   const response = await fetch(`${API_URL}/events/${slug}/public`);
