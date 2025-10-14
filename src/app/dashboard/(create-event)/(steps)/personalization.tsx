@@ -1,13 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Loader2,
-  PlusIcon,
-  Trash2,
-  UploadIcon,
-} from "lucide-react";
+import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -28,7 +21,7 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import { cn } from "@/lib/utils";
 
 import { isSlugTaken } from "../actions";
-import { eventAtom } from "../event-state";
+import { eventAtom } from "../state";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
@@ -49,13 +42,7 @@ const EventPersonalizationFormSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
 });
 
-export function PersonalizationForm({
-  goToPreviousStep,
-  goToNextStep,
-}: {
-  goToPreviousStep: () => void;
-  goToNextStep: () => void;
-}) {
+export function PersonalizationForm() {
   const [event, setEvent] = useAtom(eventAtom);
   const fileInputId = useId();
   const [lastImageUrl, setLastImageUrl] = useState<string>("");
@@ -96,7 +83,7 @@ export function PersonalizationForm({
       });
       return;
     }
-    goToNextStep();
+    // TODO: here should be a call to the form state atom that we can go to the next step
   }
 
   useAutoSave(setEvent, form);
@@ -313,31 +300,6 @@ export function PersonalizationForm({
               )}
             />
           </div>
-        </div>
-        <div className="flex flex-row items-center justify-between gap-4">
-          <Button
-            variant="ghost"
-            onClick={goToPreviousStep}
-            disabled={form.formState.isSubmitting}
-          >
-            <ArrowLeft /> Wróć
-          </Button>
-          <Button
-            className="w-min"
-            variant="ghost"
-            disabled={form.formState.isSubmitting}
-            type="submit"
-          >
-            {form.formState.isSubmitting ? (
-              <>
-                Zapisywanie danych... <Loader2 className="animate-spin" />
-              </>
-            ) : (
-              <>
-                Dalej <ArrowRight />
-              </>
-            )}
-          </Button>
         </div>
       </form>
     </Form>

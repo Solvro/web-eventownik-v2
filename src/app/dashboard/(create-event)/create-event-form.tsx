@@ -12,6 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,20 +24,19 @@ import {
 } from "@/components/ui/dialog";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
+import { cn } from "@/lib/utils";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { CoorganizersForm } from "./(steps)/coorganizers";
 import { GeneralInfoForm } from "./(steps)/general-info";
 import { PersonalizationForm } from "./(steps)/personalization";
-import { eventAtom } from "./event-state";
 import { FormContainer } from "./form-container";
-import { formStateAtom } from "./form-state";
+import { eventAtom } from "./state";
 
 export function CreateEventForm() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
-  const formState = useAtomValue(formStateAtom(currentStep));
 
   const { isDirty, isGuardActive, onCancel, onConfirm, setDisabled } =
     useUnsavedAtom(eventAtom);
@@ -51,43 +51,19 @@ export function CreateEventForm() {
       title: "Krok 1",
       description: "Podaj podstawowe informacje o wydarzeniu",
       icon: <CalendarIcon />,
-      content: (
-        <GeneralInfoForm
-          goToNextStep={() => {
-            setCurrentStep((value) => value + 1);
-          }}
-        />
-      ),
+      content: <GeneralInfoForm />,
     },
     {
       title: "Krok 2",
       description: "Spersonalizuj wydarzenie",
       icon: <SettingsIcon />,
-      content: (
-        <PersonalizationForm
-          goToPreviousStep={() => {
-            setCurrentStep((value) => value - 1);
-          }}
-          goToNextStep={() => {
-            setCurrentStep((value) => value + 1);
-          }}
-        />
-      ),
+      content: <PersonalizationForm />,
     },
     {
       title: "Krok 3",
       description: "Dodaj współorganizatorów",
       icon: <Users />,
-      content: (
-        <CoorganizersForm
-          goToPreviousStep={() => {
-            setCurrentStep((value) => value - 1);
-          }}
-          goToNextStep={() => {
-            setCurrentStep((value) => value + 1);
-          }}
-        />
-      ),
+      content: <CoorganizersForm />,
     },
     {
       title: "Krok 4",
@@ -95,9 +71,6 @@ export function CreateEventForm() {
       icon: <TextIcon />,
       content: (
         <AttributesForm
-          goToPreviousStep={() => {
-            setCurrentStep((value) => value - 1);
-          }}
           disableNavguard={() => {
             setDisabled(true);
           }}
@@ -105,6 +78,12 @@ export function CreateEventForm() {
       ),
     },
   ];
+
+  type EventSchema = z.infer<typeof EventGeneralInfoSchema> &
+    z.infer<typeof EventPersonalizationSchema> &
+    z.infer<typeof EventCoorganizersSchema> &
+    z.infer<typeof EventAttributesSchema>;
+  const form = useForm;
 
   return (
     <Dialog
@@ -148,32 +127,54 @@ export function CreateEventForm() {
         >
           <div className="flex w-full flex-col gap-4">
             {steps[currentStep].content}
-            <div className="flex flex-row items-center justify-between gap-4">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setCurrentStep((value) => value - 1);
-                }}
-                disabled={formState.submitting}
-              >
-                <ArrowLeft /> Wróć
-              </Button>
-              <Button
-                className="w-min"
-                variant="ghost"
-                disabled={formState.submitting}
-                type="submit"
-              >
-                {formState.submitting ? (
-                  <>
-                    Zapisywanie danych... <Loader2 className="animate-spin" />
-                  </>
-                ) : (
-                  <>
-                    Dalej <ArrowRight />
-                  </>
-                )}
-              </Button>
+            <div
+              className={cn(
+                "flex flex-row items-center gap-4",
+                currentStep === 0 ? "justify-end" : "justify-between",
+              )}
+            >
+              {currentStep !== 0 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setCurrentStep((value) => value - 1);
+                  }}
+                  disabled={formState.submitting}
+                >
+                  <ArrowLeft /> Wróć
+                </Button>
+              )}
+              {currentStep < steps.length - 1 ? (
+                <Button
+                  className="w-min"
+                  variant="ghost"
+                  disabled={formState.submitting}
+                  type="submit"
+                >
+                  {formState.submitting ? (
+                    <>
+                      Zapisywanie danych... <Loader2 className="animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Dalej <ArrowRight />
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  className="w-min"
+                  onClick={createEvent}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <SquarePlus />
+                  )}{" "}
+                  Dodaj wydarzenie
+                </Button>
+              )}
             </div>
           </div>
         </FormContainer>

@@ -31,8 +31,7 @@ import {
 } from "@/components/ui/popover";
 import { useAutoSave } from "@/hooks/use-autosave";
 
-import { eventAtom } from "../event-state";
-import { formStateAtom } from "../form-state";
+import { eventAtom } from "../state";
 
 const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
@@ -45,11 +44,7 @@ const EventGeneralInfoSchema = z.object({
   organizer: z.string().optional(),
 });
 
-export function GeneralInfoForm({
-  goToNextStep,
-}: {
-  goToNextStep: () => void;
-}) {
+export function GeneralInfoForm() {
   const [event, setEvent] = useAtom(eventAtom);
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
@@ -84,7 +79,7 @@ export function GeneralInfoForm({
       });
       return;
     }
-    goToNextStep();
+    // TODO: here should be a call to the form state atom that we can go to the next step
   }
 
   useAutoSave(setEvent, form);
@@ -298,22 +293,6 @@ export function GeneralInfoForm({
             )}
           />
         </div>
-        <Button
-          className="w-min"
-          variant="ghost"
-          disabled={form.formState.isSubmitting}
-          type="submit"
-        >
-          {form.formState.isSubmitting ? (
-            <>
-              Zapisywanie danych... <Loader2 className="animate-spin" />
-            </>
-          ) : (
-            <>
-              Dalej <ArrowRight />
-            </>
-          )}
-        </Button>
       </form>
     </Form>
   );
