@@ -25,7 +25,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
 
@@ -50,44 +52,6 @@ export function CreateEventForm() {
 
   const { isDirty, isGuardActive, onCancel, onConfirm, setDisabled } =
     useUnsavedAtom(eventAtom);
-
-  const steps: {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-    content: React.ReactNode;
-  }[] = [
-    {
-      title: "Krok 1",
-      description: "Podaj podstawowe informacje o wydarzeniu",
-      icon: <CalendarIcon />,
-      content: <GeneralInfoForm />,
-    },
-    {
-      title: "Krok 2",
-      description: "Spersonalizuj wydarzenie",
-      icon: <SettingsIcon />,
-      content: <PersonalizationForm />,
-    },
-    {
-      title: "Krok 3",
-      description: "Dodaj współorganizatorów",
-      icon: <Users />,
-      content: <CoorganizersForm />,
-    },
-    {
-      title: "Krok 4",
-      description: "Dodaj atrybuty",
-      icon: <TextIcon />,
-      content: (
-        <AttributesForm
-          disableNavguard={() => {
-            setDisabled(true);
-          }}
-        />
-      ),
-    },
-  ];
 
   type EventSchema = z.infer<typeof EventGeneralInfoSchema> &
     z.infer<typeof EventPersonalizationFormSchema>;
@@ -138,6 +102,71 @@ export function CreateEventForm() {
     control: form.control,
   });
 
+  const steps: {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    content: React.ReactNode;
+    onSubmit?: (values: z.infer<typeof EventGeneralInfoSchema>) => void;
+  }[] = [
+    {
+      title: "Krok 1",
+      description: "Podaj podstawowe informacje o wydarzeniu",
+      icon: <CalendarIcon />,
+      content: <GeneralInfoForm />,
+      onSubmit: (values: z.infer<typeof EventGeneralInfoSchema>) => {
+        values.startDate.setHours(
+          Number.parseInt(values.startTime.split(":")[0]),
+        );
+        values.startDate.setMinutes(
+          Number.parseInt(values.startTime.split(":")[1]),
+        );
+        values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
+        values.endDate.setMinutes(
+          Number.parseInt(values.endTime.split(":")[1]),
+        );
+        if (values.startDate < new Date()) {
+          form.setError("startDate", {
+            message: "Data rozpoczęcia nie może być w przeszłości.",
+          });
+          return;
+        }
+        if (values.endDate < values.startDate) {
+          form.setError("endDate", {
+            message: "Data zakończenia musi być po dacie rozpoczęcia.",
+          });
+          return;
+        }
+      },
+    },
+    {
+      title: "Krok 2",
+      description: "Spersonalizuj wydarzenie",
+      icon: <SettingsIcon />,
+      content: <PersonalizationForm />,
+    },
+    {
+      title: "Krok 3",
+      description: "Dodaj współorganizatorów",
+      icon: <Users />,
+      content: <CoorganizersForm />,
+    },
+    {
+      title: "Krok 4",
+      description: "Dodaj atrybuty",
+      icon: <TextIcon />,
+      content: (
+        <AttributesForm
+          disableNavguard={() => {
+            setDisabled(true);
+          }}
+        />
+      ),
+    },
+  ];
+
+  useAutoSave(setEvent, form);
+
   return (
     <Dialog
       open={dialogOpen}
@@ -179,7 +208,16 @@ export function CreateEventForm() {
           icon={steps[currentStep].icon}
         >
           <div className="flex w-full flex-col gap-4">
-            {steps[currentStep].content}
+            {steps[currentStep].onSubmit == null ? (
+              steps[currentStep].content
+            ) : (
+              // some steps don't need to be wrapped in Form
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}>
+                  {steps[currentStep].content}
+                </form>
+              </Form>
+            )}
             <div
               className={cn(
                 "flex flex-row items-center gap-4",
