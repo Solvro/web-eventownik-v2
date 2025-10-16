@@ -26,7 +26,7 @@ import { eventAtom } from "../state";
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
-const EventPersonalizationFormSchema = z.object({
+export const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
   color: z.string().optional(),
   participantsNumber: z.coerce.number().min(1),
