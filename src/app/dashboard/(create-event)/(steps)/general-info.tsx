@@ -3,13 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, getHours, getMinutes, subDays } from "date-fns";
 import { useAtom } from "jotai";
-import {
-  ArrowRight,
-  CalendarArrowDownIcon,
-  CalendarArrowUpIcon,
-  Loader2,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
+import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import { useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { WysiwygEditor } from "@/components/editor";
@@ -33,7 +28,7 @@ import { useAutoSave } from "@/hooks/use-autosave";
 
 import { eventAtom } from "../state";
 
-const EventGeneralInfoSchema = z.object({
+export const EventGeneralInfoSchema = z.object({
   name: z.string().nonempty("Nazwa nie może być pusta."),
   description: z.string().optional(),
   startDate: z.date(),
@@ -45,20 +40,8 @@ const EventGeneralInfoSchema = z.object({
 });
 
 export function GeneralInfoForm() {
-  const [event, setEvent] = useAtom(eventAtom);
-  const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
-    resolver: zodResolver(EventGeneralInfoSchema),
-    defaultValues: {
-      name: event.name,
-      description: event.description,
-      startDate: event.startDate,
-      startTime: `${getHours(event.startDate).toString()}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
-      endDate: event.endDate,
-      endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-      location: event.location,
-      organizer: event.organizer,
-    },
-  });
+  const { control, formState, setValue, getValues, register } =
+    useFormContext();
 
   function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
     values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));

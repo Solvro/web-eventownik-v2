@@ -1,6 +1,8 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getHours, getMinutes } from "date-fns";
+import { useAtom, useAtomValue } from "jotai";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,7 +14,8 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useFieldArray, useForm } from "react-hook-form";
+import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,12 +31,19 @@ import { cn } from "@/lib/utils";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { CoorganizersForm } from "./(steps)/coorganizers";
-import { GeneralInfoForm } from "./(steps)/general-info";
-import { PersonalizationForm } from "./(steps)/personalization";
+import {
+  EventGeneralInfoSchema,
+  GeneralInfoForm,
+} from "./(steps)/general-info";
+import {
+  EventPersonalizationFormSchema,
+  PersonalizationForm,
+} from "./(steps)/personalization";
 import { FormContainer } from "./form-container";
 import { eventAtom } from "./state";
 
 export function CreateEventForm() {
+  const [event, setEvent] = useAtom(eventAtom);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
@@ -80,10 +90,53 @@ export function CreateEventForm() {
   ];
 
   type EventSchema = z.infer<typeof EventGeneralInfoSchema> &
-    z.infer<typeof EventPersonalizationSchema> &
-    z.infer<typeof EventCoorganizersSchema> &
-    z.infer<typeof EventAttributesSchema>;
-  const form = useForm;
+    z.infer<typeof EventPersonalizationFormSchema>;
+
+  // Per-step resolvers you said you already have
+  const stepResolvers: Resolver<EventSchema>[] = [
+    zodResolver(EventGeneralInfoSchema) as unknown as Resolver<EventSchema>,
+    zodResolver(
+      EventPersonalizationFormSchema,
+    ) as unknown as Resolver<EventSchema>,
+  ];
+
+  const resolver: Resolver<EventSchema> = async (values, context, options) => {
+    const stepResolver =
+      stepResolvers[currentStep] ??
+      (() => ({
+        values,
+        errors: {},
+      }));
+    // Notice: we must call the inner resolver and await its result
+    return await stepResolver(values, context, options);
+  };
+
+  const form = useForm<EventSchema>({
+    resolver,
+    defaultValues: {
+      name: event.name,
+      description: event.description,
+      startDate: event.startDate,
+      startTime: `${getHours(event.startDate).toString()}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
+      endDate: event.endDate,
+      endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
+      location: event.location,
+      organizer: event.organizer,
+      image: event.image,
+      color: event.color,
+      participantsNumber: event.participantsNumber,
+      socialMediaLinks: event.socialMediaLinks,
+      slug:
+        event.slug === ""
+          ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
+          : event.slug,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    name: "socialMediaLinks",
+    control: form.control,
+  });
 
   return (
     <Dialog
@@ -139,7 +192,7 @@ export function CreateEventForm() {
                   onClick={() => {
                     setCurrentStep((value) => value - 1);
                   }}
-                  disabled={formState.submitting}
+                  disabled={form.formState.isSubmitting}
                 >
                   <ArrowLeft /> Wróć
                 </Button>
@@ -148,10 +201,10 @@ export function CreateEventForm() {
                 <Button
                   className="w-min"
                   variant="ghost"
-                  disabled={formState.submitting}
+                  disabled={form.formState.isSubmitting}
                   type="submit"
                 >
-                  {formState.submitting ? (
+                  {form.formState.isSubmitting ? (
                     <>
                       Zapisywanie danych... <Loader2 className="animate-spin" />
                     </>
