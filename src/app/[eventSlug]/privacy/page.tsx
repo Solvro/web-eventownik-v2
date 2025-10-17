@@ -140,7 +140,7 @@ export default async function EventPage({ params }: EventPageProps) {
         <h2 className="text-center text-3xl leading-relaxed font-bold md:text-4xl">
           Polityka Prywatności wydarzenia <br /> &quot;{event.name}&quot;
         </h2>
-        <div className="bg-primary/5 m-2 rounded-md p-4 leading-relaxed [&>ol>li]:my-4">
+        <div className="bg-primary/5 m-2 rounded-md p-4 leading-relaxed [&>ol>li]:my-6">
           <p className="mb-2">
             Zgodnie z art. 13 ust. 1 i ust. 2 Rozporządzenia Parlamentu
             Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w
@@ -182,8 +182,16 @@ export default async function EventPage({ params }: EventPageProps) {
                   dane dotyczące urządzenia tj. adres IP, dane sesji,
                   identyfikator użytkownika
                 </li>
-                {/* TODO(backend): Precise list of attributes */}
-                <li>dane wprowadzone do pól formularzy</li>
+                {event.attributes.map((attribute) => {
+                  return (
+                    <li key={attribute.id}>
+                      {attribute.name.toLowerCase()}
+                      {attribute.isSensitiveData
+                        ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`
+                        : ""}
+                    </li>
+                  );
+                })}
               </ol>
             </li>
             <li>
