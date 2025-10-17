@@ -49,7 +49,8 @@ const EventGeneralInfoSchema = z.object({
   termsLink: z
     .string()
     .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
-    .optional(),
+    .optional()
+    .or(z.literal("")),
 });
 
 export function GeneralInfoForm({
