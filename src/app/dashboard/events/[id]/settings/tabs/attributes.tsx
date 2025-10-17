@@ -385,19 +385,53 @@ const AttributeItem = memo(
               ) : null}
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id={`showInTable-${attribute.id.toString()}`}
-                checked={attribute.showInList}
-                onCheckedChange={(checked) => {
-                  onUpdate({ ...attribute, showInList: checked === true });
-                }}
-              />
-              <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
-                Pokaż w tabeli
-              </Label>
+            <div className="flex flex-col justify-center gap-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`showInTable-${attribute.id.toString()}`}
+                  checked={attribute.showInList}
+                  onCheckedChange={(checked) => {
+                    onUpdate({ ...attribute, showInList: checked === true });
+                  }}
+                />
+                <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
+                  Pokaż w tabeli
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`isSensitiveData-${attribute.id.toString()}`}
+                  checked={attribute.isSensitiveData}
+                  onCheckedChange={(checked) => {
+                    onUpdate({
+                      ...attribute,
+                      isSensitiveData: checked === true,
+                    });
+                  }}
+                />
+                <Label htmlFor={`isSensitiveData-${attribute.id.toString()}`}>
+                  Wrażliwe dane
+                </Label>
+              </div>
             </div>
           </div>
+
+          {attribute.isSensitiveData ? (
+            <div className="my-2 flex flex-col gap-2">
+              <Label htmlFor={`reason-${attribute.id.toString()}`}>
+                Powód dla zbierania danych (wymagane dla danych wrażliwych)
+              </Label>
+              <Input
+                id={`reason-${attribute.id.toString()}`}
+                value={attribute.reason ?? ""}
+                required={attribute.isSensitiveData}
+                onChange={(event_) => {
+                  onUpdate({ ...attribute, reason: event_.target.value });
+                }}
+                placeholder="np. 'Zorganizowanie posiłków w ośrodku'"
+              />
+            </div>
+          ) : null}
 
           {(attribute.type === "select" ||
             attribute.type === "multiselect") && (
@@ -491,7 +525,7 @@ const SortableAttributeItem = memo((props: SortableAttributeItemProps) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div className="flex gap-2 rounded-lg p-2">
+      <div className="flex gap-2 rounded-lg">
         <div
           className="my-2 hidden h-9 w-9 cursor-move items-center justify-center lg:inline-flex"
           {...attributes}
@@ -606,6 +640,8 @@ export function Attributes({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       rootBlockId: undefined,
+      isSensitiveData: false,
+      reason: null,
     };
 
     setAttributes((previous) => [...previous, newAttribute]);
