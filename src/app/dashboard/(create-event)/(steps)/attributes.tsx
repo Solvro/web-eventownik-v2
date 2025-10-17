@@ -360,6 +360,8 @@ export function AttributesForm({
           order: event.attributes.length,
           createdAt: "", // set it to empty string to avoid type error
           updatedAt: "", // set it to empty string to avoid type error
+          isSensitiveData: false,
+          reason: null,
         },
       ],
     }));

@@ -252,6 +252,8 @@ export async function updateEvent(
                 (attribute.options ?? []).length > 0
                   ? attribute.options
                   : undefined,
+              isSensitiveData: attribute.isSensitiveData,
+              reason: attribute.reason,
             }),
           },
         );
@@ -273,11 +275,18 @@ export async function updateEvent(
           );
         } else {
           console.error("[updateEvent] Error adding attribute:", attribute);
-          attributesErrors.push({
-            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-              await attributeResponse.json(),
-            )}`,
-          });
+          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
+          if (attribute.isSensitiveData && attribute.reason === "") {
+            attributesErrors.push({
+              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+            });
+          } else {
+            attributesErrors.push({
+              message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+                await attributeResponse.json(),
+              )}`,
+            });
+          }
         }
       }
 
@@ -303,16 +312,25 @@ export async function updateEvent(
                 (attribute.options ?? []).length > 0
                   ? attribute.options
                   : undefined,
+              isSensitiveData: attribute.isSensitiveData,
+              reason: attribute.reason,
             }),
           },
         );
         if (!attributeResponse.ok) {
           console.error("[updateEvent] Error updating attribute:", attribute);
-          attributesErrors.push({
-            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-              await attributeResponse.json(),
-            )}`,
-          });
+          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
+          if (attribute.isSensitiveData && attribute.reason === "") {
+            attributesErrors.push({
+              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+            });
+          } else {
+            attributesErrors.push({
+              message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+                await attributeResponse.json(),
+              )}`,
+            });
+          }
         }
       }
 
