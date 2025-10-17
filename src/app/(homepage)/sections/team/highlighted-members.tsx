@@ -58,11 +58,11 @@ export function HighlightedMember({
         rel="noreferrer noopener"
         className={cn(
           className,
-          "inline-block aspect-square shrink-0 rounded-2xl outline-2 transition sm:rounded-4xl sm:outline-0 sm:group-hover:outline-2",
+          "inline-block aspect-square shrink-0 rounded-2xl shadow-[0_0_0_2px_currentColor] transition sm:rounded-4xl sm:shadow-none sm:group-hover:shadow-[0_0_0_2px_currentColor]",
           // Responsive sizing
           "w-[clamp(4.5rem,18vw,8rem)] md:w-[8rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[18rem]",
         )}
-        style={{ outlineColor: color }}
+        style={{ color }}
         variants={{
           hidden: { rotate: rotate - 6 },
           visible: { rotate },

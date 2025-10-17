@@ -1,7 +1,7 @@
 import { ArrowRight, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ export function Footer() {
           */}
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
-          <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-start sm:gap-12">
+          <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-end sm:gap-12">
             <a
               href="/documents/regulamin.pdf"
               target="_blank"
@@ -39,15 +39,9 @@ export function Footer() {
             >
               Regulamin
             </a>
-            <Link href="/">Polityka prywatności</Link>
-            <a
-              target="_blank"
-              href="https://solvro.pwr.edu.pl/contact/"
-              rel="noreferrer noopener"
-            >
+            <a href="mailto:eventownik@pwr.edu.pl?subject=Zgłoszenie%20błędu">
               Zgłoś błąd
             </a>
-            <Link href="/">RODO</Link>
           </div>
           <div className="flex w-full flex-col items-center justify-between gap-8 sm:flex-row">
             <a
@@ -83,6 +77,18 @@ export function Footer() {
                 rel="noopener noreferrer"
               >
                 <FaGithub />
+              </a>
+              <a
+                title="Profil Koła Naukowego Solvro na Instagramie"
+                href="https://www.instagram.com/knsolvro/"
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "aspect-square rounded-full p-2",
+                )}
+                rel="noopener noreferrer"
+              >
+                <FaInstagram />
               </a>
               <a
                 title="Profil Koła Naukowego Solvro na Facebooku"

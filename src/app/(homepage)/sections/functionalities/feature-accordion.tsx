@@ -214,7 +214,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#ffc94b]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member"
+            src="/assets/landing/functionalities/organizer-1.jpg"
             alt=""
             width={200}
             height={200}
@@ -231,7 +231,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#fd36fa]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/8b57e57a-e701-4d9a-88e5-c254e9299fee?key=member"
+            src="/assets/landing/functionalities/organizer-2.jpg"
             alt=""
             width={200}
             height={200}
@@ -248,7 +248,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#3089dc]"></span>
           </div>
           <Image
-            src="https://cms.solvro.pl/assets/77255d90-0ec0-4219-9c81-707cc50babc4?key=member"
+            src="/assets/landing/functionalities/organizer-3.jpg"
             alt=""
             width={200}
             height={200}
@@ -294,7 +294,10 @@ export function FeatureAccordion() {
     >
       <div className="grid w-full grid-cols-1 items-center justify-center xl:grid-cols-2">
         <div className="z-10 flex h-full w-full items-center justify-center bg-white xl:justify-end dark:bg-[#101011]">
-          <div className="w-full space-y-2 p-16 xl:max-w-3xl">
+          <div className="w-full space-y-2 p-8 sm:p-16 xl:max-w-3xl">
+            <p className="pb-4 text-4xl font-bold sm:text-5xl">
+              Najczęściej zadawane pytania
+            </p>
             <Accordion
               type="single"
               collapsible
@@ -308,8 +311,8 @@ export function FeatureAccordion() {
                 <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                   Przy zakładaniu wydarzenia na Eventowniku zachęcamy do
                   kontaktu z naszą osobą kontaktową - chętnie wytłumaczymy i
-                  pomożemy w razie problemów. Jednak jeśli nie czujesz takiej
-                  potrzeby, możesz założyć wydarzenie w pełni samodzielnie!
+                  pomożemy w razie problemów. Jeśli nie czujesz takiej potrzeby,
+                  możesz założyć wydarzenie w pełni samodzielnie!
                 </p>
                 <Button
                   asChild
@@ -347,8 +350,8 @@ export function FeatureAccordion() {
                 title="Brak potrzeby zakładania konta dla uczestników"
               >
                 <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
-                  Uczestnicy zapisują się na wydarzenie bez korzystania z konta
-                  - nie muszą go wcale zakładać. Konto wymagane jest jedynie dla
+                  Uczestnicy zapisujący się na wydarzenia nie muszą posiadać
+                  konta. Założenie jego jest wymagane jedynie przez
                   organizatorów, aby utworzyć wydarzenie.
                 </p>
                 <Button
@@ -377,11 +380,11 @@ export function FeatureAccordion() {
               <CustomAccordionItem value="security" title="Bezpieczeństwo">
                 <p className="text-xl font-medium text-[#515151] dark:text-[#B4B4B4]">
                   Eventownik powstał przy konsultacji z jednostkami Politechniki
-                  Wrocławskiej - Działem Informatyzacji, Działem Informatyzacji,
-                  Inspektorem Ochrony Danych i innymi. Dzięki temu spełnia
-                  najwyższe standardy bezpieczeństwa. Co więcej, wytrzyma nawet
-                  bardzo duże obciążenia i może obsłużyć jednocześnie duże
-                  ilości użytkowników bez utraty stabilności.
+                  Wrocławskiej - Działem Informatyzacji, Inspektorem Ochrony
+                  Danych i innymi. Dzięki temu spełnia najwyższe standardy
+                  bezpieczeństwa. Co więcej, wytrzyma nawet bardzo duże
+                  obciążenia i może obsłużyć jednocześnie duże ilości
+                  użytkowników bez utraty stabilności.
                 </p>
               </CustomAccordionItem>
             </Accordion>

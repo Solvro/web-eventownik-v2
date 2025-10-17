@@ -247,6 +247,7 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
@@ -297,6 +298,7 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
