@@ -7,6 +7,7 @@ import type {
   SuggestionOptions,
   SuggestionProps,
 } from "@tiptap/suggestion";
+import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
 
 import { TagsList } from "@/components/tags-list";
 
@@ -27,6 +28,7 @@ type MessageTagColor = LooseAutocomplete<
 interface MessageTagCategory {
   title: string;
   searchBy: string[];
+  icon: React.ReactNode;
 }
 
 export interface MessageTag {
@@ -37,24 +39,30 @@ export interface MessageTag {
   category?: MessageTagCategory;
 }
 
+const CATEGORY_ICON_CLASSNAME = "size-4";
+
 const EVENT_CATEGORY: MessageTagCategory = {
   title: "Wydarzenie",
   searchBy: ["wydarzenie"],
+  icon: <Calendar className={CATEGORY_ICON_CLASSNAME} />,
 };
 
 const PARTICIPANT_CATEGORY: MessageTagCategory = {
   title: "Uczestnik",
   searchBy: ["uczestnik"],
+  icon: <User className={CATEGORY_ICON_CLASSNAME} />,
 };
 
 export const ATTRIBUTE_CATEGORY: MessageTagCategory = {
   title: "Atrybut",
   searchBy: ["atrybut"],
+  icon: <Tag className={CATEGORY_ICON_CLASSNAME} />,
 };
 
 export const FORM_CATEGORY: MessageTagCategory = {
   title: "Formularz",
   searchBy: ["formularz"],
+  icon: <FileSpreadsheet className={CATEGORY_ICON_CLASSNAME} />,
 };
 
 const MESSAGE_TAGS: MessageTag[] = [
