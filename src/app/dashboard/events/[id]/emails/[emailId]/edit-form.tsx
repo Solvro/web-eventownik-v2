@@ -128,7 +128,10 @@ function TriggerConfigurationInputs({
                   </FormControl>
                   <SelectContent>
                     {eventForms.map((eventForm) => (
-                      <SelectItem key={eventForm.id} value={eventForm.id}>
+                      <SelectItem
+                        key={eventForm.id}
+                        value={eventForm.id.toString()}
+                      >
                         {eventForm.name}
                       </SelectItem>
                     ))}

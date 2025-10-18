@@ -39,7 +39,7 @@ export async function registerParticipant(
     }
 
     const response = await fetch(
-      `${API_URL}/events/${event.slug}/forms/${event.firstForm.id}/submit`,
+      `${API_URL}/events/${event.slug}/forms/${event.firstForm.id.toString()}/submit`,
       {
         method: "POST",
         body: formData,
