@@ -13,6 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -29,7 +30,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave } from "@/hooks/use-autosave";
 
 import { FormContainer } from "../form-container";
@@ -108,7 +108,7 @@ export function GeneralInfoForm({
                 name="name"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Nazwa</FormLabel>
                     <FormControl>
                       <Input
@@ -130,8 +130,8 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
-                        <FormLabel>Data i godzina</FormLabel>
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Data i godzina rozpoczęcia</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -163,7 +163,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
+                      <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -183,6 +183,7 @@ export function GeneralInfoForm({
                 </FormMessage>
               </div>
               <div className="space-y-2">
+                <FormLabel>Data i godzina zakończenia</FormLabel>
                 <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
@@ -225,7 +226,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
+                      <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -247,20 +248,16 @@ export function GeneralInfoForm({
             </div>
             <div>
               <FormField
-                name="description"
                 control={form.control}
+                name="description"
                 render={({ field }) => (
-                  <FormItem className="flex h-full flex-col gap-1">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Opis</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        disabled={form.formState.isSubmitting}
-                        placeholder="Opisz wydarzenie"
-                        className="h-full resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-sm text-red-500">
+                    <WysiwygEditor
+                      content={form.getValues("description") ?? ""}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage>
                       {form.formState.errors.description?.message}
                     </FormMessage>
                   </FormItem>
@@ -273,7 +270,7 @@ export function GeneralInfoForm({
               name="location"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
+                <FormItem className="flex flex-col">
                   <FormLabel>Miejsce (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
@@ -293,7 +290,7 @@ export function GeneralInfoForm({
               name="organizer"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
+                <FormItem className="flex flex-col">
                   <FormLabel>Organizator (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input

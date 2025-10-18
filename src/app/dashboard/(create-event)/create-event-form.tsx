@@ -25,7 +25,7 @@ export function CreateEventForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
 
-  const { isDirty, isGuardActive, onCancel, onConfirm } =
+  const { isDirty, isGuardActive, onCancel, onConfirm, setDisabled } =
     useUnsavedAtom(eventAtom);
 
   const steps = [
@@ -58,6 +58,9 @@ export function CreateEventForm() {
       goToPreviousStep={() => {
         setCurrentStep((value) => value - 1);
       }}
+      disableNavguard={() => {
+        setDisabled(true);
+      }}
     />,
   ];
 
@@ -87,7 +90,7 @@ export function CreateEventForm() {
         }}
       />
       <DialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="outline">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>

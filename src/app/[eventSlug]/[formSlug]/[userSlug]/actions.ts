@@ -1,7 +1,6 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
-import type { PublicBlock } from "@/types/blocks";
 
 interface ErrorObject {
   rule: string;
@@ -57,6 +56,7 @@ export async function submitForm(
 
       return {
         success: false,
+        errors: errorData.errors,
         error:
           errorMessages ||
           `Błąd ${response.status.toString()} ${response.statusText}`,
@@ -68,22 +68,4 @@ export async function submitForm(
   }
 
   return { success: true };
-}
-
-export async function getEventBlockAttributeBlocks(
-  eventSlug: string,
-  attributeId: string,
-) {
-  const blocksResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/attributes/${attributeId}/blocks`,
-    {
-      method: "GET",
-    },
-  );
-  if (!blocksResponse.ok) {
-    const error = (await blocksResponse.json()) as unknown;
-    console.error(error);
-    throw new Error(`Failed to fetch block with id ${attributeId}`);
-  }
-  return (await blocksResponse.json()) as PublicBlock[];
 }

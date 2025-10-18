@@ -18,6 +18,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+function parseMarkdownLink(
+  link: string,
+): { label: string; url: string } | null {
+  const match = /^\[([^\]]+)]\((https?:\/\/[^\s)]+)\)$/.exec(link);
+  if (match != null) {
+    return { label: match[1], url: match[2] };
+  }
+  return null;
+}
+
 export function SocialMediaLink({
   link,
   className,
@@ -25,36 +35,41 @@ export function SocialMediaLink({
   link: string;
   className?: string;
 }) {
+  const md = parseMarkdownLink(link);
+  const url = md == null ? link : md.url;
+  const label =
+    md == null ? new URL(link).hostname.replace("www.", "") : md.label;
+
   return (
     <Tooltip key={link} delayDuration={0}>
       <TooltipTrigger asChild>
-        <Link href={link} target="_blank">
+        <Link href={url} target="_blank">
           <EventInfoDiv className={className}>
-            {link.includes("facebook.com") || link.includes("fb.me") ? (
+            {url.includes("facebook.com") || url.includes("fb.me") ? (
               <FaFacebookF size={20} />
-            ) : link.includes("instagram.com") ? (
+            ) : url.includes("instagram.com") ? (
               <FaInstagram size={20} />
-            ) : link.includes("tiktok.com") ? (
+            ) : url.includes("tiktok.com") ? (
               <FaTiktok size={20} />
-            ) : link.includes("discord.com") ? (
+            ) : url.includes("discord.com") ? (
               <FaDiscord size={20} />
-            ) : link.includes("youtube.com") ? (
+            ) : url.includes("youtube.com") ? (
               <FaYoutube size={20} />
-            ) : link.includes("google.com/maps") ? (
+            ) : url.includes("google.com/maps") ? (
               <FaLocationDot size={20} />
-            ) : link.includes("docs.google.com") ||
-              link.includes("drive.google.com") ? (
+            ) : url.includes("docs.google.com") ||
+              url.includes("drive.google.com") ? (
               <FaGoogleDrive size={20} />
             ) : (
               <FaGlobe size={20} />
             )}
-            {new URL(link).hostname.replace("www.", "")}
+            {label}
           </EventInfoDiv>
         </Link>
       </TooltipTrigger>
       <TooltipContent>
-        {link.slice(0, 60)}
-        {link.length > 50 ? "..." : ""}
+        {url.slice(0, 60)}
+        {url.length > 60 ? "..." : ""}
       </TooltipContent>
     </Tooltip>
   );

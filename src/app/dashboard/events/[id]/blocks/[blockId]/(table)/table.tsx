@@ -70,7 +70,7 @@ function BlockParticipantsTable({
               <TableRow className="hover:bg-transparent">
                 <TableCell
                   colSpan={columns.length}
-                  className="text-muted h-24 text-center"
+                  className="text-muted-foreground h-24 text-center"
                 >
                   Ten blok nie ma żadnych uczestników
                 </TableCell>

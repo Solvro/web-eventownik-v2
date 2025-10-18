@@ -35,7 +35,8 @@ const EventPersonalizationFormSchema = z.object({
     .min(1, "Musi być co najmniej 1 uczestnik"),
   socialMediaLinks: z.array(
     z.object({
-      value: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+      label: z.string().optional(),
+      link: z.string().url("Nieprawidłowy URL").or(z.literal("")),
     }),
   ),
   slug: z
@@ -66,7 +67,9 @@ export function Personalization({ event, saveFormRef }: TabProps) {
       participantsCount: event.participantsCount ?? undefined,
       socialMediaLinks:
         event.socialMediaLinks?.map((link) => ({
-          value: link,
+          // parse markdown to get label - assume format is [label](url) or just url
+          label: /\[(.*?)]/.exec(link)?.[1] ?? "",
+          link: /\((.*?)\)/.exec(link)?.[1] ?? link,
         })) ?? [],
       slug: event.slug,
       contactEmail: event.contactEmail ?? "",
@@ -88,7 +91,17 @@ export function Personalization({ event, saveFormRef }: TabProps) {
       photoUrl: lastImageUrl,
       primaryColor: values.primaryColor,
       participantsCount: values.participantsCount,
-      socialMediaLinks: values.socialMediaLinks.map((link) => link.value),
+      socialMediaLinks: values.socialMediaLinks
+        .map((link) => {
+          if (link.label != null && link.link) {
+            return `[${link.label}](${link.link})`;
+          } else if (link.link) {
+            return link.link;
+          } else {
+            return "";
+          }
+        })
+        .filter((link) => link !== ""),
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
     };
@@ -287,10 +300,18 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                       <div className="flex items-center gap-2">
                         <FormControl>
                           <Input
-                            type="url"
-                            placeholder="https://facebook.com/knsolvro"
+                            placeholder="Facebook"
                             {...form.register(
-                              `socialMediaLinks.${index}.value` as const,
+                              `socialMediaLinks.${index}.label` as const,
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <Input
+                            type="url"
+                            placeholder="https://fb.me/knsolvro"
+                            {...form.register(
+                              `socialMediaLinks.${index}.link` as const,
                             )}
                           />
                         </FormControl>
@@ -298,7 +319,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                           type="button"
                           variant="outline"
                           size="icon"
-                          className="hover:bg-red-500/90 hover:text-white"
+                          className="shrink-0 hover:bg-red-500/90 hover:text-white"
                           onClick={() => {
                             remove(index);
                           }}
@@ -306,11 +327,20 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      {form.formState.errors.socialMediaLinks?.[index]?.value
+                      {form.formState.errors.socialMediaLinks?.[index]?.label
                         ?.message != null && (
                         <p className="text-sm text-[0.8rem] font-medium text-red-500">
                           {
-                            form.formState.errors.socialMediaLinks[index].value
+                            form.formState.errors.socialMediaLinks[index].label
+                              .message
+                          }
+                        </p>
+                      )}
+                      {form.formState.errors.socialMediaLinks?.[index]?.link
+                        ?.message != null && (
+                        <p className="text-sm text-[0.8rem] font-medium text-red-500">
+                          {
+                            form.formState.errors.socialMediaLinks[index].link
                               .message
                           }
                         </p>
@@ -322,7 +352,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     variant="outline"
                     className="gap-2"
                     onClick={() => {
-                      append({ value: "" });
+                      append({ label: "", link: "" });
                     }}
                   >
                     <PlusIcon className="h-4 w-4" />

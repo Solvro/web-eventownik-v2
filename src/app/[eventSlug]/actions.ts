@@ -9,10 +9,12 @@ import type { registerParticipantFormSchema } from "@/types/schemas";
 interface ErrorObject {
   rule: string;
   field: string;
+  message: string;
 }
 
 interface ErrorResponse {
   errors: ErrorObject[];
+  message: string | undefined;
 }
 
 export async function registerParticipant(
@@ -33,7 +35,7 @@ export async function registerParticipant(
     }
 
     for (const [key, value] of Object.entries(values)) {
-      formData.append(key, value);
+      formData.append(key, String(value as unknown));
     }
 
     const response = await fetch(

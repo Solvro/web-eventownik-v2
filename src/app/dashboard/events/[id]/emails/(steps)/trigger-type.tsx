@@ -152,7 +152,7 @@ function TriggerConfigurationInputs({
                     {eventAttributes.map((attribute) => (
                       <SelectItem
                         key={attribute.id}
-                        value={attribute.id.toString()}
+                        value={String(attribute.id)}
                       >
                         {attribute.name}
                       </SelectItem>
@@ -275,7 +275,7 @@ function TriggerTypeForm({
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              <ArrowRight /> Zapisz i przejdź dalej
+              <ArrowRight /> Przejdź dalej
             </Button>
           </div>
         </form>

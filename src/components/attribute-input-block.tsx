@@ -69,7 +69,7 @@ export function AttributeInputBlock({
         </FormLabel>
       </div>
       {isRegistered ? (
-        <p className="text-muted mb-0 text-sm leading-none whitespace-nowrap">
+        <p className="text-muted-foreground mb-0 text-sm leading-none whitespace-nowrap">
           Jesteś już na tej liście
         </p>
       ) : null}

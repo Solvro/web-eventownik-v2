@@ -1,22 +1,18 @@
-import { format } from "date-fns";
-import { Building2, Calendar1, CalendarX, MapPin, User } from "lucide-react";
-import Link from "next/link";
+import { User } from "lucide-react";
+import type { Metadata } from "next";
 import React from "react";
-import sanitizeHtml from "sanitize-html";
 
-import { AddToCalendarButton } from "@/components/add-to-calendar-button";
-import { AppLogo } from "@/components/app-logo";
+import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
+import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { EventInfoDiv } from "@/components/event-info-div";
-import { EventPrimaryColorSetter } from "@/components/event-primary-color";
-import { SocialMediaLink } from "@/components/social-media-link";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { API_URL } from "@/lib/api";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 import type { Form } from "@/types/form";
 import type { PublicParticipant } from "@/types/participant";
 
+import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
@@ -77,22 +73,16 @@ async function getUserData(
   return (await userDataResponse.json()) as PublicParticipant;
 }
 
-async function getEventBlockAttributeBlocks(
-  eventSlug: string,
-  attributeId: string,
-) {
-  const blocksResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/attributes/${attributeId}/blocks`,
-    {
-      method: "GET",
-    },
-  );
-  if (!blocksResponse.ok) {
-    const error = (await blocksResponse.json()) as unknown;
-    console.error(error);
-    return null;
-  }
-  return (await blocksResponse.json()) as PublicBlock[];
+export async function generateMetadata({
+  params,
+}: FormPageProps): Promise<Metadata> {
+  const { eventSlug, formSlug } = await params;
+
+  const form = await getForm(eventSlug, formSlug);
+
+  return {
+    title: form === null ? "Formularz" : form.name,
+  };
 }
 
 export default async function FormPage({ params }: FormPageProps) {
@@ -100,17 +90,17 @@ export default async function FormPage({ params }: FormPageProps) {
 
   const event = await getEvent(eventSlug);
   if (event === null) {
-    return <div>Nie znaleziono wydarzenia 😪</div>;
+    return <EventNotFound whatNotFound="event" />;
   }
 
   const form = await getForm(eventSlug, formSlug);
   if (form === null) {
-    return <div>Nie znaleziono formularza 😪</div>;
+    return <EventNotFound whatNotFound="form" />;
   }
 
   const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
-    return <div>Nie udało się pobrać twoich danych 😪</div>;
+    return <EventNotFound whatNotFound="user" />;
   }
 
   const blockAttributesInForm = form.attributes.filter(
@@ -124,123 +114,26 @@ export default async function FormPage({ params }: FormPageProps) {
   );
 
   if (eventBlocks.includes(null)) {
-    return (
-      <div>
-        Nie udało się pobrać informacji dla przynajmniej jednego z bloków w tym
-        formularzu 😪
-      </div>
-    );
+    return <EventNotFound whatNotFound="blocks" />;
   }
 
-  const sanitizedDescription = sanitizeHtml(form.description, {
-    allowedAttributes: {
-      p: ["style"],
-      a: ["href", "name", "target"],
-      img: ["src", "srcset", "alt", "title", "width", "height", "loading"],
-    },
-    allowedTags: [
-      "h1",
-      "h2",
-      "h3",
-      "p",
-      "br",
-      "pre",
-      "strong",
-      "em",
-      "a",
-      "img",
-    ],
-    allowedSchemes: ["data", "https"],
-  });
-
   return (
-    <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
-      <EventPrimaryColorSetter primaryColor={event.primaryColor} />
-      <div
-        className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, #1F1F1F40, #000000), url(${PHOTO_URL}/${event.photoUrl ?? ""})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <nav className="flex items-center px-8">
-          <AppLogo forceTheme="dark" />
-        </nav>
-        <div className="flex flex-col gap-2">
-          <div className="p-8">
-            <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-              {event.name}
-            </h1>
-            <div className="mb-8 flex flex-col gap-y-2">
-              <div className="flex gap-x-2">
-                <EventInfoDiv>
-                  <Calendar1 size={20} />{" "}
-                  {format(event.startDate, "dd.MM.yyyy")}
-                </EventInfoDiv>
-                <EventInfoDiv>{format(event.startDate, "HH:mm")}</EventInfoDiv>
-                <AddToCalendarButton event={event} />
-              </div>
-              <div className="flex gap-x-2">
-                <EventInfoDiv>
-                  <CalendarX size={20} /> {format(event.endDate, "dd.MM.yyyy")}
-                </EventInfoDiv>
-                <EventInfoDiv>{format(event.endDate, "HH:mm")}</EventInfoDiv>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {event.location != null && event.location.trim() !== "" ? (
-                  <Link
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
-                    target="_blank"
-                  >
-                    <EventInfoDiv>
-                      <MapPin size={20} /> {event.location}
-                    </EventInfoDiv>
-                  </Link>
-                ) : null}
-                {event.organizer != null && event.organizer.trim() !== "" ? (
-                  <EventInfoDiv>
-                    <Building2 size={20} /> {event.organizer}
-                  </EventInfoDiv>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {event.socialMediaLinks != null &&
-                event.socialMediaLinks.length > 0
-                  ? event.socialMediaLinks.map((link) => (
-                      <SocialMediaLink link={link} key={link} />
-                    ))
-                  : null}
-              </div>
-            </div>
-            <ScrollArea className="h-72">
-              <div
-                className="leading-relaxed whitespace-pre-line [&>h1]:text-2xl [&>h2]:text-xl [&>h3]:text-lg"
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-              />
-            </ScrollArea>
-          </div>
-        </div>
-      </div>
-      {/* No need for ScrollArea (it's viewport's side scrollbar) */}
-      <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
-        <h2 className="text-center text-3xl font-bold md:text-4xl">
-          {form.name}
-        </h2>
-        <EventInfoDiv className="bg-accent mt-2 font-medium shadow">
-          <User className="size-4" strokeWidth={2.5} />
-          {userData.email}
-        </EventInfoDiv>
-        <FormGenerator
-          attributes={form.attributes}
-          userData={userData}
-          originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-          formId={form.id.toString()}
-          eventSlug={eventSlug}
-          userSlug={userSlug}
-        />
-      </div>
-    </div>
+    <EventPageLayout event={event} description={form.description}>
+      <h2 className="text-center text-3xl font-bold md:text-4xl">
+        {form.name}
+      </h2>
+      <EventInfoDiv className="bg-accent mt-2 font-medium shadow">
+        <User className="size-4" strokeWidth={2.5} />
+        {userData.email}
+      </EventInfoDiv>
+      <FormGenerator
+        attributes={form.attributes}
+        userData={userData}
+        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        formId={form.id.toString()}
+        eventSlug={eventSlug}
+        userSlug={userSlug}
+      />
+    </EventPageLayout>
   );
 }

@@ -49,6 +49,7 @@ const EventFormSchema = z.object({
   endDate: z.date(),
   slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isFirstForm: z.boolean(),
+  isOpen: z.boolean().default(true),
 });
 
 interface EventFormEditFormProps {
@@ -75,6 +76,7 @@ function EventFormEditForm({
       startDate: new Date(formToEdit.startDate),
       endDate: new Date(formToEdit.endDate),
       isFirstForm: formToEdit.isFirstForm,
+      isOpen: formToEdit.isOpen,
       slug: formToEdit.slug,
     },
   });
@@ -86,7 +88,7 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormSchema>) {
     try {
-      const result = await updateEventForm(eventId, formToEdit.id, {
+      const result = await updateEventForm(eventId, formToEdit.id.toString(), {
         ...formToEdit,
         ...values,
         attributes: includedAttributes,
@@ -146,7 +148,7 @@ function EventFormEditForm({
               )}
             />
             <div className="space-y-2">
-              <FormLabel>Data i godzina</FormLabel>
+              <FormLabel>Data i godzina otwarcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -210,6 +212,7 @@ function EventFormEditForm({
               </div>
             </div>
             <div className="space-y-2">
+              <FormLabel>Data i godzina zamknięcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -322,6 +325,26 @@ function EventFormEditForm({
               render={({ field }) => (
                 <FormItem className="flex w-fit flex-col">
                   <FormLabel>Formularz rejestracyjny?</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="m-0"
+                      disabled={form.formState.isSubmitting ? true : undefined}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="isOpen"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex w-fit flex-col">
+                  <FormLabel>Włączony?</FormLabel>
+                  <FormDescription>
+                    Określa, czy formularz przyjmuje nowe zgłoszenia
+                  </FormDescription>
                   <FormControl>
                     <Switch
                       checked={field.value}

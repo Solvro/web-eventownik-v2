@@ -175,7 +175,6 @@
     --tag-brown-text: #d2a679;
   }
 }
-
 @layer base {
   * {
     @apply border-border;
@@ -221,4 +220,32 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+.clip-curve {
+  clip-path: ellipse(60% 100% at 50% 0%);
+}
+
+.faded-edges {
+  /* Chrome, Safari, Edge */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40%,
+    black 60%,
+    transparent
+  );
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+
+  /* Firefox */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40%,
+    black 60%,
+    transparent
+  );
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
 }

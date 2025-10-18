@@ -117,7 +117,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 )}
               />
               <div className="space-y-2">
-                <FormLabel>Data i godzina</FormLabel>
+                <FormLabel>Data i godzina otwarcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -177,6 +177,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormMessage>
               </div>
               <div className="space-y-2">
+                <FormLabel>Data i godzina zamknięcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -248,6 +249,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       zawartości wyświetli się opis wydarzenia
                     </FormDescription>
                     <WysiwygEditor
+                      className="h-[200px]"
                       content={field.value}
                       onChange={field.onChange}
                       disabled={form.watch("isFirstForm")}
@@ -281,6 +283,9 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 render={({ field }) => (
                   <FormItem className="flex w-fit flex-col">
                     <FormLabel>Włączony?</FormLabel>
+                    <FormDescription>
+                      Określa, czy formularz przyjmuje nowe zgłoszenia
+                    </FormDescription>
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -296,7 +301,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
           </div>
           <div className="flex justify-end">
             <Button variant="eventGhost" type="submit">
-              <ArrowRight /> Zapisz i przejdź dalej
+              <ArrowRight /> Przejdź dalej
             </Button>
           </div>
         </form>

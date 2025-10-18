@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
@@ -7,27 +8,23 @@ import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
-export default async function DashboardEventLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ id: string }>;
-}) {
+async function fetchEventAndAttributes(eventId: string) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
   const { bearerToken } = session;
-  const { id } = await params;
 
-  const eventResponse = await fetch(`${API_URL}/events/${id}`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
+  const attributesResponse = await fetch(
+    `${API_URL}/events/${eventId}/attributes`,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
     },
-  });
+  );
 
-  const attributesResponse = await fetch(`${API_URL}/events/${id}/attributes`, {
+  const eventResponse = await fetch(`${API_URL}/events/${eventId}`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -39,6 +36,35 @@ export default async function DashboardEventLayout({
 
   const event = (await eventResponse.json()) as Event;
   const attributes = (await attributesResponse.json()) as Attribute[];
+  return { event, attributes };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const { event } = await fetchEventAndAttributes(id);
+
+  return {
+    title: {
+      template: `%s — ${event.name} | Eventownik`,
+      default: `Dashboard — ${event.name}`,
+    },
+  };
+}
+
+export default async function DashboardEventLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const { event, attributes } = await fetchEventAndAttributes(id);
 
   return (
     <div className="flex grow flex-col gap-4 sm:flex-row sm:gap-14">

@@ -164,8 +164,10 @@ export async function updateEvent(
         if (coOrganizer.id === null) {
           continue; // Skip co-organizers without an ID
         }
+        const eventIdString = String(event.id);
+        const coOrganizerIdString = coOrganizer.id satisfies string;
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id}`,
+          `${API_URL}/events/${eventIdString}/organizers/${coOrganizerIdString}`,
           {
             method: "PUT",
             headers: {
@@ -194,8 +196,10 @@ export async function updateEvent(
         if (coOrganizer.id == null) {
           continue; // Skip co-organizers without an ID
         }
+        const eventIdStringDel = String(event.id);
+        const coOrganizerIdStringDel = coOrganizer.id satisfies string;
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id}`,
+          `${API_URL}/events/${eventIdStringDel}/organizers/${coOrganizerIdStringDel}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${bearerToken}` },
@@ -230,7 +234,7 @@ export async function updateEvent(
     try {
       for (const attribute of attributesChanges.added) {
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes`,
+          `${API_URL}/events/${String(event.id)}/attributes`,
           {
             method: "POST",
             headers: {
@@ -242,6 +246,7 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
@@ -280,7 +285,7 @@ export async function updateEvent(
           continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
           {
             method: "PUT",
             headers: {
@@ -292,6 +297,7 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
@@ -314,7 +320,7 @@ export async function updateEvent(
           continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${bearerToken}` },
@@ -340,7 +346,7 @@ export async function updateEvent(
       return { errors: attributesErrors };
     }
 
-    revalidatePath(`/dashboard/events/${event.id.toString()}/settings`);
+    revalidatePath(`/dashboard/events/${String(event.id)}/settings`);
     return (await response.json()) as Event;
   } catch (error) {
     console.error("[updateEvent] Network Error:", error);

@@ -224,7 +224,9 @@ function AttributesReorder({
         ) : (
           // Server fallback without drag-and-drop features
           <div className="space-y-2">
-            <p className="text-muted text-sm">Ładowanie atrybutów...</p>
+            <p className="text-muted-foreground text-sm">
+              Ładowanie atrybutów...
+            </p>
           </div>
         )}
 

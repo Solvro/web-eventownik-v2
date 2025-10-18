@@ -30,7 +30,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -53,6 +53,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
@@ -113,12 +118,21 @@ SortableOption.displayName = "SortableOption";
 
 const AttributeTypeOptions = () =>
   ATTRIBUTE_TYPES.map((type) => (
-    <SelectItem key={type.value} value={type.value}>
-      <div className="flex items-center gap-2">
-        {type.icon}
-        <span className="overflow-x-hidden text-ellipsis">{type.title}</span>
-      </div>
-    </SelectItem>
+    <Tooltip key={type.value}>
+      <TooltipTrigger asChild>
+        <SelectItem value={type.value}>
+          <div className="flex items-center gap-2">
+            {type.icon}
+            <span className="overflow-x-hidden text-ellipsis">
+              {type.title}
+            </span>
+          </div>
+        </SelectItem>
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        <p>{type.description ?? type.title}</p>
+      </TooltipContent>
+    </Tooltip>
   ));
 
 const AttributeItem = memo(
@@ -310,8 +324,10 @@ AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm({
   goToPreviousStep,
+  disableNavguard,
 }: {
   goToPreviousStep: () => void;
+  disableNavguard: () => void;
 }) {
   const [event, setEvent] = useAtom(eventAtom);
   const [loading, setLoading] = useState(false);
@@ -341,6 +357,7 @@ export function AttributesForm({
           options: [],
           rootBlockId: undefined,
           showInList: true,
+          order: event.attributes.length,
           createdAt: "", // set it to empty string to avoid type error
           updatedAt: "", // set it to empty string to avoid type error
         },
@@ -400,11 +417,13 @@ export function AttributesForm({
           image: "",
           color: "#3672fd",
           participantsNumber: 1,
-          links: [],
+          socialMediaLinks: [],
           slug: "",
           coorganizers: [],
           attributes: [],
         });
+
+        disableNavguard();
 
         setTimeout(() => {
           router.push(`/dashboard/events/${result.id}`);

@@ -90,9 +90,16 @@ export function DashboardSidebar({
     },
   ];
 
+  function isActiveLink(linkRoute: string) {
+    return (
+      pathname.endsWith(`events/${linkRoute}`) ||
+      (linkRoute !== event.id.toString() && pathname.includes(linkRoute))
+    );
+  }
+
   return (
     <>
-      <nav className="border-muted hidden min-w-[240px] flex-col gap-6 border-r pr-8 sm:flex">
+      <nav className="border-muted hidden min-w-[240px] shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
@@ -105,11 +112,7 @@ export function DashboardSidebar({
                   <Button
                     className="w-full justify-start"
                     variant={
-                      pathname.endsWith(link.route) ||
-                      (link.route !== event.id.toString() &&
-                        pathname.includes(link.route))
-                        ? "eventDefault"
-                        : "eventGhost"
+                      isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                     }
                     asChild
                   >
@@ -146,11 +149,7 @@ export function DashboardSidebar({
               <li key={link.title}>
                 <Button
                   variant={
-                    pathname.endsWith(link.route) ||
-                    (link.route !== event.id.toString() &&
-                      pathname.includes(link.route))
-                      ? "eventDefault"
-                      : "eventGhost"
+                    isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                   }
                   asChild
                 >

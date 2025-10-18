@@ -1,0 +1,31 @@
+{
+  "Event": {
+    "notFound": "Event not found 😪",
+    "registration": "Event Registration",
+    "fillForm": "Fill out the form to register",
+    "addToCalendar": "Add to calendar"
+  },
+  "Form": {
+    "invalidEmail": "Invalid email address.",
+    "emailTaken": "This email is already registered for this event.",
+    "emailTakenTitle": "Email address is already taken",
+    "registrationFailed": "Registration failed.\\nTry again later",
+    "registrationFailedTitle": "Registration failed",
+    "tryAgainLater": "Try again later",
+    "serverError": "Server error",
+    "noForm": "No registration form for this event.",
+    "successMessage": "Your registration was successful!",
+    "fillAnotherForm": "Fill another form",
+    "emailPlaceholder": "Enter your email address",
+    "registering": "Registering...",
+    "signUp": "Sign up",
+    "editSaveFailed": "Saving form data failed.\\nTry again later",
+    "editSaveFailedTitle": "Saving form data failed",
+    "editYourResponse": "Edit your response"
+  },
+  "Themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}
