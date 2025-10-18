@@ -23,9 +23,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
-import { setupSuggestions } from "@/lib/extensions/tags";
+import {
+  ATTRIBUTE_CATEGORY,
+  FORM_CATEGORY,
+  setupSuggestions,
+} from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
+import type { EventForm } from "@/types/forms";
 
 import { createEventEmailTemplate } from "../actions";
 
@@ -60,11 +65,13 @@ function getTitlePlaceholder(trigger: string) {
 function MessageContentForm({
   eventId,
   eventAttributes,
+  eventForms,
   goToPreviousStep,
   setDialogOpen,
 }: {
   eventId: string;
   eventAttributes: EventAttribute[];
+  eventForms: EventForm[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -132,6 +139,17 @@ function MessageContentForm({
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
+      category: ATTRIBUTE_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
+  const formTags = eventForms.map((eventForm): MessageTag => {
+    return {
+      title: eventForm.name,
+      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      value: `/form_${eventForm.slug}`,
+      color: "green",
+      category: FORM_CATEGORY,
     };
   }) satisfies MessageTag[];
 
@@ -174,7 +192,8 @@ function MessageContentForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
-                  extensions={setupSuggestions(attributeTags)}
+                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  showTagControls
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

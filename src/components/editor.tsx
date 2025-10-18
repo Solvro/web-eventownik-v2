@@ -19,12 +19,14 @@ function WysiwygEditor({
   disabled,
   extensions = [],
   className,
+  showTagControls = false,
 }: {
   content: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   extensions?: Extensions;
   className?: string;
+  showTagControls?: boolean;
 }) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -73,7 +75,7 @@ function WysiwygEditor({
         className,
       )}
     >
-      <EditorMenuBar editor={editor} />
+      <EditorMenuBar editor={editor} showTagControls={showTagControls} />
       <ScrollArea className="h-[200px]">
         <EditorContent editor={editor} />
         <ScrollBar orientation="horizontal" />

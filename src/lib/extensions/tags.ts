@@ -24,12 +24,38 @@ type MessageTagColor = LooseAutocomplete<
   | "brown"
 >;
 
+interface MessageTagCategory {
+  title: string;
+  searchBy: string[];
+}
+
 export interface MessageTag {
   title: string;
   description: string;
   value: string;
   color: MessageTagColor;
+  category?: MessageTagCategory;
 }
+
+const EVENT_CATEGORY: MessageTagCategory = {
+  title: "Wydarzenie",
+  searchBy: ["wydarzenie"],
+};
+
+const PARTICIPANT_CATEGORY: MessageTagCategory = {
+  title: "Uczestnik",
+  searchBy: ["uczestnik"],
+};
+
+export const ATTRIBUTE_CATEGORY: MessageTagCategory = {
+  title: "Atrybut",
+  searchBy: ["atrybut"],
+};
+
+export const FORM_CATEGORY: MessageTagCategory = {
+  title: "Formularz",
+  searchBy: ["formularz"],
+};
 
 const MESSAGE_TAGS: MessageTag[] = [
   {
@@ -37,48 +63,56 @@ const MESSAGE_TAGS: MessageTag[] = [
     description: "Zamienia się w prawdziwą nazwę wydarzenia",
     value: "/event_name",
     color: "red",
+    category: EVENT_CATEGORY,
   },
   {
     title: "Data rozpoczęcia",
     description: "Zamienia się w datę rozpoczęcia wydarzenia",
     value: "/event_start_date",
     color: "orange",
+    category: EVENT_CATEGORY,
   },
   {
     title: "Data zakończenia",
     description: "Zamienia się w datę zakończenia wydarzenia",
     value: "/event_end_date",
     color: "yellow",
+    category: EVENT_CATEGORY,
   },
   {
     title: "Slug wydarzenia",
     description: "Zamienia się w slug wydarzenia",
     value: "/event_slug",
     color: "green",
+    category: EVENT_CATEGORY,
   },
   {
     title: "Kolor wydarzenia",
     description: "Zamienia się w wybrany kolor wydarzenia",
     value: "/event_primary_color",
     color: "teal",
+    category: EVENT_CATEGORY,
   },
   {
     title: "Email uczestnika",
     description: "Zamienia się w email uczestnika",
     value: "/participant_email",
     color: "blue",
+    category: PARTICIPANT_CATEGORY,
   },
   {
     title: "ID uczestnika",
     description: "Zamienia się w ID uczestnika",
     value: "/participant_id",
     color: "indigo",
+    category: PARTICIPANT_CATEGORY,
   },
   {
     title: "Slug uczestnika",
     description: "Zamienia się w slug uczestnika",
     value: "/participant_slug",
     color: "purple",
+    category: PARTICIPANT_CATEGORY,
   },
   {
     title: "Data rejestracji",
@@ -86,6 +120,7 @@ const MESSAGE_TAGS: MessageTag[] = [
       "Zamienia się w datę zarejestrowania się uczestnika na wydarzenie",
     value: "/participant_created_at",
     color: "pink",
+    category: PARTICIPANT_CATEGORY,
   },
 ];
 
@@ -116,9 +151,14 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
   return {
     char: "/",
     items: ({ query }: { query: string }) => {
-      return suggestionList.filter((item) =>
-        item.title.toLowerCase().startsWith(query.toLowerCase()),
-      );
+      const q = query.toLowerCase();
+      return suggestionList.filter((item) => {
+        const searchTargets = [
+          item.title,
+          ...(item.category?.searchBy ?? []),
+        ].map((s) => s.toLowerCase());
+        return searchTargets.some((t) => t.includes(q));
+      });
     },
     render: () => {
       let component: ReactRenderer;
