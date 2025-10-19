@@ -276,7 +276,10 @@ export async function updateEvent(
         } else {
           console.error("[updateEvent] Error adding attribute:", attribute);
           // TODO: Handle this in a better way. Maybe we could utilize Zod here?
-          if (attribute.isSensitiveData && attribute.reason === "") {
+          if (
+            attribute.isSensitiveData &&
+            (attribute.reason == null || attribute.reason.trim() === "")
+          ) {
             attributesErrors.push({
               message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
             });
@@ -320,7 +323,10 @@ export async function updateEvent(
         if (!attributeResponse.ok) {
           console.error("[updateEvent] Error updating attribute:", attribute);
           // TODO: Handle this in a better way. Maybe we could utilize Zod here?
-          if (attribute.isSensitiveData && attribute.reason === "") {
+          if (
+            attribute.isSensitiveData &&
+            (attribute.reason == null || attribute.reason.trim() === "")
+          ) {
             attributesErrors.push({
               message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
             });
