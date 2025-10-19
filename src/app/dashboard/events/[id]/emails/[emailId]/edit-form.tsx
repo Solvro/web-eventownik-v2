@@ -28,7 +28,11 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import { setupSuggestions } from "@/lib/extensions/tags";
+import {
+  ATTRIBUTE_CATEGORY,
+  FORM_CATEGORY,
+  setupSuggestions,
+} from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
@@ -258,6 +262,17 @@ function EventEmailEditForm({
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
+      category: ATTRIBUTE_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
+  const formTags = eventForms.map((eventForm): MessageTag => {
+    return {
+      title: eventForm.name,
+      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      value: `/form_${eventForm.slug}`,
+      color: "green",
+      category: FORM_CATEGORY,
     };
   }) satisfies MessageTag[];
 
@@ -361,7 +376,8 @@ function EventEmailEditForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
-                  extensions={setupSuggestions(attributeTags)}
+                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  isEmailEditor
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}
