@@ -372,7 +372,13 @@ function EventEmailEditForm({
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Treść wiadomości</FormLabel>
+                <FormLabel>
+                  Treść wiadomości
+                  <span className="text-muted-foreground ml-2 text-xs">
+                    Wskazówka: Użyj Shift+Enter aby dodać nową linię w tym samym
+                    akapicie.
+                  </span>
+                </FormLabel>
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
