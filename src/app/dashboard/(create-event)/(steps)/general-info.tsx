@@ -1,6 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { format, subDays } from "date-fns";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
@@ -35,32 +34,8 @@ export const EventGeneralInfoSchema = z.object({
 });
 
 export function GeneralInfoForm() {
-  const { control, formState, setValue, getValues, register } =
-    useFormContext();
-
-  /*
-  function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
-    values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
-    values.startDate.setMinutes(
-      Number.parseInt(values.startTime.split(":")[1]),
-    );
-    values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
-    values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
-    if (values.startDate < new Date()) {
-      form.setError("startDate", {
-        message: "Data rozpoczęcia nie może być w przeszłości.",
-      });
-      return;
-    }
-    if (values.endDate < values.startDate) {
-      form.setError("endDate", {
-        message: "Data zakończenia musi być po dacie rozpoczęcia.",
-      });
-      return;
-    }
-    // TODO: here should be a call to the form state atom that we can go to the next step
-  }
-    */
+  const { control, formState, getValues } =
+    useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
 
   return (
     <div className="flex w-full flex-col items-end gap-4">

@@ -21,7 +21,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { GripVertical, PlusIcon, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,11 +49,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/hooks/use-toast";
-import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
+import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
-import { saveEvent } from "../actions";
 import { AttributeTypes, eventAtom } from "../state";
 
 const EventAttributesFormSchema = z.object({
@@ -313,13 +310,8 @@ const AttributeItem = memo(
 
 AttributeItem.displayName = "AttributeItem";
 
-export function AttributesForm({
-  disableNavguard,
-}: {
-  disableNavguard: () => void;
-}) {
+export function AttributesForm() {
   const [event, setEvent] = useAtom(eventAtom);
-  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof EventAttributesFormSchema>>({
     resolver: zodResolver(EventAttributesFormSchema),
     defaultValues: {
@@ -327,7 +319,6 @@ export function AttributesForm({
       type: "text",
     },
   });
-  const router = useRouter();
 
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
     setEvent((_event) => ({
@@ -377,59 +368,6 @@ export function AttributesForm({
     },
     [setEvent],
   );
-
-  async function createEvent() {
-    setLoading(true);
-    const base64Image = event.image ? await getBase64FromUrl(event.image) : "";
-    const newEventObject = { ...event, image: base64Image };
-    try {
-      const result = await saveEvent(newEventObject);
-      if ("errors" in result) {
-        toast({
-          variant: "destructive",
-          title: "Nie udało się dodać wydarzenia!",
-          description: "Spróbuj utworzyć wydarzenie ponownie",
-        });
-      } else {
-        URL.revokeObjectURL(event.image);
-
-        toast({
-          title: "Dodano nowe wydarzenie",
-        });
-
-        setEvent({
-          name: "",
-          description: "",
-          // Tomorrow, midnight
-          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          location: "",
-          organizer: "",
-          image: "",
-          color: "#3672fd",
-          participantsNumber: 1,
-          socialMediaLinks: [],
-          slug: "",
-          coorganizers: [],
-          attributes: [],
-          termsLink: "",
-        });
-
-        disableNavguard();
-
-        setTimeout(() => {
-          router.push(`/dashboard/events/${result.id}`);
-        }, 200);
-      }
-    } catch {
-      toast({
-        variant: "destructive",
-        title: "Brak połączenia z serwerem",
-        description: "Sprawdź swoje połączenie z internetem",
-      });
-    }
-    setLoading(false);
-  }
 
   useEffect(() => {
     if (form.formState.isSubmitSuccessful) {
