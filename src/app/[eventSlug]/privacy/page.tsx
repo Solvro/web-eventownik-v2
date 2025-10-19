@@ -153,7 +153,7 @@ export default async function EventPage({ params }: EventPageProps) {
             <li>
               Administratorem Pani/Pana danych osobowych (dalej
               „Administratorem”) jest Politechnika Wrocławska z siedzibą przy
-              ul. Wybrzeże Stanisława Wyspiańskiego 27, 50-370 Wrocław Wrocław,
+              ul. Wybrzeże Stanisława Wyspiańskiego 27, 50-370 Wrocław,
               NIP: 8960005851, REGON: 000001614.
             </li>
             <li>
