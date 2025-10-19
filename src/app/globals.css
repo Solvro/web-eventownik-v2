@@ -193,7 +193,7 @@
   }
 }
 
-.tiptap p.is-editor-empty:first-child::before {
+.email-editor p.is-editor-empty:first-child::before {
   color: hsl(0 0% 73%);
   content: attr(data-placeholder);
   float: left;
@@ -201,16 +201,87 @@
   pointer-events: none;
 }
 
-.tiptap h1 {
+/* Headers */
+.email-editor h1 {
   font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 18px;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
-.tiptap h2 {
+.email-editor h2 {
   font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 16px;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
-.tiptap h3 {
+.email-editor h3 {
   font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 15px;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h4 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 10px 0 5px 0;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h5 {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 8px 0 4px 0;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h6 {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 8px 0 4px 0;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+/* Paragraphs */
+.email-editor p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-block: 13px;
+  color: white;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor p:last-child {
+  margin-bottom: 0;
 }
 
 @layer base {

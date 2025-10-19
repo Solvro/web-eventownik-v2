@@ -25,10 +25,10 @@ import { Button } from "./ui/button";
 
 function EditorMenuBar({
   editor,
-  showTagControls,
+  isEmailEditor,
 }: {
   editor: Editor | null;
-  showTagControls?: boolean;
+  isEmailEditor?: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -209,7 +209,7 @@ function EditorMenuBar({
       >
         <ImageIcon />
       </Button>
-      {showTagControls === undefined ? null : showTagControls ? (
+      {isEmailEditor === undefined ? null : isEmailEditor ? (
         <div>
           <Button
             size="icon"

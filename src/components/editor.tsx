@@ -19,14 +19,17 @@ function WysiwygEditor({
   disabled,
   extensions = [],
   className,
-  showTagControls = false,
+  isEmailEditor = false,
 }: {
   content: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   extensions?: Extensions;
   className?: string;
-  showTagControls?: boolean;
+  /**
+   * If true, enables tag-related buttons in menu and default CSS styling for editor content.
+   */
+  isEmailEditor?: boolean;
 }) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -75,9 +78,12 @@ function WysiwygEditor({
         className,
       )}
     >
-      <EditorMenuBar editor={editor} showTagControls={showTagControls} />
+      <EditorMenuBar editor={editor} isEmailEditor={isEmailEditor} />
       <ScrollArea className="h-[200px]">
-        <EditorContent editor={editor} />
+        <EditorContent
+          editor={editor}
+          className={isEmailEditor ? "email-editor" : ""}
+        />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
