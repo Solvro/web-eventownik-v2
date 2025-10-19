@@ -230,10 +230,11 @@ export default async function EventPage({ params }: EventPageProps) {
                   czasu było bezprawne)
                 </li>
                 <li>
-                  przenoszenia swoich danych osobowych, i. wniesienia sprzeciwu
-                  wobec przetwarzania swoich danych osobowych z przyczyn
-                  związanych z szczególną Pani/Pana sytuacją zgodnie z art. 21
-                  RODO.{" "}
+                  przenoszenia swoich danych osobowych,
+                </li>
+                <li>
+                  wniesienia sprzeciwu wobec przetwarzania swoich danych osobowych z przyczyn
+                  związanych z szczególną Pani/Pana sytuacją zgodnie z art. 21 RODO.
                 </li>
               </ol>
             </li>
