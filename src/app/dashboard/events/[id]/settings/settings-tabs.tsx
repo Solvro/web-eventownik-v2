@@ -1,13 +1,22 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Loader, Save, Trash2 } from "lucide-react";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import {
+  attributesAtom,
+  attributesChangesAtom,
+  coOrganizersAtom,
+  coOrganizersChangesAtom,
+  eventAtom,
+  isDirtyAtom,
+  resetAllChangesAtom,
+} from "@/atoms/event-settings-atom";
 import { setEventPrimaryColors } from "@/components/event-primary-color";
 import {
   AlertDialog,
@@ -28,7 +37,6 @@ import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 import { deleteEvent, updateEvent } from "./actions";
-import { areSettingsDirty } from "./settings-context";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
@@ -71,27 +79,21 @@ export function EventSettingsTabs({
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
-  const [event, setEvent] = useState(unmodifiedEvent);
-
-  const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
-
-  const [coOrganizersChanges, setCoOrganizersChanges] = useState({
-    added: [] as CoOrganizer[],
-    updated: [] as CoOrganizer[],
-    deleted: [] as CoOrganizer[],
-  });
-
-  const [attributes, setAttributes] =
-    useState<EventAttribute[]>(unmodifiedAttributes);
-  const [attributesChanges, setAttributesChanges] = useState({
-    added: [] as EventAttribute[],
-    updated: [] as EventAttribute[],
-    deleted: [] as EventAttribute[],
-  });
+  const [event, setEvent] = useAtom(eventAtom);
+  const [coOrganizers, setCoOrganizers] = useAtom(coOrganizersAtom);
+  const [coOrganizersChanges, setCoOrganizersChanges] = useAtom(
+    coOrganizersChangesAtom,
+  );
+  const [attributes, setAttributes] = useAtom(attributesAtom);
+  const [attributesChanges, setAttributesChanges] = useAtom(
+    attributesChangesAtom,
+  );
+  const [isDirty, setIsDirty] = useAtom(isDirtyAtom);
+  const resetAllChanges = useSetAtom(resetAllChangesAtom);
 
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
-
   const [isDeleteEventDialogOpen, setIsDeleteEventDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
 
@@ -99,20 +101,26 @@ export function EventSettingsTabs({
     () => Promise<{ success: boolean; event: Event | null }>
     // eslint-disable-next-line @typescript-eslint/require-await
   >(async () => {
-    return { success: true, event };
+    return { success: true, event: event ?? null };
   });
-
-  const [isSaving, setIsSaving] = useState(false);
-
-  const isDirty = useAtomValue(areSettingsDirty);
-  const setIsDirty = useSetAtom(areSettingsDirty);
 
   useEffect(() => {
     setEvent(unmodifiedEvent);
+    setCoOrganizers(unmodifiedCoOrganizers);
+    setAttributes(unmodifiedAttributes);
+    setActiveTabValue(TABS[0].value);
     return () => {
       setEventPrimaryColors(unmodifiedEvent.primaryColor);
     };
-  }, [unmodifiedEvent]);
+  }, [
+    unmodifiedEvent,
+    unmodifiedCoOrganizers,
+    unmodifiedAttributes,
+    setEvent,
+    setCoOrganizers,
+    setAttributes,
+    setActiveTabValue,
+  ]);
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
@@ -159,17 +167,7 @@ export function EventSettingsTabs({
             .join("\n")}`,
         });
       } else {
-        setCoOrganizersChanges({
-          added: [],
-          updated: [],
-          deleted: [],
-        });
-        setAttributesChanges({
-          added: [],
-          updated: [],
-          deleted: [],
-        });
-        setIsDirty(false);
+        resetAllChanges();
         toast({
           variant: "default",
           title: "Zapisano zmiany w wydarzeniu",
@@ -240,16 +238,17 @@ export function EventSettingsTabs({
         {/* Active Tab Content */}
         {TABS.map((tab) => (
           <Tabs.Content key={tab.value} value={tab.value}>
-            {tab.component({
-              event,
-              saveFormRef,
-              coOrganizers,
-              setCoOrganizers,
-              setCoOrganizersChanges,
-              attributes,
-              setAttributes,
-              setAttributesChanges,
-            })}
+            {event !== null &&
+              tab.component({
+                event,
+                saveFormRef,
+                coOrganizers,
+                setCoOrganizers,
+                setCoOrganizersChanges,
+                attributes,
+                setAttributes,
+                setAttributesChanges,
+              })}
           </Tabs.Content>
         ))}
       </Tabs.Root>
