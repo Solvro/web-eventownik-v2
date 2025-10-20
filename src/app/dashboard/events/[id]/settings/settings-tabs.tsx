@@ -105,15 +105,10 @@ export function EventSettingsTabs({
   });
 
   useEffect(() => {
-    if (event === null) {
-      setEvent(unmodifiedEvent);
-    }
-    if (coOrganizers.length === 0) {
-      setCoOrganizers(unmodifiedCoOrganizers);
-    }
-    if (attributes.length === 0) {
-      setAttributes(unmodifiedAttributes);
-    }
+    // Always update when props change to ensure sync with server data
+    setEvent(unmodifiedEvent);
+    setCoOrganizers(unmodifiedCoOrganizers);
+    setAttributes(unmodifiedAttributes);
 
     // Store primary color to avoid stale closure
     const primaryColor = unmodifiedEvent.primaryColor;
@@ -126,9 +121,6 @@ export function EventSettingsTabs({
     unmodifiedEvent,
     unmodifiedCoOrganizers,
     unmodifiedAttributes,
-    event,
-    coOrganizers.length,
-    attributes.length,
     setEvent,
     setCoOrganizers,
     setAttributes,
