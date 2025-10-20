@@ -314,44 +314,39 @@ export function GeneralInfoForm({
                 </FormItem>
               )}
             />
-            <FormField
-              name="termsLink"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col gap-1">
-                  <FormLabel className="flex items-center gap-4">
-                    <span>Link do regulaminu</span>
-                    <Button
-                      asChild
-                      variant="eventGhost"
-                      size="sm"
-                      className="px-2 py-1"
-                    >
-                      <Link
-                        href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
-                        download
-                        target="_blank"
-                      >
-                        <Download className="size-3" />
-                        Pobierz szablon regulaminu (współtworzony z Działem
-                        Prawnym PWr)
-                      </Link>
-                    </Button>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      disabled={form.formState.isSubmitting}
-                      placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500">
-                    {form.formState.errors.termsLink?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
+            <div className="col-span-2 space-y-2">
+              <FormField
+                name="termsLink"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel>Link do regulaminu</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        disabled={form.formState.isSubmitting}
+                        placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.termsLink?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <Button asChild variant="eventGhost" size="sm" className="px-2">
+                <Link
+                  href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+                  download
+                  target="_blank"
+                >
+                  <Download className="size-3" />
+                  Pobierz szablon regulaminu (współtworzony z Działem Prawnym
+                  PWr)
+                </Link>
+              </Button>
+            </div>
           </div>
           <Button
             className="w-min"
