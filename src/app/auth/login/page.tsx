@@ -126,14 +126,24 @@ function LoginForm() {
               "Kontynuuj"
             )}
           </Button>
-          <Link
-            href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
-            className={`w-full text-neutral-600 ${buttonVariants({
-              variant: "link",
-            })}`}
-          >
-            Nie masz jeszcze konta? Zarejestruj się
-          </Link>
+          <div className="flex flex-col space-y-2">
+            <Link
+              href="/auth/forgot-password"
+              className={`w-full text-neutral-600 ${buttonVariants({
+                variant: "link",
+              })}`}
+            >
+              Zapomniałeś hasła?
+            </Link>
+            <Link
+              href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
+              className={`w-full text-neutral-600 ${buttonVariants({
+                variant: "link",
+              })}`}
+            >
+              Nie masz jeszcze konta? Zarejestruj się
+            </Link>
+          </div>
         </form>
       </Form>
     </>
