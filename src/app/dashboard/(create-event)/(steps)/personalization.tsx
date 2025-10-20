@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
-import { useId, useState } from "react";
+import { useId } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -43,7 +43,6 @@ export function PersonalizationForm() {
   const { control, formState, getValues, register } =
     useFormContext<z.infer<typeof EventPersonalizationFormSchema>>();
   const fileInputId = useId();
-  const [lastImageUrl, setLastImageUrl] = useState<string>("");
 
   const { fields, append, remove } = useFieldArray({
     name: "socialMediaLinks",
@@ -83,7 +82,7 @@ export function PersonalizationForm() {
                     alt="Podgląd zdjęcia wydarzenia"
                     width={1080}
                     height={1080}
-                    className="rounded-md"
+                    className="h-full rounded-md object-cover"
                   />
                 )}
               </FormLabel>
@@ -94,12 +93,13 @@ export function PersonalizationForm() {
                 accept="image/png, image/gif, image/jpeg"
                 disabled={formState.isSubmitting}
                 {...processedField}
-                onChangeCapture={(event_) => {
+                onChange={(event_) => {
                   const input = event_.target as HTMLInputElement;
                   if (input.files?.[0] != null) {
-                    URL.revokeObjectURL(lastImageUrl);
+                    if (event.image.startsWith("blob:")) {
+                      URL.revokeObjectURL(event.image);
+                    }
                     const newBlobUrl = URL.createObjectURL(input.files[0]);
-                    setLastImageUrl(newBlobUrl);
                     setEvent({
                       ...event,
                       image: newBlobUrl,

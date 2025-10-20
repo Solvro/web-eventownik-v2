@@ -51,12 +51,19 @@ export async function saveEvent(event: Event) {
   }
 
   if (event.image) {
-    const photo = await fetch(event.image)
-      .then(async (response) => response.blob())
-      .then((blob) => {
-        return new File([blob], "File name", { type: "image/jpeg" });
-      });
-    formData.append("photo", photo);
+    const photoResponse = await fetch(event.image);
+    if (!photoResponse.ok) {
+      throw new Error(
+        `Photo fetch failed with status: ${photoResponse.status.toString()}`,
+      );
+    }
+
+    const blob = await photoResponse.blob();
+    const filename =
+      event.image.split("/").pop() ??
+      `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
+    const photoFile = new File([blob], filename, { type: blob.type });
+    formData.append("photo", photoFile);
   }
 
   const response = await fetch(`${API_URL}/events`, {

@@ -188,7 +188,9 @@ export function CreateEventForm() {
 
   async function createEvent() {
     setLoading(true);
-    const base64Image = event.image ? await getBase64FromUrl(event.image) : "";
+    const base64Image = event.image.startsWith("blob:")
+      ? await getBase64FromUrl(event.image)
+      : event.image;
     const newEventObject = { ...event, image: base64Image };
     try {
       const result = await saveEvent(newEventObject);

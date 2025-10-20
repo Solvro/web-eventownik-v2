@@ -166,7 +166,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                     accept="image/png, image/gif, image/jpeg"
                     disabled={form.formState.isSubmitting}
                     {...processedField}
-                    onChangeCapture={(event_) => {
+                    onChange={(event_) => {
                       const input = event_.target as HTMLInputElement;
                       if (input.files?.[0] != null) {
                         if (lastImageUrl.startsWith("blob:")) {
