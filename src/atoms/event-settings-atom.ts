@@ -38,21 +38,27 @@ export const attributesChangesAtom = atom<AttributesChanges>({
 
 export const isDirtyAtom = atom<boolean>(false);
 
-export const resetCoOrganizersChangesAtom = atom(null, (_get, set) => {
-  set(coOrganizersChangesAtom, {
-    added: [],
-    updated: [],
-    deleted: [],
+// Factory function to create reset atoms for changes tracking
+const createResetChangesAtom = <
+  T extends { added: unknown[]; updated: unknown[]; deleted: unknown[] },
+>(
+  targetAtom: ReturnType<typeof atom<T>>,
+) =>
+  atom(null, (_get, set) => {
+    set(targetAtom, {
+      added: [],
+      updated: [],
+      deleted: [],
+    } as unknown as T);
   });
-});
 
-export const resetAttributesChangesAtom = atom(null, (_get, set) => {
-  set(attributesChangesAtom, {
-    added: [],
-    updated: [],
-    deleted: [],
-  });
-});
+export const resetCoOrganizersChangesAtom = createResetChangesAtom(
+  coOrganizersChangesAtom,
+);
+
+export const resetAttributesChangesAtom = createResetChangesAtom(
+  attributesChangesAtom,
+);
 
 export const resetAllChangesAtom = atom(null, (_get, set) => {
   set(resetCoOrganizersChangesAtom);

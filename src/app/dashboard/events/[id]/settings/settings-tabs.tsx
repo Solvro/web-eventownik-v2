@@ -110,9 +110,17 @@ export function EventSettingsTabs({
     setAttributes(unmodifiedAttributes);
     return () => {
       setEventPrimaryColors(unmodifiedEvent.primaryColor);
+      resetAllChanges();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unmodifiedEvent, unmodifiedCoOrganizers, unmodifiedAttributes]);
+  }, [
+    unmodifiedEvent,
+    unmodifiedCoOrganizers,
+    unmodifiedAttributes,
+    setEvent,
+    setCoOrganizers,
+    setAttributes,
+    resetAllChanges,
+  ]);
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
