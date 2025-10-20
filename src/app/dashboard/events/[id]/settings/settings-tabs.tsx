@@ -105,17 +105,30 @@ export function EventSettingsTabs({
   });
 
   useEffect(() => {
-    setEvent(unmodifiedEvent);
-    setCoOrganizers(unmodifiedCoOrganizers);
-    setAttributes(unmodifiedAttributes);
+    if (event === null) {
+      setEvent(unmodifiedEvent);
+    }
+    if (coOrganizers.length === 0) {
+      setCoOrganizers(unmodifiedCoOrganizers);
+    }
+    if (attributes.length === 0) {
+      setAttributes(unmodifiedAttributes);
+    }
+
+    // Store primary color to avoid stale closure
+    const primaryColor = unmodifiedEvent.primaryColor;
+
     return () => {
-      setEventPrimaryColors(unmodifiedEvent.primaryColor);
+      setEventPrimaryColors(primaryColor);
       resetAllChanges();
     };
   }, [
     unmodifiedEvent,
     unmodifiedCoOrganizers,
     unmodifiedAttributes,
+    event,
+    coOrganizers.length,
+    attributes.length,
     setEvent,
     setCoOrganizers,
     setAttributes,
@@ -210,14 +223,6 @@ export function EventSettingsTabs({
     enabled: isDirty,
   });
 
-  if (event === null) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Loader className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <>
       <UnsavedChangesAlert
@@ -246,16 +251,17 @@ export function EventSettingsTabs({
         {/* Active Tab Content */}
         {TABS.map((tab) => (
           <Tabs.Content key={tab.value} value={tab.value}>
-            {tab.component({
-              event,
-              saveFormRef,
-              coOrganizers,
-              setCoOrganizers,
-              setCoOrganizersChanges,
-              attributes,
-              setAttributes,
-              setAttributesChanges,
-            })}
+            {event !== null &&
+              tab.component({
+                event,
+                saveFormRef,
+                coOrganizers,
+                setCoOrganizers,
+                setCoOrganizersChanges,
+                attributes,
+                setAttributes,
+                setAttributesChanges,
+              })}
           </Tabs.Content>
         ))}
       </Tabs.Root>
