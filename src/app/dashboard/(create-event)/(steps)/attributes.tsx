@@ -20,16 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import {
-  ArrowLeft,
-  GripVertical,
-  Loader,
-  PlusIcon,
-  SquarePlus,
-  TextIcon,
-  Trash2,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
+import { GripVertical, PlusIcon, Trash2 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -58,12 +49,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/hooks/use-toast";
-import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
+import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
 
-import { saveEvent } from "../actions";
-import { FormContainer } from "../form-container";
 import { AttributeTypes, eventAtom } from "../state";
 
 const EventAttributesFormSchema = z.object({
@@ -322,15 +310,8 @@ const AttributeItem = memo(
 
 AttributeItem.displayName = "AttributeItem";
 
-export function AttributesForm({
-  goToPreviousStep,
-  disableNavguard,
-}: {
-  goToPreviousStep: () => void;
-  disableNavguard: () => void;
-}) {
+export function AttributesForm() {
   const [event, setEvent] = useAtom(eventAtom);
-  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof EventAttributesFormSchema>>({
     resolver: zodResolver(EventAttributesFormSchema),
     defaultValues: {
@@ -338,7 +319,6 @@ export function AttributesForm({
       type: "text",
     },
   });
-  const router = useRouter();
 
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
     setEvent((_event) => ({
@@ -387,58 +367,6 @@ export function AttributesForm({
     [setEvent],
   );
 
-  async function createEvent() {
-    setLoading(true);
-    const base64Image = event.image ? await getBase64FromUrl(event.image) : "";
-    const newEventObject = { ...event, image: base64Image };
-    try {
-      const result = await saveEvent(newEventObject);
-      if ("errors" in result) {
-        toast({
-          variant: "destructive",
-          title: "Nie udało się dodać wydarzenia!",
-          description: "Spróbuj utworzyć wydarzenie ponownie",
-        });
-      } else {
-        URL.revokeObjectURL(event.image);
-
-        toast({
-          title: "Dodano nowe wydarzenie",
-        });
-
-        setEvent({
-          name: "",
-          description: "",
-          // Tomorrow, midnight
-          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          location: "",
-          organizer: "",
-          image: "",
-          color: "#3672fd",
-          participantsNumber: 1,
-          socialMediaLinks: [],
-          slug: "",
-          coorganizers: [],
-          attributes: [],
-        });
-
-        disableNavguard();
-
-        setTimeout(() => {
-          router.push(`/dashboard/events/${result.id}`);
-        }, 200);
-      }
-    } catch {
-      toast({
-        variant: "destructive",
-        title: "Brak połączenia z serwerem",
-        description: "Sprawdź swoje połączenie z internetem",
-      });
-    }
-    setLoading(false);
-  }
-
   useEffect(() => {
     if (form.formState.isSubmitSuccessful) {
       form.reset({
@@ -451,98 +379,75 @@ export function AttributesForm({
   }, [form.formState.isSubmitSuccessful]);
 
   return (
-    <FormContainer
-      step="4/4"
-      title="Krok 4"
-      description="Dodaj atrybuty"
-      icon={<TextIcon />}
-    >
-      <div className="flex w-full flex-col items-center">
-        <div className="w-full space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              {event.attributes.length > 0 && (
-                <p className="text-sm font-medium">Atrybuty</p>
-              )}
-              {event.attributes.map((attribute) => (
-                <AttributeItem
-                  key={attribute.id}
-                  attribute={attribute}
-                  onUpdate={handleUpdateAttribute}
-                  onRemove={() => {
-                    handleRemoveAttribute(attribute.id);
-                  }}
+    <div className="flex w-full flex-col items-center">
+      <div className="w-full space-y-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {event.attributes.length > 0 && (
+              <p className="text-sm font-medium">Atrybuty</p>
+            )}
+            {event.attributes.map((attribute) => (
+              <AttributeItem
+                key={attribute.id}
+                attribute={attribute}
+                onUpdate={handleUpdateAttribute}
+                onRemove={() => {
+                  handleRemoveAttribute(attribute.id);
+                }}
+              />
+            ))}
+          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormLabel>Dodaj atrybut</FormLabel>
+              <div className="flex flex-row items-center gap-2">
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      placeholder="Nazwa"
+                      disabled={form.formState.isSubmitting}
+                    />
+                  )}
                 />
-              ))}
-            </div>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-2"
-              >
-                <FormLabel>Dodaj atrybut</FormLabel>
-                <div className="flex flex-row items-center gap-2">
-                  <FormField
-                    name="name"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder="Nazwa"
-                        disabled={form.formState.isSubmitting}
-                      />
-                    )}
-                  />
-                  <FormField
-                    name="type"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger
-                              className="w-[180px]"
-                              disabled={form.formState.isSubmitting}
-                            >
-                              <SelectValue placeholder="Wybierz typ atrybutu" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <AttributeTypeOptions />
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                    variant="outline"
-                  >
-                    <PlusIcon />
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-          <div className="flex w-full flex-row justify-between gap-4">
-            <Button
-              variant="ghost"
-              onClick={goToPreviousStep}
-              disabled={loading}
-            >
-              <ArrowLeft /> Wróć
-            </Button>
-            <Button className="w-min" onClick={createEvent} disabled={loading}>
-              {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
-              Dodaj wydarzenie
-            </Button>
-          </div>
+                <FormField
+                  name="type"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            className="w-[180px]"
+                            disabled={form.formState.isSubmitting}
+                          >
+                            <SelectValue placeholder="Wybierz typ atrybutu" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <AttributeTypeOptions />
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  disabled={form.formState.isSubmitting}
+                  type="submit"
+                  variant="outline"
+                >
+                  <PlusIcon />
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
       </div>
-    </FormContainer>
+    </div>
   );
 }
