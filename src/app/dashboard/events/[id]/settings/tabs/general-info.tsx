@@ -322,7 +322,7 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
-        <div className="space-y-2">
+        <div className="w-full max-w-[974px] space-y-2">
           <FormField
             name="termsLink"
             control={form.control}
