@@ -86,9 +86,7 @@ export async function updateEvent(
       }
 
       const blob = await photoResponse.blob();
-      const filename =
-        event.photoUrl.split("/").pop() ??
-        `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
+      const filename = `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
       const photoFile = new File([blob], filename, { type: blob.type });
       formData.append("photo", photoFile);
     } catch (error) {
