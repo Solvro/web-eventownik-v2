@@ -101,7 +101,7 @@ export function EventSettingsTabs({
     () => Promise<{ success: boolean; event: Event | null }>
     // eslint-disable-next-line @typescript-eslint/require-await
   >(async () => {
-    return { success: true, event: event ?? null };
+    return { success: true, event };
   });
 
   useEffect(() => {

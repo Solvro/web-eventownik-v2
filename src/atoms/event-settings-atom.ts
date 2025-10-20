@@ -45,11 +45,12 @@ const createResetChangesAtom = <
   targetAtom: ReturnType<typeof atom<T>>,
 ) =>
   atom(null, (_get, set) => {
-    set(targetAtom, {
+    set(targetAtom, (previous) => ({
+      ...previous,
       added: [],
       updated: [],
       deleted: [],
-    } as unknown as T);
+    }));
   });
 
 export const resetCoOrganizersChangesAtom = createResetChangesAtom(
