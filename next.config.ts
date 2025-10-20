@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "v4.eventownik.solvro.pl",
+      },
     ],
   },
   // eslint-disable-next-line @typescript-eslint/require-await

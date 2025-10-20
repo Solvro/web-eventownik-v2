@@ -37,8 +37,12 @@ export function SocialMediaLink({
 }) {
   const md = parseMarkdownLink(link);
   const url = md == null ? link : md.url;
-  const label =
-    md == null ? new URL(link).hostname.replace("www.", "") : md.label;
+  let label: string;
+  try {
+    label = md == null ? new URL(link).hostname.replace("www.", "") : md.label;
+  } catch {
+    return null;
+  }
 
   return (
     <Tooltip key={link} delayDuration={0}>
