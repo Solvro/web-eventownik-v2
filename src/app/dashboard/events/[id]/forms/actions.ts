@@ -85,7 +85,7 @@ export async function updateEventForm(
   form.endDate.setMinutes(Number.parseInt(form.endTime.split(":")[1]));
 
   const response = await fetch(`${API_URL}/events/${eventId}/forms/${formId}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.bearerToken}`,
