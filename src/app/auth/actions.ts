@@ -5,7 +5,12 @@ import type { z } from "zod";
 import { API_URL } from "@/lib/api";
 import { createSession } from "@/lib/session";
 import type { AuthErrorResponse, AuthSuccessResponse } from "@/types/auth";
-import type { loginFormSchema, registerFormSchema } from "@/types/schemas";
+import type {
+  loginFormSchema,
+  registerFormSchema,
+  resetPasswordSchema,
+  sendPasswordResetTokenSchema,
+} from "@/types/schemas";
 
 export async function register(values: z.infer<typeof registerFormSchema>) {
   const data = await fetch(`${API_URL}/auth/register`, {
@@ -72,4 +77,76 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
     return { success: false, error: "Internal server error" };
   }
   return { success: true };
+}
+
+export async function sendPasswordResetToken(
+  values: z.infer<typeof sendPasswordResetTokenSchema>,
+) {
+  try {
+    const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        email: values.email,
+      }),
+    });
+
+    if (response.ok) {
+      return { success: true };
+    }
+
+    const error = (await response.json()) as { message?: string };
+    return {
+      success: false,
+      error: error.message ?? "Nie udało się wysłać emaila resetującego hasło",
+    };
+  } catch (error) {
+    console.error("Error sending password reset token", error);
+    return {
+      success: false,
+      error: "Wystąpił błąd serwera. Spróbuj ponownie później",
+    };
+  }
+}
+
+export async function resetPassword(
+  values: z.infer<typeof resetPasswordSchema>,
+) {
+  try {
+    const response = await fetch(`${API_URL}/auth/resetPassword`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        token: values.token,
+        newPassword: values.newPassword,
+      }),
+    });
+
+    if (response.ok) {
+      return { success: true };
+    }
+
+    if (response.status === 401) {
+      return {
+        success: false,
+        error: "Token jest nieprawidłowy lub wygasł",
+      };
+    }
+
+    const error = (await response.json()) as { message?: string };
+    return {
+      success: false,
+      error: error.message ?? "Nie udało się zresetować hasła",
+    };
+  } catch (error) {
+    console.error("Error resetting password", error);
+    return {
+      success: false,
+      error: "Wystąpił błąd serwera. Spróbuj ponownie później",
+    };
+  }
 }
