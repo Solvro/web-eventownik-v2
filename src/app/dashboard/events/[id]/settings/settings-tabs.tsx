@@ -108,19 +108,11 @@ export function EventSettingsTabs({
     setEvent(unmodifiedEvent);
     setCoOrganizers(unmodifiedCoOrganizers);
     setAttributes(unmodifiedAttributes);
-    setActiveTabValue(TABS[0].value);
     return () => {
       setEventPrimaryColors(unmodifiedEvent.primaryColor);
     };
-  }, [
-    unmodifiedEvent,
-    unmodifiedCoOrganizers,
-    unmodifiedAttributes,
-    setEvent,
-    setCoOrganizers,
-    setAttributes,
-    setActiveTabValue,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unmodifiedEvent, unmodifiedCoOrganizers, unmodifiedAttributes]);
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
@@ -210,6 +202,14 @@ export function EventSettingsTabs({
     enabled: isDirty,
   });
 
+  if (event === null) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <>
       <UnsavedChangesAlert
@@ -238,17 +238,16 @@ export function EventSettingsTabs({
         {/* Active Tab Content */}
         {TABS.map((tab) => (
           <Tabs.Content key={tab.value} value={tab.value}>
-            {event !== null &&
-              tab.component({
-                event,
-                saveFormRef,
-                coOrganizers,
-                setCoOrganizers,
-                setCoOrganizersChanges,
-                attributes,
-                setAttributes,
-                setAttributesChanges,
-              })}
+            {tab.component({
+              event,
+              saveFormRef,
+              coOrganizers,
+              setCoOrganizers,
+              setCoOrganizersChanges,
+              attributes,
+              setAttributes,
+              setAttributesChanges,
+            })}
           </Tabs.Content>
         ))}
       </Tabs.Root>
