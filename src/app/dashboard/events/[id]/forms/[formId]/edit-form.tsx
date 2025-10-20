@@ -98,7 +98,7 @@ function EventFormEditForm({
         toast({
           title: "Zapisano zmiany w formularzu",
         });
-        form.reset();
+        form.reset(values);
       } else {
         toast({
           title: "Nie udało się zapisać zmian w formularzu!",
@@ -275,18 +275,22 @@ function EventFormEditForm({
                 />
               </div>
             </div>
-            {/* TODO: Make the slug auto-generated from the name */}
+            {/* TODO: This is actually not editable and should be named id or similar */}
             <FormField
               name="slug"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel className="opacity-50">
+                    ID formularza (slug)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="text"
                       placeholder="nazwa-formularza"
                       disabled={form.formState.isSubmitting ? true : undefined}
+                      readOnly
+                      className="opacity-50"
                       {...field}
                     />
                   </FormControl>
