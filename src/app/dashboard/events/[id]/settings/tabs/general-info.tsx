@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
 import { useAtom, useSetAtom } from "jotai";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -66,40 +66,36 @@ export function General({
   const [event] = useAtom(eventAtom);
   const setIsDirty = useSetAtom(isDirtyAtom);
 
+  // Helper function to generate form values from event
+  const getFormValues = useCallback((eventData: Event | null) => {
+    return {
+      name: eventData?.name ?? "",
+      description: eventData?.description ?? "",
+      startDate: eventData == null ? new Date() : new Date(eventData.startDate),
+      startTime:
+        eventData == null
+          ? "00:00"
+          : `${getHours(eventData.startDate).toString().padStart(2, "0")}:${getMinutes(eventData.startDate).toString().padStart(2, "0")}`,
+      endDate: eventData == null ? new Date() : new Date(eventData.endDate),
+      endTime:
+        eventData == null
+          ? "00:00"
+          : `${getHours(eventData.endDate).toString().padStart(2, "0")}:${getMinutes(eventData.endDate).toString().padStart(2, "0")}`,
+      location: eventData?.location ?? undefined,
+      organizer: eventData?.organizer ?? undefined,
+    };
+  }, []);
+
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
-    defaultValues: {
-      name: event?.name ?? "",
-      description: event?.description ?? "",
-      startDate: event == null ? new Date() : new Date(event.startDate),
-      startTime:
-        event == null
-          ? "00:00"
-          : `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
-      endDate: event == null ? new Date() : new Date(event.endDate),
-      endTime:
-        event == null
-          ? "00:00"
-          : `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-      location: event?.location ?? undefined,
-      organizer: event?.organizer ?? undefined,
-    },
+    defaultValues: getFormValues(event),
   });
 
   useEffect(() => {
     if (event != null) {
-      form.reset({
-        name: event.name,
-        description: event.description ?? "",
-        startDate: new Date(event.startDate),
-        startTime: `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
-        endDate: new Date(event.endDate),
-        endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-        location: event.location ?? "",
-        organizer: event.organizer ?? "",
-      });
+      form.reset(getFormValues(event));
     }
-  }, [event, form]);
+  }, [event, form, getFormValues]);
 
   useEffect(() => {
     if (form.formState.isDirty) {
