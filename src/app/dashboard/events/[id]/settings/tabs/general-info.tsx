@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { eventAtom, isDirtyAtom } from "@/atoms/event-settings-atom";
 import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,9 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import { areSettingsDirty } from "../settings-context";
-import type { TabProps } from "./tab-props";
+import type { Event } from "@/types/event";
 
 const EventGeneralInfoSchema = z
   .object({
@@ -57,22 +56,60 @@ const EventGeneralInfoSchema = z
     },
   );
 
-export function General({ event, saveFormRef }: TabProps) {
-  const setIsDirty = useSetAtom(areSettingsDirty);
+export function General({
+  saveFormRef,
+}: {
+  saveFormRef: React.RefObject<
+    () => Promise<{ success: boolean; event: Event | null }>
+  >;
+}) {
+  const [event] = useAtom(eventAtom);
+  const setIsDirty = useSetAtom(isDirtyAtom);
 
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: {
-      name: event.name,
-      description: event.description ?? "",
-      startDate: new Date(event.startDate),
-      startTime: `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
-      endDate: new Date(event.endDate),
-      endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
-      location: event.location ?? "",
-      organizer: event.organizer ?? "",
+      name: event?.name ?? "",
+      description: event?.description ?? "",
+      startDate: event == null ? new Date() : new Date(event.startDate),
+      startTime:
+        event == null
+          ? "00:00"
+          : `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
+      endDate: event == null ? new Date() : new Date(event.endDate),
+      endTime:
+        event == null
+          ? "00:00"
+          : `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
+      location: event?.location ?? undefined,
+      organizer: event?.organizer ?? undefined,
     },
   });
+
+  useEffect(() => {
+    if (event != null) {
+      form.reset({
+        name: event.name,
+        description: event.description ?? "",
+        startDate: new Date(event.startDate),
+        startTime: `${getHours(event.startDate).toString().padStart(2, "0")}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
+        endDate: new Date(event.endDate),
+        endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
+        location: event.location ?? "",
+        organizer: event.organizer ?? "",
+      });
+    }
+  }, [event, form]);
+
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsDirty(true);
+    }
+  }, [form.formState.isDirty, setIsDirty]);
+
+  if (event == null) {
+    return null;
+  }
 
   async function saveForm() {
     if (!(await form.trigger())) {
@@ -99,13 +136,10 @@ export function General({ event, saveFormRef }: TabProps) {
     return { success: true, event: newEvent };
   }
 
-  saveFormRef.current = saveForm;
-
-  useEffect(() => {
-    if (form.formState.isDirty) {
-      setIsDirty(true);
-    }
-  }, [form.formState.isDirty, setIsDirty]);
+  saveFormRef.current = saveForm as () => Promise<{
+    success: boolean;
+    event: Event | null;
+  }>;
 
   return (
     <Form {...form}>

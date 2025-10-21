@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { eventAtom, isDirtyAtom } from "@/atoms/event-settings-atom";
 import { setEventPrimaryColors } from "@/components/event-primary-color";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -18,9 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-import { areSettingsDirty } from "../settings-context";
-import type { TabProps } from "./tab-props";
+import type { Event } from "@/types/event";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
@@ -50,29 +49,36 @@ const EventPersonalizationFormSchema = z.object({
     .optional(),
 });
 
-export function Personalization({ event, saveFormRef }: TabProps) {
+export function Personalization({
+  saveFormRef,
+}: {
+  saveFormRef: React.RefObject<
+    () => Promise<{ success: boolean; event: Event | null }>
+  >;
+}) {
+  const [event] = useAtom(eventAtom);
   const imageInputId = useId();
   const colorInputId = useId();
   const [lastImageUrl, setLastImageUrl] = useState<string>(
-    event.photoUrl ?? "",
+    event?.photoUrl ?? "",
   );
 
-  const setIsDirty = useSetAtom(areSettingsDirty);
+  const setIsDirty = useSetAtom(isDirtyAtom);
 
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
     resolver: zodResolver(EventPersonalizationFormSchema),
     defaultValues: {
-      photoUrl: event.photoUrl ?? "",
-      primaryColor: event.primaryColor,
-      participantsCount: event.participantsCount ?? undefined,
+      photoUrl: event?.photoUrl ?? "",
+      primaryColor: event?.primaryColor ?? "#000000",
+      participantsCount: event?.participantsCount ?? 1,
       socialMediaLinks:
-        event.socialMediaLinks?.map((link) => ({
+        event?.socialMediaLinks?.map((link) => ({
           // parse markdown to get label - assume format is [label](url) or just url
           label: /\[(.*?)]/.exec(link)?.[1] ?? "",
           link: /\((.*?)\)/.exec(link)?.[1] ?? link,
         })) ?? [],
-      slug: event.slug,
-      contactEmail: event.contactEmail ?? "",
+      slug: event?.slug ?? "",
+      contactEmail: event?.contactEmail ?? "",
     },
   });
 
@@ -80,6 +86,16 @@ export function Personalization({ event, saveFormRef }: TabProps) {
     name: "socialMediaLinks",
     control: form.control,
   });
+
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsDirty(true);
+    }
+  }, [form.formState.isDirty, setIsDirty]);
+
+  if (event == null) {
+    return null;
+  }
 
   async function saveForm() {
     if (!(await form.trigger())) {
@@ -108,13 +124,10 @@ export function Personalization({ event, saveFormRef }: TabProps) {
     return { success: true, event: newEvent };
   }
 
-  saveFormRef.current = saveForm;
-
-  useEffect(() => {
-    if (form.formState.isDirty) {
-      setIsDirty(true);
-    }
-  }, [form.formState.isDirty, setIsDirty]);
+  saveFormRef.current = saveForm as () => Promise<{
+    success: boolean;
+    event: Event | null;
+  }>;
 
   return (
     <Form {...form}>

@@ -9,9 +9,7 @@ import type { JSX } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import {
-  attributesAtom,
   attributesChangesAtom,
-  coOrganizersAtom,
   coOrganizersChangesAtom,
   eventAtom,
   isDirtyAtom,
@@ -41,30 +39,33 @@ import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
 import { Personalization } from "./tabs/personalization";
-import type { TabProps } from "./tabs/tab-props";
 
-type TabComponent = (props: TabProps) => JSX.Element;
+type TabComponent = (props: {
+  saveFormRef: React.RefObject<
+    () => Promise<{ success: boolean; event: Event | null }>
+  >;
+}) => JSX.Element;
 
 const TABS: { name: string; value: string; component: TabComponent }[] = [
   {
     name: "Ogólne",
     value: "general",
-    component: (props) => <General {...props} />,
+    component: (props) => <General saveFormRef={props.saveFormRef} />,
   },
   {
     name: "Personalizacja",
     value: "personalization",
-    component: (props) => <Personalization {...props} />,
+    component: (props) => <Personalization saveFormRef={props.saveFormRef} />,
   },
   {
     name: "Współorganizatorzy",
     value: "co-organizers",
-    component: (props) => <CoOrganizers {...props} />,
+    component: () => <CoOrganizers />,
   },
   {
     name: "Atrybuty",
     value: "attributes",
-    component: (props) => <Attributes {...props} />,
+    component: () => <Attributes />,
   },
 ];
 
@@ -76,18 +77,12 @@ interface TabsProps {
 
 export function EventSettingsTabs({
   unmodifiedEvent,
-  unmodifiedCoOrganizers,
-  unmodifiedAttributes,
+  unmodifiedCoOrganizers: _unmodifiedCoOrganizers,
+  unmodifiedAttributes: _unmodifiedAttributes,
 }: TabsProps) {
   const [event, setEvent] = useAtom(eventAtom);
-  const [coOrganizers, setCoOrganizers] = useAtom(coOrganizersAtom);
-  const [coOrganizersChanges, setCoOrganizersChanges] = useAtom(
-    coOrganizersChangesAtom,
-  );
-  const [attributes, setAttributes] = useAtom(attributesAtom);
-  const [attributesChanges, setAttributesChanges] = useAtom(
-    attributesChangesAtom,
-  );
+  const [coOrganizersChanges] = useAtom(coOrganizersChangesAtom);
+  const [attributesChanges] = useAtom(attributesChangesAtom);
   const [isDirty, setIsDirty] = useAtom(isDirtyAtom);
   const resetAllChanges = useSetAtom(resetAllChangesAtom);
 
@@ -107,8 +102,6 @@ export function EventSettingsTabs({
   useEffect(() => {
     // Always update when props change to ensure sync with server data
     setEvent(unmodifiedEvent);
-    setCoOrganizers(unmodifiedCoOrganizers);
-    setAttributes(unmodifiedAttributes);
 
     // Store primary color to avoid stale closure
     const primaryColor = unmodifiedEvent.primaryColor;
@@ -117,15 +110,7 @@ export function EventSettingsTabs({
       setEventPrimaryColors(primaryColor);
       resetAllChanges();
     };
-  }, [
-    unmodifiedEvent,
-    unmodifiedCoOrganizers,
-    unmodifiedAttributes,
-    setEvent,
-    setCoOrganizers,
-    setAttributes,
-    resetAllChanges,
-  ]);
+  }, [unmodifiedEvent, setEvent, resetAllChanges]);
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
@@ -243,17 +228,7 @@ export function EventSettingsTabs({
         {/* Active Tab Content */}
         {TABS.map((tab) => (
           <Tabs.Content key={tab.value} value={tab.value}>
-            {event !== null &&
-              tab.component({
-                event,
-                saveFormRef,
-                coOrganizers,
-                setCoOrganizers,
-                setCoOrganizersChanges,
-                attributes,
-                setAttributes,
-                setAttributesChanges,
-              })}
+            {event !== null && tab.component({ saveFormRef })}
           </Tabs.Content>
         ))}
       </Tabs.Root>

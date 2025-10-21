@@ -1,9 +1,14 @@
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { sha256 } from "js-sha256";
 import { EllipsisVertical, Plus, UserRoundMinus } from "lucide-react";
 import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
 
+import {
+  coOrganizersAtom,
+  coOrganizersChangesAtom,
+  isDirtyAtom,
+} from "@/atoms/event-settings-atom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -18,9 +23,6 @@ import type {
   Permission,
   PermissionType,
 } from "@/types/co-organizer";
-
-import { areSettingsDirty } from "../settings-context";
-import type { TabProps } from "./tab-props";
 
 const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
   {
@@ -163,11 +165,9 @@ const CoOrganizerItem = memo(
 
 CoOrganizerItem.displayName = "CoOrganizerItem";
 
-export function CoOrganizers({
-  coOrganizers,
-  setCoOrganizers,
-  setCoOrganizersChanges,
-}: TabProps) {
+export function CoOrganizers() {
+  const [coOrganizers, setCoOrganizers] = useAtom(coOrganizersAtom);
+  const [, setCoOrganizersChanges] = useAtom(coOrganizersChangesAtom);
   const [newEmail, setNewEmail] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<
     PermissionType[]
@@ -175,7 +175,7 @@ export function CoOrganizers({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const isEmailValid = isValidEmail(newEmail);
 
-  const setIsDirty = useSetAtom(areSettingsDirty);
+  const setIsDirty = useSetAtom(isDirtyAtom);
 
   const handleAddOrganizer = (
     email: string,
@@ -256,7 +256,7 @@ export function CoOrganizers({
       });
       setIsDirty(true);
     },
-    [setCoOrganizers, setCoOrganizersChanges],
+    [setCoOrganizers, setCoOrganizersChanges, setIsDirty],
   );
 
   return (

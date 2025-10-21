@@ -20,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
   ALargeSmall,
   Binary,
@@ -43,6 +43,11 @@ import {
 import type { JSX } from "react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
+import {
+  attributesAtom,
+  attributesChangesAtom,
+  isDirtyAtom,
+} from "@/atoms/event-settings-atom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -62,9 +67,6 @@ import {
 } from "@/components/ui/tooltip";
 import { SLUG_REGEX } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
-
-import { areSettingsDirty } from "../settings-context";
-import type { TabProps } from "./tab-props";
 
 export const ATTRIBUTE_TYPES: {
   value: AttributeType;
@@ -212,32 +214,6 @@ const AttributeItem = memo(
   ({ attribute, onUpdate, onRemove, allAttributes }: AttributeItemProps) => {
     const [optionsInput, setOptionsInput] = useState("");
     const [slugError, setSlugError] = useState("");
-
-    useEffect(() => {
-      if (attribute.type === "block" && Array.isArray(attribute.options)) {
-        const validOptions = new Set([
-          "email",
-          ...allAttributes
-            .filter(
-              (attribute_) =>
-                attribute_.id !== attribute.id &&
-                typeof attribute_.slug === "string",
-            )
-            .map((attribute_) => attribute_.slug),
-        ]);
-
-        const validSelectedOptions = attribute.options.filter((option) =>
-          validOptions.has(option),
-        );
-
-        if (validSelectedOptions.length !== attribute.options.length) {
-          onUpdate({
-            ...attribute,
-            options: validSelectedOptions,
-          });
-        }
-      }
-    }, [attribute, allAttributes, onUpdate]);
 
     const sensors = useSensors(
       useSensor(PointerSensor),
@@ -507,13 +483,11 @@ const SortableAttributeItem = memo((props: SortableAttributeItemProps) => {
 
 SortableAttributeItem.displayName = "SortableAttributeItem";
 
-export function Attributes({
-  attributes,
-  setAttributes,
-  setAttributesChanges,
-}: TabProps) {
+export function Attributes() {
+  const [attributes, setAttributes] = useAtom(attributesAtom);
+  const [, setAttributesChanges] = useAtom(attributesChangesAtom);
   const [newAttributeLabel, setNewAttributeLabel] = useState("");
-  const setIsDirty = useSetAtom(areSettingsDirty);
+  const setIsDirty = useSetAtom(isDirtyAtom);
 
   // Sort attributes by order
   const sortedAttributes = useMemo(() => {
@@ -623,24 +597,73 @@ export function Attributes({
     setIsDirty,
   ]);
 
+  // Validate and clean attribute options
+  const validateAttributeOptions = useCallback(
+    (attribute: EventAttribute): EventAttribute => {
+      if (attribute.type === "block" && Array.isArray(attribute.options)) {
+        const validOptions = new Set([
+          "email",
+          ...attributes
+            .filter(
+              (attribute_) =>
+                attribute_.id !== attribute.id &&
+                typeof attribute_.slug === "string",
+            )
+            .map((attribute_) => attribute_.slug),
+        ]);
+
+        const validSelectedOptions = attribute.options.filter((option) =>
+          validOptions.has(option),
+        );
+
+        if (validSelectedOptions.length !== attribute.options.length) {
+          return {
+            ...attribute,
+            options: validSelectedOptions,
+          };
+        }
+      }
+      return attribute;
+    },
+    [attributes],
+  );
+
+  // Validate all attributes when they change
+  useEffect(() => {
+    const validatedAttributes = attributes.map((attribute) =>
+      validateAttributeOptions(attribute),
+    );
+    const hasChanges = validatedAttributes.some(
+      (attribute, index) =>
+        JSON.stringify(attribute) !== JSON.stringify(attributes[index]),
+    );
+
+    if (hasChanges) {
+      setAttributes(validatedAttributes);
+    }
+  }, [attributes, validateAttributeOptions, setAttributes]);
+
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
+      const validatedAttribute = validateAttributeOptions(updatedAttribute);
       setAttributes((previous) =>
         previous.map((attribute) =>
-          attribute.id === updatedAttribute.id ? updatedAttribute : attribute,
+          attribute.id === validatedAttribute.id
+            ? validatedAttribute
+            : attribute,
         ),
       );
       setAttributesChanges((previous) => ({
         ...previous,
-        updated: previous.updated.some((a) => a.id === updatedAttribute.id)
+        updated: previous.updated.some((a) => a.id === validatedAttribute.id)
           ? previous.updated.map((a) =>
-              a.id === updatedAttribute.id ? updatedAttribute : a,
+              a.id === validatedAttribute.id ? validatedAttribute : a,
             )
-          : [...previous.updated, updatedAttribute],
+          : [...previous.updated, validatedAttribute],
       }));
       setIsDirty(true);
     },
-    [setAttributes, setAttributesChanges, setIsDirty],
+    [setAttributes, setAttributesChanges, setIsDirty, validateAttributeOptions],
   );
 
   const handleRemoveAttribute = useCallback(
