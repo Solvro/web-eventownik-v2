@@ -41,7 +41,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { JSX } from "react";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import {
   attributesAtom,
@@ -627,21 +627,6 @@ export function Attributes() {
     },
     [attributes],
   );
-
-  // Validate all attributes when they change
-  useEffect(() => {
-    const validatedAttributes = attributes.map((attribute) =>
-      validateAttributeOptions(attribute),
-    );
-    const hasChanges = validatedAttributes.some(
-      (attribute, index) =>
-        JSON.stringify(attribute) !== JSON.stringify(attributes[index]),
-    );
-
-    if (hasChanges) {
-      setAttributes(validatedAttributes);
-    }
-  }, [attributes, validateAttributeOptions, setAttributes]);
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {

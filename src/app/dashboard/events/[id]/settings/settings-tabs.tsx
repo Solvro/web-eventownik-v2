@@ -103,14 +103,14 @@ export function EventSettingsTabs({
     // Always update when props change to ensure sync with server data
     setEvent(unmodifiedEvent);
 
-    // Store primary color to avoid stale closure
-    const primaryColor = unmodifiedEvent.primaryColor;
-
     return () => {
-      setEventPrimaryColors(primaryColor);
+      // Use current event state from atom instead of captured prop value
+      setEventPrimaryColors(
+        event?.primaryColor ?? unmodifiedEvent.primaryColor,
+      );
       resetAllChanges();
     };
-  }, [unmodifiedEvent, setEvent, resetAllChanges]);
+  }, [unmodifiedEvent, setEvent, resetAllChanges, event]);
 
   const handleTabChange = async (newValue: string) => {
     // Check if form validation passes before allowing tab change
