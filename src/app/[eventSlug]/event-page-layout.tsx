@@ -9,6 +9,7 @@ import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { LanguageSwitch } from "@/components/language-switch";
 import { SanitizedContent } from "@/components/sanitized-content";
+import { ScrollIndicator } from "@/components/scroll-indicator";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -107,6 +108,7 @@ export function EventPageLayout({
             </ScrollArea>
           </div>
         </div>
+        <ScrollIndicator />
       </div>
       <div className="relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
         {children}
