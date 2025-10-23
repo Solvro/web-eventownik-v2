@@ -66,7 +66,7 @@ export default async function EventPage({ params }: EventPageProps) {
       </h2>
       <p className="mb-8">{t("fillForm")}</p>
       <RegisterParticipantForm event={event} />
-      <p className="text-muted-foreground my-4 text-center text-sm">
+      <p className="text-foreground/50 my-4 text-center text-sm">
         <Info className="inline-block size-4 align-[-0.195em]" /> Kontynuując
         zgadzasz się na warunki zawarte w<br />
         <Link
