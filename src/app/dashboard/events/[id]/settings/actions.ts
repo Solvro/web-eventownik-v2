@@ -101,7 +101,7 @@ export async function updateEvent(
   try {
     // Execute API request with proper error handling
     const response = await fetch(`${API_URL}/events/${event.id.toString()}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { Authorization: `Bearer ${bearerToken}` },
       body: formData,
     });
@@ -170,7 +170,7 @@ export async function updateEvent(
         const coOrganizerResponse = await fetch(
           `${API_URL}/events/${eventIdString}/organizers/${coOrganizerIdString}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               Authorization: `Bearer ${bearerToken}`,
               "Content-Type": "application/json",
@@ -300,7 +300,7 @@ export async function updateEvent(
         const attributeResponse = await fetch(
           `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               Authorization: `Bearer ${bearerToken}`,
               "Content-Type": "application/json",
