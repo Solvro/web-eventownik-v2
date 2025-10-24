@@ -90,6 +90,7 @@ export default async function EventPage({ params }: EventPageProps) {
             Dane będą przechowywane przez okres do{" "}
             {new Date(event.startDate).getFullYear() + 1} roku.
           </li>
+          <li>Dane są przetwarzane w sposób zautomatyzowany.</li>
           <li>
             Przetwarzane będą Pani/Pana poniższe dane:
             <ol className="mx-4 list-[lower-alpha] [&>li]:my-1">
@@ -120,10 +121,6 @@ export default async function EventPage({ params }: EventPageProps) {
               <li>
                 wolontariuszom świadczącym usługi w imieniu Administratora w
                 niezbędnym do tego celu zakresie
-              </li>
-              <li>
-                podmiotom utrzymującym infrastrukturę Administratora oraz
-                świadczącym usługi na Pani/Pana rzecz w imieniu Administratora
               </li>
               <li>Politechnice Wrocławskiej</li>
             </ol>
