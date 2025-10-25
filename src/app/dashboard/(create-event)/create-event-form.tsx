@@ -35,7 +35,10 @@ import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn, getBase64FromUrl } from "@/lib/utils";
 
 import { AttributesForm } from "./(steps)/attributes";
-import { CoorganizersForm } from "./(steps)/coorganizers";
+import {
+  CoorganizersForm,
+  EventCoorganizersFormSchema,
+} from "./(steps)/coorganizers";
 import {
   EventGeneralInfoSchema,
   GeneralInfoForm,
@@ -60,13 +63,17 @@ export function CreateEventForm() {
     useUnsavedAtom(eventAtom);
 
   type EventSchema = z.infer<typeof EventGeneralInfoSchema> &
-    z.infer<typeof EventPersonalizationFormSchema>;
+    z.infer<typeof EventPersonalizationFormSchema> &
+    z.infer<typeof EventCoorganizersFormSchema>;
 
   // Per-step resolvers you said you already have
   const stepResolvers: Resolver<EventSchema>[] = [
     zodResolver(EventGeneralInfoSchema) as unknown as Resolver<EventSchema>,
     zodResolver(
       EventPersonalizationFormSchema,
+    ) as unknown as Resolver<EventSchema>,
+    zodResolver(
+      EventCoorganizersFormSchema,
     ) as unknown as Resolver<EventSchema>,
   ];
 
@@ -100,6 +107,7 @@ export function CreateEventForm() {
         event.slug === ""
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
           : event.slug,
+      coorganizers: [],
     },
   });
 
@@ -109,6 +117,7 @@ export function CreateEventForm() {
     icon: React.ReactNode;
     content: React.ReactNode;
     onSubmit?: (values: EventSchema) => void;
+    resolver?: Resolver<EventSchema>;
   }[] = [
     {
       title: "Krok 1",
@@ -146,6 +155,9 @@ export function CreateEventForm() {
         );
         setCurrentStep((value) => value + 1);
       },
+      resolver: zodResolver(
+        EventGeneralInfoSchema,
+      ) as unknown as Resolver<EventSchema>,
     },
     {
       title: "Krok 2",
@@ -169,12 +181,21 @@ export function CreateEventForm() {
         }
         setCurrentStep((value) => value + 1);
       },
+      resolver: zodResolver(
+        EventPersonalizationFormSchema,
+      ) as unknown as Resolver<EventSchema>,
     },
     {
       title: "Krok 3",
       description: "Dodaj współorganizatorów",
       icon: <Users />,
       content: <CoorganizersForm />,
+      onSubmit: () => {
+        setCurrentStep((value) => value + 1);
+      },
+      resolver: zodResolver(
+        EventCoorganizersFormSchema,
+      ) as unknown as Resolver<EventSchema>,
     },
     {
       title: "Krok 4",
