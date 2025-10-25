@@ -23,6 +23,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
+import {
+  ATTRIBUTE_CATEGORY,
+  FORM_CATEGORY,
+  setupSuggestions,
+} from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
+import type { EventAttribute } from "@/types/attributes";
+import type { EventForm } from "@/types/forms";
 
 import { createEventEmailTemplate } from "../actions";
 
@@ -56,10 +64,14 @@ function getTitlePlaceholder(trigger: string) {
 
 function MessageContentForm({
   eventId,
+  eventAttributes,
+  eventForms,
   goToPreviousStep,
   setDialogOpen,
 }: {
   eventId: string;
+  eventAttributes: EventAttribute[];
+  eventForms: EventForm[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -120,6 +132,27 @@ function MessageContentForm({
     }
   }
 
+  const attributeTags = eventAttributes.map((attribute): MessageTag => {
+    return {
+      title: attribute.name,
+      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      // NOTE: Why 'attribute.slug' can be null?
+      value: `/participant_${attribute.slug ?? ""}`,
+      color: "brown",
+      category: ATTRIBUTE_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
+  const formTags = eventForms.map((eventForm): MessageTag => {
+    return {
+      title: eventForm.name,
+      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      value: `/form_${eventForm.slug}`,
+      color: "green",
+      category: FORM_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
   return (
     <FormContainer
       description="Zawartość wiadomości"
@@ -155,10 +188,19 @@ function MessageContentForm({
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Treść wiadomości</FormLabel>
+                <FormLabel>
+                  Treść wiadomości
+                  <span className="text-muted-foreground ml-2 text-xs">
+                    Wskazówka: Użyj Shift+Enter aby dodać nową linię w tym samym
+                    akapicie.
+                  </span>
+                </FormLabel>
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  isEmailEditor
+                  className="email-editor"
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}
