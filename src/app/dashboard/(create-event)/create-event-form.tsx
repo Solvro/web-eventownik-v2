@@ -125,28 +125,32 @@ export function CreateEventForm() {
       icon: <CalendarIcon />,
       content: <GeneralInfoForm />,
       onSubmit: (values: EventSchema) => {
-        values.startDate.setHours(
-          Number.parseInt(values.startTime.split(":")[0]),
-        );
-        values.startDate.setMinutes(
-          Number.parseInt(values.startTime.split(":")[1]),
-        );
-        values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
-        values.endDate.setMinutes(
-          Number.parseInt(values.endTime.split(":")[1]),
-        );
-        if (values.startDate < new Date()) {
+        const startDate = values.startDate;
+        const endDate = values.endDate;
+        startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
+        startDate.setMinutes(Number.parseInt(values.startTime.split(":")[1]));
+        endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
+        endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+
+        if (startDate < new Date()) {
           form.setError("startDate", {
             message: "Data rozpoczęcia nie może być w przeszłości.",
           });
           return;
         }
-        if (values.endDate < values.startDate) {
+        if (endDate < startDate) {
           form.setError("endDate", {
             message: "Data zakończenia musi być po dacie rozpoczęcia.",
           });
           return;
         }
+        setEvent((previous) => {
+          return {
+            ...previous,
+            startDate,
+            endDate,
+          };
+        });
         form.setValue(
           "slug",
           event.slug === ""
