@@ -15,6 +15,7 @@ function scrollToForm() {
 
 export function ScrollIndicator() {
   const [isVisible, setIsVisible] = useState(true);
+  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +30,21 @@ export function ScrollIndicator() {
     };
   }, []);
 
-  if (!isVisible) {
+  useEffect(() => {
+    if (isVisible) {
+      setShouldRender(true);
+    } else {
+      // Delay unmounting to allow fade-out animation to complete
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [isVisible]);
+
+  if (!shouldRender) {
     return null;
   }
 
@@ -39,16 +54,19 @@ export function ScrollIndicator() {
       className={cn(
         "fixed bottom-4 left-1/2 z-50 -translate-x-1/2 md:hidden",
         "flex flex-col items-center gap-1",
-        "bg-background/80 rounded-full px-4 py-3 shadow-lg backdrop-blur-sm",
+        "bg-background/70 rounded-lg px-4 py-3 shadow-lg backdrop-blur-md",
         "text-foreground dark:text-[#f0f0ff]",
-        "animate-bounce cursor-pointer transition-all duration-300",
-        "hover:bg-background/90 hover:scale-105",
+        "cursor-pointer transition-all duration-300",
+        "hover:bg-background/85 hover:scale-105",
         "focus:ring-primary focus:ring-2 focus:ring-offset-2 focus:outline-none",
+        isVisible
+          ? "animate-fade-in opacity-100"
+          : "animate-fade-out opacity-0",
       )}
       aria-label="Scroll to form"
     >
       <span className="text-sm font-medium">Formularz</span>
-      <ChevronDown className="size-8" strokeWidth={2.5} />
+      <ChevronDown className="animate-subtle-bounce size-8" strokeWidth={2.5} />
     </button>
   );
 }
