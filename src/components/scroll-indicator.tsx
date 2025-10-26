@@ -37,10 +37,13 @@ export function ScrollIndicator() {
     <button
       onClick={scrollToForm}
       className={cn(
-        "fixed bottom-8 left-1/2 z-50 -translate-x-1/2 md:hidden",
-        "flex flex-col items-center gap-1 text-[#f0f0ff]",
-        "animate-bounce cursor-pointer transition-opacity duration-300",
-        "focus:ring-primary hover:opacity-80 focus:ring-2 focus:ring-offset-2 focus:outline-none",
+        "fixed bottom-4 left-1/2 z-50 -translate-x-1/2 md:hidden",
+        "flex flex-col items-center gap-1",
+        "bg-background/80 rounded-full px-4 py-3 shadow-lg backdrop-blur-sm",
+        "text-foreground dark:text-[#f0f0ff]",
+        "animate-bounce cursor-pointer transition-all duration-300",
+        "hover:bg-background/90 hover:scale-105",
+        "focus:ring-primary focus:ring-2 focus:ring-offset-2 focus:outline-none",
       )}
       aria-label="Scroll to form"
     >
