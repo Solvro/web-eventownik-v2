@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Resolver } from "react-hook-form";
+import type { Resolver, SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 
@@ -116,7 +116,7 @@ export function CreateEventForm() {
     description: string;
     icon: React.ReactNode;
     content: React.ReactNode;
-    onSubmit?: (values: EventSchema) => void;
+    onSubmit?: SubmitHandler<EventSchema>;
     resolver?: Resolver<EventSchema>;
   }[] = [
     {
@@ -361,6 +361,7 @@ export function CreateEventForm() {
                   {currentStep !== 0 && (
                     <Button
                       variant="ghost"
+                      type="button"
                       onClick={() => {
                         setCurrentStep((value) => value - 1);
                       }}
