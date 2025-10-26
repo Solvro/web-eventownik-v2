@@ -90,7 +90,7 @@ function ResetPasswordForm() {
       <>
         <div className="space-y-2 text-center">
           <p className="text-3xl font-black">Hasło zostało zresetowane!</p>
-          <p className="text-neutral-600">
+          <p className="text-muted-foreground">
             Możesz się teraz zalogować używając nowego hasła.
           </p>
         </div>
@@ -110,7 +110,7 @@ function ResetPasswordForm() {
     <>
       <div className="space-y-2 text-center">
         <p className="text-3xl font-black">Resetowanie hasła</p>
-        <p className="text-neutral-600">
+        <p className="text-muted-foreground">
           Wprowadź nowe hasło do swojego konta.
         </p>
       </div>

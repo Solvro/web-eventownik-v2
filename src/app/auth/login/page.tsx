@@ -110,6 +110,14 @@ function LoginForm() {
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.password?.message}
                 </FormMessage>
+                <FormMessage>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-muted-foreground block w-full text-right text-sm leading-none hover:underline"
+                  >
+                    Zapomniałeś hasła?
+                  </Link>
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -126,24 +134,14 @@ function LoginForm() {
               "Kontynuuj"
             )}
           </Button>
-          <div className="flex flex-col space-y-2">
-            <Link
-              href="/auth/forgot-password"
-              className={`w-full text-neutral-600 ${buttonVariants({
-                variant: "link",
-              })}`}
-            >
-              Zapomniałeś hasła?
-            </Link>
-            <Link
-              href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
-              className={`w-full text-neutral-600 ${buttonVariants({
-                variant: "link",
-              })}`}
-            >
-              Nie masz jeszcze konta? Zarejestruj się
-            </Link>
-          </div>
+          <Link
+            href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
+            className={`w-full text-neutral-600 ${buttonVariants({
+              variant: "link",
+            })}`}
+          >
+            Nie masz jeszcze konta? Zarejestruj się
+          </Link>
         </form>
       </Form>
     </>

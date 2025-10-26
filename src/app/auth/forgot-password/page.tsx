@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
       <>
         <div className="space-y-2 text-center">
           <p className="text-3xl font-black">Email został wysłany!</p>
-          <p className="text-neutral-600">
+          <p className="text-muted-foreground">
             Sprawdź swoją skrzynkę pocztową i kliknij w link, aby zresetować
             hasło.
           </p>

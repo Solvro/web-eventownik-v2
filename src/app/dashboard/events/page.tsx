@@ -78,7 +78,7 @@ export default async function EventListPage() {
             events.map((event) => (
               <div
                 key={event.id}
-                className="border-muted-foreground bg-background flex h-full flex-col overflow-hidden rounded-xl border"
+                className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
               >
                 <div className="relative">
                   <Image
