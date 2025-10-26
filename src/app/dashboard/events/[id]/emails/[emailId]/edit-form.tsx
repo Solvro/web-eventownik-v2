@@ -301,7 +301,7 @@ function EventEmailEditForm({
             <TriggerTypeExplanation trigger={form.getValues("trigger")} />
           )}
         </div>
-        <div className="bg-muted-foreground/25 h-[1px] w-full" />
+        <div className="bg-muted/25 h-[1px] w-full" />
         <div className="flex min-h-[216px] flex-col gap-4">
           <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
           <FormMessage>
