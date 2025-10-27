@@ -3,9 +3,8 @@ import {
   AlertCircle,
   AlertCircleIcon,
   Calendar1,
-  CalendarDays,
-  CircleHelpIcon,
-  Shield,
+  Globe,
+  LayoutDashboard,
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -14,18 +13,33 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
-import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
 import { EventInfoBlock } from "@/components/event-info-block";
-import { ShareButton } from "@/components/share-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
+import { ActivateEvent } from "./activate-event";
+
 export const metadata: Metadata = {
-  title: "Moje wydarzenia",
+  title: "Panel admina",
 };
+
+async function getAllEvents(bearerToken: string) {
+  const response = await fetch(`${API_URL}/events/admins/superadminIndex`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+  if (!response.ok) {
+    return [];
+  }
+  return ((await response.json()) as Event[]).sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+}
 
 async function checkIfSuperAdmin(bearerToken: string) {
   const response = await fetch(`${API_URL}/auth/me`, {
@@ -40,71 +54,47 @@ async function checkIfSuperAdmin(bearerToken: string) {
   return data.type === "superadmin";
 }
 
-export default async function EventListPage() {
+export default async function AdminPage() {
   const session = await verifySession();
-
   if (session == null || typeof session.bearerToken !== "string") {
     notFound();
   }
   const { bearerToken } = session;
-  const response = await fetch(`${API_URL}/events`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
-  });
 
-  if (!response.ok) {
+  const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
+
+  if (!isSuperAdmin) {
     return (
       <div className="flex w-full flex-col items-center gap-4">
         <Alert variant="destructive">
           <AlertCircle className="size-6" />
           <AlertTitle>Wystąpił błąd podczas pobierania danych.</AlertTitle>
           <AlertDescription>
-            Sprawdź swoje połączenie z internetem i spróbuj ponownie.
+            Konto na które jesteś zalogowany/a nie jest superadminem.
           </AlertDescription>
         </Alert>
       </div>
     );
   }
 
-  const events = ((await response.json()) as Event[]).sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-
-  const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
+  const events = await getAllEvents(bearerToken);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h1 className="text-3xl font-bold">Moje wydarzenia</h1>
-          <div className="flex items-center gap-2">
-            <CreateEventForm />
-            {isSuperAdmin ? (
-              <Button
-                asChild
-                variant="ghost"
-                className="border border-amber-400 bg-amber-200/50 hover:bg-amber-200/70"
-              >
-                <Link href="/dashboard/admin">
-                  <Shield />
-                  Panel superadmina
-                </Link>
-              </Button>
-            ) : null}
-          </div>
+          <h1 className="text-3xl font-bold">Panel superadmina</h1>
         </div>
         <Alert>
           <AlertCircleIcon />
           <AlertTitle className="line-clamp-0">
-            Oficjalna premiera Eventownika już wkrótce!
+            Znajdujesz się w panelu superadmina.
           </AlertTitle>
           <AlertDescription className="text-foreground inline">
-            Jeśli chcesz stworzyć i udostępnić wydarzenie już teraz - odezwij
-            się do nas:{" "}
-            <a href="mailto:eventownik@pwr.edu.pl" className="hover:underline">
-              eventownik@pwr.edu.pl
-            </a>
+            Poniżej znajduje się lista <strong>wszystkich wydarzeń</strong> w
+            bazie - nie tylko tych, które zostały utworzone przez ciebie. Jest
+            ich tu pewnie sporo więc szukaj przez <strong>CTRL+F</strong> jakieś
+            wyszukiwanie zrobi się #kiedyś
           </AlertDescription>
         </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -112,7 +102,10 @@ export default async function EventListPage() {
             events.map((event) => (
               <div
                 key={event.id}
-                className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
+                className={cn(
+                  "bg-background flex h-full flex-col overflow-hidden rounded-xl border-2",
+                  event.isActive ? "border-green-400" : "border-red-400",
+                )}
               >
                 <div className="relative">
                   <Image
@@ -145,28 +138,38 @@ export default async function EventListPage() {
                   <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
                     {event.name}
                   </h3>
-                  <div className="flex w-full">
-                    <Button asChild variant="ghost">
+                  <div className="flex w-full flex-col gap-2">
+                    <Button asChild variant="outline">
                       <Link href={`/dashboard/events/${event.id.toString()}`}>
-                        <CircleHelpIcon className="mr-2 size-4" />
-                        Wyświetl szczegóły
+                        <LayoutDashboard className="mr-2 size-4" />
+                        Dashboard
                       </Link>
                     </Button>
-                    <ShareButton
-                      url={`https://eventownik.solvro.pl/${event.slug}`}
-                      variant="icon"
-                      buttonVariant="ghost"
+                    <Button asChild variant="outline">
+                      <Link
+                        href={`https://eventownik.solvro.pl/${event.slug}`}
+                        target="_blank"
+                      >
+                        <Globe className="mr-2 size-4" />
+                        Strona
+                      </Link>
+                    </Button>
+                    <ActivateEvent
+                      bearerToken={bearerToken}
+                      eventId={event.id}
+                      isActive={event.isActive}
                     />
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-              <CalendarDays className="text-muted-foreground mb-4 size-12" />
-              <h3 className="text-muted-foreground text-lg">
-                Nie masz jeszcze żadnego wydarzenia
-              </h3>
+            <div className="col-span-full">
+              <p className="text-red-500">
+                Wystąpił błąd podczas pobierania danych. Backend zweryfikował
+                tożsamość superadmina, jednak nie zwrócił żadnych wydarzeń. Pisz
+                na #backend
+              </p>
             </div>
           )}
         </div>
