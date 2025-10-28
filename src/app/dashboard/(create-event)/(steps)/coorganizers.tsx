@@ -1,9 +1,7 @@
 "use client";
 
 import { EllipsisVertical, Plus, UserRoundMinus } from "lucide-react";
-import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import type { FormState, UseFieldArrayAppend } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -77,7 +75,28 @@ export function CoorganizersForm() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <p>Współorganizatorzy</p>
+      <div className="flex w-full items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <p>Współorganizatorzy</p>
+          <p className="text-muted-foreground text-sm leading-none font-medium">
+            Możesz dodać tylko osoby, które mają konto w Eventowniku
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            append({
+              id: "",
+              email: "",
+              permissions: PERMISSIONS_CONFIG.map((p) => p.permission),
+            });
+          }}
+          className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
       {fields.map((coorganizer, index) => (
         <div
           key={coorganizer.email}
@@ -104,17 +123,6 @@ export function CoorganizersForm() {
           />
         </div>
       ))}
-      {/**
-       * Because of the refactor, we could drop this input -
-       * we could just add a new co-organizer button and modify
-       * his email and permissions in EditCoOrganizer component.
-       */}
-      <div className="flex flex-row gap-2">
-        <NewCoOrganizer formState={formState} onSubmit={append} />
-      </div>
-      <span className="text-muted-foreground text-sm leading-none font-medium">
-        Możesz dodać tylko osoby, które mają konto w Eventowniku
-      </span>
     </div>
   );
 }
@@ -129,7 +137,11 @@ function EditCoOrganizer({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" aria-label="Open permissions menu">
+        <Button
+          variant="outline"
+          className="h-12 w-12"
+          aria-label="Open permissions menu"
+        >
           <EllipsisVertical />
         </Button>
       </PopoverTrigger>
@@ -174,112 +186,5 @@ function EditCoOrganizer({
         </div>
       </PopoverContent>
     </Popover>
-  );
-}
-
-function NewCoOrganizer({
-  formState,
-  onSubmit,
-}: {
-  formState: FormState<z.infer<typeof EventCoorganizersFormSchema>>;
-  onSubmit: UseFieldArrayAppend<z.infer<typeof EventCoorganizersFormSchema>>;
-}) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [coorganizer, setCoorganizer] = useState<{
-    email: string;
-    permissions: number[];
-  }>({
-    email: "",
-    permissions: [3, 4, 5, 6],
-  });
-  return (
-    <>
-      <Input
-        disabled={formState.isSubmitting}
-        type="email"
-        className="h-12 rounded-xl text-lg sm:w-full sm:min-w-80 md:text-sm"
-        placeholder="Wprowadź email współorganizatora"
-        value={coorganizer.email}
-        onChange={(event) => {
-          setCoorganizer({ ...coorganizer, email: event.target.value });
-        }}
-      />
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="bg-accent w-min">
-          <div className="flex flex-col gap-2">
-            <span className="text-sm leading-none font-medium">
-              Tymczasowo nie można rozdzielać uprawnień
-            </span>
-            {PERMISSIONS_CONFIG.map(({ permission, label }) => (
-              <div key={permission.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`permission-${permission.id.toString()}-new`}
-                  checked={coorganizer.permissions.includes(permission.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked === true) {
-                      setCoorganizer({
-                        ...coorganizer,
-                        permissions: [
-                          ...coorganizer.permissions,
-                          permission.id,
-                        ],
-                      });
-                    } else {
-                      setCoorganizer({
-                        ...coorganizer,
-                        permissions: coorganizer.permissions.filter(
-                          (p) => p !== permission.id,
-                        ),
-                      });
-                    }
-                  }}
-                  disabled={true} // temporary disabled
-                />
-                <Label
-                  htmlFor={`permission-${permission.id.toString()}-new`}
-                  className="cursor-pointer"
-                >
-                  {label}
-                </Label>
-              </div>
-            ))}
-            <div className="mt-4 flex justify-end gap-2">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => {
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Anuluj
-              </Button>
-              <Button
-                onClick={() => {
-                  onSubmit({
-                    id: "",
-                    email: coorganizer.email,
-                    permissions: PERMISSIONS_CONFIG.filter((p) =>
-                      coorganizer.permissions.includes(p.permission.id),
-                    ).map((p) => p.permission),
-                  });
-                  setCoorganizer({ email: "", permissions: [3, 4, 5, 6] });
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Dodaj
-              </Button>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </>
   );
 }
