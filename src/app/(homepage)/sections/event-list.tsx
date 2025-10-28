@@ -285,7 +285,7 @@ function Event({
   );
 }
 
-const events: Omit<EventType, "termsLink" | "attributes">[] = [
+const events: Omit<EventType, "termsLink" | "attributes" | "isActive">[] = [
   {
     id: 1,
     organizerId: 1,
