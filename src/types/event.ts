@@ -1,3 +1,4 @@
+import type { EventAttribute } from "./attributes";
 import type { EventForm } from "./forms";
 
 export interface Event {
@@ -19,4 +20,7 @@ export interface Event {
   updatedAt: string;
   photoUrl: string | null;
   firstForm: EventForm | null;
+  termsLink: string | null;
+  isActive: boolean;
+  attributes: EventAttribute[];
 }

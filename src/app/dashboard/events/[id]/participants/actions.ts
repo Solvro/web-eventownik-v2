@@ -191,7 +191,7 @@ export async function updateParticipant(
   const response = await fetch(
     `${API_URL}/events/${eventId}/participants/${participantId}`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",

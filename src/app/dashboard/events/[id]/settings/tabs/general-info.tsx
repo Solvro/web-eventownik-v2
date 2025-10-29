@@ -1,7 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
 import { useSetAtom } from "jotai";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  Download,
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,6 +42,13 @@ const EventGeneralInfoSchema = z
     endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
     location: z.string().optional(),
     organizer: z.string().optional(),
+    termsLink: z
+      .string()
+      .url(
+        "Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
+      )
+      .optional()
+      .or(z.literal("")),
   })
   .refine(
     (data) => {
@@ -71,6 +83,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location ?? "",
       organizer: event.organizer ?? "",
+      termsLink: event.termsLink ?? "",
     },
   });
 
@@ -95,6 +108,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endDate: formatISO9075(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
+      termsLink: values.termsLink ?? "",
     };
     return { success: true, event: newEvent };
   }
@@ -290,22 +304,56 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
         </div>
-        <FormField
-          name="description"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem className="flex flex-col gap-2">
-              <FormLabel>Opis</FormLabel>
-              <WysiwygEditor
-                content={form.getValues("description") ?? "<p></p>"}
-                onChange={field.onChange}
-              />
-              <FormMessage>
-                {form.formState.errors.description?.message}
-              </FormMessage>
-            </FormItem>
-          )}
-        />
+        <div className="w-full space-y-4 sm:w-auto sm:min-w-80">
+          <FormField
+            name="description"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>Opis</FormLabel>
+                <WysiwygEditor
+                  content={form.getValues("description") ?? "<p></p>"}
+                  onChange={field.onChange}
+                />
+                <FormMessage>
+                  {form.formState.errors.description?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-full max-w-[974px] space-y-2">
+          <FormField
+            name="termsLink"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-1">
+                <FormLabel>Link do regulaminu</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.termsLink?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <Button asChild variant="eventGhost" size="sm" className="px-2">
+            <Link
+              href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+              download
+              target="_blank"
+            >
+              <Download className="size-3" />
+              Pobierz szablon regulaminu (współtworzony z Działem Prawnym PWr)
+            </Link>
+          </Button>
+        </div>
       </form>
     </Form>
   );

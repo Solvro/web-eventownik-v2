@@ -25,7 +25,10 @@ export async function saveEvent(event: Event) {
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
   formData.append("slug", event.slug);
+  formData.append("termsLink", event.termsLink ?? "");
 
+  // NOTE: Backend expects ISO 9075 format but returns ISO 8601 format for
+  // reasons unknown to anyone.
   formData.append(
     "startDate",
     formatISO9075(event.startDate, { representation: "complete" }),

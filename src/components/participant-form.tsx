@@ -173,7 +173,7 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="w-full max-w-sm space-y-4 pb-24"
+        className="w-full max-w-sm space-y-4"
       >
         {includeEmail ? (
           <FormField
