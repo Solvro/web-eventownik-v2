@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +17,7 @@ function ActivateEvent({
   bearerToken: string;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleClick = async () => {
     const response = await activateEvent(isActive, eventId, bearerToken);
@@ -30,6 +33,7 @@ function ActivateEvent({
         description: response.success,
       });
     }
+    router.refresh();
   };
 
   return (
