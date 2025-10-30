@@ -216,23 +216,14 @@ export function Functionalities() {
               </div>
             </div>
             {/* Step 2 */}
-            <div className="z-20 grid w-full grid-cols-1 gap-8 bg-white p-4 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
-              <div className="grid grid-cols-2 items-center gap-4 sm:gap-8">
-                <Image
-                  src="/assets/landing/functionalities/form.png"
-                  alt="Widok formularza"
-                  className="h-auto w-full rounded-3xl"
-                  width={500}
-                  height={1000}
-                />
-                <Image
-                  src="/assets/landing/functionalities/signup.png"
-                  alt="Widok zapisów"
-                  className="h-auto w-full rounded-3xl"
-                  width={500}
-                  height={1000}
-                />
-              </div>
+            <div className="z-20 grid w-full grid-cols-1 items-center gap-8 bg-white p-4 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
+              <Image
+                src="/assets/landing/functionalities/iphones-mockup.png"
+                alt="Widok formularza"
+                className="h-auto w-full rounded-3xl p-2"
+                width={500}
+                height={1000}
+              />
               <div className="flex w-full flex-col gap-8 sm:gap-16">
                 <div className="w-full space-y-4">
                   <FeatureStep step={2} />
