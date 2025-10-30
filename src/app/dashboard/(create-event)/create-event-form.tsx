@@ -34,7 +34,10 @@ import { toast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn, getBase64FromUrl } from "@/lib/utils";
 
-import { AttributesForm } from "./(steps)/attributes";
+import {
+  AttributesForm,
+  EventAttributesFormSchema,
+} from "./(steps)/attributes";
 import {
   CoorganizersForm,
   EventCoorganizersFormSchema,
@@ -64,9 +67,9 @@ export function CreateEventForm() {
 
   type EventSchema = z.infer<typeof EventGeneralInfoSchema> &
     z.infer<typeof EventPersonalizationFormSchema> &
-    z.infer<typeof EventCoorganizersFormSchema>;
+    z.infer<typeof EventCoorganizersFormSchema> &
+    z.infer<typeof EventAttributesFormSchema>;
 
-  // Per-step resolvers you said you already have
   const stepResolvers: Resolver<EventSchema>[] = [
     zodResolver(EventGeneralInfoSchema) as unknown as Resolver<EventSchema>,
     zodResolver(
@@ -75,6 +78,7 @@ export function CreateEventForm() {
     zodResolver(
       EventCoorganizersFormSchema,
     ) as unknown as Resolver<EventSchema>,
+    zodResolver(EventAttributesFormSchema) as unknown as Resolver<EventSchema>,
   ];
 
   const resolver: Resolver<EventSchema> = async (values, context, options) => {
@@ -108,6 +112,7 @@ export function CreateEventForm() {
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
           : event.slug,
       coorganizers: [],
+      attributes: [],
     },
   });
 
@@ -116,7 +121,7 @@ export function CreateEventForm() {
     description: string;
     icon: React.ReactNode;
     content: React.ReactNode;
-    onSubmit?: SubmitHandler<EventSchema>;
+    onSubmit: SubmitHandler<EventSchema>;
     resolver?: Resolver<EventSchema>;
   }[] = [
     {
@@ -206,6 +211,12 @@ export function CreateEventForm() {
       description: "Dodaj atrybuty",
       icon: <TextIcon />,
       content: <AttributesForm />,
+      onSubmit: () => {
+        // TODO: handle saving event here
+      },
+      resolver: zodResolver(
+        EventAttributesFormSchema,
+      ) as unknown as Resolver<EventSchema>,
     },
   ];
 
@@ -306,24 +317,36 @@ export function CreateEventForm() {
           description={steps[currentStep].description}
           icon={steps[currentStep].icon}
         >
-          {steps[currentStep].onSubmit == null ? (
-            <div className="flex w-full flex-col gap-4">
-              {steps[currentStep].content}
-              <div className="flex flex-row items-center justify-between gap-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setCurrentStep((value) => value - 1);
-                  }}
-                >
-                  <ArrowLeft /> Wróć
-                </Button>
-
+          <Form {...form}>
+            <form
+              className="flex w-full flex-col items-end gap-4"
+              onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
+            >
+              {steps[currentStep].content}{" "}
+              <div
+                className={cn(
+                  "flex w-full flex-row items-center gap-4",
+                  currentStep === 0 ? "justify-end" : "justify-between",
+                )}
+              >
+                {currentStep !== 0 && (
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={() => {
+                      setCurrentStep((value) => value - 1);
+                    }}
+                    disabled={form.formState.isSubmitting}
+                  >
+                    <ArrowLeft /> Wróć
+                  </Button>
+                )}
                 {currentStep === steps.length - 1 ? (
                   <Button
                     className="w-min"
                     onClick={createEvent}
                     disabled={loading}
+                    type="submit"
                   >
                     {loading ? (
                       <Loader2 className="animate-spin" />
@@ -333,43 +356,6 @@ export function CreateEventForm() {
                     Dodaj wydarzenie
                   </Button>
                 ) : (
-                  <Button
-                    className="w-min"
-                    variant="ghost"
-                    onClick={() => {
-                      setCurrentStep((value) => value + 1);
-                    }}
-                  >
-                    Dalej <ArrowRight />
-                  </Button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <Form {...form}>
-              <form
-                className="flex w-full flex-col items-end gap-4"
-                onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
-              >
-                {steps[currentStep].content}{" "}
-                <div
-                  className={cn(
-                    "flex w-full flex-row items-center gap-4",
-                    currentStep === 0 ? "justify-end" : "justify-between",
-                  )}
-                >
-                  {currentStep !== 0 && (
-                    <Button
-                      variant="ghost"
-                      type="button"
-                      onClick={() => {
-                        setCurrentStep((value) => value - 1);
-                      }}
-                      disabled={form.formState.isSubmitting}
-                    >
-                      <ArrowLeft /> Wróć
-                    </Button>
-                  )}
                   <Button
                     className="w-min"
                     variant="ghost"
@@ -387,10 +373,10 @@ export function CreateEventForm() {
                       </>
                     )}
                   </Button>
-                </div>
-              </form>
-            </Form>
-          )}
+                )}
+              </div>
+            </form>
+          </Form>
         </FormContainer>
       </DialogContent>
     </Dialog>

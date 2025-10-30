@@ -20,9 +20,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { GripVertical, PlusIcon, Trash2 } from "lucide-react";
+import { GripVertical, Plus, PlusIcon, Trash2 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { ATTRIBUTE_TYPES } from "@/app/dashboard/events/[id]/settings/tabs/attributes";
@@ -54,9 +54,11 @@ import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 import { AttributeTypes, eventAtom } from "../state";
 
-const EventAttributesFormSchema = z.object({
-  name: z.string().nonempty("Nazwa nie może być pusta"),
-  type: z.enum(AttributeTypes),
+// Required for usage of useFieldArray hook
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
+export const EventAttributesFormSchema = z.object({
+  attributes: z.array(z.custom<EventAttribute>()),
 });
 
 interface AttributeItemProps {
@@ -311,15 +313,14 @@ const AttributeItem = memo(
 AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm() {
-  const [event, setEvent] = useAtom(eventAtom);
-  const form = useForm<z.infer<typeof EventAttributesFormSchema>>({
-    resolver: zodResolver(EventAttributesFormSchema),
-    defaultValues: {
-      name: "",
-      type: "text",
-    },
-  });
+  const { control, formState, register } =
+    useFormContext<z.infer<typeof EventAttributesFormSchema>>();
 
+  const { fields, append, remove } = useFieldArray({
+    name: "attributes",
+    control,
+  });
+  /*
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
     setEvent((_event) => ({
       ..._event,
@@ -346,6 +347,7 @@ export function AttributesForm() {
       ],
     }));
   }
+    */
 
   const handleUpdateAttribute = useCallback(
     (updatedAttribute: EventAttribute) => {
@@ -385,10 +387,31 @@ export function AttributesForm() {
       <div className="w-full space-y-4">
         <div className="space-y-4">
           <div className="space-y-2">
-            {event.attributes.length > 0 && (
-              <p className="text-sm font-medium">Atrybuty</p>
-            )}
-            {event.attributes.map((attribute) => (
+            <div className="flex flex-col gap-1">
+              <p>Atrybuty</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                append({
+                  id: fields.length + 1,
+                  name: "",
+                  type: "text" as AttributeType,
+                  slug: "",
+                  eventId: 0,
+                  options: [],
+                  showInList: true,
+                  rootBlockId: undefined,
+                  createdAt: "", // set it to empty string to avoid type error
+                  updatedAt: "", // set it to empty string to avoid type error
+                });
+              }}
+              className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            {fields.map((attribute) => (
               <AttributeItem
                 key={attribute.id}
                 attribute={attribute}
@@ -399,55 +422,6 @@ export function AttributesForm() {
               />
             ))}
           </div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormLabel>Dodaj atrybut</FormLabel>
-              <div className="flex flex-row items-center gap-2">
-                <FormField
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nazwa"
-                      disabled={form.formState.isSubmitting}
-                    />
-                  )}
-                />
-                <FormField
-                  name="type"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="space-y-0">
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger
-                            className="w-[180px]"
-                            disabled={form.formState.isSubmitting}
-                          >
-                            <SelectValue placeholder="Wybierz typ atrybutu" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <AttributeTypeOptions />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  disabled={form.formState.isSubmitting}
-                  type="submit"
-                  variant="outline"
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </form>
-          </Form>
         </div>
       </div>
     </div>
