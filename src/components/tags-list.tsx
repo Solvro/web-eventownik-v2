@@ -95,10 +95,9 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                 return (
                   <button
                     className={cn(
-                      "flex w-full items-center gap-1 rounded-md bg-transparent px-2 py-[2px] text-left",
-                      "hover:bg-primary/50",
-                      isSelected &&
-                        "bg-primary/90 hover:bg-primary/50 text-popover",
+                      "flex w-full items-center gap-1 rounded-md bg-transparent px-8 py-[2px] text-left",
+                      "hover:bg-primary/10",
+                      isSelected && "bg-primary/30 hover:bg-primary/10",
                     )}
                     key={tag.value}
                     onClick={() => {
