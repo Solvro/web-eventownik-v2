@@ -1,7 +1,7 @@
 "use client";
 
 import type { SuggestionProps } from "@tiptap/suggestion";
-import { useEffect, useImperativeHandle, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import type { MessageTag } from "@/lib/extensions/tags";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ interface TagsListProps extends SuggestionProps<MessageTag> {
 
 export function TagsList({ items, command, ref }: TagsListProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const selectedTagRef = useRef<HTMLButtonElement | null>(null);
 
   const selectItem = (index: number) => {
     const item = items[index];
@@ -35,6 +36,10 @@ export function TagsList({ items, command, ref }: TagsListProps) {
   useEffect(() => {
     setSelectedIndex(0);
   }, [items]);
+
+  useEffect(() => {
+    selectedTagRef.current?.scrollIntoView(false);
+  }, [selectedIndex]);
 
   useImperativeHandle(ref, () => ({
     onKeyDown: (event: KeyboardEvent) => {
@@ -84,8 +89,9 @@ export function TagsList({ items, command, ref }: TagsListProps) {
               </div>
               {tags.map((tag) => {
                 globalIndex++;
-                const flatIndex = globalIndex; // capture current value
+                const flatIndex = globalIndex;
                 const isSelected = flatIndex === selectedIndex;
+
                 return (
                   <button
                     className={cn(
@@ -99,6 +105,7 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                       selectItem(flatIndex);
                     }}
                     title={tag.description}
+                    ref={isSelected ? selectedTagRef : null}
                   >
                     <span className="max-w-3xs truncate">{tag.title}</span>
                   </button>
