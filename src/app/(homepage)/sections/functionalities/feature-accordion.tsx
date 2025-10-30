@@ -337,7 +337,7 @@ export function FeatureAccordion() {
                   className="p-0 text-xl font-medium text-[#6583c8]"
                 >
                   <a
-                    href="https://docs.solvro.pl/projects/eventownik/handbook/"
+                    href="http://link.solvro.pl/eventownik-instrukcja"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
