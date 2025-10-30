@@ -207,3 +207,8 @@
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
 }
+
+.image-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 70%);
+  mask-image: linear-gradient(to right, transparent, black 70%);
+}

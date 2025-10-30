@@ -93,8 +93,8 @@ export function Functionalities() {
         >
           <div className="divide-input flex w-full flex-col divide-y-[1px] divide-dashed overflow-hidden rounded-t-4xl bg-[#ffffff] dark:bg-[#101011]">
             {/* Step 1 */}
-            <div className="grid w-full grid-cols-1 gap-8 p-4 sm:gap-16 sm:p-16 lg:grid-cols-2">
-              <div className="flex w-full flex-col gap-8 sm:gap-16">
+            <div className="grid w-full grid-cols-1 gap-8 sm:gap-16 lg:grid-cols-2">
+              <div className="flex w-full flex-col gap-8 px-4 sm:gap-16 sm:px-16 lg:pt-16">
                 <div className="w-full space-y-4">
                   <FeatureStep step={1} />
                   <FeatureTitle>Tworzenie i konfiguracja wydarzeń</FeatureTitle>
@@ -115,7 +115,7 @@ export function Functionalities() {
               <Image
                 src="/assets/landing/functionalities/event-creation.png"
                 alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
-                className="order-first rounded-3xl sm:order-last lg:max-w-5xl"
+                className="image-fade order-first h-full rounded-3xl object-cover pt-8 sm:pt-16 lg:order-last lg:max-w-5xl lg:-translate-x-1/5"
                 width={2000}
                 height={1000}
               />
@@ -176,8 +176,8 @@ export function Functionalities() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col-reverse p-4 sm:flex-row sm:gap-8 sm:p-16">
-                <div className="flex min-w-3xs flex-col gap-8 sm:gap-16">
+              <div className="flex flex-col-reverse sm:flex-row sm:gap-8">
+                <div className="flex min-w-3xs flex-col gap-8 py-4 pl-4 sm:gap-16 sm:py-16 sm:pl-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
                       Nowe
@@ -196,23 +196,13 @@ export function Functionalities() {
                     icon={<CircleEllipsis />}
                   />
                 </div>
-                <div className="relative space-y-4">
-                  <span className="absolute z-10 h-full w-full bg-gradient-to-b from-transparent to-white to-90% dark:to-[#101011]" />
-                  <Image
-                    src="/assets/landing/functionalities/event-page.png"
-                    alt="Strona wydarzenia"
-                    className="rounded-3xl"
-                    width={2000}
-                    height={1000}
-                  />
-                  <Image
-                    src="/assets/landing/functionalities/event-page-2.png"
-                    alt="Strona wydarzenia - widok 2"
-                    className="rounded-3xl"
-                    width={2000}
-                    height={1000}
-                  />
-                </div>
+                <Image
+                  src="/assets/landing/functionalities/ipads-mockup.png"
+                  alt="Strona wydarzenia"
+                  className="translate-x-1/8 rounded-3xl object-cover"
+                  width={2000}
+                  height={1000}
+                />
               </div>
             </div>
             {/* Step 2 */}
