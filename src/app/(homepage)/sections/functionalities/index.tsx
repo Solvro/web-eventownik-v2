@@ -19,7 +19,7 @@ function FeatureTile({
   icon: JSX.Element;
 }) {
   return (
-    <div className="flex max-w-80 flex-row gap-4 sm:flex-col sm:gap-8">
+    <div className="flex flex-row gap-4 sm:max-w-80 sm:flex-col sm:gap-8">
       <div className="h-min w-min rounded-xl bg-[#3672FD]/15 p-2 text-[#3672FD] sm:rounded-2xl sm:p-4 [&>svg]:size-5 sm:[&>svg]:size-6">
         {icon}
       </div>
@@ -94,7 +94,7 @@ export function Functionalities() {
           <div className="divide-input flex w-full flex-col divide-y-[1px] divide-dashed overflow-hidden rounded-t-4xl bg-[#ffffff] dark:bg-[#101011]">
             {/* Step 1 */}
             <div className="grid w-full grid-cols-1 gap-8 sm:gap-16 lg:grid-cols-2">
-              <div className="flex w-full flex-col gap-8 px-4 sm:gap-16 sm:px-16 lg:pt-16">
+              <div className="flex w-full flex-col gap-8 px-4 pb-8 sm:gap-16 sm:px-16 lg:pt-16">
                 <div className="w-full space-y-4">
                   <FeatureStep step={1} />
                   <FeatureTitle>Tworzenie i konfiguracja wydarzeń</FeatureTitle>
@@ -122,7 +122,7 @@ export function Functionalities() {
             </div>
             {/* New functionalities */}
             <div className="divide-input grid w-full grid-cols-1 divide-y divide-dashed sm:gap-8 sm:divide-x-[1px] lg:grid-cols-2">
-              <div className="flex flex-col-reverse overflow-hidden p-4 sm:flex-row sm:py-16 sm:pr-6 sm:pl-16">
+              <div className="flex flex-col-reverse overflow-hidden px-4 pt-4 pb-8 sm:flex-row sm:py-16 sm:pr-6 sm:pl-16">
                 <div className="z-20 flex min-w-3xs flex-col gap-8 sm:gap-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
@@ -177,7 +177,7 @@ export function Functionalities() {
                 </div>
               </div>
               <div className="flex flex-col-reverse sm:flex-row sm:gap-8">
-                <div className="flex min-w-3xs flex-col gap-8 py-4 pl-4 sm:gap-16 sm:py-16 sm:pl-16">
+                <div className="flex min-w-3xs flex-col gap-8 pt-4 pb-8 pl-4 sm:gap-16 sm:py-16 sm:pl-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
                       Nowe
@@ -199,14 +199,14 @@ export function Functionalities() {
                 <Image
                   src="/assets/landing/functionalities/ipads-mockup.png"
                   alt="Strona wydarzenia"
-                  className="translate-x-1/8 rounded-3xl object-cover"
+                  className="w-full object-cover object-left pt-8 sm:w-md sm:pt-0"
                   width={2000}
                   height={1000}
                 />
               </div>
             </div>
             {/* Step 2 */}
-            <div className="z-20 grid w-full grid-cols-1 items-center gap-8 bg-white p-4 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
+            <div className="z-20 grid w-full grid-cols-1 items-center gap-8 bg-white px-4 pt-4 pb-8 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
               <Image
                 src="/assets/landing/functionalities/iphones-mockup.png"
                 alt="Widok formularza"
