@@ -3,6 +3,7 @@ import React from "react";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import { EventPageLayout } from "../event-page-layout";
@@ -102,7 +103,7 @@ export default async function EventPage({ params }: EventPageProps) {
               {event.attributes.map((attribute) => {
                 return (
                   <li key={attribute.id}>
-                    {attribute.name.toLowerCase()}
+                    {getAttributeLabel(attribute.name, "pl")}
                     {attribute.isSensitiveData
                       ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`
                       : ""}
