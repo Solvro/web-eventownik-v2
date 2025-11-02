@@ -34,6 +34,7 @@ import {
   setupSuggestions,
 } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
+import { getAttributeLabel } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
@@ -257,7 +258,7 @@ function EventEmailEditForm({
 
   const attributeTags = eventAttributes.map((attribute): MessageTag => {
     return {
-      title: attribute.name,
+      title: getAttributeLabel(attribute.name, "pl"),
       description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
