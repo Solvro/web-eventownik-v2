@@ -148,6 +148,7 @@ export function Functionalities() {
                   <div className="flex h-72 flex-col gap-4 overflow-hidden sm:h-auto">
                     {Array.from({ length: 6 }).map((_, index) => (
                       <div
+                        // eslint-disable-next-line react/no-array-index-key
                         key={index}
                         className="border-input flex h-min flex-row gap-6 rounded-2xl border bg-[#f7f7f7] p-6 dark:bg-[#151515]"
                       >

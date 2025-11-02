@@ -67,7 +67,7 @@ export default async function EventListPage() {
     );
   }
 
-  const events = ((await response.json()) as Event[]).sort((a, b) => {
+  const events = ((await response.json()) as Event[]).toSorted((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 

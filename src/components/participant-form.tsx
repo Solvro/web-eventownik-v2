@@ -71,7 +71,7 @@ export function ParticipantForm({
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForAttributes(
-      attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+      attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     ),
   });
 

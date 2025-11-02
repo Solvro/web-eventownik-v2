@@ -3,6 +3,7 @@ import React from "react";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import { EventPageLayout } from "../event-page-layout";
@@ -55,7 +56,7 @@ export default async function EventPage({ params }: EventPageProps) {
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
       <h2 className="text-center text-3xl leading-relaxed font-bold md:text-4xl">
-        Polityka Prywatności wydarzenia <br /> &quot;{event.name}&quot;
+        Polityka Prywatności wydarzenia <br /> „{event.name}”
       </h2>
       <div className="bg-primary/5 m-2 rounded-md p-4 leading-relaxed [&>ol>li]:my-6">
         <p className="mb-2">
@@ -102,7 +103,7 @@ export default async function EventPage({ params }: EventPageProps) {
               {event.attributes.map((attribute) => {
                 return (
                   <li key={attribute.id}>
-                    {attribute.name.toLowerCase()}
+                    {getAttributeLabel(attribute.name, "pl")}
                     {attribute.isSensitiveData
                       ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`
                       : ""}
