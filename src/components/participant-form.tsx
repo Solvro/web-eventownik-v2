@@ -1,10 +1,11 @@
 "use client";
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -66,6 +67,8 @@ export function ParticipantForm({
   const locale = useLocale();
   const [files, setFiles] = useState<File[]>([]);
   const router = useRouter();
+  const hCaptchaRef = useRef<HCaptcha>(null);
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
 
   // generate schema for form based on attributes
   const formSchema = z.object({
@@ -95,7 +98,7 @@ export function ParticipantForm({
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const result = await onSubmit(values, files);
+      const result = await onSubmit({ ...values, hCaptchaToken }, files);
       if (result.success) {
         setFiles([]);
         if (editMode) {
@@ -141,6 +144,8 @@ export function ParticipantForm({
           : t("registrationFailedTitle"),
         description: t("serverError"),
       });
+    } finally {
+      hCaptchaRef.current?.resetCaptcha();
     }
   }
 
@@ -259,10 +264,26 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
+        <HCaptcha
+          ref={hCaptchaRef}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
+          size="invisible"
+          onLoad={() => {
+            hCaptchaRef.current?.execute();
+          }}
+          onVerify={(token) => {
+            setHCaptchaToken(token);
+          }}
+          onExpire={() => {
+            setHCaptchaToken(null);
+            hCaptchaRef.current?.execute();
+          }}
+        />
+
         <Button
           type="submit"
           variant="eventDefault"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || hCaptchaToken == null}
           className="sticky bottom-4 w-full shadow-lg md:bottom-0"
         >
           {form.formState.isSubmitting ? (
