@@ -113,8 +113,8 @@ export function generateColumns(
 
   const attributeColumns = [
     // Sort attributes by order before creating columns
-    ...[...attributes]
-      .sort((a, b) => {
+    ...attributes
+      .toSorted((a, b) => {
         const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
         const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;

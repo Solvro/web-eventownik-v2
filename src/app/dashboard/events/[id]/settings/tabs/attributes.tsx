@@ -551,7 +551,7 @@ export function Attributes({
 
   // Sort attributes by order
   const sortedAttributes = useMemo(() => {
-    return [...attributes].sort((a, b) => {
+    return attributes.toSorted((a, b) => {
       const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
       const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
       return orderA - orderB;

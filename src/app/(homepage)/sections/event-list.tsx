@@ -7,10 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Event as EventType } from "@/types/event";
-
-import { Button } from "../../../components/ui/button";
 
 function TimelineStep({
   month,
@@ -54,6 +53,7 @@ function TimelineStep({
                   ? "w-0"
                   : "h-5 w-px",
             )}
+            // eslint-disable-next-line react/no-array-index-key
             key={index}
           />
         ))}

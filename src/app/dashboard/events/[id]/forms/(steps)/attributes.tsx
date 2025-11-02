@@ -32,9 +32,7 @@ function AttributesForm({
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
   >(
-    [...newEventForm.attributes].sort(
-      (a, b) => (a.order ?? 0) - (b.order ?? 0),
-    ),
+    newEventForm.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
   );
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
