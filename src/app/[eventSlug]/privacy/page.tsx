@@ -56,7 +56,7 @@ export default async function EventPage({ params }: EventPageProps) {
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
       <h2 className="text-center text-3xl leading-relaxed font-bold md:text-4xl">
-        Polityka Prywatności wydarzenia <br /> &quot;{event.name}&quot;
+        Polityka Prywatności wydarzenia <br /> „{event.name}”
       </h2>
       <div className="bg-primary/5 m-2 rounded-md p-4 leading-relaxed [&>ol>li]:my-6">
         <p className="mb-2">
