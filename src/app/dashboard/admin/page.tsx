@@ -36,7 +36,7 @@ async function getAllEvents(bearerToken: string) {
   if (!response.ok) {
     return [];
   }
-  return ((await response.json()) as Event[]).sort((a, b) => {
+  return ((await response.json()) as Event[]).toSorted((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 }

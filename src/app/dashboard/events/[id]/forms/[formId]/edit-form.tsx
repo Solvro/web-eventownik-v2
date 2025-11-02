@@ -65,7 +65,7 @@ function EventFormEditForm({
 }: EventFormEditFormProps) {
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
-  >(formToEdit.attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+  >(formToEdit.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)));
   const form = useForm<z.infer<typeof EventFormSchema>>({
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
