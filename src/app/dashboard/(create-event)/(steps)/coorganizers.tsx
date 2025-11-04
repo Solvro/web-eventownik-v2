@@ -19,7 +19,7 @@ import type { Permission } from "@/types/co-organizer";
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
-const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
+export const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
   {
     permission: {
       id: 3,
@@ -55,13 +55,53 @@ const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
 ];
 
 export const EventCoorganizersFormSchema = z.object({
-  coorganizers: z.array(
-    z.object({
-      id: z.string(),
-      email: z.string().email("Podaj poprawny adres email"),
-      permissions: z.array(z.custom<Permission>()),
-    }),
-  ),
+  coorganizers: z
+    .array(
+      z.object({
+        id: z.string(),
+        email: z.string(),
+        permissions: z.array(z.custom<Permission>()),
+      }),
+    )
+    .superRefine((coorganizers, ctx) => {
+      // make changes to the validation based on the length of the array
+      if (coorganizers.length === 1) {
+        // if there's only one item, allow it to be an empty string, we will filter it out later
+        const result = z
+          .string()
+          .email()
+          .or(z.literal(""))
+          .safeParse(coorganizers[0].email);
+        if (!result.success) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [0, "email"],
+            message: "Podaj poprawny adres email",
+          });
+        }
+      } else {
+        // if there are more than one, all emails must be valid
+        coorganizers.forEach((coorganizer, index) => {
+          const result = z
+            .string()
+            .email({
+              message: "Podaj poprawny adres email",
+            })
+            .safeParse(coorganizer.email);
+          if (!result.success) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: [index, "email"],
+              message: result.error.issues[0].message,
+            });
+          }
+        });
+      }
+    })
+    .transform((coorganizers) =>
+      // this filter will remove the item if it was the only one and it was empty
+      coorganizers.filter((coorganizer) => coorganizer.email.trim() !== ""),
+    ),
 });
 
 export function CoorganizersForm() {
@@ -105,7 +145,7 @@ export function CoorganizersForm() {
           <FormItem className="w-full">
             <Input
               disabled={formState.isSubmitting}
-              type="email"
+              type="text"
               className="h-12 rounded-xl text-lg sm:w-full sm:min-w-80 md:text-sm"
               placeholder="Wprowadź email współorganizatora"
               defaultValue={coorganizer.email}

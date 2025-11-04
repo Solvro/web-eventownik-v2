@@ -41,6 +41,7 @@ import {
 import {
   CoorganizersForm,
   EventCoorganizersFormSchema,
+  PERMISSIONS_CONFIG,
 } from "./(steps)/coorganizers";
 import {
   EventGeneralInfoSchema,
@@ -111,7 +112,13 @@ export function CreateEventForm() {
         event.slug === ""
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
           : event.slug,
-      coorganizers: [],
+      coorganizers: [
+        {
+          id: "",
+          email: "",
+          permissions: PERMISSIONS_CONFIG.map((p) => p.permission),
+        },
+      ],
       attributes: [],
     },
   });
