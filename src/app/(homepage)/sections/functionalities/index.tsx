@@ -115,7 +115,7 @@ export function Functionalities() {
               <Image
                 src="/assets/landing/functionalities/event-creation.png"
                 alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
-                className="image-fade order-first h-full rounded-3xl object-cover pt-8 sm:pt-16 lg:order-last lg:max-w-5xl lg:-translate-x-1/5"
+                className="image-fade order-first h-full rounded-3xl object-cover pt-8 sm:pt-16 lg:order-last lg:max-w-5xl lg:-translate-x-[20%]"
                 width={2000}
                 height={1000}
               />
