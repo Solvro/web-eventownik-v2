@@ -207,7 +207,7 @@ export function ParticipantForm({
    * Checks captcha status: executes captcha if not yet verified, and
    * if captcha is verified, submits form right away - noticable in edit mode.
    *
-   * After this function finishes, `form.formState.isSubmitting` will be true, that's why
+   * After this function finishes, `form.formState.isSubmitSuccessful` will be true, that's why
    * we don't rely on it to show the success screen.
    */
   async function handleFormSubmit(values: z.infer<typeof formSchema>) {
