@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -68,12 +68,15 @@ export function ParticipantForm({
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
+  const sortedAttributes = useMemo(
+    () => attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [attributes],
+  );
+
   // generate schema for form based on attributes
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
-    ...getSchemaObjectForAttributes(
-      attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-    ),
+    ...getSchemaObjectForAttributes(attributes),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -202,7 +205,7 @@ export function ParticipantForm({
           />
         ) : null}
 
-        {attributes.map((attribute) => (
+        {sortedAttributes.map((attribute) => (
           <FormField
             key={attribute.id}
             control={form.control}
