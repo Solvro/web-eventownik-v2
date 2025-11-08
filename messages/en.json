@@ -26,7 +26,8 @@
     "editSaveFailedTitle": "Saving form data failed",
     "editYourResponse": "Edit your response",
     "captchaInProgress": "Verifying CAPTCHA...",
-    "captchaFailed": "CAPTCHA verification failed. Try again."
+    "captchaFailed": "CAPTCHA verification failed",
+    "tryAgain": "Try again"
   },
   "Themes": {
     "light": "Light",

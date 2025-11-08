@@ -2,7 +2,7 @@
 
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
@@ -63,6 +63,7 @@ export function ParticipantForm({
   const router = useRouter();
   const hCaptchaRef = useRef<HCaptcha>(null);
   const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
   const submitText = editMode ? t("save") : t("signUp");
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
@@ -270,31 +271,56 @@ export function ParticipantForm({
           }}
           onVerify={(token) => {
             setHCaptchaToken(token);
+            setDidCaptchaFail(false);
           }}
           onExpire={() => {
             setHCaptchaToken(null);
-            hCaptchaRef.current?.execute();
+            setDidCaptchaFail(true);
+          }}
+          onClose={() => {
+            setDidCaptchaFail(true);
+          }}
+          onError={(captchaError) => {
+            console.error("Captcha error occured:", captchaError);
+            setDidCaptchaFail(true);
           }}
         />
 
-        <Button
-          type="submit"
-          variant="eventDefault"
-          disabled={form.formState.isSubmitting || hCaptchaToken == null}
-          className="sticky bottom-4 w-full shadow-lg md:bottom-0"
-        >
-          {form.formState.isSubmitting ? (
-            <>
-              <Loader2 className="animate-spin" /> {submittingText}
-            </>
-          ) : hCaptchaToken === null ? (
-            <>
-              <Loader2 className="animate-spin" /> {t("captchaInProgress")}
-            </>
-          ) : (
-            submitText
-          )}
-        </Button>
+        {didCaptchaFail ? (
+          <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-500 p-4">
+            <Ban className="size-8 text-red-500" />
+            <p className="text-center text-red-500">{t("captchaFailed")}</p>
+            <Button
+              size="sm"
+              type="button"
+              variant="outline"
+              onClick={() => {
+                hCaptchaRef.current?.execute();
+              }}
+            >
+              {t("tryAgain")}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="submit"
+            variant="eventDefault"
+            disabled={form.formState.isSubmitting || hCaptchaToken === null}
+            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" /> {submittingText}
+              </>
+            ) : hCaptchaToken === null ? (
+              <>
+                <Loader2 className="animate-spin" /> {t("captchaInProgress")}
+              </>
+            ) : (
+              submitText
+            )}
+          </Button>
+        )}
       </form>
     </Form>
   );
