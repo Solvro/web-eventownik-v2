@@ -26,8 +26,7 @@
     "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
     "editYourResponse": "Edytuj swoją odpowiedź",
     "captchaInProgress": "Trwa weryfikacja CAPTCHA...",
-    "captchaFailed": "Weryfikacja CAPTCHA nie powiodła się",
-    "tryAgain": "Spróbuj ponownie"
+    "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie"
   },
   "Themes": {
     "light": "Jasny",

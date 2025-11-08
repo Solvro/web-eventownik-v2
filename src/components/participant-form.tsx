@@ -290,20 +290,17 @@ export function ParticipantForm({
         />
 
         {didCaptchaFail ? (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-500 p-4">
-            <Ban className="size-8 text-red-500" />
-            <p className="text-center text-red-500">{t("captchaFailed")}</p>
-            <Button
-              size="sm"
-              type="button"
-              variant="outline"
-              onClick={() => {
-                hCaptchaRef.current?.execute();
-              }}
-            >
-              {t("tryAgain")}
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="destructive"
+            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            onClick={() => {
+              hCaptchaRef.current?.execute();
+            }}
+          >
+            <Ban className="size-8" />
+            <span>{t("captchaFailed")}</span>
+          </Button>
         ) : (
           <Button
             type="submit"
