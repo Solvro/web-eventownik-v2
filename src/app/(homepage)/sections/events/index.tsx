@@ -1,0 +1,96 @@
+"use client";
+
+import {
+  QueryFunctionContext,
+  keepPreviousData,
+  useQuery,
+} from "@tanstack/react-query";
+import {
+  addMonths,
+  endOfMonth,
+  format,
+  getYear,
+  set,
+  startOfMonth,
+} from "date-fns";
+import { CircleAlert, Loader2 } from "lucide-react";
+import { useState } from "react";
+
+import { EventList } from "@/app/(homepage)/sections/events/event-list";
+import { Timeline } from "@/app/(homepage)/sections/events/timeline";
+import { API_URL } from "@/lib/api";
+import type { Event as EventType } from "@/types/event";
+
+/**
+ * Generates an API URL for a specific month and year.
+ *
+ * @param {number} year - The full year.
+ * @param {number} month - The month (1 for Jan, 12 for Dec).
+ * @returns {string} The formatted API URL string.
+ */
+function getEventsUrl(year: number, month: number) {
+  const targetDate = set(new Date(), { year: year, month: month });
+
+  // Get the first and last day of the month
+  const startDate = startOfMonth(targetDate);
+  const endDate = addMonths(startDate, 1);
+
+  // Format them into YYYY-MM-DD strings
+  const formattedStart = format(startDate, "yyyy-MM-dd");
+  const formattedEnd = format(endDate, "yyyy-MM-dd");
+
+  // 4. Build the URL
+  return `${API_URL}/events/public?from=${formattedStart}&to=${formattedEnd}`;
+}
+
+async function fetchEvents(
+  context: QueryFunctionContext<[string, number, number]>,
+): Promise<EventType[]> {
+  const [_key, year, month] = context.queryKey;
+  const url = getEventsUrl(year, month);
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json() as Promise<EventType[]>;
+}
+
+export function Events() {
+  const [month, setMonth] = useState<number>(new Date().getMonth());
+  const {
+    data: events,
+    isLoading,
+    error,
+  } = useQuery({
+    // TODO: implement selecting year later
+    queryKey: ["events", getYear(new Date()), month],
+    queryFn: fetchEvents,
+    placeholderData: keepPreviousData,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 shadow-xl">
+        <Loader2 className="animate-spin" />
+        Pobieranie wydarzeń...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 shadow-xl">
+        <CircleAlert className="text-red-500" />
+        <p>O nie! Nie udało się pobrać wydarzeń: {error.message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full overflow-hidden">
+      <Timeline month={month} setMonth={setMonth} />
+      <EventList events={events} />
+    </div>
+  );
+}
