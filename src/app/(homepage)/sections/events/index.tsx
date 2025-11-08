@@ -1,18 +1,8 @@
 "use client";
 
-import {
-  QueryFunctionContext,
-  keepPreviousData,
-  useQuery,
-} from "@tanstack/react-query";
-import {
-  addMonths,
-  endOfMonth,
-  format,
-  getYear,
-  set,
-  startOfMonth,
-} from "date-fns";
+import type { QueryFunctionContext } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { addMonths, format, getYear, set, startOfMonth } from "date-fns";
 import { CircleAlert, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,7 +19,7 @@ import type { Event as EventType } from "@/types/event";
  * @returns {string} The formatted API URL string.
  */
 function getEventsUrl(year: number, month: number) {
-  const targetDate = set(new Date(), { year: year, month: month });
+  const targetDate = set(new Date(), { year, month });
 
   // Get the first and last day of the month
   const startDate = startOfMonth(targetDate);
@@ -78,7 +68,7 @@ export function Events() {
     );
   }
 
-  if (error) {
+  if (error != null) {
     return (
       <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 shadow-xl">
         <CircleAlert className="text-red-500" />
