@@ -29,9 +29,9 @@ function Event({
   slug: string;
 }) {
   const eventPhoto =
-    photoUrl !== null
-      ? `${PHOTO_URL}/${photoUrl}`
-      : "/assets/event-photo-placeholder.png";
+    photoUrl === null
+      ? "/assets/event-photo-placeholder.png"
+      : `${PHOTO_URL}/${photoUrl}`;
 
   // Helper to render date range using date-fns
   function renderDate() {
@@ -157,7 +157,7 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
   return (
     <section id="events" className="flex flex-col">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b bg-white dark:bg-[#101011]">
-        {events && events.length > 0 ? (
+        {events != null && events.length > 0 ? (
           events.map((event) => (
             <Event
               key={event.slug}
