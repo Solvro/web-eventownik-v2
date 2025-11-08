@@ -43,9 +43,6 @@ interface ParticipantFormProps {
     values: Record<string, unknown>,
     files: File[],
   ) => Promise<{ success: boolean; errors?: ErrorObject[]; error?: string }>;
-  successMessage: string;
-  submitButtonText: string;
-  submittingText: string;
   includeEmail?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
@@ -55,9 +52,6 @@ interface ParticipantFormProps {
 export function ParticipantForm({
   attributes,
   onSubmit,
-  successMessage,
-  submitButtonText,
-  submittingText,
   includeEmail = false,
   userData,
   eventBlocks = [],
@@ -69,6 +63,9 @@ export function ParticipantForm({
   const router = useRouter();
   const hCaptchaRef = useRef<HCaptcha>(null);
   const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const submitText = editMode ? t("save") : t("signUp");
+  const submittingText = editMode ? t("saving") : t("registering");
+  const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
   // generate schema for form based on attributes
   const formSchema = z.object({
@@ -290,8 +287,12 @@ export function ParticipantForm({
             <>
               <Loader2 className="animate-spin" /> {submittingText}
             </>
+          ) : hCaptchaToken === null ? (
+            <>
+              <Loader2 className="animate-spin" /> {t("captchaInProgress")}
+            </>
           ) : (
-            submitButtonText
+            submitText
           )}
         </Button>
       </form>
