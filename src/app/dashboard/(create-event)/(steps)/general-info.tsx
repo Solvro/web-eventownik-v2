@@ -1,7 +1,12 @@
 "use client";
 
 import { format, subDays } from "date-fns";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  Download,
+} from "lucide-react";
+import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,6 +36,11 @@ export const EventGeneralInfoSchema = z.object({
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   location: z.string().optional(),
   organizer: z.string().optional(),
+  termsLink: z
+    .string()
+    .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
+    .optional()
+    .or(z.literal("")),
 });
 
 export function GeneralInfoForm() {
@@ -241,6 +251,38 @@ export function GeneralInfoForm() {
             </FormItem>
           )}
         />
+        <div className="col-span-2 space-y-2">
+          <FormField
+            name="termsLink"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-1">
+                <FormLabel>Link do regulaminu</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={formState.isSubmitting}
+                    placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {formState.errors.termsLink?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <Button asChild variant="eventGhost" size="sm" className="px-2">
+            <Link
+              href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+              download
+              target="_blank"
+            >
+              <Download className="size-3" />
+              Pobierz szablon regulaminu (współtworzony z Działem Prawnym PWr)
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

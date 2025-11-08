@@ -104,6 +104,7 @@ export function CreateEventForm() {
       endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location,
       organizer: event.organizer,
+      termsLink: event.termsLink,
       image: event.image,
       color: event.color,
       participantsNumber: event.participantsNumber,
@@ -218,7 +219,8 @@ export function CreateEventForm() {
       description: "Dodaj atrybuty",
       icon: <TextIcon />,
       content: <AttributesForm />,
-      onSubmit: () => {
+      onSubmit: (values: EventSchema) => {
+        console.log(values);
         // TODO: handle saving event here
       },
       resolver: zodResolver(
@@ -265,6 +267,7 @@ export function CreateEventForm() {
           slug: "",
           coorganizers: [],
           attributes: [],
+          termsLink: "",
         });
 
         // Disable the unsaved changes guard
@@ -351,11 +354,10 @@ export function CreateEventForm() {
                 {currentStep === steps.length - 1 ? (
                   <Button
                     className="w-min"
-                    onClick={createEvent}
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting}
                     type="submit"
                   >
-                    {loading ? (
+                    {form.formState.isSubmitting ? (
                       <Loader2 className="animate-spin" />
                     ) : (
                       <SquarePlus />
