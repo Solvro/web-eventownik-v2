@@ -22,7 +22,7 @@ export async function AuthButton({
       {session === null ? (
         <Link href="/auth/login">Zaloguj się</Link>
       ) : (
-        <Link href="/dashboard">Panel organizatora</Link>
+        <Link href="/dashboard/events">Panel organizatora</Link>
       )}
     </Button>
   );
