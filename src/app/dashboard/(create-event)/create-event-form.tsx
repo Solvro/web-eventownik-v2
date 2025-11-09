@@ -59,7 +59,6 @@ export function CreateEventForm() {
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
 
@@ -219,9 +218,65 @@ export function CreateEventForm() {
       description: "Dodaj atrybuty",
       icon: <TextIcon />,
       content: <AttributesForm />,
-      onSubmit: (values: EventSchema) => {
-        console.log(values);
-        // TODO: handle saving event here
+      onSubmit: async () => {
+        const base64Image = event.image.startsWith("blob:")
+          ? await getBase64FromUrl(event.image)
+          : event.image;
+        const newEventObject = {
+          ...event,
+          image: base64Image,
+          coorganizers:
+            event.coorganizers.length === 1 && !event.coorganizers[0].email
+              ? []
+              : event.coorganizers,
+        };
+        try {
+          const result = await saveEvent(newEventObject);
+          if ("errors" in result) {
+            toast({
+              variant: "destructive",
+              title: "Nie udało się dodać wydarzenia!",
+              description: "Spróbuj utworzyć wydarzenie ponownie",
+            });
+          } else {
+            URL.revokeObjectURL(event.image);
+
+            toast({
+              title: "Dodano nowe wydarzenie",
+            });
+
+            setEvent({
+              name: "",
+              description: "",
+              // Tomorrow, midnight
+              startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              location: "",
+              organizer: "",
+              image: "",
+              color: "#3672fd",
+              participantsNumber: 1,
+              socialMediaLinks: [],
+              slug: "",
+              coorganizers: [],
+              attributes: [],
+              termsLink: "",
+            });
+
+            // Disable the unsaved changes guard
+            setDisabled(true);
+
+            setTimeout(() => {
+              router.push(`/dashboard/events/${result.id}`);
+            }, 200);
+          }
+        } catch {
+          toast({
+            variant: "destructive",
+            title: "Brak połączenia z serwerem",
+            description: "Sprawdź swoje połączenie z internetem",
+          });
+        }
       },
       resolver: zodResolver(
         EventAttributesFormSchema,
@@ -230,62 +285,6 @@ export function CreateEventForm() {
   ];
 
   useAutoSave(setEvent, form);
-
-  async function createEvent() {
-    setLoading(true);
-    const base64Image = event.image.startsWith("blob:")
-      ? await getBase64FromUrl(event.image)
-      : event.image;
-    const newEventObject = { ...event, image: base64Image };
-    try {
-      const result = await saveEvent(newEventObject);
-      if ("errors" in result) {
-        toast({
-          variant: "destructive",
-          title: "Nie udało się dodać wydarzenia!",
-          description: "Spróbuj utworzyć wydarzenie ponownie",
-        });
-      } else {
-        URL.revokeObjectURL(event.image);
-
-        toast({
-          title: "Dodano nowe wydarzenie",
-        });
-
-        setEvent({
-          name: "",
-          description: "",
-          // Tomorrow, midnight
-          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
-          location: "",
-          organizer: "",
-          image: "",
-          color: "#3672fd",
-          participantsNumber: 1,
-          socialMediaLinks: [],
-          slug: "",
-          coorganizers: [],
-          attributes: [],
-          termsLink: "",
-        });
-
-        // Disable the unsaved changes guard
-        setDisabled(true);
-
-        setTimeout(() => {
-          router.push(`/dashboard/events/${result.id}`);
-        }, 200);
-      }
-    } catch {
-      toast({
-        variant: "destructive",
-        title: "Brak połączenia z serwerem",
-        description: "Sprawdź swoje połączenie z internetem",
-      });
-    }
-    setLoading(false);
-  }
 
   return (
     <Dialog
@@ -332,7 +331,7 @@ export function CreateEventForm() {
               className="flex w-full flex-col items-end gap-4"
               onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
             >
-              {steps[currentStep].content}{" "}
+              {steps[currentStep].content}
               <div
                 className={cn(
                   "flex w-full flex-row items-center gap-4",

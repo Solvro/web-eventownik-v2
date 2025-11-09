@@ -63,7 +63,7 @@ export const EventCoorganizersFormSchema = z.object({
         permissions: z.array(z.custom<Permission>()),
       }),
     )
-    .superRefine((coorganizers, ctx) => {
+    .superRefine((coorganizers, context) => {
       // make changes to the validation based on the length of the array
       if (coorganizers.length === 1) {
         // if there's only one item, allow it to be an empty string, we will filter it out later
@@ -73,7 +73,7 @@ export const EventCoorganizersFormSchema = z.object({
           .or(z.literal(""))
           .safeParse(coorganizers[0].email);
         if (!result.success) {
-          ctx.addIssue({
+          context.addIssue({
             code: z.ZodIssueCode.custom,
             path: [0, "email"],
             message: "Podaj poprawny adres email",
@@ -81,7 +81,7 @@ export const EventCoorganizersFormSchema = z.object({
         }
       } else {
         // if there are more than one, all emails must be valid
-        coorganizers.forEach((coorganizer, index) => {
+        for (const [index, coorganizer] of coorganizers.entries()) {
           const result = z
             .string()
             .email({
@@ -89,13 +89,13 @@ export const EventCoorganizersFormSchema = z.object({
             })
             .safeParse(coorganizer.email);
           if (!result.success) {
-            ctx.addIssue({
+            context.addIssue({
               code: z.ZodIssueCode.custom,
               path: [index, "email"],
               message: result.error.issues[0].message,
             });
           }
-        });
+        }
       }
     })
     .transform((coorganizers) =>
