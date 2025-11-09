@@ -46,12 +46,17 @@ import type { AttributeType, EventAttribute } from "@/types/attributes";
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
+type NewEventAttribute = Pick<
+  EventAttribute,
+  "name" | "slug" | "type" | "options" | "showInList"
+>;
+
 export const EventAttributesFormSchema = z.object({
-  attributes: z.array(z.custom<EventAttribute>()),
+  attributes: z.array(z.custom<NewEventAttribute>()),
 });
 
 interface AttributeItemProps {
-  attribute: EventAttribute;
+  attribute: NewEventAttribute;
   index: number;
   onRemove: () => void;
 }
@@ -224,13 +229,13 @@ function AttributeItem({ attribute, index, onRemove }: AttributeItemProps) {
 
           <div className="flex items-center space-x-2">
             <Checkbox
-              id={`showInTable-${attribute.id.toString()}`}
+              id={`showInTable-${index.toString()}`}
               onCheckedChange={(checked) => {
                 setValue(`attributes.${index}.showInList`, checked === true);
               }}
               defaultChecked={true}
             />
-            <Label htmlFor={`showInTable-${attribute.id.toString()}`}>
+            <Label htmlFor={`showInTable-${index.toString()}`}>
               Pokaż w tabeli
             </Label>
           </div>
@@ -307,16 +312,11 @@ export function AttributesForm() {
               variant="outline"
               onClick={() => {
                 append({
-                  id: fields.length + 1,
                   name: "",
                   type: "text" as AttributeType,
                   slug: "",
-                  eventId: 0,
                   options: [],
                   showInList: true,
-                  rootBlockId: undefined,
-                  createdAt: "", // set it to empty string to avoid type error
-                  updatedAt: "", // set it to empty string to avoid type error
                 });
               }}
               className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
