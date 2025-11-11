@@ -25,7 +25,24 @@
     "editSaveFailed": "Saving form data failed.\\nTry again later",
     "editSaveFailedTitle": "Saving form data failed",
     "editYourResponse": "Edit your response",
-    "captchaInProgress": "Verifying CAPTCHA...",
+    "captchaInProgress": "CAPTCHA verification...",
+    "captchaFailed": "CAPTCHA error. Try again"
+  },
+  "Auth": {
+    "registerTitle": "Organizer registeration",
+    "registerDescription": "Enter your email to register.",
+    "creatingAccout": "Creating account...",
+    "loginExisting": "Already have an account? Sign in",
+    "loginTitle": "Organizer login",
+    "loginDescription": "Enter your email to sign in.",
+    "loggingIn": "Signing in...",
+    "forgotPassword": "Forgot your password?",
+    "noAccountYet": "No account yet? Register",
+    "passwordLabel": "Password",
+    "nameLabel": "First name",
+    "surnameLabel": "Last name",
+    "continue": "Continue",
+    "captchaInProgress": "CAPTCHA verification...",
     "captchaFailed": "CAPTCHA error. Try again"
   },
   "Themes": {

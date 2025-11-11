@@ -28,6 +28,21 @@
     "captchaInProgress": "Trwa weryfikacja CAPTCHA...",
     "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie"
   },
+  "Auth": {
+    "registerTitle": "Rejestracja organizatora",
+    "registerDescription": "Podaj swój email by się zarejestrować.",
+    "creatingAccout": "Tworzenie konta...",
+    "loginExisting": "Posiadasz już konto? Zaloguj się",
+    "loginTitle": "Logowanie organizatora",
+    "loginDescription": "Podaj swój email by się zalogować.",
+    "loggingIn": "Logowanie...",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "noAccountYet": "Nie masz jeszcze konta? Zarejestruj się",
+    "passwordLabel": "Hasło",
+    "nameLabel": "Imię",
+    "surnameLabel": "Nazwisko",
+    "continue": "Kontynuuj"
+  },
   "Themes": {
     "light": "Jasny",
     "dark": "Ciemny",
