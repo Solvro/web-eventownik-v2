@@ -20,7 +20,7 @@ const themes = [
   { name: "light", icon: Sun },
   { name: "dark", icon: Moon },
   { name: "system", icon: Monitor },
-];
+] as const;
 
 function ThemeSwitch({
   variant = "outline",
