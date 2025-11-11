@@ -86,7 +86,7 @@ export async function login(
 }
 
 export async function sendPasswordResetToken(
-  values: z.infer<typeof sendPasswordResetTokenSchema>,
+  values: z.infer<typeof sendPasswordResetTokenSchema> & { token: string },
 ) {
   try {
     const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
@@ -96,6 +96,7 @@ export async function sendPasswordResetToken(
       method: "POST",
       body: JSON.stringify({
         email: values.email,
+        token: values.token,
       }),
     });
 
