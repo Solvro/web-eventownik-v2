@@ -1,4 +1,4 @@
-import { EventList } from "@/app/(homepage)/sections/event-list";
+import { Events } from "@/app/(homepage)/sections/events";
 import { Footer } from "@/app/(homepage)/sections/footer";
 import { Functionalities } from "@/app/(homepage)/sections/functionalities";
 import { Hero } from "@/app/(homepage)/sections/hero";
@@ -15,7 +15,7 @@ export default function Home() {
         <Navbar />
         <Hero />
         <HighlightedEvents />
-        <EventList />
+        <Events />
         <Functionalities />
       </div>
       <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">

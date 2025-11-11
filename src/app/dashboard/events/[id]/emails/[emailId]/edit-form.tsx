@@ -28,6 +28,13 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
+import {
+  ATTRIBUTE_CATEGORY,
+  FORM_CATEGORY,
+  setupSuggestions,
+} from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/extensions/tags";
+import { getAttributeLabel } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
@@ -249,6 +256,27 @@ function EventEmailEditForm({
     }
   }
 
+  const attributeTags = eventAttributes.map((attribute): MessageTag => {
+    return {
+      title: getAttributeLabel(attribute.name, "pl"),
+      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      // NOTE: Why 'attribute.slug' can be null?
+      value: `/participant_${attribute.slug ?? ""}`,
+      color: "brown",
+      category: ATTRIBUTE_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
+  const formTags = eventForms.map((eventForm): MessageTag => {
+    return {
+      title: eventForm.name,
+      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      value: `/form_${eventForm.slug}`,
+      color: "green",
+      category: FORM_CATEGORY,
+    };
+  }) satisfies MessageTag[];
+
   return (
     <Form {...form}>
       <UnsavedChangesAlert
@@ -345,10 +373,18 @@ function EventEmailEditForm({
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Treść wiadomości</FormLabel>
+                <FormLabel>
+                  Treść wiadomości
+                  <span className="text-muted-foreground ml-2 text-xs">
+                    Wskazówka: Użyj Shift+Enter aby dodać nową linię w tym samym
+                    akapicie.
+                  </span>
+                </FormLabel>
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
+                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  isEmailEditor
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import { AuthButton } from "@/components/auth-button";
+import { ThemeSwitch } from "@/components/theme-switch";
 
-import { ThemeSwitch } from "../../../../components/theme-switch";
 import { AppLogo } from "../app-logo";
+import { AuthButton } from "./auth-button";
 import { MobileNavbar } from "./mobile-navbar";
 
 export function Navbar() {
