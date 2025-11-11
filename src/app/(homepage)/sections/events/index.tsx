@@ -2,7 +2,14 @@
 
 import type { QueryFunctionContext } from "@tanstack/react-query";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { addMonths, format, getYear, set, startOfMonth } from "date-fns";
+import {
+  addMonths,
+  format,
+  getMonth,
+  getYear,
+  set,
+  startOfMonth,
+} from "date-fns";
 import { CircleAlert, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -47,14 +54,18 @@ async function fetchEvents(
 }
 
 export function Events() {
-  const [month, setMonth] = useState<number>(new Date().getMonth());
+  const [filters, setFilters] = useState<{ month: number; year: number }>({
+    month: getMonth(new Date()),
+    year: getYear(new Date()),
+  });
+
   const {
     data: events,
     isLoading,
     error,
   } = useQuery({
     // TODO: implement selecting year later
-    queryKey: ["events", getYear(new Date()), month],
+    queryKey: ["events", filters.year, filters.month],
     queryFn: fetchEvents,
     placeholderData: keepPreviousData,
   });
@@ -79,7 +90,7 @@ export function Events() {
 
   return (
     <div className="w-full overflow-hidden">
-      <Timeline month={month} setMonth={setMonth} />
+      <Timeline filters={filters} setFilters={setFilters} />
       <EventList events={events} />
     </div>
   );

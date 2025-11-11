@@ -1,5 +1,6 @@
 "use client";
 
+import { addMonths, getMonth, getYear } from "date-fns";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { useLayoutEffect, useRef, useState } from "react";
@@ -10,11 +11,15 @@ import { cn } from "@/lib/utils";
 function TimelineStep({
   month,
   monthNumber,
+  monthIndex,
+  year,
   isActive,
   onClick,
 }: {
   month: string;
   monthNumber: number;
+  monthIndex: number;
+  year: number;
   isActive: boolean;
   onClick: () => void;
 }) {
@@ -33,25 +38,30 @@ function TimelineStep({
       </button>
       <div className="flex flex-row items-end gap-6">
         {Array.from({ length: 11 }).map((_, index) => (
-          <span
-            className={cn(
-              "block",
-              // Make the lines transparent if they are out of bounds
-              (index < 5 && monthNumber === 0) ||
-                (index > 5 && monthNumber === 11)
-                ? "bg-transparent"
-                : "bg-[#414141] dark:bg-[#d6d6d6]",
-              // Full line for under the month
-              index === 5
-                ? "h-10 w-px"
-                : // Remove the last line so they won't stack up
-                  index === 10 && monthNumber !== 11
-                  ? "w-0"
-                  : "h-5 w-px",
+          <div className="flex flex-col items-center" key={index}>
+            {monthNumber === 0 && index === 0 && (
+              <p className="absolute -translate-y-6 text-sm">{year}</p>
             )}
-            // eslint-disable-next-line react/no-array-index-key
-            key={index}
-          />
+            <span
+              className={cn(
+                "block",
+                // Make the lines transparent if they are out of bounds
+                (index < 5 && monthIndex === 0) ||
+                  (index > 5 && monthIndex === 11)
+                  ? "bg-transparent"
+                  : "bg-[#414141] dark:bg-[#d6d6d6]",
+                // Full line for under the month
+                index === 5
+                  ? "h-10 w-px"
+                  : // Remove the last line so they won't stack up
+                    index === 10 && monthIndex !== 11
+                    ? "w-0"
+                    : "h-5 w-px",
+              )}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -59,11 +69,11 @@ function TimelineStep({
 }
 
 export function Timeline({
-  month,
-  setMonth,
+  filters,
+  setFilters,
 }: {
-  month: number;
-  setMonth: (month: number) => void;
+  filters: { month: number; year: number };
+  setFilters: ({ month, year }: { month: number; year: number }) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -75,20 +85,15 @@ export function Timeline({
     }
   }, [ref]);
 
-  const months = [
-    "Styczeń",
-    "Luty",
-    "Marzec",
-    "Kwiecień",
-    "Maj",
-    "Czerwiec",
-    "Lipiec",
-    "Sierpień",
-    "Wrzesień",
-    "Październik",
-    "Listopad",
-    "Grudzień",
-  ];
+  const monthYears = Array.from({ length: 12 }, (_, index) => index - 6).map(
+    (index) => {
+      const date = addMonths(new Date(), index);
+      return {
+        month: getMonth(date),
+        year: getYear(date),
+      };
+    },
+  );
 
   return (
     <div className="relative flex h-22 w-full flex-col items-center">
@@ -98,7 +103,11 @@ export function Timeline({
           size={"icon"}
           className="z-10 hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
-            setMonth(Math.max(month - 1, 0));
+            if (filters.month === 0) {
+              setFilters({ month: 11, year: filters.year - 1 });
+              return;
+            }
+            setFilters({ month: filters.month - 1, year: filters.year });
           }}
         >
           <ArrowLeftCircle />
@@ -108,7 +117,11 @@ export function Timeline({
           size={"icon"}
           className="z-10 hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
-            setMonth(Math.min(month + 1, 11));
+            if (filters.month === 11) {
+              setFilters({ month: 0, year: filters.year + 1 });
+              return;
+            }
+            setFilters({ month: filters.month + 1, year: filters.year });
           }}
         >
           <ArrowRightCircle />
@@ -118,7 +131,12 @@ export function Timeline({
         <motion.div
           ref={ref}
           animate={{
-            x: width / -24 - month * (width / 12),
+            x:
+              width / -24 -
+              monthYears.findIndex(
+                (monthYear) => monthYear.month === filters.month,
+              ) *
+                (width / 12),
           }}
           transition={{
             type: "spring",
@@ -127,14 +145,25 @@ export function Timeline({
           }}
           className="absolute flex shrink-0 translate-x-1/2 flex-row"
         >
-          {months.map((monthName, index) => (
+          {monthYears.map(({ year, month }, index) => (
             <TimelineStep
-              key={monthName}
-              month={monthName}
-              monthNumber={index}
-              isActive={index === month}
+              key={index}
+              month={new Date(year, month, 1).toLocaleString("pl", {
+                month: "long",
+              })}
+              year={year}
+              monthIndex={index}
+              monthNumber={month}
+              isActive={
+                new Date(year, month, 1).toLocaleString("pl", {
+                  month: "long",
+                }) ===
+                new Date(filters.year, filters.month, 1).toLocaleString("pl", {
+                  month: "long",
+                })
+              }
               onClick={() => {
-                setMonth(index);
+                setFilters({ month, year });
               }}
             />
           ))}
