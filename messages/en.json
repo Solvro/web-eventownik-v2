@@ -35,6 +35,7 @@
     "loginExisting": "Already have an account? Sign in",
     "loginTitle": "Organizer login",
     "loginDescription": "Enter your email to sign in.",
+    "loginDisclaimer": "Sign in to manage your events!",
     "loggingIn": "Signing in...",
     "forgotPassword": "Forgot your password?",
     "noAccountYet": "No account yet? Register",

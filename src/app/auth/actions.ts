@@ -42,7 +42,9 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
   return data;
 }
 
-export async function login(values: z.infer<typeof loginFormSchema>) {
+export async function login(
+  values: z.infer<typeof loginFormSchema> & { token: string },
+) {
   try {
     const user = await fetch(`${API_URL}/auth/login`, {
       headers: {
@@ -53,6 +55,7 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
         email: values.email,
         password: values.password,
         rememberMe: true,
+        token: values.token,
       }),
     }).then(async (response) => {
       switch (response.status) {

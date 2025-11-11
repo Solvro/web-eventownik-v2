@@ -25,7 +25,7 @@
     "editSaveFailed": "Zapisanie danych formularza nie powiodło się.\\nSpróbuj ponownie później",
     "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
     "editYourResponse": "Edytuj swoją odpowiedź",
-    "captchaInProgress": "Trwa weryfikacja CAPTCHA...",
+    "captchaInProgress": "Weryfikacja CAPTCHA...",
     "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie"
   },
   "Auth": {
@@ -35,13 +35,16 @@
     "loginExisting": "Posiadasz już konto? Zaloguj się",
     "loginTitle": "Logowanie organizatora",
     "loginDescription": "Podaj swój email by się zalogować.",
+    "loginDisclaimer": "Żeby zarządzać wydarzeniami najpierw musisz się zalogować!",
     "loggingIn": "Logowanie...",
     "forgotPassword": "Zapomniałeś hasła?",
     "noAccountYet": "Nie masz jeszcze konta? Zarejestruj się",
     "passwordLabel": "Hasło",
     "nameLabel": "Imię",
     "surnameLabel": "Nazwisko",
-    "continue": "Kontynuuj"
+    "continue": "Kontynuuj",
+    "captchaInProgress": "Weryfikacja CAPTCHA...",
+    "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie"
   },
   "Themes": {
     "light": "Jasny",
