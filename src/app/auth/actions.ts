@@ -12,7 +12,9 @@ import type {
   sendPasswordResetTokenSchema,
 } from "@/types/schemas";
 
-export async function register(values: z.infer<typeof registerFormSchema>) {
+export async function register(
+  values: z.infer<typeof registerFormSchema> & { token: string },
+) {
   const data = await fetch(`${API_URL}/auth/register`, {
     headers: {
       "Content-Type": "application/json",
@@ -23,6 +25,7 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
+      token: values.token,
     }),
   }).then(async (response) => {
     if (response.status === 200) {
