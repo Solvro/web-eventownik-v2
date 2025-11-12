@@ -33,6 +33,7 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn, getBase64FromUrl } from "@/lib/utils";
+import type { AttributeType } from "@/types/attributes";
 
 import {
   AttributesForm,
@@ -119,7 +120,15 @@ export function CreateEventForm() {
           permissions: PERMISSIONS_CONFIG.map((p) => p.permission),
         },
       ],
-      attributes: [],
+      attributes: [
+        {
+          name: "",
+          type: "text" as AttributeType,
+          slug: "",
+          options: [],
+          showInList: true,
+        },
+      ],
     },
   });
 
@@ -229,6 +238,12 @@ export function CreateEventForm() {
             event.coorganizers.length === 1 && !event.coorganizers[0].email
               ? []
               : event.coorganizers,
+          attributes:
+            event.attributes.length === 1 &&
+            !event.attributes[0].name &&
+            event.attributes[0].slug === ""
+              ? []
+              : event.attributes,
         };
         try {
           const result = await saveEvent(newEventObject);

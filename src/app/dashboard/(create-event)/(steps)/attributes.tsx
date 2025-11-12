@@ -26,6 +26,7 @@ import { z } from "zod";
 import { ATTRIBUTE_TYPES } from "@/app/dashboard/events/[id]/settings/tabs/attributes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -52,7 +53,29 @@ type NewEventAttribute = Pick<
 >;
 
 export const EventAttributesFormSchema = z.object({
-  attributes: z.array(z.custom<NewEventAttribute>()),
+  attributes: z
+    .array(z.custom<NewEventAttribute>())
+    .transform((attributes) => {
+      if (
+        attributes.length === 1 &&
+        !attributes[0].name &&
+        attributes[0].slug === ""
+      ) {
+        return [];
+      }
+      return attributes;
+    })
+    .superRefine((attributes, context) => {
+      for (const [index, attribute] of attributes.entries()) {
+        if (attribute.name === "") {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [index, "name"],
+            message: "Nazwa atrybutu nie może być pusta.",
+          });
+        }
+      }
+    }),
 });
 
 interface AttributeItemProps {
@@ -120,6 +143,7 @@ const AttributeTypeOptions = () =>
   ));
 
 function AttributeItem({ attribute, index, onRemove }: AttributeItemProps) {
+  const [wasSlugModified, setWasSlugModified] = useState<boolean>(false);
   const { register, formState, setValue, getValues } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
   const [optionsInput, setOptionsInput] = useState("");
@@ -190,13 +214,23 @@ function AttributeItem({ attribute, index, onRemove }: AttributeItemProps) {
 
       <div className="flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Input
-            defaultValue={attribute.name}
-            {...register(`attributes.${index}.name` as const)}
-            disabled={formState.isSubmitting}
-            placeholder="Attribute label"
-            className="flex-1"
-          />
+          <div className="flex flex-col gap-2">
+            <Input
+              defaultValue={attribute.name}
+              {...register(`attributes.${index}.name` as const)}
+              disabled={formState.isSubmitting}
+              onChange={(event_) => {
+                if (!wasSlugModified) {
+                  handleSlugChange(event_.target.value);
+                }
+              }}
+              placeholder="Attribute label"
+              className="flex-1"
+            />
+            <FormMessage>
+              {formState.errors.attributes?.[index]?.name?.message}
+            </FormMessage>
+          </div>
 
           <Select
             defaultValue={attribute.type}
@@ -214,8 +248,11 @@ function AttributeItem({ attribute, index, onRemove }: AttributeItemProps) {
 
           <div className="flex flex-col gap-2">
             <Input
-              defaultValue={attribute.slug ?? ""}
+              value={getValues(`attributes.${index}.slug`) ?? ""}
               onChange={(event_) => {
+                if (!wasSlugModified) {
+                  setWasSlugModified(true);
+                }
                 handleSlugChange(event_.target.value);
               }}
               disabled={formState.isSubmitting}
@@ -304,25 +341,31 @@ export function AttributesForm() {
       <div className="w-full space-y-4">
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="flex flex-col gap-1">
-              <p>Atrybuty</p>
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-col gap-1">
+                <p>Atrybuty</p>
+                <p className="text-muted-foreground text-sm leading-none font-medium">
+                  Dodane atrybuty będzie można wykorzystać w np. formularzu
+                  rejestracyjnym.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  append({
+                    name: "",
+                    type: "text" as AttributeType,
+                    slug: "",
+                    options: [],
+                    showInList: true,
+                  });
+                }}
+                className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                append({
-                  name: "",
-                  type: "text" as AttributeType,
-                  slug: "",
-                  options: [],
-                  showInList: true,
-                });
-              }}
-              className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
             {fields.map((attribute, index) => (
               <AttributeItem
                 key={attribute.id}
