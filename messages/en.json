@@ -21,7 +21,9 @@
     "signUp": "Sign up",
     "editSaveFailed": "Saving form data failed.\\nTry again later",
     "editSaveFailedTitle": "Saving form data failed",
-    "editYourResponse": "Edit your response"
+    "editYourResponse": "Edit your response",
+    "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
+    "attributeIsRequiredTooltip": "This field is required."
   },
   "Themes": {
     "light": "Light",

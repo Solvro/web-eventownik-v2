@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 
 interface ShareButtonProps {
-  url: string;
+  path: string;
   variant?: "icon" | "full";
   buttonVariant?:
     | "link"
@@ -28,7 +28,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({
-  url,
+  path,
   variant = "full",
   buttonVariant = "outline",
   className,
@@ -38,6 +38,7 @@ export function ShareButton({
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
+    const url = `${window.location.origin}/${path}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
