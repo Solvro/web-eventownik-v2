@@ -10,6 +10,7 @@ import { z } from "zod";
 
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputFile } from "@/components/attribute-input-file";
+import { RequiredFieldIndicator } from "@/components/required-field-indicator";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -182,6 +183,7 @@ export function ParticipantForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
+                <RequiredFieldIndicator />
                 <FormControl>
                   <Input
                     type="email"
@@ -215,6 +217,7 @@ export function ParticipantForm({
                   {includeEmail
                     ? getAttributeLabel(attribute.name, locale)
                     : attribute.name}
+                  {attribute.isRequired ? <RequiredFieldIndicator /> : ""}
                 </FormLabel>
                 <FormControl>
                   {attribute.type === "file" ? (

@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { WysiwygEditor } from "@/components/editor";
+import { RequiredFieldIndicator } from "@/components/required-field-indicator";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -126,7 +127,10 @@ export function GeneralInfoForm({
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Nazwa</FormLabel>
+                    <FormLabel>
+                      Nazwa
+                      <RequiredFieldIndicator />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
@@ -148,7 +152,10 @@ export function GeneralInfoForm({
                     name="startDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Data i godzina rozpoczęcia</FormLabel>
+                        <FormLabel>
+                          Data i godzina rozpoczęcia
+                          <RequiredFieldIndicator />
+                        </FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -200,7 +207,10 @@ export function GeneralInfoForm({
                 </FormMessage>
               </div>
               <div className="space-y-2">
-                <FormLabel>Data i godzina zakończenia</FormLabel>
+                <FormLabel>
+                  Data i godzina zakończenia
+                  <RequiredFieldIndicator />
+                </FormLabel>
                 <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
@@ -269,7 +279,10 @@ export function GeneralInfoForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Opis</FormLabel>
+                    <FormLabel>
+                      Opis
+                      <RequiredFieldIndicator />
+                    </FormLabel>
                     <WysiwygEditor
                       content={form.getValues("description") ?? ""}
                       onChange={field.onChange}
@@ -329,7 +342,10 @@ export function GeneralInfoForm({
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel>Link do regulaminu</FormLabel>
+                    <FormLabel>
+                      Link do regulaminu
+                      <RequiredFieldIndicator />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
