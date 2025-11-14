@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getHours, getMinutes } from "date-fns";
 import { useAtom } from "jotai";
 import {
   ArrowLeft,
@@ -99,9 +98,9 @@ export function CreateEventForm() {
       name: event.name,
       description: event.description,
       startDate: event.startDate,
-      startTime: `${getHours(event.startDate).toString()}:${getMinutes(event.startDate).toString().padStart(2, "0")}`,
+      startTime: "12:00",
       endDate: event.endDate,
-      endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
+      endTime: "12:00",
       location: event.location,
       organizer: event.organizer,
       termsLink: event.termsLink,
@@ -113,6 +112,7 @@ export function CreateEventForm() {
         event.slug === ""
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
           : event.slug,
+      contactEmail: event.contactEmail,
       coorganizers: [
         {
           id: "",
@@ -127,6 +127,7 @@ export function CreateEventForm() {
           slug: "",
           options: [],
           showInList: true,
+          order: 1,
         },
       ],
     },
@@ -231,6 +232,7 @@ export function CreateEventForm() {
         const base64Image = event.image.startsWith("blob:")
           ? await getBase64FromUrl(event.image)
           : event.image;
+        // TODO: add `isSensiviteData` and `reason` to attributes
         const newEventObject = {
           ...event,
           image: base64Image,
@@ -273,6 +275,7 @@ export function CreateEventForm() {
               participantsNumber: 1,
               socialMediaLinks: [],
               slug: "",
+              contactEmail: "",
               coorganizers: [],
               attributes: [],
               termsLink: "",

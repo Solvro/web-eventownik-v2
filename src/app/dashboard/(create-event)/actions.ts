@@ -24,6 +24,7 @@ export async function saveEvent(event: Event) {
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
+  formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
   formData.append("termsLink", event.termsLink ?? "");
 
@@ -137,6 +138,9 @@ export async function saveEvent(event: Event) {
                 (attribute.options ?? []).length > 0
                   ? attribute.options
                   : undefined,
+              order: attribute.order,
+              isSensitiveData: false,
+              reason: null,
             }),
           },
         );

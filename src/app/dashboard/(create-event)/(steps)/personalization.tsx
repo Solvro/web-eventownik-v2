@@ -36,6 +36,11 @@ export const EventPersonalizationFormSchema = z.object({
     .string()
     .min(3, "Slug musi mieć co najmniej 3 znaki")
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
+  contactEmail: z
+    .string()
+    .email("Nieprawidłowy adres email")
+    .or(z.literal(""))
+    .optional(),
 });
 
 export function PersonalizationForm() {
@@ -162,7 +167,26 @@ export function PersonalizationForm() {
             </FormItem>
           )}
         />
-
+        <FormField
+          name="contactEmail"
+          control={control}
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Email do kontaktu</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="example@example.org"
+                  disabled={formState.isSubmitting}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm text-red-500">
+                {formState.errors.contactEmail?.message}
+              </FormMessage>
+            </FormItem>
+          )}
+        />
         <FormField
           name="socialMediaLinks"
           control={control}

@@ -49,7 +49,7 @@ import type { AttributeType, EventAttribute } from "@/types/attributes";
 
 type NewEventAttribute = Pick<
   EventAttribute,
-  "name" | "slug" | "type" | "options" | "showInList"
+  "name" | "slug" | "type" | "options" | "showInList" | "order"
 >;
 
 export const EventAttributesFormSchema = z.object({
@@ -359,6 +359,7 @@ export function AttributesForm() {
                     slug: "",
                     options: [],
                     showInList: true,
+                    order: fields.length,
                   });
                 }}
                 className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
