@@ -5,10 +5,10 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+//import { Checkbox } from "@/components/ui/checkbox";
 import { FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+//import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -168,7 +168,7 @@ export function CoorganizersForm() {
 }
 
 function EditCoOrganizer({
-  permissions,
+  //permissions,
   onRemove,
 }: {
   permissions: Permission[];
@@ -188,6 +188,7 @@ function EditCoOrganizer({
 
       <PopoverContent side="right" align="start" className="bg-accent w-min">
         <div className="flex flex-col gap-2">
+          {/*
           <span className="text-sm leading-none font-medium">
             Tymczasowo nie można rozdzielać uprawnień
           </span>
@@ -215,6 +216,7 @@ function EditCoOrganizer({
               </Label>
             </div>
           ))}
+          */}
           <Button
             variant="link"
             className="text-destructive m-0 h-6 justify-start p-0"
