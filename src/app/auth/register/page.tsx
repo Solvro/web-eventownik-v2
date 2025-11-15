@@ -1,10 +1,12 @@
 "use client";
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Info, Loader2 } from "lucide-react";
+import { Ban, Info, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -24,9 +26,21 @@ import { registerFormSchema } from "@/types/schemas";
 import { register } from "../actions";
 
 function RegisterForm() {
+  const t = useTranslations("Auth");
+
   const router = useRouter();
   const searchParameters = useSearchParams();
   const redirectTo = searchParameters.get("redirectTo");
+
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
+  const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
+
+  const pendingFormData = useRef<z.infer<typeof registerFormSchema> | null>(
+    null,
+  );
+  const hCaptchaRef = useRef<HCaptcha>(null);
+
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -37,9 +51,15 @@ function RegisterForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof registerFormSchema>) {
+  /**
+   * Final stage of form submission with captcha token
+   */
+  async function submitWithCaptcha(
+    values: z.infer<typeof registerFormSchema>,
+    token: string,
+  ) {
     try {
-      const result = await register(values);
+      const result = await register({ ...values, token });
       if ("errors" in result) {
         toast({
           variant: "destructive",
@@ -50,19 +70,49 @@ function RegisterForm() {
         const redirectUrl = redirectTo ?? "/dashboard/events";
         router.replace(redirectUrl);
       }
-    } catch {
+    } catch (error) {
+      console.error("Registration failed", error);
       toast({
         variant: "destructive",
         title: "Brak połączenia z serwerem.",
         description: "Sprawdź swoje połączenie z internetem.",
       });
+    } finally {
+      hCaptchaRef.current?.resetCaptcha();
+      setIsAwaitingCaptcha(false);
+    }
+  }
+
+  /**
+   * Triggered upon captcha verification
+   */
+  async function handleCaptchaVerify(token: string) {
+    setHCaptchaToken(token);
+    setDidCaptchaFail(false);
+
+    if (pendingFormData.current !== null) {
+      await submitWithCaptcha(pendingFormData.current, token);
+      pendingFormData.current = null;
+    }
+  }
+
+  /**
+   * Form submission after Zod validation
+   */
+  async function handleFormSubmit(values: z.infer<typeof registerFormSchema>) {
+    if (hCaptchaToken === null) {
+      pendingFormData.current = values;
+      setIsAwaitingCaptcha(true);
+      hCaptchaRef.current?.execute();
+    } else {
+      await submitWithCaptcha(values, hCaptchaToken);
     }
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleFormSubmit)}
         className="w-full max-w-sm space-y-4"
       >
         <FormField
@@ -74,7 +124,7 @@ function RegisterForm() {
               <FormControl>
                 <Input
                   placeholder="E-mail"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   type="email"
                   {...field}
                 />
@@ -90,11 +140,11 @@ function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Hasło</FormLabel>
+              <FormLabel className="sr-only">{t("passwordLabel")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Hasło"
-                  disabled={form.formState.isSubmitting}
+                  placeholder={t("passwordLabel")}
+                  disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   type="password"
                   {...field}
                 />
@@ -110,11 +160,11 @@ function RegisterForm() {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Imię</FormLabel>
+              <FormLabel className="sr-only">{t("nameLabel")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Imię"
-                  disabled={form.formState.isSubmitting}
+                  placeholder={t("nameLabel")}
+                  disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   {...field}
                 />
               </FormControl>
@@ -129,11 +179,11 @@ function RegisterForm() {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Nazwisko</FormLabel>
+              <FormLabel className="sr-only">{t("surnameLabel")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Nazwisko"
-                  disabled={form.formState.isSubmitting}
+                  placeholder={t("surnameLabel")}
+                  disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   {...field}
                 />
               </FormControl>
@@ -143,24 +193,63 @@ function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full"
-        >
-          {form.formState.isSubmitting ? (
-            <>
-              <Loader2 className="animate-spin" /> Tworzenie konta...
-            </>
-          ) : (
-            "Kontynuuj"
-          )}
-        </Button>
+
+        <HCaptcha
+          ref={hCaptchaRef}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
+          size="invisible"
+          onVerify={handleCaptchaVerify}
+          onExpire={() => {
+            setHCaptchaToken(null);
+            setDidCaptchaFail(true);
+          }}
+          onClose={() => {
+            setDidCaptchaFail(true);
+          }}
+          onError={(captchaError) => {
+            console.error("Captcha error occurred:", captchaError);
+            setDidCaptchaFail(true);
+          }}
+        />
+
+        {didCaptchaFail ? (
+          <Button
+            type="button"
+            variant="destructive"
+            className="w-full"
+            onClick={() => {
+              setDidCaptchaFail(false);
+              hCaptchaRef.current?.execute();
+            }}
+          >
+            <Ban className="size-8" />
+            <span>{t("captchaFailed")}</span>
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting || isAwaitingCaptcha}
+            className="w-full"
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" /> {t("creatingAccount")}
+              </>
+            ) : isAwaitingCaptcha ? (
+              <>
+                <Loader2 className="animate-spin" /> {t("captchaInProgress")}
+              </>
+            ) : (
+              t("continue")
+            )}
+          </Button>
+        )}
+
         <Link
           href="/auth/login"
           className={`w-full text-neutral-600 ${buttonVariants({ variant: "link" })}`}
         >
-          Posiadasz już konto? Zaloguj się
+          {t("loginExisting")}
         </Link>
       </form>
     </Form>
@@ -168,11 +257,12 @@ function RegisterForm() {
 }
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth");
   return (
     <>
       <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">Rejestracja organizatora</p>
-        <p>Podaj swój email by się zarejestrować.</p>
+        <p className="text-3xl font-black">{t("registerTitle")}</p>
+        <p>{t("registerDescription")}</p>
       </div>
       <Suspense>
         <RegisterForm />

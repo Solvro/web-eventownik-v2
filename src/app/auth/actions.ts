@@ -12,7 +12,9 @@ import type {
   sendPasswordResetTokenSchema,
 } from "@/types/schemas";
 
-export async function register(values: z.infer<typeof registerFormSchema>) {
+export async function register(
+  values: z.infer<typeof registerFormSchema> & { token: string },
+) {
   const data = await fetch(`${API_URL}/auth/register`, {
     headers: {
       "Content-Type": "application/json",
@@ -23,6 +25,7 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
+      token: values.token,
     }),
   }).then(async (response) => {
     if (response.status === 200) {
@@ -42,7 +45,9 @@ export async function register(values: z.infer<typeof registerFormSchema>) {
   return data;
 }
 
-export async function login(values: z.infer<typeof loginFormSchema>) {
+export async function login(
+  values: z.infer<typeof loginFormSchema> & { token: string },
+) {
   try {
     const user = await fetch(`${API_URL}/auth/login`, {
       headers: {
@@ -53,6 +58,7 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
         email: values.email,
         password: values.password,
         rememberMe: true,
+        token: values.token,
       }),
     }).then(async (response) => {
       switch (response.status) {
@@ -80,7 +86,7 @@ export async function login(values: z.infer<typeof loginFormSchema>) {
 }
 
 export async function sendPasswordResetToken(
-  values: z.infer<typeof sendPasswordResetTokenSchema>,
+  values: z.infer<typeof sendPasswordResetTokenSchema> & { token: string },
 ) {
   try {
     const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
@@ -90,6 +96,7 @@ export async function sendPasswordResetToken(
       method: "POST",
       body: JSON.stringify({
         email: values.email,
+        token: values.token,
       }),
     });
 

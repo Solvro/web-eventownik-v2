@@ -27,9 +27,6 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
           files,
         )
       }
-      successMessage={t("successMessage")}
-      submitButtonText={t("signUp")}
-      submittingText={t("registering")}
       includeEmail={true}
     />
   );
