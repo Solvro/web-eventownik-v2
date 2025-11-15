@@ -209,7 +209,7 @@ function RegisterForm() {
             setIsAwaitingCaptcha(false);
           }}
           onError={(captchaError) => {
-            console.error("Captcha error occured:", captchaError);
+            console.error("Captcha error occurred:", captchaError);
             setDidCaptchaFail(true);
             setIsAwaitingCaptcha(false);
           }}
