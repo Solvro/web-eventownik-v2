@@ -38,6 +38,7 @@ function TimelineStep({
       </button>
       <div className="flex flex-row items-end gap-6">
         {Array.from({ length: 11 }).map((_, index) => (
+          // eslint-disable-next-line react/no-array-index-key
           <div className="flex flex-col items-center" key={index}>
             {monthNumber === 0 && index === 0 && (
               <p className="absolute -translate-y-6 text-sm">{year}</p>
@@ -107,6 +108,10 @@ export function Timeline({
               setFilters({ month: 11, year: filters.year - 1 });
               return;
             }
+            if (filters.month === addMonths(new Date(), -6).getMonth()) {
+              setFilters({ month: filters.month - 1, year: filters.year + 1 });
+              return;
+            }
             setFilters({ month: filters.month - 1, year: filters.year });
           }}
         >
@@ -119,6 +124,10 @@ export function Timeline({
           onClick={() => {
             if (filters.month === 11) {
               setFilters({ month: 0, year: filters.year + 1 });
+              return;
+            }
+            if (filters.month === addMonths(new Date(), 5).getMonth()) {
+              setFilters({ month: filters.month + 1, year: filters.year - 1 });
               return;
             }
             setFilters({ month: filters.month + 1, year: filters.year });
@@ -134,7 +143,9 @@ export function Timeline({
             x:
               width / -24 -
               monthYears.findIndex(
-                (monthYear) => monthYear.month === filters.month,
+                (monthYear) =>
+                  monthYear.month === filters.month &&
+                  monthYear.year === filters.year,
               ) *
                 (width / 12),
           }}
@@ -147,6 +158,7 @@ export function Timeline({
         >
           {monthYears.map(({ year, month }, index) => (
             <TimelineStep
+              // eslint-disable-next-line react/no-array-index-key
               key={index}
               month={new Date(year, month, 1).toLocaleString("pl", {
                 month: "long",
@@ -154,14 +166,7 @@ export function Timeline({
               year={year}
               monthIndex={index}
               monthNumber={month}
-              isActive={
-                new Date(year, month, 1).toLocaleString("pl", {
-                  month: "long",
-                }) ===
-                new Date(filters.year, filters.month, 1).toLocaleString("pl", {
-                  month: "long",
-                })
-              }
+              isActive={year === filters.year && month === filters.month}
               onClick={() => {
                 setFilters({ month, year });
               }}
