@@ -106,6 +106,7 @@ export function ParticipantForm({
     setSuccess(false);
     setIsAwaitingCaptcha(false);
     setDidCaptchaFail(false);
+    setHCaptchaToken(null);
     pendingFormData.current = null;
   }
 
@@ -342,13 +343,16 @@ export function ParticipantForm({
           onExpire={() => {
             setHCaptchaToken(null);
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
           onClose={() => {
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occured:", captchaError);
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
         />
 
@@ -358,6 +362,7 @@ export function ParticipantForm({
             variant="destructive"
             className="sticky bottom-4 w-full shadow-lg md:bottom-0"
             onClick={() => {
+              setDidCaptchaFail(false);
               hCaptchaRef.current?.execute();
             }}
           >

@@ -31,9 +31,9 @@
     "attributeIsRequiredTooltip": "This field is required."
   },
   "Auth": {
-    "registerTitle": "Organizer registeration",
+    "registerTitle": "Organizer registration",
     "registerDescription": "Enter your email to register.",
-    "creatingAccout": "Creating account...",
+    "creatingAccount": "Creating account...",
     "loginExisting": "Already have an account? Sign in",
     "loginTitle": "Organizer login",
     "loginDescription": "Enter your email to sign in.",

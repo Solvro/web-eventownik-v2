@@ -33,7 +33,7 @@
   "Auth": {
     "registerTitle": "Rejestracja organizatora",
     "registerDescription": "Podaj swój email by się zarejestrować.",
-    "creatingAccout": "Tworzenie konta...",
+    "creatingAccount": "Tworzenie konta...",
     "loginExisting": "Posiadasz już konto? Zaloguj się",
     "loginTitle": "Logowanie organizatora",
     "loginDescription": "Podaj swój email by się zalogować.",

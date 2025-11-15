@@ -202,13 +202,16 @@ function RegisterForm() {
           onExpire={() => {
             setHCaptchaToken(null);
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
           onClose={() => {
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occured:", captchaError);
             setDidCaptchaFail(true);
+            setIsAwaitingCaptcha(false);
           }}
         />
 
@@ -218,6 +221,7 @@ function RegisterForm() {
             variant="destructive"
             className="w-full"
             onClick={() => {
+              setDidCaptchaFail(false);
               hCaptchaRef.current?.execute();
             }}
           >
