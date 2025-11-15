@@ -343,16 +343,13 @@ export function ParticipantForm({
           onExpire={() => {
             setHCaptchaToken(null);
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
           onClose={() => {
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occurred:", captchaError);
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
         />
 

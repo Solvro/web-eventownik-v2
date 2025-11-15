@@ -202,16 +202,13 @@ function RegisterForm() {
           onExpire={() => {
             setHCaptchaToken(null);
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
           onClose={() => {
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occurred:", captchaError);
             setDidCaptchaFail(true);
-            setIsAwaitingCaptcha(false);
           }}
         />
 
@@ -236,7 +233,7 @@ function RegisterForm() {
           >
             {form.formState.isSubmitting ? (
               <>
-                <Loader2 className="animate-spin" /> {t("creatingAccout")}
+                <Loader2 className="animate-spin" /> {t("creatingAccount")}
               </>
             ) : isAwaitingCaptcha ? (
               <>
