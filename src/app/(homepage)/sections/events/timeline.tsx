@@ -103,6 +103,9 @@ export function Timeline({
           className="z-10 hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             if (filters.month === 0) {
+              if (filters.year === 2025) {
+                return;
+              }
               setFilters({ month: 11, year: filters.year - 1 });
               return;
             }
@@ -117,6 +120,9 @@ export function Timeline({
           className="z-10 hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             if (filters.month === 11) {
+              if (filters.year === getYear(new Date()) + 1) {
+                return;
+              }
               setFilters({ month: 0, year: filters.year + 1 });
               return;
             }
