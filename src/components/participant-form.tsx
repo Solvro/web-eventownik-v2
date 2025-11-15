@@ -20,6 +20,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import {
   cn,
@@ -184,7 +189,17 @@ export function ParticipantForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>
+                  Email{" "}
+                  <Tooltip>
+                    <TooltipTrigger type="button">
+                      <span className="text-red-500">*</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[var(--radix-tooltip-content-available-width)] text-wrap">
+                      {t("emailIsRequiredTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -215,9 +230,17 @@ export function ParticipantForm({
                 )}
               >
                 <FormLabel htmlFor={attribute.id.toString()}>
-                  {includeEmail
-                    ? getAttributeLabel(attribute.name, locale)
-                    : attribute.name}
+                  {getAttributeLabel(attribute.name, locale)}{" "}
+                  {attribute.isRequired ? (
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <span className="text-red-500">*</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        {t("attributeIsRequiredTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : null}
                 </FormLabel>
                 <FormControl>
                   {attribute.type === "file" ? (

@@ -95,7 +95,7 @@ export default async function DashboardEventPage({
               <SquarePenIcon /> Edytuj wydarzenie
             </Link>
           </Button>
-          <ShareButton url={`https://eventownik.solvro.pl/${event.slug}`} />
+          <ShareButton path={event.slug} />
         </div>
       </div>
       <Image

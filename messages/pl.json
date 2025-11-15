@@ -21,7 +21,9 @@
     "signUp": "Zapisz się",
     "editSaveFailed": "Zapisanie danych formularza nie powiodło się.\\nSpróbuj ponownie później",
     "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
-    "editYourResponse": "Edytuj swoją odpowiedź"
+    "editYourResponse": "Edytuj swoją odpowiedź",
+    "emailIsRequiredTooltip": "Musisz podać adres e-mail, aby zarejestrować się na to wydarzenie.",
+    "attributeIsRequiredTooltip": "To pole jest wymagane."
   },
   "Themes": {
     "light": "Jasny",
