@@ -1,4 +1,4 @@
-import { isSameDay } from "date-fns";
+import { compareAsc, isBefore, isSameDay } from "date-fns";
 import { format as formatDate } from "date-fns/format";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -57,15 +57,25 @@ function Event({
   function getEventStatus() {
     const now = new Date();
     if (now < startDate) {
-      return "Nadchodzące";
+      return {
+        status: "Nadchodzące",
+        style:
+          "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]",
+      };
     } else if (now >= startDate && now <= endDate) {
-      return "W trakcie";
+      return {
+        status: "W trakcie",
+        style:
+          "rounded-full bg-[#4473E1]/20 px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#4473E1] dark:text-[#84a9ff]",
+      };
     } else {
-      return "Zakończone";
+      return {
+        status: "Zakończone",
+        style:
+          "rounded-full bg-gray-300 px-5 py-2 text-center font-extrabold whitespace-nowrap text-gray-600 dark:bg-gray-700/80 dark:text-gray-300",
+      };
     }
   }
-
-  const eventStatus = getEventStatus();
 
   return (
     <div
@@ -85,15 +95,7 @@ function Event({
           />
           {/* Text overlay */}
           <div className="absolute inset-0 flex flex-col items-start justify-between rounded-4xl bg-gradient-to-r from-black/60 to-transparent p-6 text-white">
-            <p
-              className={
-                eventStatus === "W trakcie"
-                  ? "rounded-full bg-[#4473E1] px-5 py-2 text-center font-extrabold whitespace-nowrap text-white dark:bg-[#3458ae] dark:text-white"
-                  : "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]"
-              }
-            >
-              {eventStatus}
-            </p>
+            <p className={getEventStatus().style}>{getEventStatus().status}</p>
             <p className="text-left text-4xl font-semibold sm:text-5xl">
               {renderDate()}
             </p>
@@ -107,16 +109,8 @@ function Event({
               <p className="text-center text-4xl font-extrabold text-[#274276] dark:text-[#4473E1]">
                 {renderDate()}
               </p>
-              <p
-                className={
-                  eventStatus === "W trakcie"
-                    ? "rounded-full bg-[#4473E1]/20 px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#4473E1] dark:text-[#84a9ff]"
-                    : eventStatus === "Zakończone"
-                      ? "rounded-full bg-gray-300 px-5 py-2 text-center font-extrabold whitespace-nowrap text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                      : "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]"
-                }
-              >
-                {eventStatus}
+              <p className={getEventStatus().style}>
+                {getEventStatus().status}
               </p>
             </div>
             <div className="flex flex-col gap-12 xl:w-[calc(100%-40rem)] 2xl:w-[calc(100%-48rem)]">
@@ -158,18 +152,33 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
     <section id="events" className="flex flex-col">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b bg-white dark:bg-[#101011]">
         {events != null && events.length > 0 ? (
-          events.map((event) => (
-            <Event
-              key={event.slug}
-              name={event.name}
-              organizer={event.organizer}
-              description={event.description}
-              startDate={new Date(event.startDate)}
-              endDate={new Date(event.endDate)}
-              photoUrl={event.photoUrl}
-              slug={event.slug}
-            />
-          ))
+          events
+            .toSorted((a, b) => {
+              const now = new Date();
+              const aIsFinished = isBefore(new Date(a.endDate), now);
+              const bIsFinished = isBefore(new Date(b.endDate), now);
+
+              if (aIsFinished && !bIsFinished) {
+                return 1;
+              }
+              if (!aIsFinished && bIsFinished) {
+                return -1;
+              }
+
+              return compareAsc(new Date(a.startDate), new Date(b.startDate));
+            })
+            .map((event) => (
+              <Event
+                key={event.slug}
+                name={event.name}
+                organizer={event.organizer}
+                description={event.description}
+                startDate={new Date(event.startDate)}
+                endDate={new Date(event.endDate)}
+                photoUrl={event.photoUrl}
+                slug={event.slug}
+              />
+            ))
         ) : (
           <div className="flex h-64 w-full items-center justify-center text-gray-500 dark:text-gray-400">
             <p className="text-xl">Brak wydarzeń w wybranym miesiącu</p>

@@ -37,6 +37,7 @@ jobs:
           NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
         if: always()
 
       - name: Build
@@ -44,5 +45,6 @@ jobs:
           NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
         run: npm run build
         if: always()

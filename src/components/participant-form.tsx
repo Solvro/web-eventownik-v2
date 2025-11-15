@@ -1,10 +1,10 @@
 "use client";
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -47,9 +47,6 @@ interface ParticipantFormProps {
     values: Record<string, unknown>,
     files: File[],
   ) => Promise<{ success: boolean; errors?: ErrorObject[]; error?: string }>;
-  successMessage: string;
-  submitButtonText: string;
-  submittingText: string;
   includeEmail?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
@@ -59,9 +56,6 @@ interface ParticipantFormProps {
 export function ParticipantForm({
   attributes,
   onSubmit,
-  successMessage,
-  submitButtonText,
-  submittingText,
   includeEmail = false,
   userData,
   eventBlocks = [],
@@ -69,13 +63,23 @@ export function ParticipantForm({
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const locale = useLocale();
-  const [files, setFiles] = useState<File[]>([]);
-  const router = useRouter();
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
+  const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const sortedAttributes = useMemo(
     () => attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [attributes],
   );
+
+  const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
+  const hCaptchaRef = useRef<HCaptcha>(null);
+
+  const submitText = editMode ? t("save") : t("signUp");
+  const submittingText = editMode ? t("saving") : t("registering");
+  const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
   // generate schema for form based on attributes
   const formSchema = z.object({
@@ -96,19 +100,37 @@ export function ParticipantForm({
     },
   });
 
+  function resetStates() {
+    form.reset();
+    setFiles([]);
+    setSuccess(false);
+    setIsAwaitingCaptcha(false);
+    setDidCaptchaFail(false);
+    setHCaptchaToken(null);
+    pendingFormData.current = null;
+  }
+
   const { toast } = useToast();
 
   // temporarily disabled to avoid issues with dirty state not reseting after clearing values
   // useUnsavedForm(form.formState.isDirty);
 
-  async function handleSubmit(values: z.infer<typeof formSchema>) {
+  /**
+   * Fourth, final stage of form submission. Calls onSubmit with the form data and captcha token.
+   * If successful, resets form and sets success state.
+   */
+  async function submitWithCaptcha(
+    values: z.infer<typeof formSchema>,
+    token: string,
+  ) {
     try {
-      const result = await onSubmit(values, files);
+      const result = await onSubmit({ ...values, token }, files);
       if (result.success) {
         setFiles([]);
         if (editMode) {
           form.reset(values);
         }
+        setSuccess(true);
       } else {
         if (
           includeEmail &&
@@ -149,10 +171,14 @@ export function ParticipantForm({
           : t("registrationFailedTitle"),
         description: t("serverError"),
       });
+    } finally {
+      hCaptchaRef.current?.resetCaptcha();
+      // We set it here instead of in `handleCaptchaVerify` to prevent submit button content flash
+      setIsAwaitingCaptcha(false);
     }
   }
 
-  if (form.formState.isSubmitSuccessful) {
+  if (success) {
     return (
       <div>
         <h2 className="text-center text-xl font-bold text-green-500 md:text-2xl">
@@ -160,16 +186,7 @@ export function ParticipantForm({
         </h2>
         <br />
         <div className="text-center">
-          <Button
-            variant="eventDefault"
-            type="button"
-            onClick={() => {
-              form.reset();
-              if (editMode) {
-                router.refresh();
-              }
-            }}
-          >
+          <Button variant="eventDefault" type="button" onClick={resetStates}>
             {editMode ? t("editYourResponse") : t("fillAnotherForm")}
           </Button>
         </div>
@@ -177,10 +194,43 @@ export function ParticipantForm({
     );
   }
 
+  /**
+   * Third stage of form submission. Triggered upon captcha verification.
+   * Calls submitWithCaptcha with the captcha token.
+   */
+  async function handleCaptchaVerify(token: string) {
+    setHCaptchaToken(token);
+    setDidCaptchaFail(false);
+
+    if (pendingFormData.current !== null) {
+      await submitWithCaptcha(pendingFormData.current, token);
+      pendingFormData.current = null;
+    }
+  }
+
+  /**
+   * Second stage of form submission after Zod validation.
+   * Checks captcha status: executes captcha if not yet verified, and
+   * if captcha is verified, submits form right away - noticable in edit mode.
+   *
+   * After this function finishes, `form.formState.isSubmitSuccessful` will be true, that's why
+   * we don't rely on it to show the success screen.
+   */
+  async function handleFormSubmit(values: z.infer<typeof formSchema>) {
+    if (hCaptchaToken === null) {
+      pendingFormData.current = values;
+
+      setIsAwaitingCaptcha(true);
+      hCaptchaRef.current?.execute();
+    } else {
+      await submitWithCaptcha(values, hCaptchaToken);
+    }
+  }
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(handleFormSubmit)}
         className="w-full max-w-sm space-y-4"
       >
         {includeEmail ? (
@@ -285,20 +335,57 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        <Button
-          type="submit"
-          variant="eventDefault"
-          disabled={form.formState.isSubmitting}
-          className="sticky bottom-4 w-full shadow-lg md:bottom-0"
-        >
-          {form.formState.isSubmitting ? (
-            <>
-              <Loader2 className="animate-spin" /> {submittingText}
-            </>
-          ) : (
-            submitButtonText
-          )}
-        </Button>
+        <HCaptcha
+          ref={hCaptchaRef}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
+          size="invisible"
+          onVerify={handleCaptchaVerify}
+          onExpire={() => {
+            setHCaptchaToken(null);
+            setDidCaptchaFail(true);
+          }}
+          onClose={() => {
+            setDidCaptchaFail(true);
+          }}
+          onError={(captchaError) => {
+            console.error("Captcha error occurred:", captchaError);
+            setDidCaptchaFail(true);
+          }}
+        />
+
+        {didCaptchaFail ? (
+          <Button
+            type="button"
+            variant="destructive"
+            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            onClick={() => {
+              setDidCaptchaFail(false);
+              hCaptchaRef.current?.execute();
+            }}
+          >
+            <Ban className="size-8" />
+            <span>{t("captchaFailed")}</span>
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            variant="eventDefault"
+            disabled={form.formState.isSubmitting || isAwaitingCaptcha}
+            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" /> {submittingText}
+              </>
+            ) : isAwaitingCaptcha ? (
+              <>
+                <Loader2 className="animate-spin" /> {t("captchaInProgress")}
+              </>
+            ) : (
+              submitText
+            )}
+          </Button>
+        )}
       </form>
     </Form>
   );

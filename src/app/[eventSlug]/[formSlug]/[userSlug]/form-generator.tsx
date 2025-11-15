@@ -75,9 +75,6 @@ export function FormGenerator({
       onSubmit={async (values, files) =>
         submitForm(values, formId, eventSlug, userSlug, files)
       }
-      successMessage="Twoja odpowiedź została zapisana!"
-      submitButtonText="Zapisz"
-      submittingText="Zapisywanie..."
       userData={userData}
       eventBlocks={eventBlocks}
       editMode={true}
