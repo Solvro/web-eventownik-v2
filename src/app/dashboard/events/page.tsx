@@ -153,7 +153,7 @@ export default async function EventListPage() {
                       </Link>
                     </Button>
                     <ShareButton
-                      url={`https://eventownik.solvro.pl/${event.slug}`}
+                      path={event.slug}
                       variant="icon"
                       buttonVariant="ghost"
                     />

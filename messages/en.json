@@ -26,7 +26,9 @@
     "editSaveFailedTitle": "Saving form data failed",
     "editYourResponse": "Edit your response",
     "captchaInProgress": "CAPTCHA verification...",
-    "captchaFailed": "CAPTCHA error. Try again"
+    "captchaFailed": "CAPTCHA error. Try again",
+    "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
+    "attributeIsRequiredTooltip": "This field is required."
   },
   "Auth": {
     "registerTitle": "Organizer registeration",
