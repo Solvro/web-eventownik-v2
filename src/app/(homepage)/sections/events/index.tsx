@@ -4,6 +4,7 @@ import type { QueryFunctionContext } from "@tanstack/react-query";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   addMonths,
+  eachYearOfInterval,
   format,
   getMonth,
   getYear,
@@ -15,6 +16,13 @@ import { useState } from "react";
 
 import { EventList } from "@/app/(homepage)/sections/events/event-list";
 import { Timeline } from "@/app/(homepage)/sections/events/timeline";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { API_URL } from "@/lib/api";
 import type { Event as EventType } from "@/types/event";
 
@@ -89,9 +97,38 @@ export function Events() {
   }
 
   return (
-    <div className="w-full overflow-hidden">
-      <Timeline filters={filters} setFilters={setFilters} />
-      <EventList events={events} />
+    <div className="flex w-full flex-col items-center gap-8">
+      <div>
+        <Select
+          value={filters.year.toString()}
+          onValueChange={(value) => {
+            setFilters({ year: Number(value), month: filters.month });
+          }}
+        >
+          <SelectTrigger className="h-auto gap-1 rounded-full px-4 py-2">
+            <SelectValue placeholder={filters.year} className="rounded-full" />
+          </SelectTrigger>
+          <SelectContent>
+            {eachYearOfInterval({
+              start: new Date(2025, 0, 1),
+              end: new Date(getYear(new Date()) + 1, 0, 1),
+            })
+              .toReversed()
+              .map((date) => {
+                const year = getYear(date);
+                return (
+                  <SelectItem key={year.toString()} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                );
+              })}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="w-full overflow-hidden">
+        <Timeline filters={filters} setFilters={setFilters} />
+        <EventList events={events} />
+      </div>
     </div>
   );
 }
