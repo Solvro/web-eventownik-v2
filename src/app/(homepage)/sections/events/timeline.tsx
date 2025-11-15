@@ -100,7 +100,7 @@ export function Timeline({
         <Button
           variant={"eventGhost"}
           size={"icon"}
-          className="z-10 hover:bg-transparent [&_svg]:size-8"
+          className="z-10 transition-opacity hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             if (filters.month === 0) {
               if (filters.year === 2025) {
@@ -111,13 +111,14 @@ export function Timeline({
             }
             setFilters({ month: filters.month - 1, year: filters.year });
           }}
+          disabled={filters.month === 0 && filters.year === 2025}
         >
           <ArrowLeftCircle />
         </Button>
         <Button
           variant={"eventGhost"}
           size={"icon"}
-          className="z-10 hover:bg-transparent [&_svg]:size-8"
+          className="z-10 transition-opacity hover:bg-transparent [&_svg]:size-8"
           onClick={() => {
             if (filters.month === 11) {
               if (filters.year === getYear(new Date()) + 1) {
@@ -128,6 +129,9 @@ export function Timeline({
             }
             setFilters({ month: filters.month + 1, year: filters.year });
           }}
+          disabled={
+            filters.month === 11 && filters.year === getYear(new Date()) + 1
+          }
         >
           <ArrowRightCircle />
         </Button>
