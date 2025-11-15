@@ -35,6 +35,7 @@ export interface Event {
   participantsNumber: number;
   socialMediaLinks: { label?: string; link: string }[];
   slug: string;
+  contactEmail: string | undefined;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
   termsLink: string | undefined;
@@ -53,6 +54,7 @@ export const eventAtom = atom<Event>({
   participantsNumber: 1,
   socialMediaLinks: [],
   slug: "",
+  contactEmail: "",
   coorganizers: [],
   attributes: [],
   termsLink: "",
