@@ -49,7 +49,7 @@ const EventFormSchema = z.object({
   endDate: z.date(),
   slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isFirstForm: z.boolean(),
-  isOpen: z.boolean().default(true),
+  // isOpen: z.boolean().default(true),
 });
 
 interface EventFormEditFormProps {
@@ -76,7 +76,7 @@ function EventFormEditForm({
       startDate: new Date(formToEdit.startDate),
       endDate: new Date(formToEdit.endDate),
       isFirstForm: formToEdit.isFirstForm,
-      isOpen: formToEdit.isOpen,
+      // isOpen: formToEdit.isOpen,
       slug: formToEdit.slug,
     },
   });
@@ -340,7 +340,7 @@ function EventFormEditForm({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               name="isOpen"
               control={form.control}
               render={({ field }) => (
@@ -359,7 +359,7 @@ function EventFormEditForm({
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
           <AttributesReorder
             attributes={eventAttributes}

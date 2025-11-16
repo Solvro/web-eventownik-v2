@@ -5,7 +5,7 @@ export interface Form {
   name: string;
   slug: string;
   startDate: string;
-  isOpen: boolean;
+  // isOpen: boolean;
   isFirstForm: boolean;
   description: string;
   endDate: string;

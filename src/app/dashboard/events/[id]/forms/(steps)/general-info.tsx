@@ -35,6 +35,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useAutoSave } from "@/hooks/use-autosave";
 
+// TODO: Uncomment `isOpen` related code once its fixed by backend
+
 const EventFormGeneralInfoSchema = z
   .object({
     name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
@@ -44,7 +46,7 @@ const EventFormGeneralInfoSchema = z
     startDate: z.date(),
     endDate: z.date(),
     isFirstForm: z.boolean().default(false),
-    isOpen: z.boolean().default(true),
+    // isOpen: z.boolean().default(true),
   })
   .refine(
     (schema) => {
@@ -79,7 +81,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       startDate: newEventForm.startDate,
       endDate: newEventForm.endDate,
       isFirstForm: newEventForm.isFirstForm,
-      isOpen: newEventForm.isOpen,
+      // isOpen: newEventForm.isOpen,
     },
   });
 
@@ -277,7 +279,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 name="isOpen"
                 control={form.control}
                 render={({ field }) => (
@@ -296,7 +298,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     </FormControl>
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
           </div>
           <div className="flex justify-end">
