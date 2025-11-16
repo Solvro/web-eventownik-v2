@@ -47,7 +47,6 @@ const EventFormSchema = z.object({
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   startDate: z.date(),
   endDate: z.date(),
-  slug: z.string().min(1, { message: "Slug jest wymagany" }),
   isFirstForm: z.boolean(),
   // isOpen: z.boolean().default(true),
 });
@@ -77,7 +76,6 @@ function EventFormEditForm({
       endDate: new Date(formToEdit.endDate),
       isFirstForm: formToEdit.isFirstForm,
       // isOpen: formToEdit.isOpen,
-      slug: formToEdit.slug,
     },
   });
   const { toast } = useToast();
@@ -275,31 +273,6 @@ function EventFormEditForm({
                 />
               </div>
             </div>
-            {/* TODO: This is actually not editable and should be named id or similar */}
-            <FormField
-              name="slug"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="opacity-50">
-                    ID formularza (slug)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="nazwa-formularza"
-                      disabled={form.formState.isSubmitting ? true : undefined}
-                      readOnly
-                      className="opacity-50"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.slug?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
           </div>
           <div className="flex flex-col gap-8">
             <FormField
