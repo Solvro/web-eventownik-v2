@@ -104,6 +104,7 @@ export function AttributeInputFile({
       )}
       <Input
         type="file"
+        id={attribute.id.toString()}
         required={attribute.isRequired ? lastUpdate == null : false}
         {...field}
         onChange={handleFileChange}

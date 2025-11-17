@@ -58,6 +58,7 @@ export async function updateEvent(
     (event.participantsCount ?? 0).toString(),
   );
   formData.append("contactEmail", event.contactEmail ?? "");
+  formData.append("termsLink", event.termsLink ?? "");
   for (const link of event.socialMediaLinks ?? []) {
     if (link.trim() === "") {
       continue; // Skip empty links
@@ -100,7 +101,7 @@ export async function updateEvent(
   try {
     // Execute API request with proper error handling
     const response = await fetch(`${API_URL}/events/${event.id.toString()}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { Authorization: `Bearer ${bearerToken}` },
       body: formData,
     });
@@ -164,10 +165,12 @@ export async function updateEvent(
         if (coOrganizer.id === null) {
           continue; // Skip co-organizers without an ID
         }
+        const eventIdString = String(event.id);
+        const coOrganizerIdString = coOrganizer.id satisfies string;
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          `${API_URL}/events/${eventIdString}/organizers/${coOrganizerIdString}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               Authorization: `Bearer ${bearerToken}`,
               "Content-Type": "application/json",
@@ -194,8 +197,10 @@ export async function updateEvent(
         if (coOrganizer.id == null) {
           continue; // Skip co-organizers without an ID
         }
+        const eventIdStringDel = String(event.id);
+        const coOrganizerIdStringDel = coOrganizer.id satisfies string;
         const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers/${coOrganizer.id.toString()}`,
+          `${API_URL}/events/${eventIdStringDel}/organizers/${coOrganizerIdStringDel}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${bearerToken}` },
@@ -230,7 +235,7 @@ export async function updateEvent(
     try {
       for (const attribute of attributesChanges.added) {
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes`,
+          `${API_URL}/events/${String(event.id)}/attributes`,
           {
             method: "POST",
             headers: {
@@ -242,10 +247,13 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
                   : undefined,
+              isSensitiveData: attribute.isSensitiveData,
+              reason: attribute.reason,
             }),
           },
         );
@@ -267,11 +275,21 @@ export async function updateEvent(
           );
         } else {
           console.error("[updateEvent] Error adding attribute:", attribute);
-          attributesErrors.push({
-            message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-              await attributeResponse.json(),
-            )}`,
-          });
+          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
+          if (
+            attribute.isSensitiveData &&
+            (attribute.reason == null || attribute.reason.trim() === "")
+          ) {
+            attributesErrors.push({
+              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+            });
+          } else {
+            attributesErrors.push({
+              message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+                await attributeResponse.json(),
+              )}`,
+            });
+          }
         }
       }
 
@@ -280,9 +298,9 @@ export async function updateEvent(
           continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               Authorization: `Bearer ${bearerToken}`,
               "Content-Type": "application/json",
@@ -292,20 +310,33 @@ export async function updateEvent(
               type: attribute.type,
               slug: attribute.slug,
               showInList: attribute.showInList,
+              order: attribute.order,
               options:
                 (attribute.options ?? []).length > 0
                   ? attribute.options
                   : undefined,
+              isSensitiveData: attribute.isSensitiveData,
+              reason: attribute.reason,
             }),
           },
         );
         if (!attributeResponse.ok) {
           console.error("[updateEvent] Error updating attribute:", attribute);
-          attributesErrors.push({
-            message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-              await attributeResponse.json(),
-            )}`,
-          });
+          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
+          if (
+            attribute.isSensitiveData &&
+            (attribute.reason == null || attribute.reason.trim() === "")
+          ) {
+            attributesErrors.push({
+              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+            });
+          } else {
+            attributesErrors.push({
+              message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
+                await attributeResponse.json(),
+              )}`,
+            });
+          }
         }
       }
 
@@ -314,7 +345,7 @@ export async function updateEvent(
           continue; // Skip attributes without a valid ID
         }
         const attributeResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/attributes/${attribute.id.toString()}`,
+          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${bearerToken}` },
@@ -340,7 +371,7 @@ export async function updateEvent(
       return { errors: attributesErrors };
     }
 
-    revalidatePath(`/dashboard/events/${event.id.toString()}/settings`);
+    revalidatePath(`/dashboard/events/${String(event.id)}/settings`);
     return (await response.json()) as Event;
   } catch (error) {
     console.error("[updateEvent] Network Error:", error);

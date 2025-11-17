@@ -1,8 +1,9 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { ArrowLeft, Loader, Save, TextIcon } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventFormAtom } from "@/atoms/new-event-form-atom";
@@ -17,27 +18,22 @@ function AttributesForm({
   eventId,
   attributes,
   goToPreviousStep,
+  setDialogOpen,
 }: {
   eventId: string;
   attributes: EventAttribute[];
   goToPreviousStep: () => void;
+  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
   >(
-    [...newEventForm.attributes].sort(
-      (a, b) => (a.order ?? 0) - (b.order ?? 0),
-    ),
+    newEventForm.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
   );
-
-  function saveSelectedAttributes() {
-    setNewEventForm((previous) => {
-      return { ...previous, attributes: includedAttributes };
-    });
-  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -63,25 +59,29 @@ function AttributesForm({
           description: "",
           name: "",
           slug: "",
-          startTime: "",
-          endTime: "",
-          startDate: new Date(),
-          endDate: new Date(),
+          startTime: "12:00",
+          endTime: "12:00",
+          // Tomorrow, midnight
+          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
           attributes: [],
         });
 
-        // 'router.refresh()' doesn't work here for some reason - using native method instead
-        location.reload();
+        setDialogOpen(false);
+
+        setTimeout(() => {
+          router.refresh();
+        }, 100);
       } else {
         toast({
-          title: "Nie udało się dodać formularza",
+          title: "Nie udało się dodać formularza!",
           description: result.error,
           variant: "destructive",
         });
       }
     } catch {
       toast({
-        title: "Nie udało się dodać formularza",
+        title: "Nie udało się dodać formularza!",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
         variant: "destructive",
       });
@@ -89,6 +89,13 @@ function AttributesForm({
       setIsSubmitting(false);
     }
   }
+
+  // Auto save implementation exclusive to this step
+  useEffect(() => {
+    setNewEventForm((previous) => {
+      return { ...previous, attributes: includedAttributes };
+    });
+  }, [attributes, setNewEventForm, includedAttributes]);
 
   return (
     <FormContainer
@@ -105,18 +112,19 @@ function AttributesForm({
         />
         <div className="flex justify-between">
           <Button
-            variant="ghost"
-            onClick={() => {
-              saveSelectedAttributes();
-              goToPreviousStep();
-            }}
+            variant="eventGhost"
+            onClick={goToPreviousStep}
             disabled={isSubmitting}
           >
             <ArrowLeft /> Wróć
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Loader className="animate-spin" /> : <Save />}{" "}
-            Zapisz
+          <Button type="submit" variant="eventDefault" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <Loader className="animate-spin" />
+            ) : (
+              <SquarePlus />
+            )}{" "}
+            Dodaj formularz
           </Button>
         </div>
       </form>

@@ -12,6 +12,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { SanitizedContent } from "@/components/sanitized-content";
 import { ShareButton } from "@/components/share-button";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,7 @@ export default async function DashboardEventPage({
           ) : null}
         </div>
         {event.description != null && event.description.trim() !== "" ? (
-          <p className="whitespace-pre-line">{event.description}</p>
+          <SanitizedContent contentToSanitize={event.description} />
         ) : null}
         <div className="flex gap-1">
           {event.socialMediaLinks != null && event.socialMediaLinks.length > 0
@@ -89,12 +90,12 @@ export default async function DashboardEventPage({
             : null}
         </div>
         <div className="flex flex-col gap-2 md:flex-row">
-          <Button asChild>
+          <Button variant="eventDefault" asChild>
             <Link href={`/dashboard/events/${id}/settings`}>
               <SquarePenIcon /> Edytuj wydarzenie
             </Link>
           </Button>
-          <ShareButton url={`https://eventownik.solvro.pl/${event.slug}`} />
+          <ShareButton path={event.slug} />
         </div>
       </div>
       <Image
@@ -105,7 +106,7 @@ export default async function DashboardEventPage({
         }
         width={400}
         height={400}
-        className="aspect-square rounded-xl object-cover"
+        className="aspect-square max-h-96 rounded-xl object-cover"
         alt={`Zdjęcie wydarzenia ${event.name}`}
       />
     </div>

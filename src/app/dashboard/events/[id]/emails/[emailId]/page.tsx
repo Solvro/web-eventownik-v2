@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,6 +9,20 @@ import {
   getSingleEventEmail,
 } from "../data-access";
 import { EventEmailEditForm } from "./edit-form";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; emailId: string }>;
+}): Promise<Metadata> {
+  const { id, emailId } = await params;
+
+  const emailToEdit = await getSingleEventEmail(id, emailId);
+
+  return {
+    title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
+  };
+}
 
 export default async function EventMailEditPage({
   params,

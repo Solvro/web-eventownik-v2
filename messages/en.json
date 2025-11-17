@@ -1,0 +1,61 @@
+{
+  "Event": {
+    "notFound": "Event not found 😪",
+    "registration": "Event Registration",
+    "fillForm": "Fill out the form to register",
+    "addToCalendar": "Add to calendar"
+  },
+  "Form": {
+    "invalidEmail": "Invalid email address.",
+    "emailTaken": "This email is already registered for this event.",
+    "emailTakenTitle": "Email address is already taken",
+    "registrationSuccess": "Registration successful!",
+    "registrationFailed": "Registration failed.\\nTry again later",
+    "registrationFailedTitle": "Registration failed",
+    "tryAgainLater": "Try again later",
+    "serverError": "Server error",
+    "noForm": "No registration form for this event.",
+    "fillAnotherForm": "Fill out again",
+    "emailPlaceholder": "Enter your email address",
+    "registering": "Registering...",
+    "save": "Save response",
+    "saving": "Saving...",
+    "saved": "Your response has been saved!",
+    "signUp": "Sign up",
+    "editSaveFailed": "Saving form data failed.\\nTry again later",
+    "editSaveFailedTitle": "Saving form data failed",
+    "editYourResponse": "Edit your response",
+    "captchaInProgress": "CAPTCHA verification...",
+    "captchaFailed": "CAPTCHA error. Try again",
+    "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
+    "attributeIsRequiredTooltip": "This field is required."
+  },
+  "Auth": {
+    "registerTitle": "Organizer registration",
+    "registerDescription": "Enter your email to register.",
+    "creatingAccount": "Creating account...",
+    "loginExisting": "Already have an account? Sign in",
+    "loginTitle": "Organizer login",
+    "loginDescription": "Enter your email to sign in.",
+    "loginDisclaimer": "Sign in to manage your events!",
+    "loggingIn": "Signing in...",
+    "forgotPassword": "Forgot your password?",
+    "resetPasswordTitle": "Forgot your password?",
+    "resetPasswordDescription": "Enter your email to send a password reset link.",
+    "sending": "Sending...",
+    "sendResetLink": "Send reset link",
+    "loginReturn": "Return to login",
+    "noAccountYet": "No account yet? Register",
+    "passwordLabel": "Password",
+    "nameLabel": "First name",
+    "surnameLabel": "Last name",
+    "continue": "Continue",
+    "captchaInProgress": "CAPTCHA verification...",
+    "captchaFailed": "CAPTCHA error. Try again"
+  },
+  "Themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

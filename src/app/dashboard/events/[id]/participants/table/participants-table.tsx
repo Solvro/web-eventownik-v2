@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -32,8 +33,10 @@ import {
 } from "../actions";
 import { generateColumns } from "./columns";
 import { flattenParticipants } from "./data";
+import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
+import { getAriaSort } from "./utils";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -47,7 +50,7 @@ declare module "@tanstack/react-table" {
  * To seamlessly navigate during working on this component
  * get familiar with [Tanstack Table V8 docs](https://tanstack.com/table/latest/docs/introduction)
  *
- * There is a lot of space to improve since the first version of the component was made in a hurry 😭.
+ * In current implementation sorting is based on alphanumeric (punctuation and symbols < numbers < uppercase letters < lowercase letters) order because every value used for table is a string [SortingFns Docs](https://tanstack.com/table/v8/docs/guide/sorting#sorting-fns)
  */
 export function ParticipantTable({
   participants,
@@ -72,7 +75,6 @@ export function ParticipantTable({
   );
 
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  // Then in your component where the table is defined
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const table = useReactTable({
@@ -96,6 +98,7 @@ export function ParticipantTable({
       },
     },
     autoResetPageIndex: false,
+    enableMultiSort: true,
 
     meta: {
       updateData: (rowIndex, value) => {
@@ -131,20 +134,25 @@ export function ParticipantTable({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Usunięcie uczestnika nie powiodło się!",
+          title: "Nie udało się usunąć uczestnika!",
           description: error,
         });
         return;
       }
-
+      table.resetExpanded();
       setData((previousData) => {
         return previousData.filter(
           (participant) => participant.id !== participantId,
         );
       });
+      toast({
+        variant: "default",
+        title: "Pomyślnie usunięto uczestnika",
+        description: error,
+      });
     } catch {
       toast({
-        title: "Usunięcie uczestnika nie powiodło się!",
+        title: "Nie udało się usunąć uczestnika!",
         variant: "destructive",
         description: "Wystąpił błąd podczas usuwania uczestnika.",
       });
@@ -169,18 +177,18 @@ export function ParticipantTable({
         });
         table.resetRowSelection();
         toast({
-          title: "Uczestnicy zostali pomyślnie usunięci",
+          title: "Usunięto uczestników",
           description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
         });
       } else {
         toast({
-          title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+          title: "Nie udało się grupowo usunąć uczestników!",
           description: response.error,
         });
       }
     } catch {
       toast({
-        title: "Wystąpił błąd podczas grupowego usuwania uczestników",
+        title: "Nie udało się grupowo usunąć uczestników!",
         variant: "destructive",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
       });
@@ -191,8 +199,11 @@ export function ParticipantTable({
 
   return (
     <>
-      <div className="my-2 flex flex-wrap items-center gap-4">
-        <h1 className="text-3xl font-bold">Lista uczestników</h1>
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex grow justify-between">
+          <h1 className="text-3xl font-bold">Lista uczestników</h1>
+          <HelpDialog />
+        </div>
         <TableMenu
           table={table}
           eventId={eventId}
@@ -202,54 +213,59 @@ export function ParticipantTable({
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>
-      <div className="relative w-full overflow-auto">
-        <Table>
-          <TableHeader className="border-border border-b-2">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
-                key={headerGroup.id}
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={cn(
-                        "border-border bg-background border-r-2",
-                        header.id === "expand" ? "w-16 text-right" : "",
-                        header.column.columnDef.meta?.headerClassName,
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <TableRowForm
-                  key={row.id}
-                  cells={row.getAllCells()}
-                  eventId={eventId}
-                  row={row}
-                  setData={setData}
-                  deleteParticipant={deleteParticipant}
-                  isQuerying={isQuerying}
-                  blocks={blocks ?? []}
-                ></TableRowForm>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <ScrollArea className="mt-4 w-full">
+        <div className="relative">
+          <Table>
+            <TableHeader className="border-border border-b-2">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                  key={headerGroup.id}
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          "border-border bg-background border-r-2",
+                          header.id === "expand" ? "w-16 text-right" : "",
+                          header.column.columnDef.meta?.headerClassName,
+                        )}
+                        aria-sort={getAriaSort(header.column.getIsSorted())}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <TableRowForm
+                    key={row.id}
+                    cells={row.getAllCells()}
+                    eventId={eventId}
+                    row={row}
+                    setData={setData}
+                    deleteParticipant={deleteParticipant}
+                    isQuerying={isQuerying}
+                    blocks={blocks ?? []}
+                  ></TableRowForm>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
       {table.getRowCount() === 0 ? (
         <div className="text-center">
           Nie znaleziono żadnych pasujących wyników

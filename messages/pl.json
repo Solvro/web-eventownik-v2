@@ -1,0 +1,61 @@
+{
+  "Event": {
+    "notFound": "Nie znaleziono wydarzenia 😪",
+    "registration": "Rejestracja na wydarzenie",
+    "fillForm": "Wypełnij formularz, aby się zarejestrować",
+    "addToCalendar": "Dodaj do kalendarza"
+  },
+  "Form": {
+    "invalidEmail": "Nieprawidłowy adres email.",
+    "emailTaken": "Ten adres email jest już zarejestrowany na to wydarzenie.",
+    "emailTakenTitle": "Adres email jest już zajęty",
+    "registrationSuccess": "Twoja rejestracja przebiegła pomyślnie!",
+    "registrationFailed": "Rejestracja na wydarzenie nie powiodła się.\\nSpróbuj ponownie później",
+    "registrationFailedTitle": "Rejestracja na wydarzenie nie powiodła się",
+    "tryAgainLater": "Spróbuj ponownie później",
+    "serverError": "Błąd serwera",
+    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
+    "fillAnotherForm": "Uzupełnij ponownie",
+    "emailPlaceholder": "Podaj swój adres e-mail",
+    "registering": "Rejestrowanie...",
+    "save": "Zapisz odpowiedź",
+    "saving": "Zapisywanie...",
+    "saved": "Twoja odpowiedź została zapisana!",
+    "signUp": "Zapisz się",
+    "editSaveFailed": "Zapisanie danych formularza nie powiodło się.\\nSpróbuj ponownie później",
+    "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
+    "editYourResponse": "Edytuj swoją odpowiedź",
+    "captchaInProgress": "Weryfikacja CAPTCHA...",
+    "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie",
+    "emailIsRequiredTooltip": "Musisz podać adres e-mail, aby zarejestrować się na to wydarzenie.",
+    "attributeIsRequiredTooltip": "To pole jest wymagane."
+  },
+  "Auth": {
+    "registerTitle": "Rejestracja organizatora",
+    "registerDescription": "Podaj swój email by się zarejestrować.",
+    "creatingAccount": "Tworzenie konta...",
+    "loginExisting": "Posiadasz już konto? Zaloguj się",
+    "loginTitle": "Logowanie organizatora",
+    "loginDescription": "Podaj swój email by się zalogować.",
+    "loginDisclaimer": "Żeby zarządzać wydarzeniami najpierw musisz się zalogować!",
+    "loggingIn": "Logowanie...",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "resetPasswordTitle": "Zapomniałeś hasła?",
+    "resetPasswordDescription": "Podaj swój adres email, a wyślemy Ci link do zresetowania hasła.",
+    "sending": "Wysyłanie...",
+    "sendResetLink": "Wyślij link resetujący",
+    "loginReturn": "Powrót do logowania",
+    "noAccountYet": "Nie masz jeszcze konta? Zarejestruj się",
+    "passwordLabel": "Hasło",
+    "nameLabel": "Imię",
+    "surnameLabel": "Nazwisko",
+    "continue": "Kontynuuj",
+    "captchaInProgress": "Weryfikacja CAPTCHA...",
+    "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie"
+  },
+  "Themes": {
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "System"
+  }
+}

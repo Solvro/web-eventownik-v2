@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useLocale } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute, FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -29,10 +31,11 @@ export function AttributeInput({
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
 }) {
+  const locale = useLocale();
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
-      return <Input type="text" {...field} />;
+      return <Input type="text" id={attribute.id.toString()} {...field} />;
     }
     case "number": {
       return (
@@ -41,6 +44,7 @@ export function AttributeInput({
           onWheel={(event) => {
             event.currentTarget.blur();
           }}
+          id={attribute.id.toString()}
           {...field}
         />
       );
@@ -52,18 +56,25 @@ export function AttributeInput({
           defaultValue={field.value as string}
           {...field}
         >
-          <SelectTrigger>
-            <SelectValue {...field}> {field.value as string}</SelectValue>
+          <SelectTrigger id={attribute.id.toString()}>
+            <SelectValue
+              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+            />
           </SelectTrigger>
           <SelectContent>
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value=" ">Wybierz opcję</SelectItem>
-            )}
             {attribute.options?.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
             ))}
+            {/* 
+            This hacky solution allows for setting "empty" option/ "unchecking" option
+            Filtering logic is based on this value (" ")
+            Feel free to propose better solution
+            */}
+            {!("isRequired" in attribute ? attribute.isRequired : false) && (
+              <SelectItem value={" "}>Brak</SelectItem>
+            )}
           </SelectContent>
         </Select>
       );
@@ -74,7 +85,7 @@ export function AttributeInput({
           {attribute.options?.map((option) => (
             <div key={option} className="mb-2 flex items-center space-x-2">
               <Checkbox
-                id={option}
+                id={`${attribute.id.toString()}-${option}`}
                 disabled={field.disabled}
                 checked={((field.value ?? []) as string[]).includes(option)}
                 onCheckedChange={(checked) => {
@@ -92,14 +103,16 @@ export function AttributeInput({
                   }
                 }}
               />
-              <Label htmlFor={option}>{option}</Label>
+              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
+                {option}
+              </Label>
             </div>
           ))}
         </div>
       );
     }
     case "email": {
-      return <Input type="email" {...field} />;
+      return <Input type="email" id={attribute.id.toString()} {...field} />;
     }
     case "date": {
       if (
@@ -110,7 +123,7 @@ export function AttributeInput({
         // It may break some features
         field.value = format(field.value as Date, "yyyy-MM-dd");
       }
-      return <Input type="date" {...field} />;
+      return <Input type="date" id={attribute.id.toString()} {...field} />;
     }
     case "datetime": {
       if (
@@ -120,22 +133,31 @@ export function AttributeInput({
       ) {
         field.value = format(field.value as Date, "yyyy-MM-dd HH:mm");
       }
-      return <Input type="datetime-local" {...field} />;
+      return (
+        <Input type="datetime-local" id={attribute.id.toString()} {...field} />
+      );
     }
     case "time": {
-      return <Input type="time" {...field} />;
+      return <Input type="time" id={attribute.id.toString()} {...field} />;
     }
     case "color": {
-      return <Input type="color" className="h-16 w-full" {...field} />;
+      return (
+        <Input
+          type="color"
+          className="h-16 w-full"
+          id={attribute.id.toString()}
+          {...field}
+        />
+      );
     }
     case "textarea": {
-      return <Textarea rows={3} {...field} />;
+      return <Textarea rows={3} id={attribute.id.toString()} {...field} />;
     }
     case "checkbox": {
       return (
         <div className="flex items-center space-x-2">
           <Checkbox
-            id={field.name}
+            id={attribute.id.toString()}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
               field.onChange(checked);
@@ -146,7 +168,15 @@ export function AttributeInput({
       );
     }
     case "tel": {
-      return <Input type="tel" {...field} />;
+      return (
+        <Input
+          id={attribute.id.toString()}
+          type="tel"
+          pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
+          maxLength={16}
+          {...field}
+        />
+      );
     }
     case "file": {
       // Handled in ./attribute-input-file.tsx

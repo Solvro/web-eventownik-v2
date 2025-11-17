@@ -33,24 +33,27 @@ export interface Event {
   image: string;
   color: string;
   participantsNumber: number;
-  links: string[];
+  socialMediaLinks: { label?: string; link: string }[];
   slug: string;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
+  termsLink: string | undefined;
 }
 
 export const eventAtom = atom<Event>({
   name: "",
-  description: "",
-  startDate: new Date(),
-  endDate: new Date(),
+  description: "<p></p>",
+  // Tomorrow, midnight
+  startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  endDate: new Date(new Date().setHours(24, 0, 0, 0)),
   location: "",
   organizer: "",
   image: "",
   color: "#3672fd",
   participantsNumber: 1,
-  links: [],
+  socialMediaLinks: [],
   slug: "",
   coorganizers: [],
   attributes: [],
+  termsLink: "",
 });

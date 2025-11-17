@@ -1,9 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatISO9075, getHours, getMinutes } from "date-fns";
-import { CalendarArrowDown, CalendarArrowUp } from "lucide-react";
+import { useSetAtom } from "jotai";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  Download,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -20,8 +28,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 const EventGeneralInfoSchema = z
@@ -34,6 +42,13 @@ const EventGeneralInfoSchema = z
     endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
     location: z.string().optional(),
     organizer: z.string().optional(),
+    termsLink: z
+      .string()
+      .url(
+        "Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
+      )
+      .optional()
+      .or(z.literal("")),
   })
   .refine(
     (data) => {
@@ -55,6 +70,8 @@ const EventGeneralInfoSchema = z
   );
 
 export function General({ event, saveFormRef }: TabProps) {
+  const setIsDirty = useSetAtom(areSettingsDirty);
+
   const form = useForm<z.infer<typeof EventGeneralInfoSchema>>({
     resolver: zodResolver(EventGeneralInfoSchema),
     defaultValues: {
@@ -66,6 +83,7 @@ export function General({ event, saveFormRef }: TabProps) {
       endTime: `${getHours(event.endDate).toString().padStart(2, "0")}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location ?? "",
       organizer: event.organizer ?? "",
+      termsLink: event.termsLink ?? "",
     },
   });
 
@@ -90,16 +108,23 @@ export function General({ event, saveFormRef }: TabProps) {
       endDate: formatISO9075(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
+      termsLink: values.termsLink ?? "",
     };
     return { success: true, event: newEvent };
   }
 
   saveFormRef.current = saveForm;
 
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsDirty(true);
+    }
+  }, [form.formState.isDirty, setIsDirty]);
+
   return (
     <Form {...form}>
-      <form className="flex w-full flex-row flex-wrap gap-4">
-        <div className="w-full space-y-4 sm:w-auto sm:min-w-80">
+      <form className="flex w-full flex-col flex-wrap gap-4">
+        <div className="w-full space-y-4 sm:w-100">
           <FormField
             name="name"
             control={form.control}
@@ -121,7 +146,7 @@ export function General({ event, saveFormRef }: TabProps) {
             )}
           />
           <div className="space-y-2">
-            <FormLabel>Data i godzina</FormLabel>
+            <FormLabel>Data i godzina rozpoczęcia</FormLabel>
             <div className="flex flex-row flex-wrap gap-2">
               <FormField
                 control={form.control}
@@ -132,11 +157,11 @@ export function General({ event, saveFormRef }: TabProps) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className="justify-start pl-3 text-left font-normal"
                           >
                             {format(field.value, "PPP")}
-                            <CalendarArrowDown className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -176,6 +201,7 @@ export function General({ event, saveFormRef }: TabProps) {
             </div>
           </div>
           <div className="space-y-2">
+            <FormLabel>Data i godzina zakończenia</FormLabel>
             <div className="flex flex-row flex-wrap gap-2">
               <FormField
                 control={form.control}
@@ -186,12 +212,12 @@ export function General({ event, saveFormRef }: TabProps) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className="justify-start pl-3 text-left font-normal"
                             disabled={form.formState.isSubmitting}
                           >
                             {format(field.value, "PPP")}
-                            <CalendarArrowUp className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -284,21 +310,49 @@ export function General({ event, saveFormRef }: TabProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel className="mb-0">Opis</FormLabel>
-                <FormControl>
-                  <Textarea
-                    disabled={form.formState.isSubmitting}
-                    placeholder="Opisz wydarzenie"
-                    className="h-60 resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
+                <FormLabel>Opis</FormLabel>
+                <WysiwygEditor
+                  content={form.getValues("description") ?? "<p></p>"}
+                  onChange={field.onChange}
+                />
+                <FormMessage>
                   {form.formState.errors.description?.message}
                 </FormMessage>
               </FormItem>
             )}
           />
+        </div>
+        <div className="w-full max-w-[974px] space-y-2">
+          <FormField
+            name="termsLink"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-1">
+                <FormLabel>Link do regulaminu</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.termsLink?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <Button asChild variant="eventGhost" size="sm" className="px-2">
+            <Link
+              href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+              download
+              target="_blank"
+            >
+              <Download className="size-3" />
+              Pobierz szablon regulaminu (współtworzony z Działem Prawnym PWr)
+            </Link>
+          </Button>
         </div>
       </form>
     </Form>

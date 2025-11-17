@@ -5,13 +5,18 @@ import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 import { getParticipant } from "../actions";
 import { flattenParticipant } from "./data";
-import { FilterButton, SortButton, SortIcon } from "./utils";
+import { FilterButton } from "./filter-button";
+import { SortButton, SortIcon } from "./sort-button";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,7 +44,7 @@ export function generateColumns(
             (table.getIsSomeRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            table.toggleAllRowsSelected(!!(value as boolean));
+            table.toggleAllRowsSelected(Boolean(value));
           }}
           aria-label="Wybierz wszystkie"
         ></Checkbox>
@@ -48,7 +53,7 @@ export function generateColumns(
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
-            row.toggleSelected(!!(value as boolean));
+            row.toggleSelected(Boolean(value));
           }}
           aria-label="Wybierz wiersz"
         ></Checkbox>
@@ -78,9 +83,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Email
-            </SortButton>
+            <SortButton column={column}>Email</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -95,9 +98,7 @@ export function generateColumns(
         const sortingDirection = column.getIsSorted();
         return (
           <div className="flex items-center">
-            <SortButton sortingDirection={sortingDirection} column={column}>
-              Data rejestracji
-            </SortButton>
+            <SortButton column={column}>Data rejestracji</SortButton>
             <SortIcon sortingDirection={sortingDirection} />
           </div>
         );
@@ -111,108 +112,146 @@ export function generateColumns(
   ];
 
   const attributeColumns = [
-    ...attributes.map((attribute) => {
-      //accessor must match keys in flatParticipant (check ./data.ts)
-      const showInTable = attribute.showInList;
-      return columnHelper.accessor(attribute.id.toString(), {
-        meta: {
-          attribute,
-          showInTable,
-          headerClassName: showInTable ? "" : "hidden",
-          cellClassName: showInTable ? "" : "hidden",
-        },
-        header: ({ column }) => {
-          const sortingDirection = column.getIsSorted();
-          return (
-            <div className="flex items-center">
-              <FilterButton
-                attributeType={attribute.type}
-                options={attribute.options}
-                column={column}
-              />
-              <SortButton sortingDirection={sortingDirection} column={column}>
-                <span className="max-w-sm truncate">{attribute.name}</span>
-              </SortButton>
-              <SortIcon sortingDirection={sortingDirection} />
-            </div>
-          );
-        },
-        cell: (info) => {
-          switch (attribute.type) {
-            case "date": {
-              const value = info.getValue();
-              if (value !== undefined && value !== null && value !== "") {
-                return format(value as Date, "dd-MM-yyyy");
+    // Sort attributes by order before creating columns
+    ...attributes
+      .toSorted((a, b) => {
+        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      })
+      .map((attribute) => {
+        //accessor must match keys in flatParticipant (check ./data.ts)
+        const showInTable = attribute.showInList;
+        return columnHelper.accessor(attribute.id.toString(), {
+          meta: {
+            attribute,
+            showInTable,
+            headerClassName: showInTable ? "" : "hidden",
+            cellClassName: showInTable ? "" : "hidden",
+          },
+          header: ({ column }) => {
+            const sortingDirection = column.getIsSorted();
+            return (
+              <div className="flex items-center">
+                <FilterButton
+                  attributeType={attribute.type}
+                  options_={attribute.options}
+                  column={column}
+                />
+                <SortButton column={column}>
+                  <span className="max-w-sm truncate">
+                    {getAttributeLabel(attribute.name, "pl")}
+                  </span>
+                </SortButton>
+                <SortIcon sortingDirection={sortingDirection} />
+              </div>
+            );
+          },
+          cell: (info) => {
+            switch (attribute.type) {
+              case "date": {
+                const value = info.getValue();
+                if (value !== undefined && value !== null && value !== "") {
+                  return format(value as Date, "dd-MM-yyyy");
+                }
+                return value;
               }
-              return value;
-            }
-            case "datetime": {
-              const value = info.getValue();
-              if (value !== undefined && value !== null && value !== "") {
-                return format(value as Date, "dd-MM-yyyy HH:mm:ss");
+              case "datetime": {
+                const value = info.getValue();
+                if (value !== undefined && value !== null && value !== "") {
+                  return format(value as Date, "dd-MM-yyyy HH:mm:ss");
+                }
+                return value;
               }
-              return value;
+              case "block": {
+                const rootBlock = blocks.find(
+                  (b) => b?.attributeId === attribute.id,
+                );
+                const childBlockId = Number(info.getValue());
+                const childBlock = rootBlock?.children.find(
+                  (b) => b.id === childBlockId,
+                );
+                return childBlock?.name;
+              }
+              case "time":
+              case "number":
+              case "text":
+              case "select":
+              case "email":
+              case "textarea":
+              case "color":
+              case "checkbox":
+              case "tel":
+              case "file":
+              case "multiselect":
+              default: {
+                return info.getValue();
+              }
             }
-            case "block": {
-              const rootBlock = blocks.find(
-                (b) => b?.attributeId === attribute.id,
+          },
+          //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type
+          filterFn: (
+            row: Row<FlattenedParticipant>,
+            columnId: string,
+            filterValue: ParticipantAttributeValueType[],
+          ) => {
+            if (filterValue.length === 0) {
+              return true;
+            }
+            const rowValue = row.original[columnId] ?? null;
+
+            // Multiselect case has to be handled separately
+            // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+            if (rowValue !== null && attribute.type === "multiselect") {
+              const values = new Set(
+                (row.original[columnId] as string).split(","),
               );
-              const childBlockId = Number(info.getValue());
-              const childBlock = rootBlock?.children.find(
-                (b) => b.id === childBlockId,
-              );
-              return childBlock?.name;
+              return filterValue.some((value) => values.has(value as string));
             }
-            case "time":
-            case "number":
-            case "text":
-            case "select":
-            case "email":
-            case "textarea":
-            case "color":
-            case "checkbox":
-            case "tel":
-            case "file":
-            case "multiselect":
-            default: {
-              return info.getValue();
+
+            // Special case when attribute of single select type is set empty
+            // Check implementation of AttributeInput for explanation
+            if (rowValue === " " && filterValue.includes(null)) {
+              return true;
             }
-          }
-        },
-        filterFn: "arrIncludesSome",
-      });
-    }),
+
+            return filterValue.includes(rowValue);
+          },
+          sortDescFirst: false,
+        });
+      }),
     columnHelper.display({
       id: "expand",
-      header: ({ table }) => {
-        const isAnyExpanded = table.getIsSomeRowsExpanded();
-        const notExpandedRows = table
-          .getCoreRowModel()
-          .rows.filter((row) => !row.original.wasExpanded);
-        return (
-          <Button
-            variant="ghost"
-            onClick={async () => {
-              await Promise.all(
-                notExpandedRows.map(async (row) => {
-                  return fetchAdditionalParticipantData(row, table, eventId);
-                }),
-              );
-              isAnyExpanded
-                ? table.resetExpanded(isAnyExpanded)
-                : table.toggleAllRowsExpanded();
-            }}
-          >
-            {isAnyExpanded ? "Zwiń" : "Rozwiń"}
-          </Button>
-        );
-      },
+      // TODO: wait for backend for better/different implementation of fetching additional data
+      // header: ({ table }) => {
+      //   const isAnyExpanded = table.getIsSomeRowsExpanded();
+      //   const notExpandedRows = table
+      //     .getCoreRowModel()
+      //     .rows.filter((row) => !row.original.wasExpanded);
+      //   return (
+      //     <Button
+      //       variant="eventGhost"
+      //       onClick={async () => {
+      //         await Promise.all(
+      //           notExpandedRows.map(async (row) => {
+      //             return fetchAdditionalParticipantData(row, table, eventId);
+      //           }),
+      //         );
+      //         isAnyExpanded
+      //           ? table.resetExpanded(isAnyExpanded)
+      //           : table.toggleAllRowsExpanded();
+      //       }}
+      //     >
+      //       {isAnyExpanded ? "Zwiń" : "Rozwiń"}
+      //     </Button>
+      //   );
+      // },
       cell: ({ row, table }) => {
         const isLoading = table.options.meta?.isRowLoading(row.index) ?? false;
         return row.getCanExpand() ? (
           <Button
             size="icon"
-            variant={row.getIsExpanded() ? "outline" : "ghost"}
+            variant={row.getIsExpanded() ? "outline" : "eventGhost"}
             disabled={isLoading}
             onClick={async () => {
               await fetchAdditionalParticipantData(row, table, eventId);
@@ -221,6 +260,7 @@ export function generateColumns(
               }
               row.toggleExpanded();
             }}
+            aria-label={row.getIsExpanded() ? "Zwiń wiersz" : "Rozwiń wiersz"}
           >
             {isLoading ? (
               <Loader2 className="animate-spin" />

@@ -1,3 +1,4 @@
+import { useSetAtom } from "jotai";
 import { sha256 } from "js-sha256";
 import { EllipsisVertical, Plus, UserRoundMinus } from "lucide-react";
 import Image from "next/image";
@@ -18,6 +19,7 @@ import type {
   PermissionType,
 } from "@/types/co-organizer";
 
+import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
@@ -173,6 +175,8 @@ export function CoOrganizers({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const isEmailValid = isValidEmail(newEmail);
 
+  const setIsDirty = useSetAtom(areSettingsDirty);
+
   const handleAddOrganizer = (
     email: string,
     permissionsIds: PermissionType[],
@@ -205,6 +209,7 @@ export function CoOrganizers({
         },
       ],
     }));
+    setIsDirty(true);
   };
 
   const handleRemoveOrganizer = (email: string) => {
@@ -218,6 +223,7 @@ export function CoOrganizers({
         coOrganizers.find((org) => org.email === email),
       ].filter((org): org is CoOrganizer => org !== undefined),
     }));
+    setIsDirty(true);
   };
 
   const handlePermissionToggle = useCallback(
@@ -248,6 +254,7 @@ export function CoOrganizers({
         }
         return newCoOrganizers;
       });
+      setIsDirty(true);
     },
     [setCoOrganizers, setCoOrganizersChanges],
   );
@@ -341,6 +348,7 @@ export function CoOrganizers({
                       Anuluj
                     </Button>
                     <Button
+                      variant="eventDefault"
                       onClick={() => {
                         handleAddOrganizer(newEmail, selectedPermissions);
                         setNewEmail("");

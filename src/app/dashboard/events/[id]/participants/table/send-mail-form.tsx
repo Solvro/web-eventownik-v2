@@ -21,6 +21,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -65,14 +71,14 @@ function SendMailForm({
 
     if (result.success) {
       toast({
-        title: "Pomyślnie rozesłano maile",
+        title: "Wysłano wiadomości",
       });
 
       // 'router.refresh()' doesn't work here for some reason - using native method instead
       location.reload();
     } else {
       toast({
-        title: "Nie udało się wysłać maili",
+        title: "Nie udało się wysłać wiadomości!",
         description: result.error,
         variant: "destructive",
       });
@@ -81,12 +87,17 @@ function SendMailForm({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="icon" variant="outline" title="Wyślij maila">
-          <Mail />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button size="icon" variant="outline" aria-label="Wyślij maila">
+              <Mail />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Wyślij maila</TooltipContent>
+      </Tooltip>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader className="sr-only">
           <DialogTitle>Wyślij maila</DialogTitle>
         </DialogHeader>
@@ -147,13 +158,20 @@ function SendMailForm({
                   Zamierzasz wysłać tą wiadomość do {targetParticipants.length}{" "}
                   uczestników z następującymi adresami:
                 </h2>
-                <pre className="bg-muted/20 max-h-16 overflow-y-auto rounded-md p-4 whitespace-pre-wrap">
-                  {targetParticipants
-                    .map((participant) => participant.email)
-                    .join("\n")}
-                </pre>
+                <ScrollArea className="h-32">
+                  <pre className="bg-muted/70 rounded-md p-4 whitespace-pre-wrap">
+                    {targetParticipants
+                      .map((participant) => participant.email)
+                      .join("\n")}
+                  </pre>
+                </ScrollArea>
+
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                  <Button
+                    type="submit"
+                    variant="eventDefault"
+                    disabled={form.formState.isSubmitting}
+                  >
                     {form.formState.isSubmitting ? (
                       <Loader className="animate-spin" />
                     ) : (

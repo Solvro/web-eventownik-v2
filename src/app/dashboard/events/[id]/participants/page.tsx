@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
@@ -9,6 +10,10 @@ import {
   getEmails,
   getParticipants,
 } from "./actions";
+
+export const metadata: Metadata = {
+  title: "Uczestnicy",
+};
 
 export default async function DashboardEventParticipantsPage({
   params,
@@ -38,7 +43,7 @@ export default async function DashboardEventParticipantsPage({
         <div>Nie udało się załadować danych o uczestnikach</div>
       ) : (
         <ParticipantTable
-          participants={participants.sort(
+          participants={participants.toSorted(
             (a, b) =>
               new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
           )}

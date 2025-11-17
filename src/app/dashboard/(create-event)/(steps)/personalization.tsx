@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import {
@@ -8,7 +6,7 @@ import {
   Loader2,
   PlusIcon,
   SettingsIcon,
-  TrashIcon,
+  Trash2,
   UploadIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -16,6 +14,7 @@ import { useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { setEventPrimaryColors } from "@/components/event-primary-color";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -26,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { cn } from "@/lib/utils";
 
 import { isSlugTaken } from "../actions";
@@ -39,9 +39,10 @@ const EventPersonalizationFormSchema = z.object({
   image: z.string().optional(),
   color: z.string().optional(),
   participantsNumber: z.coerce.number().min(1),
-  links: z.array(
+  socialMediaLinks: z.array(
     z.object({
-      value: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+      label: z.string().optional(),
+      link: z.string().url("Nieprawidłowy URL").or(z.literal("")),
     }),
   ),
   slug: z
@@ -59,7 +60,6 @@ export function PersonalizationForm({
 }) {
   const [event, setEvent] = useAtom(eventAtom);
   const fileInputId = useId();
-  const imageInputId = useId();
   const [lastImageUrl, setLastImageUrl] = useState<string>("");
 
   const form = useForm<z.infer<typeof EventPersonalizationFormSchema>>({
@@ -68,9 +68,7 @@ export function PersonalizationForm({
       image: event.image,
       color: event.color,
       participantsNumber: event.participantsNumber,
-      links: event.links.map((link) => ({
-        value: link,
-      })),
+      socialMediaLinks: event.socialMediaLinks,
       slug:
         event.slug === ""
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
@@ -79,7 +77,7 @@ export function PersonalizationForm({
   });
 
   const { fields, append, remove } = useFieldArray({
-    name: "links",
+    name: "socialMediaLinks",
     control: form.control,
   });
 
@@ -100,16 +98,10 @@ export function PersonalizationForm({
       });
       return;
     }
-    setEvent({
-      ...event,
-      image: event.image,
-      color: data.color ?? "#3672fd",
-      participantsNumber: data.participantsNumber,
-      links: data.links.map((link) => link.value),
-      slug: data.slug,
-    });
     goToNextStep();
   }
+
+  useAutoSave(setEvent, form);
 
   return (
     <FormContainer
@@ -130,7 +122,7 @@ export function PersonalizationForm({
               render={({ field }) => {
                 const processedField = { ...field, value: "" };
                 return (
-                  <FormItem className="flex w-full flex-col gap-2">
+                  <FormItem className="flex w-full flex-col">
                     <FormLabel>Zdjęcie</FormLabel>
                     <FormLabel
                       htmlFor={fileInputId}
@@ -190,11 +182,13 @@ export function PersonalizationForm({
                 name="color"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Kolor wydarzenia</FormLabel>
                     <FormLabel
-                      htmlFor={imageInputId}
-                      className={cn(buttonVariants({ variant: "outline" }))}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "cursor-pointer justify-start",
+                      )}
                     >
                       <span
                         className="aspect-square w-6 rounded-full"
@@ -205,10 +199,13 @@ export function PersonalizationForm({
                     <FormControl>
                       <Input
                         type="color"
-                        className="hidden"
-                        id={imageInputId}
+                        className="pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
                         disabled={form.formState.isSubmitting}
                         {...field}
+                        onChange={(event_) => {
+                          setEventPrimaryColors(event_.target.value);
+                          field.onChange(event_);
+                        }}
                       />
                     </FormControl>
                   </FormItem>
@@ -218,7 +215,7 @@ export function PersonalizationForm({
                 name="participantsNumber"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Liczba uczestników</FormLabel>
                     <FormControl>
                       <Input
@@ -231,22 +228,31 @@ export function PersonalizationForm({
                   </FormItem>
                 )}
               />
+
               <FormField
-                name="links"
+                name="socialMediaLinks"
                 control={form.control}
                 render={() => (
-                  <FormItem className="flex flex-col gap-2">
+                  <FormItem>
                     <FormLabel>Linki</FormLabel>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {fields.map((field, index) => (
                         <div className="flex flex-col gap-2" key={field.id}>
                           <div className="flex items-center gap-2">
                             <FormControl>
                               <Input
-                                type="url"
-                                placeholder=""
+                                placeholder="Facebook"
                                 {...form.register(
-                                  `links.${index}.value` as const,
+                                  `socialMediaLinks.${index}.label` as const,
+                                )}
+                              />
+                            </FormControl>
+                            <FormControl>
+                              <Input
+                                type="url"
+                                placeholder="https://fb.me/knsolvro"
+                                {...form.register(
+                                  `socialMediaLinks.${index}.link` as const,
                                 )}
                               />
                             </FormControl>
@@ -254,18 +260,30 @@ export function PersonalizationForm({
                               type="button"
                               variant="outline"
                               size="icon"
-                              className="hover:bg-red-500/90 hover:text-white"
+                              className="shrink-0 hover:bg-red-500/90 hover:text-white"
                               onClick={() => {
                                 remove(index);
                               }}
                             >
-                              <TrashIcon className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
-                          {form.formState.errors.links?.[index]?.value
+                          {form.formState.errors.socialMediaLinks?.[index]
+                            ?.label?.message != null && (
+                            <p className="text-sm text-[0.8rem] font-medium text-red-500">
+                              {
+                                form.formState.errors.socialMediaLinks[index]
+                                  .label.message
+                              }
+                            </p>
+                          )}
+                          {form.formState.errors.socialMediaLinks?.[index]?.link
                             ?.message != null && (
                             <p className="text-sm text-[0.8rem] font-medium text-red-500">
-                              {form.formState.errors.links[index].value.message}
+                              {
+                                form.formState.errors.socialMediaLinks[index]
+                                  .link.message
+                              }
                             </p>
                           )}
                         </div>
@@ -273,13 +291,13 @@ export function PersonalizationForm({
                       <Button
                         type="button"
                         variant="outline"
-                        className="w-full gap-2"
+                        className="gap-2"
                         onClick={() => {
-                          append({ value: "" });
+                          append({ label: "", link: "" });
                         }}
                       >
                         <PlusIcon className="h-4 w-4" />
-                        Dodaj Linka
+                        Dodaj link
                       </Button>
                     </div>
                   </FormItem>
@@ -289,7 +307,7 @@ export function PersonalizationForm({
                 name="slug"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Slug</FormLabel>
                     <FormControl>
                       <Input

@@ -13,10 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./action-components";
+import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
 import { ExportButton } from "./export-button";
 import { SendMailForm } from "./send-mail-form";
 import { getPaginationInfoText } from "./utils";
@@ -50,6 +55,7 @@ export function TableMenu({
           placeholder="Wyszukaj..."
           value={globalFilter}
           onChange={(event) => {
+            // TODO maybe some debouncing?
             setIsUserSearching(true);
             const searchValue = event.target.value;
             table.setGlobalFilter(searchValue);
@@ -65,26 +71,36 @@ export function TableMenu({
             }
           }}
         ></Input>
-        <Button
-          onClick={() => {
-            table.resetColumnFilters();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj filtry"
-        >
-          <FilterX />
-        </Button>
-        <Button
-          onClick={() => {
-            table.resetSorting();
-          }}
-          size="icon"
-          variant="outline"
-          title="Resetuj sortowanie"
-        >
-          <ArrowUpDown />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label="Resetuj wszystkie filtry"
+            >
+              <FilterX />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj wszystkie filtry</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label="Resetuj sortowanie"
+            >
+              <ArrowUpDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Resetuj sortowanie</TooltipContent>
+        </Tooltip>
         <SendMailForm
           eventId={eventId}
           targetParticipants={table
@@ -107,7 +123,7 @@ export function TableMenu({
             table.setPageSize(
               value === "all"
                 ? table.getFilteredRowModel().rows.length
-                : +value,
+                : Number(value),
             );
           }}
           defaultValue={table.getState().pagination.pageSize.toString()}

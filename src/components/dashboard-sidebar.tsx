@@ -14,6 +14,7 @@ import React from "react";
 
 import { Button } from "@/components/ui/button";
 import type { Attribute } from "@/types/attributes";
+import type { Event } from "@/types/event";
 
 interface SidebarSection {
   title: string;
@@ -27,10 +28,10 @@ interface SidebarLink {
 }
 
 export function DashboardSidebar({
-  id,
+  event,
   attributes,
 }: {
-  id: string;
+  event: Event;
   attributes: Attribute[];
 }) {
   const pathname = usePathname();
@@ -53,7 +54,7 @@ export function DashboardSidebar({
         {
           title: "Wydarzenie",
           icon: <Play />,
-          route: id,
+          route: event.id.toString(),
         },
         {
           title: "Formularze",
@@ -89,9 +90,16 @@ export function DashboardSidebar({
     },
   ];
 
+  function isActiveLink(linkRoute: string) {
+    return (
+      pathname.endsWith(`events/${linkRoute}`) ||
+      (linkRoute !== event.id.toString() && pathname.includes(linkRoute))
+    );
+  }
+
   return (
     <>
-      <nav className="border-muted hidden min-w-[240px] flex-col gap-6 border-r pr-8 sm:flex">
+      <nav className="border-muted hidden min-w-[240px] shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
@@ -104,12 +112,12 @@ export function DashboardSidebar({
                   <Button
                     className="w-full justify-start"
                     variant={
-                      pathname.endsWith(link.route) ? "default" : "ghost"
+                      isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                     }
                     asChild
                   >
                     <Link
-                      href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
+                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                     >
                       {link.icon}
                       {link.title}
@@ -141,15 +149,12 @@ export function DashboardSidebar({
               <li key={link.title}>
                 <Button
                   variant={
-                    pathname.endsWith(link.route) ||
-                    (link.route !== id && pathname.includes(link.route))
-                      ? "default"
-                      : "ghost"
+                    isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                   }
                   asChild
                 >
                   <Link
-                    href={`/dashboard/events/${id}/${link.route === id ? "" : link.route}`}
+                    href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                   >
                     {link.icon}
                   </Link>

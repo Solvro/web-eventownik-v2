@@ -11,14 +11,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
+import { useUnsavedAtom } from "@/hooks/use-unsaved";
 
 import { AttributesForm } from "./(steps)/attributes";
 import { CoorganizersForm } from "./(steps)/coorganizers";
 import { GeneralInfoForm } from "./(steps)/general-info";
 import { PersonalizationForm } from "./(steps)/personalization";
+import { eventAtom } from "./state";
 
 export function CreateEventForm() {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [alertActive, setAlertActive] = useState(false);
+
+  const { isDirty, isGuardActive, onCancel, onConfirm, setDisabled } =
+    useUnsavedAtom(eventAtom);
+
   const steps = [
     <GeneralInfoForm
       key={0}
@@ -49,12 +58,39 @@ export function CreateEventForm() {
       goToPreviousStep={() => {
         setCurrentStep((value) => value - 1);
       }}
+      disableNavguard={() => {
+        setDisabled(true);
+      }}
     />,
   ];
+
   return (
-    <Dialog>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open: boolean) => {
+        if (open) {
+          setDialogOpen(open);
+        } else {
+          if (isDirty || isGuardActive) {
+            setAlertActive(isDirty || isGuardActive);
+          } else {
+            setDialogOpen(open);
+          }
+        }
+      }}
+    >
+      <UnsavedChangesAlert
+        active={alertActive}
+        setActive={setAlertActive}
+        setDialogOpen={setDialogOpen}
+        onCancel={onCancel}
+        onConfirm={() => {
+          setCurrentStep(0);
+          onConfirm();
+        }}
+      />
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="outline">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>

@@ -23,13 +23,14 @@ import { useAtom } from "jotai";
 import {
   ArrowLeft,
   GripVertical,
-  Loader2,
+  Loader,
   PlusIcon,
+  SquarePlus,
   TextIcon,
-  TrashIcon,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -52,6 +53,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { SLUG_REGEX, getBase64FromUrl } from "@/lib/utils";
 import type { AttributeType, EventAttribute } from "@/types/attributes";
@@ -112,12 +118,21 @@ SortableOption.displayName = "SortableOption";
 
 const AttributeTypeOptions = () =>
   ATTRIBUTE_TYPES.map((type) => (
-    <SelectItem key={type.value} value={type.value}>
-      <div className="flex items-center gap-2">
-        {type.icon}
-        <span className="overflow-x-hidden text-ellipsis">{type.title}</span>
-      </div>
-    </SelectItem>
+    <Tooltip key={type.value}>
+      <TooltipTrigger asChild>
+        <SelectItem value={type.value}>
+          <div className="flex items-center gap-2">
+            {type.icon}
+            <span className="overflow-x-hidden text-ellipsis">
+              {type.title}
+            </span>
+          </div>
+        </SelectItem>
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        <p>{type.description ?? type.title}</p>
+      </TooltipContent>
+    </Tooltip>
   ));
 
 const AttributeItem = memo(
@@ -194,7 +209,7 @@ const AttributeItem = memo(
           onClick={onRemove}
           className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
         >
-          <TrashIcon className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
 
         <div className="flex flex-1 flex-col gap-2">
@@ -309,8 +324,10 @@ AttributeItem.displayName = "AttributeItem";
 
 export function AttributesForm({
   goToPreviousStep,
+  disableNavguard,
 }: {
   goToPreviousStep: () => void;
+  disableNavguard: () => void;
 }) {
   const [event, setEvent] = useAtom(eventAtom);
   const [loading, setLoading] = useState(false);
@@ -321,7 +338,6 @@ export function AttributesForm({
       type: "text",
     },
   });
-
   const router = useRouter();
 
   function onSubmit(data: z.infer<typeof EventAttributesFormSchema>) {
@@ -341,8 +357,11 @@ export function AttributesForm({
           options: [],
           rootBlockId: undefined,
           showInList: true,
+          order: event.attributes.length,
           createdAt: "", // set it to empty string to avoid type error
           updatedAt: "", // set it to empty string to avoid type error
+          isSensitiveData: false,
+          reason: null,
         },
       ],
     }));
@@ -379,31 +398,35 @@ export function AttributesForm({
       if ("errors" in result) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj utworzyć wydarzenie ponownie.",
+          title: "Nie udało się dodać wydarzenia!",
+          description: "Spróbuj utworzyć wydarzenie ponownie",
         });
       } else {
         URL.revokeObjectURL(event.image);
 
         toast({
-          title: "Pomyślnie utworzono nowe wydarzenie",
+          title: "Dodano nowe wydarzenie",
         });
 
         setEvent({
           name: "",
           description: "",
-          startDate: new Date(),
-          endDate: new Date(),
+          // Tomorrow, midnight
+          startDate: new Date(new Date().setHours(24, 0, 0, 0)),
+          endDate: new Date(new Date().setHours(24, 0, 0, 0)),
           location: "",
           organizer: "",
           image: "",
           color: "#3672fd",
           participantsNumber: 1,
-          links: [],
+          socialMediaLinks: [],
           slug: "",
           coorganizers: [],
           attributes: [],
+          termsLink: "",
         });
+
+        disableNavguard();
 
         setTimeout(() => {
           router.push(`/dashboard/events/${result.id}`);
@@ -412,8 +435,8 @@ export function AttributesForm({
     } catch {
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: "Brak połączenia z serwerem",
+        description: "Sprawdź swoje połączenie z internetem",
       });
     }
     setLoading(false);
@@ -517,13 +540,8 @@ export function AttributesForm({
               <ArrowLeft /> Wróć
             </Button>
             <Button className="w-min" onClick={createEvent} disabled={loading}>
-              {loading ? (
-                <>
-                  Zapisywanie danych... <Loader2 className="animate-spin" />
-                </>
-              ) : (
-                <>Utwórz wydarzenie</>
-              )}
+              {loading ? <Loader className="animate-spin" /> : <SquarePlus />}{" "}
+              Dodaj wydarzenie
             </Button>
           </div>
         </div>

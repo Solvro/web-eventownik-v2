@@ -9,10 +9,16 @@ export interface EventAttribute {
   type: string;
   rootBlockId: number | undefined;
   showInList: boolean;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
+  isSensitiveData: boolean;
+  reason: string | null;
 }
 
+/**
+ * @param value - Data returned from API is always a string (even numbers, booleans are in string format - "true", "123")
+ */
 export interface AttributeBase {
   id: number;
   name: string;
@@ -25,6 +31,7 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   showInList: boolean;
   options: string[] | null;
   type: AttributeType;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
 }

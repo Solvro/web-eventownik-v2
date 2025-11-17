@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAutoSave } from "@/hooks/use-autosave";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
@@ -64,7 +65,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="border-primary/25 flex max-w-lg grow flex-col gap-2 rounded-md border p-4">
+    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -154,7 +155,7 @@ function TriggerConfigurationInputs({
                     {eventAttributes.map((attribute) => (
                       <SelectItem
                         key={attribute.id}
-                        value={attribute.id.toString()}
+                        value={String(attribute.id)}
                       >
                         {attribute.name}
                       </SelectItem>
@@ -204,14 +205,7 @@ function TriggerTypeForm({
     },
   });
 
-  function onSubmit(
-    values: z.infer<typeof EventEmailTemplateTriggerTypeSchema>,
-  ) {
-    setNewEmailTemplate((previous) => {
-      return { ...previous, ...values };
-    });
-    goToNextStep();
-  }
+  useAutoSave(setNewEmailTemplate, form);
 
   return (
     <FormContainer
@@ -221,7 +215,7 @@ function TriggerTypeForm({
       title="Krok 1"
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
           <h2 className="font-semibold">Wybierz rodzaj wyzwalacza</h2>
           <div className="flex justify-between">
             <FormField
@@ -261,7 +255,7 @@ function TriggerTypeForm({
               <TriggerTypeExplanation trigger={form.getValues("trigger")} />
             )}
           </div>
-          <div className="bg-muted-foreground/25 h-[1px] w-full" />
+          <div className="bg-muted/25 h-[1px] w-full" />
           <div className="flex min-h-40 flex-col gap-4">
             <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
             <FormMessage>
@@ -280,11 +274,11 @@ function TriggerTypeForm({
           </div>
           <div className="flex justify-end">
             <Button
-              variant="ghost"
+              variant="eventGhost"
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              <ArrowRight /> Dalej
+              <ArrowRight /> Przejdź dalej
             </Button>
           </div>
         </form>

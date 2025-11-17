@@ -1,6 +1,8 @@
+import { Cuboid } from "lucide-react";
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { AddBlockEntry } from "@/app/dashboard/events/[id]/blocks/[blockId]/add-block-entry";
+import { CreateBlockForm } from "@/app/dashboard/events/[id]/blocks/[blockId]/create-block-form";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
@@ -54,10 +56,14 @@ async function getParticipantsInRootBlock(
     return [];
   }
   const participants = (await response.json()) as Participant[];
+  // TODO fix case when block attribute has field showInList=false
+  // In such case this filter will return empty list
+  // since participants won't have block attribute in their fields (attribute.id === blockId is always false)
+  // The error results from what data does the backend return (`${API_URL}/events/${eventId}/participants` endpoint)
   return participants.filter((participant) => {
-    const targetBlockAttribute = participant.attributes.find(
-      (attribute) => attribute.id.toString() === blockId,
-    );
+    const targetBlockAttribute = participant.attributes.find((attribute) => {
+      return attribute.id.toString() === blockId;
+    });
     return targetBlockAttribute !== undefined;
   });
 }
@@ -100,8 +106,31 @@ function getParticipantsInChildBlock(
     const targetBlockAttribute = participant.attributes.find(
       (attribute) => attribute.id.toString() === rootBlockId,
     ) as AttributeBase;
-    return targetBlockAttribute.value === childBlockId.toString();
+    return targetBlockAttribute.value === childBlockId;
   });
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; blockId: string }>;
+}): Promise<Metadata> {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+  const { bearerToken } = session;
+  const { id: eventId, blockId: rootBlockId } = await params;
+
+  const rootBlockName = await getRootBlockAttributeName(
+    eventId,
+    rootBlockId,
+    bearerToken,
+  );
+
+  return {
+    title: rootBlockName,
+  };
 }
 
 export default async function EventBlockEditPage({
@@ -133,38 +162,45 @@ export default async function EventBlockEditPage({
   } else {
     return (
       <div className="flex grow flex-col gap-8">
-        <div className="flex justify-between">
-          <h1 className="text-3xl font-bold">{rootBlockName}</h1>
-          <div className="flex items-center gap-2">
-            <span className="hidden text-2xl font-bold sm:inline-block">
-              Liczba uczestników:
-            </span>
-            <span className="text-2xl font-bold">
+        <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">{rootBlockName}</h1>
+            <span className="text-muted-foreground text-lg">
+              Łączna liczba uczestników:{" "}
               {rootBlock.children
                 .map((block) => block.meta.participantsInBlockCount ?? 0)
-                .reduce((a, b) => a + b, 0)}
+                .reduce((a, b) => a + b, 0)}{" "}
             </span>
           </div>
-        </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-          <AddBlockEntry
+          <CreateBlockForm
             eventId={eventId}
             attributeId={rootBlockId}
             parentId={rootBlock.id.toString()}
           />
-          {rootBlock.children.map((childBlock) => (
-            <BlockEntry
-              key={childBlock.id}
-              block={childBlock}
-              attributeId={rootBlockId}
-              eventId={eventId}
-              participantsInBlock={getParticipantsInChildBlock(
-                participantsInRootBlock,
-                rootBlockId,
-                childBlock.id.toString(),
-              )}
-            />
-          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
+          {rootBlock.children.length > 0 ? (
+            rootBlock.children.map((childBlock) => (
+              <BlockEntry
+                key={childBlock.id}
+                block={childBlock}
+                attributeId={rootBlockId}
+                eventId={eventId}
+                participantsInBlock={getParticipantsInChildBlock(
+                  participantsInRootBlock,
+                  rootBlockId,
+                  childBlock.id.toString(),
+                )}
+              />
+            ))
+          ) : (
+            <div className="flex w-full flex-col items-center justify-center py-12 text-center">
+              <Cuboid className="text-muted-foreground mb-4 size-12" />
+              <h3 className="text-muted-foreground text-lg">
+                Nie masz jeszcze żadnego bloku w bloku
+              </h3>
+            </div>
+          )}
         </div>
       </div>
     );
