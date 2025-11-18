@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-function getContrastColor(hex?: string) {
+function getContrastColor(hex?: string | null) {
   if (hex == null) {
     return "var(--color-primary-foreground)";
   }
@@ -17,7 +17,7 @@ function getContrastColor(hex?: string) {
   return luminance > 0.5 ? "hsl(0 0% 9%)" : "hsl(0 0% 98%)";
 }
 
-export function setEventPrimaryColors(primaryColor?: string) {
+export function setEventPrimaryColors(primaryColor?: string | null) {
   document.documentElement.style.setProperty(
     "--event-primary-color",
     primaryColor ?? "var(--color-primary)",

@@ -16,8 +16,24 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Resolver, SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import type z from "zod";
+import type { z } from "zod";
 
+import {
+  AttributesForm,
+  EventAttributesFormSchema,
+} from "@/components/forms/event/attributes-form";
+import {
+  CoorganizersForm,
+  EventCoorganizersFormSchema,
+} from "@/components/forms/event/coorganizers-form";
+import {
+  EventGeneralInfoSchema,
+  GeneralInfoForm,
+} from "@/components/forms/event/general-info-form";
+import {
+  EventPersonalizationFormSchema,
+  PersonalizationForm,
+} from "@/components/forms/event/personalization-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,25 +48,7 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn, getBase64FromUrl } from "@/lib/utils";
-import type { AttributeType } from "@/types/attributes";
 
-import {
-  AttributesForm,
-  EventAttributesFormSchema,
-} from "./(steps)/attributes";
-import {
-  CoorganizersForm,
-  EventCoorganizersFormSchema,
-  PERMISSIONS_CONFIG,
-} from "./(steps)/coorganizers";
-import {
-  EventGeneralInfoSchema,
-  GeneralInfoForm,
-} from "./(steps)/general-info";
-import {
-  EventPersonalizationFormSchema,
-  PersonalizationForm,
-} from "./(steps)/personalization";
 import { isSlugTaken, saveEvent } from "./actions";
 import { FormContainer } from "./form-container";
 import { eventAtom } from "./state";
@@ -104,8 +102,8 @@ export function CreateEventForm() {
       location: event.location,
       organizer: event.organizer,
       termsLink: event.termsLink,
-      image: event.image,
-      color: event.color,
+      photoUrl: event.photoUrl,
+      primaryColor: event.primaryColor,
       participantsNumber: event.participantsNumber,
       socialMediaLinks: event.socialMediaLinks,
       slug:
@@ -113,23 +111,8 @@ export function CreateEventForm() {
           ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
           : event.slug,
       contactEmail: event.contactEmail,
-      coorganizers: [
-        {
-          id: "",
-          email: "",
-          permissions: PERMISSIONS_CONFIG.map((p) => p.permission),
-        },
-      ],
-      attributes: [
-        {
-          name: "",
-          type: "text" as AttributeType,
-          slug: "",
-          options: [],
-          showInList: true,
-          order: 1,
-        },
-      ],
+      coorganizers: [],
+      attributes: [],
     },
   });
 
@@ -229,10 +212,9 @@ export function CreateEventForm() {
       icon: <TextIcon />,
       content: <AttributesForm />,
       onSubmit: async () => {
-        const base64Image = event.image.startsWith("blob:")
-          ? await getBase64FromUrl(event.image)
-          : event.image;
-        // TODO: add `isSensiviteData` and `reason` to attributes
+        const base64Image = event.photoUrl.startsWith("blob:")
+          ? await getBase64FromUrl(event.photoUrl)
+          : event.photoUrl;
         const newEventObject = {
           ...event,
           image: base64Image,
@@ -253,14 +235,24 @@ export function CreateEventForm() {
             toast({
               variant: "destructive",
               title: "Nie udało się dodać wydarzenia!",
-              description: "Spróbuj utworzyć wydarzenie ponownie",
+              description:
+                result.errors?.map((error_) => error_.message).join("\n") ??
+                "Spróbuj utworzyć wydarzenie ponownie",
             });
-          } else {
-            URL.revokeObjectURL(event.image);
+          } else if (result.id != null) {
+            URL.revokeObjectURL(event.photoUrl);
 
-            toast({
-              title: "Dodano nowe wydarzenie",
-            });
+            if (result.warnings != null && result.warnings.length > 0) {
+              toast({
+                variant: "default",
+                title: "Dodano nowe wydarzenie",
+                description: `Wydarzenie zostało utworzone, ale wystąpiły problemy:\n${result.warnings.slice(0, 3).join("\n")}${result.warnings.length > 3 ? `\n...i ${(result.warnings.length - 3).toString()} więcej` : ""}\n\nMożesz naprawić to w ustawieniach wydarzenia.`,
+              });
+            } else {
+              toast({
+                title: "Dodano nowe wydarzenie",
+              });
+            }
 
             setEvent({
               name: "",
@@ -270,8 +262,8 @@ export function CreateEventForm() {
               endDate: new Date(new Date().setHours(24, 0, 0, 0)),
               location: "",
               organizer: "",
-              image: "",
-              color: "#3672fd",
+              photoUrl: "",
+              primaryColor: "#3672fd",
               participantsNumber: 1,
               socialMediaLinks: [],
               slug: "",
@@ -285,6 +277,7 @@ export function CreateEventForm() {
             setDisabled(true);
 
             setTimeout(() => {
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               router.push(`/dashboard/events/${result.id}`);
             }, 200);
           }

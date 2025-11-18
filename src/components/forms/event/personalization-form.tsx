@@ -1,6 +1,6 @@
-import { useAtom } from "jotai";
-import { PlusIcon, Trash2, UploadIcon } from "lucide-react";
+import { Download, PlusIcon, Trash2, UploadIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useId } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -17,15 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-import { eventAtom } from "../state";
-
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 export const EventPersonalizationFormSchema = z.object({
-  image: z.string().optional(),
-  color: z.string().optional(),
+  photoUrl: z.string().nullish(),
+  primaryColor: z.string().nullable(),
   participantsNumber: z.coerce.number().min(1),
+  termsLink: z
+    .string()
+    .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
+    .optional()
+    .or(z.literal("")),
   socialMediaLinks: z.array(
     z.object({
       label: z.string().optional(),
@@ -36,16 +39,10 @@ export const EventPersonalizationFormSchema = z.object({
     .string()
     .min(3, "Slug musi mieć co najmniej 3 znaki")
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
-  contactEmail: z
-    .string()
-    .email("Nieprawidłowy adres email")
-    .or(z.literal(""))
-    .optional(),
 });
 
-export function PersonalizationForm() {
-  const [event, setEvent] = useAtom(eventAtom);
-  const { control, formState, getValues, register } =
+export function PersonalizationForm({ className }: { className?: string }) {
+  const { control, formState, getValues, register, setValue, watch } =
     useFormContext<z.infer<typeof EventPersonalizationFormSchema>>();
   const fileInputId = useId();
 
@@ -54,10 +51,12 @@ export function PersonalizationForm() {
     control,
   });
 
+  const imageValue = watch("photoUrl");
+
   return (
-    <div className="grid w-full gap-4 sm:grid-cols-2">
+    <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
       <FormField
-        name="image"
+        name="photoUrl"
         control={control}
         render={({ field }) => {
           const processedField = { ...field, value: "" };
@@ -68,11 +67,13 @@ export function PersonalizationForm() {
                 htmlFor={fileInputId}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "border-box flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 sm:max-w-xs",
-                  event.image !== "" && "overflow-hidden p-0",
+                  "border-box flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
+                  imageValue != null &&
+                    imageValue !== "" &&
+                    "overflow-hidden p-0",
                 )}
               >
-                {event.image === "" ? (
+                {imageValue == null || imageValue === "" ? (
                   <>
                     <div className="flex flex-row items-center gap-2">
                       <UploadIcon /> Dodaj zdjęcie
@@ -83,7 +84,11 @@ export function PersonalizationForm() {
                   </>
                 ) : (
                   <Image
-                    src={event.image === "" ? "" : event.image}
+                    src={
+                      imageValue.startsWith("blob:")
+                        ? imageValue
+                        : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${imageValue}`
+                    }
                     alt="Podgląd zdjęcia wydarzenia"
                     width={1080}
                     height={1080}
@@ -101,14 +106,13 @@ export function PersonalizationForm() {
                 onChange={(event_) => {
                   const input = event_.target as HTMLInputElement;
                   if (input.files?.[0] != null) {
-                    if (event.image.startsWith("blob:")) {
-                      URL.revokeObjectURL(event.image);
+                    const currentImage = getValues("photoUrl");
+                    if (currentImage?.startsWith("blob:") === true) {
+                      URL.revokeObjectURL(currentImage);
                     }
                     const newBlobUrl = URL.createObjectURL(input.files[0]);
-                    setEvent({
-                      ...event,
-                      image: newBlobUrl,
-                    });
+                    setValue("photoUrl", newBlobUrl);
+                    field.onChange(newBlobUrl);
                   }
                 }}
               />
@@ -116,12 +120,12 @@ export function PersonalizationForm() {
           );
         }}
       />
-      <div className="flex flex-col gap-4">
+      <div className="grid gap-4">
         <FormField
-          name="color"
+          name="primaryColor"
           control={control}
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex flex-col gap-2 space-y-0">
               <FormLabel>Kolor wydarzenia</FormLabel>
               <FormLabel
                 className={cn(
@@ -131,9 +135,11 @@ export function PersonalizationForm() {
               >
                 <span
                   className="aspect-square w-6 rounded-full"
-                  style={{ backgroundColor: getValues("color") }}
+                  style={{
+                    backgroundColor: getValues("primaryColor") ?? "#3672fd",
+                  }}
                 />
-                <p>{getValues("color")}</p>
+                <p>{getValues("primaryColor")}</p>
               </FormLabel>
               <FormControl>
                 <Input
@@ -141,6 +147,7 @@ export function PersonalizationForm() {
                   className="pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
                   disabled={formState.isSubmitting}
                   {...field}
+                  value={field.value ?? "#3672fd"}
                   onChange={(event_) => {
                     setEventPrimaryColors(event_.target.value);
                     field.onChange(event_);
@@ -167,26 +174,39 @@ export function PersonalizationForm() {
             </FormItem>
           )}
         />
-        <FormField
-          name="contactEmail"
-          control={control}
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Email do kontaktu</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="example@example.org"
-                  disabled={formState.isSubmitting}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="text-sm text-red-500">
-                {formState.errors.contactEmail?.message}
-              </FormMessage>
-            </FormItem>
-          )}
-        />
+        <div className="space-y-1">
+          <FormField
+            name="termsLink"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="flex flex-col flex-wrap">
+                <FormLabel>Link do regulaminu</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    disabled={formState.isSubmitting}
+                    placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {formState.errors.termsLink?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <Button asChild variant="eventGhost" size="sm" className="px-2">
+            <Link
+              href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+              download
+              target="_blank"
+              className="whitespace-pre-wrap"
+            >
+              <Download className="size-3" />
+              Pobierz szablon współtworzony z Działem Prawnym PWr
+            </Link>
+          </Button>
+        </div>
         <FormField
           name="socialMediaLinks"
           control={control}
@@ -260,13 +280,14 @@ export function PersonalizationForm() {
           control={control}
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Slug</FormLabel>
+              <FormLabel>
+                Slug{" "}
+                <span className="text-neutral-500">
+                  (eventownik.solvro.pl/...)
+                </span>
+              </FormLabel>
               <FormControl>
-                <Input
-                  type="text"
-                  disabled={formState.isSubmitting}
-                  {...field}
-                />
+                <Input type="text" placeholder="twoje-wydarzenie" {...field} />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
                 {formState.errors.slug?.message}

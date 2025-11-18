@@ -30,7 +30,7 @@ export function EventPageLayout({
 }: EventPageLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
-      <EventPrimaryColorSetter primaryColor={event.primaryColor || "#3672fd"} />
+      <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
       <div
         className="flex flex-1 flex-col justify-between p-4 text-[#f0f0ff]"
         style={{
