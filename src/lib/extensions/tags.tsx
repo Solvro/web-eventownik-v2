@@ -88,38 +88,10 @@ const MESSAGE_TAGS: MessageTag[] = [
     category: EVENT_CATEGORY,
   },
   {
-    title: "Slug wydarzenia",
-    description: "Zamienia się w slug wydarzenia",
-    value: "/event_slug",
-    color: "green",
-    category: EVENT_CATEGORY,
-  },
-  {
-    title: "Kolor wydarzenia",
-    description: "Zamienia się w wybrany kolor wydarzenia",
-    value: "/event_primary_color",
-    color: "teal",
-    category: EVENT_CATEGORY,
-  },
-  {
     title: "Email uczestnika",
     description: "Zamienia się w email uczestnika",
     value: "/participant_email",
     color: "blue",
-    category: PARTICIPANT_CATEGORY,
-  },
-  {
-    title: "ID uczestnika",
-    description: "Zamienia się w ID uczestnika",
-    value: "/participant_id",
-    color: "indigo",
-    category: PARTICIPANT_CATEGORY,
-  },
-  {
-    title: "Slug uczestnika",
-    description: "Zamienia się w slug uczestnika",
-    value: "/participant_slug",
-    color: "purple",
     category: PARTICIPANT_CATEGORY,
   },
   {

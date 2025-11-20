@@ -54,7 +54,7 @@ function AttributesForm({
         });
 
         setNewEventForm({
-          isOpen: true,
+          // isOpen: true,
           isFirstForm: false,
           description: "",
           name: "",
