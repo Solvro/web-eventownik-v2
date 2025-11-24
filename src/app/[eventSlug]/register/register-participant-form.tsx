@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { registerParticipant } from "@/app/[eventSlug]/actions";
+import { registerParticipant } from "@/app/[eventSlug]/register/actions";
 import { ParticipantForm } from "@/components/participant-form";
 import type { Event } from "@/types/event";
 

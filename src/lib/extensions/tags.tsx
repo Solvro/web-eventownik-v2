@@ -159,11 +159,11 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
           // NOTE: Updating the position twice looks silly here, but without it
           // the suggestion list initially appears far away from the text
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
 
           document.body.append(component.element);
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
         },
 
         async onUpdate(props: SuggestionProps) {
@@ -173,7 +173,7 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
             return;
           }
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
         },
 
         onKeyDown(props: SuggestionKeyDownProps) {

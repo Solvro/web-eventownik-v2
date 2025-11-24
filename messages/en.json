@@ -3,7 +3,9 @@
     "notFound": "Event not found 😪",
     "registration": "Event Registration",
     "fillForm": "Fill out the form to register",
-    "addToCalendar": "Add to calendar"
+    "addToCalendar": "Add to calendar",
+    "registerForThisEvent": "Register for this event",
+    "registrationDisabled": "The organizer has disabled registration on Eventownik."
   },
   "Form": {
     "invalidEmail": "Invalid email address.",

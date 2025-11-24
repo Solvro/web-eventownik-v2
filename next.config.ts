@@ -21,7 +21,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
+    dangerouslyAllowLocalIP: true,
   },
   // eslint-disable-next-line @typescript-eslint/require-await
   async redirects() {
@@ -38,6 +43,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "10mb",
     },
+    viewTransition: true,
   },
 };
 

@@ -73,6 +73,7 @@ export default async function RootLayout({
       lang={locale}
       className="scroll-smooth"
       suppressHydrationWarning={true}
+      data-scroll-behavior="smooth"
     >
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
         <NextIntlClientProvider locale={locale} messages={messages}>
