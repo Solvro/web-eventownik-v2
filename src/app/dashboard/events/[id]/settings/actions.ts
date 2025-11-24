@@ -5,27 +5,31 @@ import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
-import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
+
+import type { AttributeChange, CoOrganizerChange } from "./change-types";
 
 interface ErrorResponse {
   errors: { message: string }[];
 }
 
+interface UpdateResult {
+  event?: Event;
+  errors: {
+    message: string;
+    section: "event" | "coOrganizers" | "attributes";
+  }[];
+  processedChanges: {
+    coOrganizers: number;
+    attributes: number;
+  };
+}
+
 export async function updateEvent(
   unmodifiedEvent: Event,
   event: Event,
-  coOrganizersChanges: {
-    added: CoOrganizer[];
-    updated: CoOrganizer[];
-    deleted: CoOrganizer[];
-  },
-  attributesChanges: {
-    added: EventAttribute[];
-    updated: EventAttribute[];
-    deleted: EventAttribute[];
-  },
+  coOrganizersChanges: CoOrganizerChange[],
+  attributesChanges: AttributeChange[],
 ): Promise<Event | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
@@ -33,73 +37,83 @@ export async function updateEvent(
   }
   const { bearerToken } = session;
 
-  // Prepare form data with proper typing
-  const formData = new FormData();
-
-  // Basic fields
-  formData.append("name", event.name);
-  formData.append(
-    "startDate",
-    formatISO9075(event.startDate, { representation: "complete" }),
-  );
-  formData.append(
-    "endDate",
-    formatISO9075(event.endDate, { representation: "complete" }),
-  );
-  formData.append("description", event.description ?? "");
-  formData.append("organizer", event.organizer ?? "");
-  if (event.slug !== unmodifiedEvent.slug) {
-    formData.append("slug", event.slug);
-  }
-  formData.append("location", event.location ?? "");
-  formData.append("primaryColor", event.primaryColor);
-  formData.append(
-    "participantsCount",
-    (event.participantsCount ?? 0).toString(),
-  );
-  formData.append("contactEmail", event.contactEmail ?? "");
-  formData.append("termsLink", event.termsLink ?? "");
-  for (const link of event.socialMediaLinks ?? []) {
-    if (link.trim() === "") {
-      continue; // Skip empty links
-    }
-    formData.append("socialMediaLinks[]", link);
-  }
-  if (
-    event.socialMediaLinks === null ||
-    event.socialMediaLinks.map((link) => link.trim()).length === 0
-  ) {
-    formData.append("socialMediaLinks", "");
-  }
-
-  // Handle photo upload
-  if (
-    event.photoUrl != null &&
-    event.photoUrl !== "" &&
-    event.photoUrl !== unmodifiedEvent.photoUrl
-  ) {
-    try {
-      const photoResponse = await fetch(event.photoUrl);
-      if (!photoResponse.ok) {
-        throw new Error(
-          `Photo fetch failed with status: ${photoResponse.status.toString()}`,
-        );
-      }
-
-      const blob = await photoResponse.blob();
-      const filename =
-        event.photoUrl.split("/").pop() ??
-        `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
-      const photoFile = new File([blob], filename, { type: blob.type });
-      formData.append("photo", photoFile);
-    } catch (error) {
-      console.error("[updateEvent] Error processing photo:", error);
-      return { errors: [{ message: "Failed to process event photo" }] };
-    }
-  }
+  const result: UpdateResult = {
+    errors: [],
+    processedChanges: {
+      coOrganizers: 0,
+      attributes: 0,
+    },
+  };
 
   try {
-    // Execute API request with proper error handling
+    const formData = new FormData();
+
+    // Basic fields
+    formData.append("name", event.name);
+    formData.append(
+      "startDate",
+      formatISO9075(event.startDate, { representation: "complete" }),
+    );
+    formData.append(
+      "endDate",
+      formatISO9075(event.endDate, { representation: "complete" }),
+    );
+    formData.append("description", event.description ?? "");
+    formData.append("organizer", event.organizer ?? "");
+    if (event.slug !== unmodifiedEvent.slug) {
+      formData.append("slug", event.slug);
+    }
+    formData.append("location", event.location ?? "");
+    formData.append("primaryColor", event.primaryColor ?? "#3672fd");
+    formData.append(
+      "participantsCount",
+      (event.participantsCount ?? 0).toString(),
+    );
+    formData.append("contactEmail", event.contactEmail ?? "");
+    formData.append("termsLink", event.termsLink ?? "");
+    for (const link of event.socialMediaLinks ?? []) {
+      if (link.trim() === "") {
+        continue;
+      }
+      formData.append("socialMediaLinks[]", link);
+    }
+    if (
+      event.socialMediaLinks === null ||
+      event.socialMediaLinks.map((link) => link.trim()).length === 0
+    ) {
+      formData.append("socialMediaLinks", "");
+    }
+
+    // Handle photo upload
+    if (
+      event.photoUrl != null &&
+      event.photoUrl !== "" &&
+      event.photoUrl !== unmodifiedEvent.photoUrl
+    ) {
+      try {
+        const photoResponse = await fetch(event.photoUrl);
+        if (!photoResponse.ok) {
+          throw new Error(
+            `Photo fetch failed with status: ${photoResponse.status.toString()}`,
+          );
+        }
+
+        const blob = await photoResponse.blob();
+        const filename =
+          event.photoUrl.split("/").pop() ??
+          `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
+        const photoFile = new File([blob], filename, { type: blob.type });
+        formData.append("photo", photoFile);
+      } catch (error) {
+        console.error("[updateEvent] Error processing photo:", error);
+        result.errors.push({
+          message: "Failed to process event photo",
+          section: "event",
+        });
+        return { errors: result.errors };
+      }
+    }
+
     const response = await fetch(`${API_URL}/events/${event.id.toString()}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${bearerToken}` },
@@ -108,275 +122,292 @@ export async function updateEvent(
 
     if (!response.ok) {
       const errorData = (await response.json()) as ErrorResponse;
-      console.error("[updateEvent] API Error:", {
+      console.error("[updateEvent] Event update failed:", {
         status: response.status,
         error: errorData,
       });
-      return { errors: errorData.errors };
-    }
-
-    // Update co-organizers
-    const coOrganizersErrors: { message: string }[] = [];
-
-    try {
-      for (const coOrganizer of coOrganizersChanges.added) {
-        const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${event.id.toString()}/organizers`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: coOrganizer.email,
-              permissionsIds: [1], //coOrganizer.permissions.map((perm) => perm.id), // Temporary only one permission
-            }),
-          },
-        );
-        if (coOrganizerResponse.ok) {
-          // For now backend doesn't return the new co-organizer ID so we can't update it here yet
-          // if (coOrganizer.id == null) {
-          //   const newCoOrganizer =
-          //     (await coOrganizerResponse.json()) as CoOrganizer;
-          //   const existingCoOrganizer = coOrganizersChanges.added.find(
-          //     (co) => co.email === coOrganizer.email && co.id == null,
-          //   );
-          //   if (existingCoOrganizer != null) {
-          //     existingCoOrganizer.id = newCoOrganizer.id;
-          //   }
-          // }
-        } else {
-          console.error(
-            "[updateEvent] Error adding co-organizer:",
-            coOrganizer,
-          );
-          coOrganizersErrors.push({
-            message: `Upewnij się że ta osoba ma konto w Eventowniku.
-            
-            Failed to add co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
-              await coOrganizerResponse.json(),
-            )}`,
-          });
-        }
-      }
-
-      for (const coOrganizer of coOrganizersChanges.updated) {
-        if (coOrganizer.id === null) {
-          continue; // Skip co-organizers without an ID
-        }
-        const eventIdString = String(event.id);
-        const coOrganizerIdString = coOrganizer.id satisfies string;
-        const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${eventIdString}/organizers/${coOrganizerIdString}`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              permissionsIds: coOrganizer.permissions.map((perm) => perm.id),
-            }),
-          },
-        );
-        if (!coOrganizerResponse.ok) {
-          console.error(
-            "[updateEvent] Error updating co-organizer:",
-            coOrganizer,
-          );
-          coOrganizersErrors.push({
-            message: `Failed to update co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
-              await coOrganizerResponse.json(),
-            )}`,
-          });
-        }
-      }
-
-      for (const coOrganizer of coOrganizersChanges.deleted) {
-        if (coOrganizer.id == null) {
-          continue; // Skip co-organizers without an ID
-        }
-        const eventIdStringDel = String(event.id);
-        const coOrganizerIdStringDel = coOrganizer.id satisfies string;
-        const coOrganizerResponse = await fetch(
-          `${API_URL}/events/${eventIdStringDel}/organizers/${coOrganizerIdStringDel}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${bearerToken}` },
-          },
-        );
-        if (!coOrganizerResponse.ok) {
-          console.error(
-            "[updateEvent] Error deleting co-organizer:",
-            coOrganizer,
-          );
-          coOrganizersErrors.push({
-            message: `Failed to delete co-organizer ${coOrganizer.email}, error: ${coOrganizerResponse.statusText} - ${JSON.stringify(
-              await coOrganizerResponse.json(),
-            )}`,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("[updateEvent] Co-organizer update error:", error);
-      coOrganizersErrors.push({
-        message: "Failed to update co-organizers",
+      result.errors.push({
+        message: errorData.errors[0]?.message ?? "Failed to update event",
+        section: "event",
       });
+      return { errors: result.errors };
     }
 
-    if (coOrganizersErrors.length > 0) {
-      return { errors: coOrganizersErrors };
-    }
-
-    // Update attributes
-    const attributesErrors: { message: string }[] = [];
-
-    try {
-      for (const attribute of attributesChanges.added) {
-        const attributeResponse = await fetch(
-          `${API_URL}/events/${String(event.id)}/attributes`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: attribute.name,
-              type: attribute.type,
-              slug: attribute.slug,
-              showInList: attribute.showInList,
-              order: attribute.order,
-              options:
-                (attribute.options ?? []).length > 0
-                  ? attribute.options
-                  : undefined,
-              isSensitiveData: attribute.isSensitiveData,
-              reason: attribute.reason,
-            }),
-          },
-        );
-        if (attributeResponse.ok) {
-          // Update the attribute with the new ID
-          const newAttribute =
-            (await attributeResponse.json()) as EventAttribute;
-          attributesChanges.updated = attributesChanges.updated.map(
-            (attribute_) =>
-              attribute_.id === attribute.id
-                ? { ...attribute_, id: newAttribute.id }
-                : attribute_,
-          );
-          attributesChanges.deleted = attributesChanges.deleted.map(
-            (attribute_) =>
-              attribute_.id === attribute.id
-                ? { ...attribute_, id: newAttribute.id }
-                : attribute_,
-          );
-        } else {
-          console.error("[updateEvent] Error adding attribute:", attribute);
-          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
-          if (
-            attribute.isSensitiveData &&
-            (attribute.reason == null || attribute.reason.trim() === "")
-          ) {
-            attributesErrors.push({
-              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
-            });
-          } else {
-            attributesErrors.push({
-              message: `Failed to add attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-                await attributeResponse.json(),
-              )}`,
-            });
-          }
-        }
-      }
-
-      for (const attribute of attributesChanges.updated) {
-        if (attribute.id < 0) {
-          continue; // Skip attributes without a valid ID
-        }
-        const attributeResponse = await fetch(
-          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: attribute.name,
-              type: attribute.type,
-              slug: attribute.slug,
-              showInList: attribute.showInList,
-              order: attribute.order,
-              options:
-                (attribute.options ?? []).length > 0
-                  ? attribute.options
-                  : undefined,
-              isSensitiveData: attribute.isSensitiveData,
-              reason: attribute.reason,
-            }),
-          },
-        );
-        if (!attributeResponse.ok) {
-          console.error("[updateEvent] Error updating attribute:", attribute);
-          // TODO: Handle this in a better way. Maybe we could utilize Zod here?
-          if (
-            attribute.isSensitiveData &&
-            (attribute.reason == null || attribute.reason.trim() === "")
-          ) {
-            attributesErrors.push({
-              message: `Atrybut ${attribute.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
-            });
-          } else {
-            attributesErrors.push({
-              message: `Failed to update attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-                await attributeResponse.json(),
-              )}`,
-            });
-          }
-        }
-      }
-
-      for (const attribute of attributesChanges.deleted) {
-        if (attribute.id < 0) {
-          continue; // Skip attributes without a valid ID
-        }
-        const attributeResponse = await fetch(
-          `${API_URL}/events/${String(event.id)}/attributes/${String(attribute.id)}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${bearerToken}` },
-          },
-        );
-        if (!attributeResponse.ok) {
-          console.error("[updateEvent] Error deleting attribute:", attribute);
-          attributesErrors.push({
-            message: `Failed to delete attribute ${attribute.name}, error: ${attributeResponse.statusText} - ${JSON.stringify(
-              await attributeResponse.json(),
-            )}`,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("[updateEvent] Attribute update error:", error);
-      attributesErrors.push({
-        message: "Failed to update attributes",
-      });
-    }
-
-    if (attributesErrors.length > 0) {
-      return { errors: attributesErrors };
-    }
-
-    revalidatePath(`/dashboard/events/${String(event.id)}/settings`);
-    return (await response.json()) as Event;
+    result.event = (await response.json()) as Event;
   } catch (error) {
-    console.error("[updateEvent] Network Error:", error);
-    return { errors: [{ message: "Network error occurred" }] };
+    console.error("[updateEvent] Network error updating event:", error);
+    result.errors.push({
+      message: "Network error occurred while updating event",
+      section: "event",
+    });
+    return { errors: result.errors };
   }
+
+  for (const change of coOrganizersChanges) {
+    try {
+      switch (change.type) {
+        case "add": {
+          const response = await fetch(
+            `${API_URL}/events/${event.id.toString()}/organizers`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: change.data.email,
+                permissionsIds: [1],
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to add co-organizer:",
+              change.data,
+            );
+            result.errors.push({
+              message: `Upewnij się że ta osoba ma konto w Eventowniku. Failed to add co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              section: "coOrganizers",
+            });
+            continue;
+          }
+          result.processedChanges.coOrganizers++;
+          break;
+        }
+        case "update": {
+          if (change.data.id === null) {
+            continue;
+          }
+
+          const response = await fetch(
+            `${API_URL}/events/${String(event.id)}/organizers/${change.data.id}`,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                permissionsIds: change.data.permissions.map((perm) => perm.id),
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to update co-organizer:",
+              change.data,
+            );
+            result.errors.push({
+              message: `Failed to update co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              section: "coOrganizers",
+            });
+            continue;
+          }
+          result.processedChanges.coOrganizers++;
+          break;
+        }
+        case "delete": {
+          if (change.data.id == null) {
+            continue;
+          }
+
+          const response = await fetch(
+            `${API_URL}/events/${String(event.id)}/organizers/${change.data.id}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${bearerToken}` },
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to delete co-organizer:",
+              change.data,
+            );
+            result.errors.push({
+              message: `Failed to delete co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              section: "coOrganizers",
+            });
+            continue;
+          }
+          result.processedChanges.coOrganizers++;
+          break;
+        }
+      }
+    } catch (error) {
+      console.error(
+        "[updateEvent] Error processing co-organizer change:",
+        error,
+      );
+      result.errors.push({
+        message: `Error processing co-organizer ${change.data.email}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        section: "coOrganizers",
+      });
+    }
+  }
+
+  for (const change of attributesChanges) {
+    try {
+      switch (change.type) {
+        case "add": {
+          const response = await fetch(
+            `${API_URL}/events/${String(event.id)}/attributes`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: change.data.name,
+                type: change.data.type,
+                slug: change.data.slug,
+                showInList: change.data.showInList,
+                order: change.data.order,
+                options:
+                  (change.data.options ?? []).length > 0
+                    ? change.data.options
+                    : undefined,
+                isSensitiveData: change.data.isSensitiveData,
+                reason: change.data.reason,
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to add attribute:",
+              change.data,
+            );
+
+            if (
+              change.data.isSensitiveData &&
+              (change.data.reason == null || change.data.reason.trim() === "")
+            ) {
+              result.errors.push({
+                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                section: "attributes",
+              });
+            } else {
+              result.errors.push({
+                message: `Failed to add attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                section: "attributes",
+              });
+            }
+            continue;
+          }
+          result.processedChanges.attributes++;
+          break;
+        }
+        case "update": {
+          if (change.data.id == null || change.data.id < 0) {
+            continue;
+          }
+
+          const response = await fetch(
+            `${API_URL}/events/${String(event.id)}/attributes/${String(change.data.id)}`,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: change.data.name,
+                type: change.data.type,
+                slug: change.data.slug,
+                showInList: change.data.showInList,
+                order: change.data.order,
+                options:
+                  (change.data.options ?? []).length > 0
+                    ? change.data.options
+                    : undefined,
+                isSensitiveData: change.data.isSensitiveData,
+                reason: change.data.reason,
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to update attribute:",
+              change.data,
+              errorData,
+            );
+
+            if (
+              change.data.isSensitiveData &&
+              (change.data.reason == null || change.data.reason.trim() === "")
+            ) {
+              result.errors.push({
+                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                section: "attributes",
+              });
+            } else {
+              result.errors.push({
+                message: `Failed to update attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                section: "attributes",
+              });
+            }
+            continue;
+          }
+          result.processedChanges.attributes++;
+          break;
+        }
+        case "delete": {
+          if (change.data.id == null || change.data.id < 0) {
+            continue;
+          }
+
+          const response = await fetch(
+            `${API_URL}/events/${String(event.id)}/attributes/${String(change.data.id)}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${bearerToken}` },
+            },
+          );
+
+          if (!response.ok) {
+            const errorData = (await response.json()) as ErrorResponse;
+            console.error(
+              "[updateEvent] Failed to delete attribute:",
+              change.data,
+            );
+            result.errors.push({
+              message: `Failed to delete attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+              section: "attributes",
+            });
+            continue;
+          }
+          result.processedChanges.attributes++;
+          break;
+        }
+      }
+    } catch (error) {
+      console.error("[updateEvent] Error processing attribute change:", error);
+      result.errors.push({
+        message: `Error processing attribute ${change.data.name}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        section: "attributes",
+      });
+    }
+  }
+
+  revalidatePath(`/dashboard/events/${String(event.id)}/settings`);
+
+  // Return errors if any, otherwise return the updated event
+  if (result.errors.length > 0) {
+    return { errors: result.errors };
+  }
+
+  return result.event;
 }
 
 export async function deleteEvent(
