@@ -131,7 +131,7 @@ export default async function EventListPage() {
                   <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
                     {event.name}
                   </h3>
-                  <div className="flex w-full">
+                  <div className="flex w-full items-center justify-between">
                     <Button asChild variant="ghost">
                       <Link href={`/dashboard/events/${event.id.toString()}`}>
                         <CircleHelpIcon className="mr-2 size-4" />
@@ -141,6 +141,7 @@ export default async function EventListPage() {
                     <ShareButton
                       path={event.slug}
                       variant="icon"
+                      className="size-12"
                       buttonVariant="ghost"
                     />
                   </div>

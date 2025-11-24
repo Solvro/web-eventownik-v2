@@ -65,7 +65,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       description={event.description ?? ""}
       variant="form"
     >
-      <h2 className="text-center text-3xl font-bold md:text-4xl">
+      <h2 className="text-center text-3xl font-bold md:text-4xl" id="form">
         {t("registration")}
       </h2>
       <p className="mb-8">{t("fillForm")}</p>

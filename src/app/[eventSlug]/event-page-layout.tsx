@@ -35,7 +35,7 @@ export function EventPageLayout({
 
   return (
     <ViewTransition>
-      <div className="flex min-h-screen flex-col md:max-h-screen md:flex-row">
+      <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
         <EventPrimaryColorSetter
           primaryColor={event.primaryColor || "#3672fd"}
         />
@@ -54,8 +54,7 @@ export function EventPageLayout({
         >
           <div
             className={cn(
-              "flex h-full flex-1 flex-col justify-between p-4",
-              showForm || "container mx-auto",
+              "container mx-auto flex h-dvh flex-1 flex-col justify-between overflow-hidden p-4",
             )}
           >
             <nav className="flex w-full flex-wrap items-center justify-between sm:pl-8">
@@ -76,8 +75,8 @@ export function EventPageLayout({
                 />
               </div>
             </nav>
-            <div className="flex flex-col gap-2">
-              <div className="px-4 py-8 sm:px-8">
+            <div className="flex min-h-0 flex-col gap-2">
+              <div className="flex min-h-0 flex-col px-4 py-8 sm:px-8">
                 <h1
                   className="mb-4 text-4xl font-bold md:text-5xl"
                   style={{ viewTransitionName: "event-title" }}
@@ -85,7 +84,7 @@ export function EventPageLayout({
                   {event.name}
                 </h1>
                 <div
-                  className="mb-8 flex flex-col gap-y-2"
+                  className="mb-2 flex flex-col gap-y-2 sm:mb-8"
                   style={{ viewTransitionName: "event-info" }}
                 >
                   <div className="flex gap-x-2">
@@ -135,10 +134,12 @@ export function EventPageLayout({
                   </div>
                 </div>
                 <ScrollArea
-                  className="h-72"
+                  className="min-h-0"
                   style={{ viewTransitionName: "event-description" }}
                 >
-                  <SanitizedContent contentToSanitize={description} />
+                  <div className="max-h-72">
+                    <SanitizedContent contentToSanitize={description} />
+                  </div>
                 </ScrollArea>
                 {!showForm && children}
               </div>
@@ -146,11 +147,9 @@ export function EventPageLayout({
           </div>
         </div>
         {showForm ? (
-          <ViewTransition enter="form-content-enter" exit="form-content-exit">
-            <div className="view-transition-form-content relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
-              {children}
-            </div>
-          </ViewTransition>
+          <div className="view-transition-form-content relative flex flex-1 flex-col items-center gap-y-2 p-4 md:overflow-y-auto">
+            {children}
+          </div>
         ) : null}
       </div>
     </ViewTransition>
