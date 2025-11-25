@@ -80,7 +80,7 @@ export function Events() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 shadow-xl">
+      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 text-black shadow-xl">
         <Loader2 className="animate-spin" />
         Pobieranie wydarzeń...
       </div>
@@ -89,7 +89,7 @@ export function Events() {
 
   if (error != null) {
     return (
-      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 shadow-xl">
+      <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 text-black shadow-xl">
         <CircleAlert className="text-red-500" />
         <p>O nie! Nie udało się pobrać wydarzeń: {error.message}</p>
       </div>
