@@ -19,7 +19,7 @@ function FeatureTile({
   icon: JSX.Element;
 }) {
   return (
-    <div className="flex flex-row gap-4 sm:max-w-80 sm:flex-col sm:gap-8">
+    <div className="flex flex-row gap-4 pb-4 sm:max-w-80 sm:flex-col sm:gap-8">
       <div className="h-min w-min rounded-xl bg-[#3672FD]/15 p-2 text-[#3672FD] sm:rounded-2xl sm:p-4 [&>svg]:size-5 sm:[&>svg]:size-6">
         {icon}
       </div>
@@ -121,7 +121,7 @@ export function Functionalities() {
               />
             </div>
             {/* New functionalities */}
-            <div className="divide-input grid w-full grid-cols-1 divide-y divide-dashed sm:gap-8 sm:divide-x-[1px] lg:grid-cols-2">
+            <div className="divide-input grid w-full grid-cols-1 divide-y divide-dashed sm:gap-8 sm:divide-x-[1px] lg:grid-cols-2 lg:divide-y-0">
               <div className="flex flex-col-reverse overflow-hidden px-4 pt-4 pb-8 sm:flex-row sm:py-16 sm:pr-6 sm:pl-16">
                 <div className="z-20 flex min-w-3xs flex-col gap-8 sm:gap-16">
                   <div className="w-full space-y-4">

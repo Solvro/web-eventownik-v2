@@ -15,13 +15,13 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
   return (
     <div className="flex w-full flex-col items-center gap-4">
       <header className="container flex w-full flex-row items-center justify-between gap-4 lg:hidden">
-        <div className="bg-background border-border flex flex-col items-center justify-center rounded-2xl border p-3">
+        <div className="bg-background flex flex-col items-center justify-center rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141]">
           <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
         </div>
         <Button
           variant="outline"
-          className="border-border bg-background aspect-square h-full rounded-2xl border p-3 [&_svg]:size-8"
+          className="bg-background aspect-square h-full rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141] [&_svg]:size-8"
           title="Otwórz menu"
           onClick={() => {
             setIsOpen(!isOpen);

@@ -14,7 +14,7 @@ export function Navbar() {
         authButton={<AuthButton variant="default" className="w-full" />}
       />
       {/* Desktop Navbar */}
-      <header className="bg-background border-border container hidden w-full flex-row items-center justify-between gap-4 rounded-2xl border p-3 lg:flex xl:max-w-6xl">
+      <header className="bg-background container hidden w-full flex-row items-center justify-between gap-4 rounded-2xl border border-[#B2B2B2] p-3 lg:flex xl:max-w-6xl dark:border-[#414141]">
         <div className="flex items-center gap-8 uppercase">
           <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
