@@ -1,5 +1,7 @@
-import { Mail } from "lucide-react";
+import { AlertCircleIcon, Mail } from "lucide-react";
 import type { Metadata } from "next";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
@@ -33,6 +35,18 @@ export default async function DashboardEventEmailTemplatesPage({
           eventForms={forms}
         />
       </div>
+
+      <Alert>
+        <AlertCircleIcon />
+        <AlertTitle className="line-clamp-0">
+          Wysyłanie maili jest chwilowo niedostępne
+        </AlertTitle>
+        <AlertDescription className="text-foreground inline">
+          Pracujemy z zewnętrznym operatorem, aby przywrócić tę funkcjonalność
+          tak szybko, jak to możliwe.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {templates === null ? (
           <p className="text-red-600">Nie udało się pobrać szablonów</p>
