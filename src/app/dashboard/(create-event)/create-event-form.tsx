@@ -129,33 +129,7 @@ export function CreateEventForm() {
       description: "Podaj podstawowe informacje o wydarzeniu",
       icon: <CalendarIcon />,
       content: <GeneralInfoForm />,
-      onSubmit: (values: EventSchema) => {
-        const startDate = values.startDate;
-        const endDate = values.endDate;
-        startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
-        startDate.setMinutes(Number.parseInt(values.startTime.split(":")[1]));
-        endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
-        endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
-
-        if (startDate < new Date()) {
-          form.setError("startDate", {
-            message: "Data rozpoczęcia nie może być w przeszłości.",
-          });
-          return;
-        }
-        if (endDate < startDate) {
-          form.setError("endDate", {
-            message: "Data zakończenia musi być po dacie rozpoczęcia.",
-          });
-          return;
-        }
-        setEvent((previous) => {
-          return {
-            ...previous,
-            startDate,
-            endDate,
-          };
-        });
+      onSubmit: () => {
         form.setValue(
           "slug",
           event.slug === ""
@@ -212,11 +186,27 @@ export function CreateEventForm() {
       icon: <TextIcon />,
       content: <AttributesForm />,
       onSubmit: async () => {
+        const startDate = new Date(form.getValues("startDate"));
+        const [startHours, startMinutes] = form
+          .getValues("startTime")
+          .split(":")
+          .map(Number);
+        startDate.setHours(startHours, startMinutes);
+
+        const endDate = new Date(form.getValues("endDate"));
+        const [endHours, endMinutes] = form
+          .getValues("endTime")
+          .split(":")
+          .map(Number);
+        endDate.setHours(endHours, endMinutes);
+
         const base64Image = event.photoUrl.startsWith("blob:")
           ? await getBase64FromUrl(event.photoUrl)
           : event.photoUrl;
         const newEventObject = {
           ...event,
+          startDate,
+          endDate,
           image: base64Image,
           coorganizers:
             event.coorganizers.length === 1 && !event.coorganizers[0].email
