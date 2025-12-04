@@ -21,8 +21,10 @@ export interface EventEmail {
   };
 }
 
-export interface EventEmailParticipantData
-  extends Omit<Participant, "attributes"> {
+export interface EventEmailParticipantData extends Omit<
+  Participant,
+  "attributes"
+> {
   meta: {
     pivot_status: string;
     pivot_email_id: number;
