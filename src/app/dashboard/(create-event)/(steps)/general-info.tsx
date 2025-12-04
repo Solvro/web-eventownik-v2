@@ -153,6 +153,7 @@ export function GeneralInfoForm({
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
+                                aria-label="Data rozpoczęcia"
                                 variant={"outline"}
                                 className="w-[240px] pl-3 text-left font-normal"
                               >
@@ -164,6 +165,7 @@ export function GeneralInfoForm({
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               className="z-50"
+                              aria-label="Wybierz datę rozpoczęcia"
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
@@ -183,6 +185,7 @@ export function GeneralInfoForm({
                       <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
+                            aria-label="Godzina rozpoczęcia"
                             disabled={form.formState.isSubmitting}
                             type="time"
                             {...field}
@@ -211,6 +214,7 @@ export function GeneralInfoForm({
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
+                                aria-label="Data zakończenia"
                                 variant={"outline"}
                                 className="w-[240px] pl-3 text-left font-normal"
                                 disabled={form.formState.isSubmitting}
@@ -224,6 +228,7 @@ export function GeneralInfoForm({
                             <Calendar
                               className="z-50"
                               mode="single"
+                              aria-label="Wybierz datę zakończenia"
                               selected={field.value}
                               onSelect={field.onChange}
                               disabled={(date) =>
@@ -246,6 +251,7 @@ export function GeneralInfoForm({
                       <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
+                            aria-label="Godzina zakończenia"
                             disabled={form.formState.isSubmitting}
                             type="time"
                             {...field}
