@@ -1,6 +1,6 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
+import { formatISO } from "date-fns";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
@@ -35,18 +35,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
   formData.append("termsLink", event.termsLink ?? "");
-
-  // NOTE: Backend expects ISO 9075 format but returns ISO 8601 format for
-  // reasons unknown to anyone.
-  formData.append(
-    "startDate",
-    formatISO9075(event.startDate, { representation: "complete" }),
-  );
-  formData.append(
-    "endDate",
-    formatISO9075(event.endDate, { representation: "complete" }),
-  );
-
+  formData.append("startDate", formatISO(event.startDate));
+  formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
