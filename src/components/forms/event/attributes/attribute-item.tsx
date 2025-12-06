@@ -98,7 +98,6 @@ export function AttributeItem({
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      {JSON.stringify(watch(`attributes.${index}`))}
       <div className="flex flex-col gap-2 lg:flex-row">
         <div className="flex flex-1 flex-col gap-2">
           <Input
