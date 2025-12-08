@@ -50,6 +50,7 @@ export function TableMenu({
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
       <div className="flex items-center gap-x-2">
+        {/* Search input */}
         <Input
           className="h-10 w-32"
           placeholder="Wyszukaj..."
@@ -116,6 +117,14 @@ export function TableMenu({
             .rows.map((row) => row.original.id.toString())}
           deleteManyParticipants={deleteManyParticipants}
         />
+        {(() => {
+          const selectedCount = table.getSelectedRowModel().rows.length;
+          return (
+            <p className="text-muted-foreground text-sm">
+              {selectedCount > 0 && `Wybrano ${selectedCount.toString()}`}
+            </p>
+          );
+        })()}
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <Select
