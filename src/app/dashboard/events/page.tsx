@@ -100,7 +100,10 @@ export default async function EventListPage() {
                 key={event.id}
                 className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
               >
-                <div className="relative">
+                <Link
+                  className="relative"
+                  href={`/dashboard/events/${event.id.toString()}`}
+                >
                   <Image
                     src={
                       event.photoUrl == null
@@ -126,10 +129,12 @@ export default async function EventListPage() {
                       </EventInfoBlock>
                     </div>
                   </div>
-                </div>
+                </Link>
                 <div className="flex flex-1 flex-col justify-between p-4">
                   <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-                    {event.name}
+                    <Link href={`/dashboard/events/${event.id.toString()}`}>
+                      {event.name}
+                    </Link>
                   </h3>
                   <div className="flex w-full items-center justify-between">
                     <Button asChild variant="ghost">
