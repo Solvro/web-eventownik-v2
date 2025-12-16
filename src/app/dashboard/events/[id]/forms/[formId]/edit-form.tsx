@@ -146,7 +146,7 @@ function EventFormEditForm({
               )}
             />
             <div className="space-y-2">
-              <FormLabel>Data i godzina otwarcia</FormLabel>
+              <FormLabel>Data otwarcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -174,10 +174,6 @@ function EventFormEditForm({
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date: Date) =>
-                              new Date(date) <=
-                              new Date(form.getValues("startDate"))
-                            }
                           />
                         </PopoverContent>
                       </Popover>
@@ -187,6 +183,7 @@ function EventFormEditForm({
                     </FormItem>
                   )}
                 />
+                {/*
                 <FormField
                   control={form.control}
                   name="startTime"
@@ -207,10 +204,11 @@ function EventFormEditForm({
                     </FormItem>
                   )}
                 />
+                */}
               </div>
             </div>
             <div className="space-y-2">
-              <FormLabel>Data i godzina zamknięcia</FormLabel>
+              <FormLabel>Data zamknięcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -251,6 +249,7 @@ function EventFormEditForm({
                     </FormItem>
                   )}
                 />
+                {/*
                 <FormField
                   control={form.control}
                   name="endTime"
@@ -271,6 +270,7 @@ function EventFormEditForm({
                     </FormItem>
                   )}
                 />
+                */}
               </div>
             </div>
           </div>

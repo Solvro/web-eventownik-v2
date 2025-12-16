@@ -117,7 +117,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 )}
               />
               <div className="space-y-2">
-                <FormLabel>Data i godzina otwarcia</FormLabel>
+                <FormLabel>Data otwarcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -153,6 +153,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       </FormItem>
                     )}
                   />
+                  {/*
                   <FormField
                     control={form.control}
                     name="startTime"
@@ -168,6 +169,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       </FormItem>
                     )}
                   />
+                  */}
                 </div>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.startDate?.message}
@@ -177,7 +179,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormMessage>
               </div>
               <div className="space-y-2">
-                <FormLabel>Data i godzina zamknięcia</FormLabel>
+                <FormLabel>Data zamknięcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -213,6 +215,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       </FormItem>
                     )}
                   />
+                  {/*
                   <FormField
                     control={form.control}
                     name="endTime"
@@ -228,6 +231,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       </FormItem>
                     )}
                   />
+                  */}
                 </div>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.endDate?.message}
