@@ -97,7 +97,7 @@ export async function updateEventForm(
       attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
       isFirstForm: form.isFirstForm,
-      // isOpen: form.isOpen,
+      isOpen: form.isOpen,
     }),
   });
 

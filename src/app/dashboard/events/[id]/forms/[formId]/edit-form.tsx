@@ -48,7 +48,7 @@ const EventFormSchema = z.object({
   startDate: z.date(),
   endDate: z.date(),
   isFirstForm: z.boolean(),
-  // isOpen: z.boolean().default(true),
+  isOpen: z.boolean().default(true),
 });
 
 interface EventFormEditFormProps {
@@ -75,7 +75,7 @@ function EventFormEditForm({
       startDate: new Date(formToEdit.startDate),
       endDate: new Date(formToEdit.endDate),
       isFirstForm: formToEdit.isFirstForm,
-      // isOpen: formToEdit.isOpen,
+      isOpen: formToEdit.isOpen,
     },
   });
   const { toast } = useToast();
@@ -313,7 +313,7 @@ function EventFormEditForm({
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               name="isOpen"
               control={form.control}
               render={({ field }) => (
@@ -332,7 +332,7 @@ function EventFormEditForm({
                   </FormControl>
                 </FormItem>
               )}
-            /> */}
+            />
           </div>
           <AttributesReorder
             attributes={eventAttributes}
