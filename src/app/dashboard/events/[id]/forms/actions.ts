@@ -33,7 +33,7 @@ export async function createEventForm(eventId: string, form: Payload) {
       startDate: formatISO9075(form.startDate),
       attributes: form.attributes,
       endDate: formatISO9075(form.endDate),
-      // isOpen: form.isOpen,
+      isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
     }),
   });
