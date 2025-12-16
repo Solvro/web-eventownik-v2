@@ -82,12 +82,6 @@ export function GeneralInfoForm({
     endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
     endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
 
-    if (startDate < new Date()) {
-      form.setError("startDate", {
-        message: "Data rozpoczęcia nie może być w przeszłości.",
-      });
-      return;
-    }
     if (endDate < startDate) {
       form.setError("endDate", {
         message: "Data zakończenia musi być po dacie rozpoczęcia.",
@@ -167,9 +161,6 @@ export function GeneralInfoForm({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                date <= subDays(new Date(), 1)
-                              }
                             />
                           </PopoverContent>
                         </Popover>
