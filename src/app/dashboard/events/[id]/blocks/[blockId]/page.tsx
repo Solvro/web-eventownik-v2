@@ -1,3 +1,4 @@
+import { Cuboid } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -178,19 +179,28 @@ export default async function EventBlockEditPage({
           />
         </div>
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-          {rootBlock.children.map((childBlock) => (
-            <BlockEntry
-              key={childBlock.id}
-              block={childBlock}
-              attributeId={rootBlockId}
-              eventId={eventId}
-              participantsInBlock={getParticipantsInChildBlock(
-                participantsInRootBlock,
-                rootBlockId,
-                childBlock.id.toString(),
-              )}
-            />
-          ))}
+          {rootBlock.children.length > 0 ? (
+            rootBlock.children.map((childBlock) => (
+              <BlockEntry
+                key={childBlock.id}
+                block={childBlock}
+                attributeId={rootBlockId}
+                eventId={eventId}
+                participantsInBlock={getParticipantsInChildBlock(
+                  participantsInRootBlock,
+                  rootBlockId,
+                  childBlock.id.toString(),
+                )}
+              />
+            ))
+          ) : (
+            <div className="flex w-full flex-col items-center justify-center py-12 text-center">
+              <Cuboid className="text-muted-foreground mb-4 size-12" />
+              <h3 className="text-muted-foreground text-lg">
+                Nie masz jeszcze żadnego bloku w bloku
+              </h3>
+            </div>
+          )}
         </div>
       </div>
     );

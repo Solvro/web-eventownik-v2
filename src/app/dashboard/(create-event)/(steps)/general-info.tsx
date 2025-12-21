@@ -8,8 +8,10 @@ import {
   CalendarArrowDownIcon,
   CalendarArrowUpIcon,
   CalendarIcon,
+  Download,
   Loader2,
 } from "lucide-react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -44,6 +46,11 @@ const EventGeneralInfoSchema = z.object({
   endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
   location: z.string().optional(),
   organizer: z.string().optional(),
+  termsLink: z
+    .string()
+    .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
+    .optional()
+    .or(z.literal("")),
 });
 
 export function GeneralInfoForm({
@@ -63,28 +70,32 @@ export function GeneralInfoForm({
       endTime: `${getHours(event.endDate).toString()}:${getMinutes(event.endDate).toString().padStart(2, "0")}`,
       location: event.location,
       organizer: event.organizer,
+      termsLink: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof EventGeneralInfoSchema>) {
-    values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
-    values.startDate.setMinutes(
-      Number.parseInt(values.startTime.split(":")[1]),
-    );
-    values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
-    values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
-    if (values.startDate < new Date()) {
-      form.setError("startDate", {
-        message: "Data rozpoczęcia nie może być w przeszłości.",
-      });
-      return;
-    }
-    if (values.endDate < values.startDate) {
+    const startDate = values.startDate;
+    const endDate = values.endDate;
+    startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
+    startDate.setMinutes(Number.parseInt(values.startTime.split(":")[1]));
+    endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
+    endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+
+    if (endDate < startDate) {
       form.setError("endDate", {
         message: "Data zakończenia musi być po dacie rozpoczęcia.",
       });
       return;
     }
+
+    setEvent((previous) => {
+      return {
+        ...previous,
+        startDate,
+        endDate,
+      };
+    });
     goToNextStep();
   }
 
@@ -108,7 +119,7 @@ export function GeneralInfoForm({
                 name="name"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Nazwa</FormLabel>
                     <FormControl>
                       <Input
@@ -130,8 +141,8 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
-                        <FormLabel>Data i godzina</FormLabel>
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Data i godzina rozpoczęcia</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -150,9 +161,6 @@ export function GeneralInfoForm({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                date <= subDays(new Date(), 1)
-                              }
                             />
                           </PopoverContent>
                         </Popover>
@@ -163,7 +171,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
+                      <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -183,6 +191,7 @@ export function GeneralInfoForm({
                 </FormMessage>
               </div>
               <div className="space-y-2">
+                <FormLabel>Data i godzina zakończenia</FormLabel>
                 <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
@@ -225,7 +234,7 @@ export function GeneralInfoForm({
                     control={form.control}
                     name="endTime"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col gap-1">
+                      <FormItem className="flex flex-col">
                         <FormControl>
                           <Input
                             disabled={form.formState.isSubmitting}
@@ -250,7 +259,7 @@ export function GeneralInfoForm({
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1">
+                  <FormItem className="flex flex-col">
                     <FormLabel>Opis</FormLabel>
                     <WysiwygEditor
                       content={form.getValues("description") ?? ""}
@@ -269,7 +278,7 @@ export function GeneralInfoForm({
               name="location"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
+                <FormItem className="flex flex-col">
                   <FormLabel>Miejsce (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
@@ -289,7 +298,7 @@ export function GeneralInfoForm({
               name="organizer"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
+                <FormItem className="flex flex-col">
                   <FormLabel>Organizator (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input
@@ -305,6 +314,39 @@ export function GeneralInfoForm({
                 </FormItem>
               )}
             />
+            <div className="col-span-2 space-y-2">
+              <FormField
+                name="termsLink"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel>Link do regulaminu</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        disabled={form.formState.isSubmitting}
+                        placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-sm text-red-500">
+                      {form.formState.errors.termsLink?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <Button asChild variant="eventGhost" size="sm" className="px-2">
+                <Link
+                  href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+                  download
+                  target="_blank"
+                >
+                  <Download className="size-3" />
+                  Pobierz szablon regulaminu (współtworzony z Działem Prawnym
+                  PWr)
+                </Link>
+              </Button>
+            </div>
           </div>
           <Button
             className="w-min"

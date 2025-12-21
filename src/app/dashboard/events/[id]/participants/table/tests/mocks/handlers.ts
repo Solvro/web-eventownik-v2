@@ -8,7 +8,7 @@ import { deleteParticipantCaseData } from "./test-cases-data";
 let DELETE_PARTICIPANTS_MOCK = { ...deleteParticipantCaseData };
 
 export const handlers = [
-  http.put<{ eventId: string; participantId: string }>(
+  http.patch<{ eventId: string; participantId: string }>(
     `${API_URL}/events/:eventId/participants/:participantId`,
     () => {
       return HttpResponse.json();

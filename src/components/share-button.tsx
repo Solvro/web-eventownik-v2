@@ -1,7 +1,7 @@
 "use client";
 
 import { Share2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 
 interface ShareButtonProps {
-  url: string;
+  path: string;
   variant?: "icon" | "full";
   buttonVariant?:
     | "link"
@@ -28,7 +28,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({
-  url,
+  path,
   variant = "full",
   buttonVariant = "outline",
   className,
@@ -37,22 +37,15 @@ export function ShareButton({
 }: ShareButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
 
-  useEffect(() => {
-    if (isCopied) {
-      const timer = setTimeout(() => {
-        setIsCopied(false);
-      }, 2000);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [isCopied]);
-
   const handleCopy = () => {
+    const url = `${window.location.origin}/${path}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
         setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 2000);
       })
       .catch((error: unknown) => {
         console.error("Copy failed:", error);

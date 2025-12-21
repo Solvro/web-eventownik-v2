@@ -357,8 +357,11 @@ export function AttributesForm({
           options: [],
           rootBlockId: undefined,
           showInList: true,
+          order: event.attributes.length,
           createdAt: "", // set it to empty string to avoid type error
           updatedAt: "", // set it to empty string to avoid type error
+          isSensitiveData: false,
+          reason: null,
         },
       ],
     }));
@@ -416,10 +419,11 @@ export function AttributesForm({
           image: "",
           color: "#3672fd",
           participantsNumber: 1,
-          links: [],
+          socialMediaLinks: [],
           slug: "",
           coorganizers: [],
           attributes: [],
+          termsLink: "",
         });
 
         disableNavguard();

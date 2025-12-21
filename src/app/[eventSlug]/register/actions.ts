@@ -9,10 +9,12 @@ import type { registerParticipantFormSchema } from "@/types/schemas";
 interface ErrorObject {
   rule: string;
   field: string;
+  message: string;
 }
 
 interface ErrorResponse {
   errors: ErrorObject[];
+  message: string | undefined;
 }
 
 export async function registerParticipant(

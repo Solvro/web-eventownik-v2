@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { Space_Grotesk } from "next/font/google";
+import { cookies } from "next/headers";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 
@@ -49,25 +52,43 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("locale")?.value ?? "pl";
+
+  let messages;
+  try {
+    messages = await getMessages({ locale });
+  } catch {
+    // Fallback messages will be handled by next-intl
+    messages = {};
+  }
+
   return (
-    <html lang="pl" suppressHydrationWarning={true}>
+    <html
+      lang={locale}
+      className="scroll-smooth"
+      suppressHydrationWarning={true}
+      data-scroll-behavior="smooth"
+    >
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
-        <Providers>
-          <NextTopLoader />
-          <Toaster />
-          <WebVitalsProvider>{children}</WebVitalsProvider>
-          <Script
-            defer
-            src="https://analytics.solvro.pl/script.js"
-            data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
-            data-domains="eventownik.solvro.pl"
-          ></Script>
-        </Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>
+            <NextTopLoader />
+            <Toaster />
+            <WebVitalsProvider>{children}</WebVitalsProvider>
+            <Script
+              defer
+              src="https://analytics.solvro.pl/script.js"
+              data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
+              data-domains="eventownik.solvro.pl"
+            ></Script>
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: "npm"
@@ -34,15 +34,17 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          EVENTOWNIK_API: https://example.com/
+          NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
         if: always()
 
       - name: Build
         env:
-          EVENTOWNIK_API: https://example.com/
+          NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
         run: npm run build
         if: always()

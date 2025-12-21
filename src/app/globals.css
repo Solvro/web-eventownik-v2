@@ -76,7 +76,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.789 0 0);
-  --muted-foreground: oklch(0.789 0 0);
+  --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(48.315% 0.19586 28.951);
@@ -98,6 +98,26 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --puck-font-family: "Space Grotesk", sans-serif !important;
+  --tag-red-bg: #ffe5e5;
+  --tag-red-text: #b30000;
+  --tag-orange-bg: #fff1e0;
+  --tag-orange-text: #b34700;
+  --tag-yellow-bg: #fffbe0;
+  --tag-yellow-text: #8c7000;
+  --tag-green-bg: #e5fff1;
+  --tag-green-text: #007a3d;
+  --tag-teal-bg: #e0f7f7;
+  --tag-teal-text: #007f80;
+  --tag-blue-bg: #e0f0ff;
+  --tag-blue-text: #005cb3;
+  --tag-indigo-bg: #e8eaff;
+  --tag-indigo-text: #4b50c9;
+  --tag-purple-bg: #f3e0ff;
+  --tag-purple-text: #6c00b3;
+  --tag-pink-bg: #ffe0f0;
+  --tag-pink-text: #b3006b;
+  --tag-brown-bg: #f2e6e0;
+  --tag-brown-text: #5c3d2e;
 }
 
 .dark {
@@ -133,6 +153,26 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --tag-red-bg: #330000;
+  --tag-red-text: #ff6666;
+  --tag-orange-bg: #331a00;
+  --tag-orange-text: #ff9933;
+  --tag-yellow-bg: #332b00;
+  --tag-yellow-text: #ffe066;
+  --tag-green-bg: #002d1a;
+  --tag-green-text: #66ffb2;
+  --tag-teal-bg: #003333;
+  --tag-teal-text: #66ffff;
+  --tag-blue-bg: #001933;
+  --tag-blue-text: #66aaff;
+  --tag-indigo-bg: #1a1a40;
+  --tag-indigo-text: #9999ff;
+  --tag-purple-bg: #2b004d;
+  --tag-purple-text: #d580ff;
+  --tag-pink-bg: #33001a;
+  --tag-pink-text: #ff66b2;
+  --tag-brown-bg: #2b1a14;
+  --tag-brown-text: #d2a679;
 }
 
 @layer base {
@@ -155,7 +195,7 @@
   }
 }
 
-.tiptap p.is-editor-empty:first-child::before {
+.email-editor p.is-editor-empty:first-child::before {
   color: hsl(0 0% 73%);
   content: attr(data-placeholder);
   float: left;
@@ -163,16 +203,80 @@
   pointer-events: none;
 }
 
-.tiptap h1 {
+/* Headers */
+.email-editor h1 {
   font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 18px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
-.tiptap h2 {
+.email-editor h2 {
   font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 16px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
-.tiptap h3 {
+.email-editor h3 {
   font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 15px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h4 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 10px 0 5px 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h5 {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 8px 0 4px 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h6 {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 8px 0 4px 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+/* Paragraphs */
+.email-editor p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-block: 13px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor p:last-child {
+  margin-bottom: 0;
 }
 
 @layer base {
@@ -180,4 +284,44 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+.clip-curve {
+  clip-path: ellipse(60% 100% at 50% 0%);
+}
+
+.faded-edges {
+  /* Chrome, Safari, Edge */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40%,
+    black 60%,
+    transparent
+  );
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+
+  /* Firefox */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40%,
+    black 60%,
+    transparent
+  );
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+}
+
+.image-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 70%);
+  mask-image: linear-gradient(to right, transparent, black 70%);
+}
+
+::view-transition-new(event-background),
+::view-transition-old(event-background) {
+  height: 100%;
+  overflow: clip;
+  object-fit: cover;
 }
