@@ -45,9 +45,9 @@ export default async function DashboardEventPage({
 
   const event = (await response.json()) as Event;
   return (
-    <div className="flex h-full flex-col-reverse gap-4 xl:flex-row xl:justify-between">
-      <div className="flex flex-1 flex-col space-y-6 align-top">
-        <div className="space-y-4">
+    <div className="flex h-full flex-col-reverse gap-4 xl:max-h-[calc(100vh-12rem)] xl:flex-row xl:justify-between">
+      <div className="flex min-h-0 flex-1 flex-col gap-6">
+        <div className="shrink-0 space-y-4">
           <h1 className="text-3xl font-bold">{event.name}</h1>
           {event.organizer != null && event.organizer.trim() !== "" ? (
             <div className="flex flex-row items-center gap-2">
@@ -76,31 +76,34 @@ export default async function DashboardEventPage({
             </div>
           ) : null}
         </div>
-        {event.description != null && event.description.trim() !== "" ? (
-          <ScrollArea className="flex-1 pr-3 text-justify">
-            <div className="max-h-[25vh] min-h-44">
-              <SanitizedContent contentToSanitize={event.description} />
+        <div className="flex min-h-0 flex-1 flex-col gap-6">
+          {event.description != null && event.description.trim() !== "" ? (
+            <div className="max-h-[50vh] min-h-0 overflow-auto xl:max-h-full">
+              <ScrollArea className="h-full pr-3 text-justify">
+                <SanitizedContent contentToSanitize={event.description} />
+              </ScrollArea>
             </div>
-          </ScrollArea>
-        ) : null}
-        <div className="flex gap-1">
-          {event.socialMediaLinks != null && event.socialMediaLinks.length > 0
-            ? event.socialMediaLinks.map((link) => (
+          ) : null}
+          {event.socialMediaLinks != null &&
+          event.socialMediaLinks.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {event.socialMediaLinks.map((link) => (
                 <SocialMediaLink
                   link={link}
                   key={link}
                   className="bg-accent-foreground/60 text-background"
                 />
-              ))
-            : null}
-        </div>
-        <div className="flex flex-col gap-2 md:flex-row">
-          <Button variant="eventDefault" asChild>
-            <Link href={`/dashboard/events/${id}/settings`}>
-              <SquarePenIcon /> Edytuj wydarzenie
-            </Link>
-          </Button>
-          <ShareButton path={event.slug} />
+              ))}
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-2 md:flex-row">
+            <Button variant="eventDefault" asChild>
+              <Link href={`/dashboard/events/${id}/settings`}>
+                <SquarePenIcon /> Edytuj wydarzenie
+              </Link>
+            </Button>
+            <ShareButton path={event.slug} />
+          </div>
         </div>
       </div>
       <Image
@@ -111,7 +114,7 @@ export default async function DashboardEventPage({
         }
         width={400}
         height={400}
-        className="aspect-square max-h-96 rounded-xl object-cover"
+        className="aspect-square max-h-96 w-full rounded-xl object-cover xl:w-auto"
         alt={`Zdjęcie wydarzenia ${event.name}`}
       />
     </div>
