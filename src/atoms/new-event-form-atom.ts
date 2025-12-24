@@ -15,8 +15,8 @@ export interface NewEventForm extends Omit<
 }
 
 // TODO: Uncomment `isOpen` stuff once its fixed by backend
-export const newEventFormAtom = atom<Omit<NewEventForm, "isOpen">>({
-  // isOpen: true,
+export const newEventFormAtom = atom<NewEventForm>({
+  isOpen: true,
   isFirstForm: false,
   description: "<p></p>",
   name: "",

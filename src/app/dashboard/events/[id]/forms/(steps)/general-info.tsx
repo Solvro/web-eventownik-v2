@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { endOfYesterday, format, isSameDay } from "date-fns";
+//import { endOfYesterday, format, isSameDay } from "date-fns";
 import { useAtom } from "jotai";
 import {
   ArrowRight,
   BookOpenText,
-  CalendarArrowDownIcon,
-  CalendarArrowUpIcon,
+  //CalendarArrowDownIcon,
+  //CalendarArrowUpIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+//import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -27,27 +27,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+/*
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+*/
 import { Switch } from "@/components/ui/switch";
 import { useAutoSave } from "@/hooks/use-autosave";
 
-// TODO: Uncomment `isOpen` related code once its fixed by backend
-
-const EventFormGeneralInfoSchema = z
-  .object({
-    name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
-    description: z.string().nonempty({ message: "Opis jest wymagany" }),
-    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-    startDate: z.date(),
-    endDate: z.date(),
-    isFirstForm: z.boolean().default(false),
-    // isOpen: z.boolean().default(true),
-  })
+const EventFormGeneralInfoSchema = z.object({
+  name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
+  description: z.string().nonempty({ message: "Opis jest wymagany" }),
+  startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
+  endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
+  startDate: z.date(),
+  endDate: z.date(),
+  isFirstForm: z.boolean().default(false),
+  isOpen: z.boolean().default(true),
+});
+/* 
   .refine(
     (schema) => {
       const startDate = new Date(schema.startDate);
@@ -67,6 +67,7 @@ const EventFormGeneralInfoSchema = z
       message: "Data zakończenia musi być po dacie rozpoczęcia.",
     },
   );
+  */
 
 function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
@@ -81,7 +82,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
       startDate: newEventForm.startDate,
       endDate: newEventForm.endDate,
       isFirstForm: newEventForm.isFirstForm,
-      // isOpen: newEventForm.isOpen,
+      isOpen: newEventForm.isOpen,
     },
   });
 
@@ -118,8 +119,9 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                   </FormItem>
                 )}
               />
+              {/*
               <div className="space-y-2">
-                <FormLabel>Data i godzina otwarcia</FormLabel>
+                <FormLabel>Data otwarcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -135,6 +137,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 disabled={form.formState.isSubmitting}
                               >
                                 {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+              {/*
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
@@ -155,6 +158,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="startTime"
@@ -179,7 +183,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormMessage>
               </div>
               <div className="space-y-2">
-                <FormLabel>Data i godzina zamknięcia</FormLabel>
+                <FormLabel>Data zamknięcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
                   <FormField
                     control={form.control}
@@ -195,6 +199,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 disabled={form.formState.isSubmitting}
                               >
                                 {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
+              {/*
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
@@ -238,7 +243,9 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                   {form.formState.errors.endTime?.message}
                 </FormMessage>
               </div>
+              */}
             </div>
+
             <div className="flex flex-col gap-8">
               <FormField
                 control={form.control}
@@ -279,7 +286,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                   </FormItem>
                 )}
               />
-              {/* <FormField
+              <FormField
                 name="isOpen"
                 control={form.control}
                 render={({ field }) => (
@@ -298,7 +305,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     </FormControl>
                   </FormItem>
                 )}
-              /> */}
+              />
             </div>
           </div>
           <div className="flex justify-end">
