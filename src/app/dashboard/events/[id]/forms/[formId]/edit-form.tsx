@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+//import { format } from "date-fns";
 import {
-  CalendarArrowDownIcon,
-  CalendarArrowUpIcon,
+  //CalendarArrowDownIcon,
+  //CalendarArrowUpIcon,
   Loader,
   Save,
 } from "lucide-react";
@@ -15,7 +15,7 @@ import { z } from "zod";
 import { AttributesReorder } from "@/components/attributes-manager";
 import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+//import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -26,11 +26,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+/*
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+*/
 import { Switch } from "@/components/ui/switch";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
@@ -48,7 +50,7 @@ const EventFormSchema = z.object({
   startDate: z.date(),
   endDate: z.date(),
   isFirstForm: z.boolean(),
-  // isOpen: z.boolean().default(true),
+  isOpen: z.boolean().default(true),
 });
 
 interface EventFormEditFormProps {
@@ -75,7 +77,7 @@ function EventFormEditForm({
       startDate: new Date(formToEdit.startDate),
       endDate: new Date(formToEdit.endDate),
       isFirstForm: formToEdit.isFirstForm,
-      // isOpen: formToEdit.isOpen,
+      isOpen: formToEdit.isOpen,
     },
   });
   const { toast } = useToast();
@@ -145,8 +147,9 @@ function EventFormEditForm({
                 </FormItem>
               )}
             />
+            {/*
             <div className="space-y-2">
-              <FormLabel>Data i godzina otwarcia</FormLabel>
+              <FormLabel>Data otwarcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -174,10 +177,6 @@ function EventFormEditForm({
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date: Date) =>
-                              new Date(date) <=
-                              new Date(form.getValues("startDate"))
-                            }
                           />
                         </PopoverContent>
                       </Popover>
@@ -210,7 +209,7 @@ function EventFormEditForm({
               </div>
             </div>
             <div className="space-y-2">
-              <FormLabel>Data i godzina zamknięcia</FormLabel>
+              <FormLabel>Data zamknięcia</FormLabel>
               <div className="flex flex-row items-center gap-4">
                 <FormField
                   control={form.control}
@@ -271,8 +270,10 @@ function EventFormEditForm({
                     </FormItem>
                   )}
                 />
+
               </div>
             </div>
+            */}
           </div>
           <div className="flex flex-col gap-8">
             <FormField
@@ -313,7 +314,7 @@ function EventFormEditForm({
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               name="isOpen"
               control={form.control}
               render={({ field }) => (
@@ -332,7 +333,7 @@ function EventFormEditForm({
                   </FormControl>
                 </FormItem>
               )}
-            /> */}
+            />
           </div>
           <AttributesReorder
             attributes={eventAttributes}
