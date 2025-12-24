@@ -1,12 +1,7 @@
 "use client";
 
 import { Drawer, Puck, Render, useGetPuck, usePuck } from "@measured/puck";
-import type {
-  AppState,
-  Config,
-  PuckAction,
-  PuckComponent,
-} from "@measured/puck";
+import type { AppState, Config, PuckAction } from "@measured/puck";
 import "@measured/puck/no-external.css";
 import {
   Container,
@@ -26,8 +21,7 @@ import {
   X,
 } from "lucide-react";
 
-import { type TagFields, puckConfig } from "@/components/editor/config";
-import { EMAIL_TAGS } from "@/lib/emails";
+import { puckConfig } from "@/components/editor/config";
 import { cn } from "@/lib/utils";
 
 import {
@@ -101,7 +95,7 @@ function Toolbar({
   const { back, forward, hasFuture, hasPast } = history;
 
   return (
-    <div className="flex justify-between border-b border-[var(--event-primary-color)]/50">
+    <div className="flex justify-between border-b border-(--event-primary-color)/50">
       <div className="flex justify-center">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -183,12 +177,12 @@ function BlocksAndSchemaSidebar({
   return (
     <ScrollArea
       className={cn(
-        "max-h-[724px] w-[234px]",
+        "max-h-181 w-58.5",
         appState.ui.leftSideBarVisible ? "block" : "hidden",
       )}
     >
-      <div className="space-y-4 border-r border-[var(--event-primary-color)]/50">
-        <h2 className="border-b border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+      <div className="space-y-4 border-r border-(--event-primary-color)/50">
+        <h2 className="border-b border-(--event-primary-color)/50 p-4 text-lg font-semibold">
           Bloki
         </h2>
         <Drawer>
@@ -248,24 +242,24 @@ function BlocksAndSchemaSidebar({
                 )}
           </Accordion>
         </Drawer>
-        <h2 className="border-y border-[var(--event-primary-color)]/50 p-4 text-lg font-semibold">
+        <h2 className="border-y border-(--event-primary-color)/50 p-4 text-lg font-semibold">
           Schemat
         </h2>
         <div
           className={cn(
-            "mb-2 max-h-[264px] overflow-y-auto",
+            "mb-2 max-h-66 overflow-y-auto",
             // Outline list (ul - "_LayerTree")
             "[&>div>ul]:space-y-2 [&>div>ul]:px-4!",
             // Outline list item (outer element - "_Layer")
-            "[&>div>ul>li]:border-[var(--event-primary-color)]/20!",
+            "[&>div>ul>li]:border-(--event-primary-color)/20!",
             // Outline list item content (root element for each item - "_Layer-inner")
-            "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
+            "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-(--event-primary-color)/10! [&>div>ul>li>div:hover]:border-(--event-primary-color)/60!",
             // Outline list item button (wrapper for items below - "_Layer-clickable")
             // Icon - "_Layer-icon")
-            "[&>div>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+            "[&>div>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div>button>div>div>svg]:stroke-(--event-primary-color)!",
             // Children of slot type component dropdown (as in layout blocks)
-            "[&>div>ul>li>div:nth-child(2)>ul>li>div]:text-foreground! [&>div>ul>li>div:nth-child(2)>ul>li>div]:bg-[var(--event-primary-color)]/10! [&>div>ul>li>div:nth-child(2)>ul>li>div:hover]:border-[var(--event-primary-color)]/60!",
-            "[&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:stroke-[var(--event-primary-color)]!",
+            "[&>div>ul>li>div:nth-child(2)>ul>li>div]:text-foreground! [&>div>ul>li>div:nth-child(2)>ul>li>div]:bg-(--event-primary-color)/10! [&>div>ul>li>div:nth-child(2)>ul>li>div:hover]:border-(--event-primary-color)/60!",
+            "[&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:stroke-(--event-primary-color)!",
             // Background of slot type component dropdown ("BLOKI W KONTENERZE")
             "[&>div>ul>li>div:nth-child(2)]:bg-transparent!",
           )}
@@ -281,25 +275,25 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   return (
     <ScrollArea
       className={cn(
-        "max-h-[724px] w-[234px]",
+        "max-h-181 w-58.5",
         appState.ui.rightSideBarVisible ? "block" : "hidden",
       )}
     >
       <div
         className={cn(
-          "overflow-y-auto border-l border-[var(--event-primary-color)]/50 [&>form]:w-[234px]",
+          "overflow-y-auto border-l border-(--event-primary-color)/50 [&>form]:w-58.5",
           // Each field entry - outside of field groups, exclusive to block (e.g. no. of columns in grid)
-          "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-[var(--event-primary-color)]/50!",
+          "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-(--event-primary-color)/50!",
           // All field groups containers (as in commons - e.g. the div holding font size field in case of typography)
-          "[&>form_div>div>div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+          "[&>form_div>div>div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)]:bg-(--event-primary-color)/2!",
           // Nested field groups containers (in case of an object field within another object field - e.g. background image in appearance)
-          "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-[var(--event-primary-color)]/2!",
+          "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-(--event-primary-color)/2!",
           // Labels of field groups
           "[&>form>div_div>div]:text-muted-foreground!",
           // Fields of type "array"
-          "[&>form>div_div>div>div>div>div_button>svg]:stroke-foreground! [&>form_fieldset]:border-none! [&>form>div_div]:border-[var(--event-primary-color)]/20! [&>form>div_div>div>div>div>div]:bg-[var(--event-primary-color)]/10! [&>form>div_div>div>div>div>div_button]:bg-transparent! [&>form>div_div>div>div>div>div_button]:hover:bg-[var(--event-primary-color)]! [&>form>div_div>div>div>div>div>div>div]:bg-transparent!",
+          "[&>form>div_div>div>div>div>div_button>svg]:stroke-foreground! [&>form_fieldset]:border-none! [&>form>div_div]:border-(--event-primary-color)/20! [&>form>div_div>div>div>div>div]:bg-(--event-primary-color)/10! [&>form>div_div>div>div>div>div_button]:bg-transparent! [&>form>div_div>div>div>div>div_button]:hover:bg-(--event-primary-color)! [&>form>div_div>div>div>div>div>div>div]:bg-transparent!",
           // 'Add item to array field' button
-          "[&>form>div>div>div>div>button]:border-[var(--event-primary-color)]/20! [&>form>div>div>div>div>button]:bg-[var(--event-primary-color)]/20! [&>form>div>div>div>div>button_svg]:stroke-[var(--event-primary-color)]!",
+          "[&>form>div>div>div>div>button]:border-(--event-primary-color)/20! [&>form>div>div>div>div>button]:bg-(--event-primary-color)/20! [&>form>div>div>div>div>button_svg]:stroke-(--event-primary-color)!",
         )}
       >
         <Puck.Fields />
@@ -357,7 +351,7 @@ function PuckComposition({ config }: { config: Config }) {
   const { appState, dispatch, history } = usePuck();
 
   return (
-    <div className="flex h-[835px] flex-col">
+    <div className="flex h-208.75 flex-col">
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <div className="flex gap-2">
@@ -365,9 +359,9 @@ function PuckComposition({ config }: { config: Config }) {
           <SaveButton {...appState} />
         </div>
       </div>
-      <div className="flex h-[835px] grow flex-col rounded-xl border border-[var(--event-primary-color)]/50 bg-[var(--event-primary-color)]/10">
+      <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/10">
         <Toolbar appState={appState} dispatch={dispatch} history={history} />
-        <div className="flex max-h-[724px] grow">
+        <div className="flex max-h-181 grow">
           <BlocksAndSchemaSidebar config={config} appState={appState} />
           <div className="flex grow bg-white px-8 py-2 font-[system-ui]">
             <div className="mx-auto flex max-w-2xl grow flex-col gap-2">
