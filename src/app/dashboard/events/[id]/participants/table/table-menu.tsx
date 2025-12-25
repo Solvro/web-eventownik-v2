@@ -47,6 +47,14 @@ export function TableMenu({
   );
   const [isUserSearching, setIsUserSearching] = useState(false);
 
+  const selectedCount = table.getSelectedRowModel().rows.length;
+  const pageRows = table.getPaginationRowModel().rows;
+  const totalFilteredCount = table.getFilteredRowModel().rows.length;
+  const allSelectedOnPage =
+    pageRows.length > 0 && pageRows.every((r) => r.getIsSelected());
+  const hasMoreThanOnePage = totalFilteredCount > pageRows.length;
+  const isAllRowsSelected = table.getIsAllRowsSelected();
+
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
       <div className="flex items-center gap-x-2">
@@ -116,6 +124,28 @@ export function TableMenu({
             .rows.map((row) => row.original.id.toString())}
           deleteManyParticipants={deleteManyParticipants}
         />
+        {selectedCount === 0 ? null : (
+          <div className="text-muted-foreground flex items-center gap-x-2 text-sm">
+            <span>Wybrano {selectedCount}</span>
+            {allSelectedOnPage && hasMoreThanOnePage && !isAllRowsSelected ? (
+              <Button
+                variant="link"
+                size="sm"
+                className="text-primary h-auto p-0"
+                onClick={() => {
+                  table.toggleAllRowsSelected(true);
+                }}
+              >
+                Zaznacz wszystkich ({totalFilteredCount})
+              </Button>
+            ) : null}
+            {isAllRowsSelected && hasMoreThanOnePage ? (
+              <span className="text-primary">
+                (wszyscy z {totalFilteredCount})
+              </span>
+            ) : null}
+          </div>
+        )}
       </div>
       <div className="ml-auto flex items-center gap-x-2">
         <Select
