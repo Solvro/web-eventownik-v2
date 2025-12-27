@@ -97,6 +97,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --puck-font-family: "Space Grotesk", sans-serif !important;
   --tag-red-bg: #ffe5e5;
   --tag-red-text: #b30000;
   --tag-orange-bg: #fff1e0;
