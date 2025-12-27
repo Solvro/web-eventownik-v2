@@ -9,12 +9,9 @@ import {
   LinkIcon,
   Mail,
   Rows3,
-  Tag,
   Type,
 } from "lucide-react";
 import type { CSSProperties } from "react";
-
-import { EMAIL_TAGS } from "@/lib/emails";
 
 import type {
   AppearanceFields,
@@ -28,7 +25,23 @@ import {
   withTypography,
 } from "./common";
 
-// Definiuje pola dla tego komponentu i ich typy
+interface EmailCSSProperties extends CSSProperties {
+  msoTableLspace?: string;
+  msoTableRspace?: string;
+}
+
+const tableStyle: EmailCSSProperties = {
+  borderCollapse: "collapse",
+  msoTableLspace: "0pt",
+  msoTableRspace: "0pt",
+};
+
+const tableProps = {
+  cellPadding: "0",
+  cellSpacing: "0",
+  border: 0,
+};
+
 interface HeadingFields extends TypographyFields {
   title: string;
   level: number;
@@ -65,14 +78,9 @@ interface UnorderedListFields extends TypographyFields {
   listStyleType: string;
 }
 
-export interface TagFields extends TypographyFields {
-  type: (typeof EMAIL_TAGS)[number]["value"];
-}
-
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
-  Tag: TagFields;
   UnorderedList: UnorderedListFields;
   Grid: GridFields;
   Flex: FlexFields;
@@ -83,18 +91,19 @@ interface Components {
 }
 
 function HeadingComponent({ title, level }: { title: string; level: number }) {
+  const style = { margin: 0 };
   switch (level) {
     case 1: {
-      return <h1>{title}</h1>;
+      return <h1 style={style}>{title}</h1>;
     }
     case 2: {
-      return <h2>{title}</h2>;
+      return <h2 style={style}>{title}</h2>;
     }
     case 3: {
-      return <h3>{title}</h3>;
+      return <h3 style={style}>{title}</h3>;
     }
     default: {
-      return <h1>{title}</h1>;
+      return <h1 style={style}>{title}</h1>;
     }
   }
 }
@@ -115,18 +124,9 @@ export const puckConfig: Config<Components> = {
           label: "Stopień",
           labelIcon: <ALargeSmall className={PUCK_ICON_CLASSNAME} />,
           options: [
-            {
-              label: "1",
-              value: 1,
-            },
-            {
-              label: "2",
-              value: 2,
-            },
-            {
-              label: "3",
-              value: 3,
-            },
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
           ],
         },
         ...withTypography,
@@ -143,17 +143,24 @@ export const puckConfig: Config<Components> = {
       },
       render: ({ level, title, typography }) => {
         return (
-          <div
-            style={{
-              textAlign: typography.textAlign,
-              fontWeight: typography.fontWeight,
-              fontSize: typography.fontSize,
-              color: typography.color,
-            }}
-            className="p-4 text-inherit"
-          >
-            <HeadingComponent level={level} title={title} />
-          </div>
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  style={{
+                    textAlign: typography.textAlign,
+                    fontWeight: typography.fontWeight,
+                    fontSize: typography.fontSize,
+                    color: typography.color,
+                    padding: "16px",
+                    fontFamily: "sans-serif",
+                  }}
+                >
+                  <HeadingComponent level={level} title={title} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
     },
@@ -179,103 +186,25 @@ export const puckConfig: Config<Components> = {
       },
       render: ({ content, typography }) => {
         return (
-          <div
-            style={{
-              textAlign: typography.textAlign,
-              fontWeight: typography.fontWeight,
-              fontSize: typography.fontSize,
-              color: typography.color,
-            }}
-            className="p-4 text-inherit"
-          >
-            {/* NOTE: We render the paragraph with additional padding, so that the "bubble" is not cut off.
-                This is not reflected in the document schema, though it creates a visual mismatch
-                between what you see in the editor and what gets sent to the user
-            */}
-            <p className="text-inherit">{content}</p>
-          </div>
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  style={{
+                    textAlign: typography.textAlign,
+                    fontWeight: typography.fontWeight,
+                    fontSize: typography.fontSize,
+                    color: typography.color,
+                    padding: "16px",
+                    fontFamily: "sans-serif",
+                  }}
+                >
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>{content}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
-      },
-    },
-    Tag: {
-      label: "Znacznik",
-      fields: {
-        type: {
-          type: "select",
-          label: "Rodzaj znacznika",
-          labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
-          options: EMAIL_TAGS.map((tag) => {
-            return {
-              label: tag.title,
-              value: tag.value,
-            };
-          }),
-        },
-        ...withTypography,
-      },
-      defaultProps: {
-        type: EMAIL_TAGS[0].value,
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-      },
-      render({
-        puck,
-        type,
-        typography: { fontWeight, textAlign, fontSize, color },
-      }) {
-        const tagLabel =
-          EMAIL_TAGS.find((tag) => tag.value === type)?.title ??
-          "Nieznany znacznik";
-
-        if (puck.metadata.isPreview as boolean) {
-          const tagMap = new Map<
-            (typeof EMAIL_TAGS)[number]["value"],
-            string
-          >();
-          tagMap.set(EMAIL_TAGS[0].value, "Wydarzenie XYZ");
-          tagMap.set(EMAIL_TAGS[1].value, "14 listopada 2025");
-          tagMap.set(EMAIL_TAGS[2].value, "16 listopada 2025");
-          tagMap.set(EMAIL_TAGS[3].value, "wydarzenie_xyz");
-          tagMap.set(EMAIL_TAGS[4].value, "#ff0000");
-          tagMap.set(EMAIL_TAGS[5].value, "uczestnik@gmail.com");
-          tagMap.set(EMAIL_TAGS[6].value, "13");
-          tagMap.set(EMAIL_TAGS[7].value, "djUmEdS34asxZ");
-          tagMap.set(EMAIL_TAGS[8].value, "10 listopada 2025");
-
-          return (
-            <p
-              style={{
-                fontWeight,
-                textAlign,
-                fontSize,
-                color,
-              }}
-            >
-              {tagMap.get(type)}
-            </p>
-          );
-        } else {
-          return (
-            <div
-              style={{
-                fontSize,
-                fontWeight,
-                textAlign,
-                color,
-                backgroundColor: `${color}30`,
-              }}
-              className="flex items-center gap-2 rounded-lg p-4 text-inherit"
-              data-tag={type}
-            >
-              <Tag className="size-4" />
-              {tagLabel}
-            </div>
-          );
-        }
       },
     },
     UnorderedList: {
@@ -311,20 +240,36 @@ export const puckConfig: Config<Components> = {
         typography: { fontWeight, textAlign, fontSize, color },
       }) {
         return (
-          <ul
-            style={{
-              listStyleType,
-              fontWeight,
-              textAlign,
-              fontSize,
-              color,
-              marginLeft: 18,
-            }}
-          >
-            {items.map(({ content }) => (
-              <li key={content}>{content}</li>
-            ))}
-          </ul>
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  style={{
+                    padding: "16px",
+                    color,
+                    fontSize,
+                    fontWeight,
+                    fontFamily: "sans-serif",
+                  }}
+                >
+                  <ul
+                    style={{
+                      listStyleType,
+                      margin: 0,
+                      paddingLeft: "20px",
+                      textAlign,
+                    }}
+                  >
+                    {items.map(({ content }) => (
+                      <li key={content} style={{ marginBottom: "4px" }}>
+                        {content}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
       defaultProps: {
@@ -339,7 +284,7 @@ export const puckConfig: Config<Components> = {
       },
     },
     Grid: {
-      label: "Siatka",
+      label: "Kontener (Grid)",
       fields: {
         content: {
           type: "slot",
@@ -347,14 +292,14 @@ export const puckConfig: Config<Components> = {
         },
         columns: {
           type: "number",
-          label: "Kolumny",
+          label: "Kolumny (nieobsługiwane w emailu)",
           labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
           min: 1,
           max: 6,
         },
         columnGap: {
           type: "number",
-          label: "Odstęp kolumn",
+          label: "Odstęp",
           labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
         },
         rows: {
@@ -376,11 +321,7 @@ export const puckConfig: Config<Components> = {
       },
       render: ({
         content: Content,
-        columns,
-        columnGap,
-        rows,
-        rowGap,
-        layout: { width, height, margin, padding },
+        layout: { width, margin, padding },
         appearance: {
           color,
           backgroundColor,
@@ -393,32 +334,35 @@ export const puckConfig: Config<Components> = {
         },
       }) => {
         return (
-          <Content
+          <table
+            width={width === "auto" ? "100%" : width}
+            {...tableProps}
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr ".repeat(columns),
-              columnGap,
-              gridTemplateRows: "1fr ".repeat(rows),
-              rowGap,
-              color,
+              ...tableStyle,
+              margin: `${margin}px auto`,
               backgroundColor,
               backgroundImage: `url('${backgroundImage}')`,
               backgroundPosition,
               backgroundSize,
               backgroundRepeat,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
+              color,
             }}
-          />
+          >
+            <tbody>
+              <tr>
+                <td style={{ padding: `${padding}px` }}>
+                  <Content />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
       defaultProps: {
-        columns: 2,
-        columnGap: 16,
+        columns: 1,
+        columnGap: 0,
         rows: 1,
-        rowGap: 16,
+        rowGap: 0,
         content: [],
         layout: {
           width: "auto",
@@ -439,7 +383,7 @@ export const puckConfig: Config<Components> = {
       },
     },
     Flex: {
-      label: "Flex",
+      label: "Kontener (Flex)",
       fields: {
         content: {
           type: "slot",
@@ -456,29 +400,27 @@ export const puckConfig: Config<Components> = {
         },
         align: {
           type: "select",
-          label: "Wyrównanie na osi głównej",
+          label: "Wyrównanie",
           labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
           options: [
             { label: "Do lewej", value: "start" },
             { label: "Do środka", value: "center" },
             { label: "Do prawej", value: "end" },
-            { label: "Do środka", value: "stretch" },
           ],
         },
         justify: {
           type: "select",
-          label: "Wyrównanie na osi drugorzędnej",
+          label: "Justowanie",
           labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           options: [
             { label: "Do góry", value: "start" },
             { label: "Do środka", value: "center" },
             { label: "Do dołu", value: "end" },
-            { label: "Do środka", value: "stretch" },
           ],
         },
         gap: {
           type: "number",
-          label: "Odstęp między elementami",
+          label: "Odstęp",
           labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           min: 0,
           max: 100,
@@ -487,10 +429,10 @@ export const puckConfig: Config<Components> = {
         ...withAppearance,
       },
       defaultProps: {
-        direction: "row",
+        direction: "column",
         align: "start",
         justify: "start",
-        gap: 16,
+        gap: 0,
         content: [],
         layout: {
           width: "auto",
@@ -511,11 +453,7 @@ export const puckConfig: Config<Components> = {
       },
       render: ({
         content: Content,
-        direction,
-        align,
-        justify,
-        gap,
-        layout: { width, height, margin, padding },
+        layout: { width, margin, padding },
         appearance: {
           color,
           backgroundColor,
@@ -528,25 +466,28 @@ export const puckConfig: Config<Components> = {
         },
       }) => {
         return (
-          <Content
+          <table
+            width={width === "auto" ? "100%" : width}
+            {...tableProps}
             style={{
-              display: "flex",
-              flexDirection: direction,
-              alignItems: align,
-              justifyContent: justify,
-              gap,
-              color,
+              ...tableStyle,
+              margin: `${margin}px auto`,
               backgroundColor,
               backgroundImage: `url('${backgroundImage}')`,
               backgroundPosition,
               backgroundSize,
               backgroundRepeat,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
+              color,
             }}
-          />
+          >
+            <tbody>
+              <tr>
+                <td style={{ padding: `${padding}px` }}>
+                  <Content />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
     },
@@ -575,13 +516,23 @@ export const puckConfig: Config<Components> = {
       },
       render({ height, appearance: { color, backgroundColor } }) {
         return (
-          <div
-            style={{
-              height: `${height}px`,
-              backgroundColor,
-              color,
-            }}
-          />
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  height={height}
+                  style={{
+                    backgroundColor,
+                    color,
+                    fontSize: 0,
+                    lineHeight: 0,
+                  }}
+                >
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
     },
@@ -629,18 +580,31 @@ export const puckConfig: Config<Components> = {
         layout: { width, height, margin, padding },
       }) {
         return (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={src === "" ? `/editor-image-placeholder.png` : src}
-            alt={alt}
-            style={{
-              objectFit,
-              width: `${width}px`,
-              height: `${height}px`,
-              margin: `${margin}px`,
-              padding: `${padding}px`,
-            }}
-          />
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  align="center"
+                  style={{ padding: `${padding}px`, margin: `${margin}px` }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src === "" ? `/editor-image-placeholder.png` : src}
+                    alt={alt}
+                    width={width}
+                    height={height}
+                    style={{
+                      display: "block",
+                      objectFit,
+                      width: `${width}px`,
+                      height: `${height}px`,
+                      maxWidth: "100%",
+                    }}
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         );
       },
     },
@@ -648,7 +612,7 @@ export const puckConfig: Config<Components> = {
   categories: {
     typography: {
       title: "Tekst",
-      components: ["Heading", "Paragraph", "Tag", "UnorderedList"],
+      components: ["Heading", "Paragraph", "UnorderedList"],
     },
     layout: {
       title: "Układ",
@@ -667,6 +631,39 @@ export const puckConfig: Config<Components> = {
         label: "Nazwa szablonu",
         labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
       },
+    },
+    render: ({ children }) => {
+      return (
+        <div
+          id="email-root"
+          style={{ width: "100%", backgroundColor: "#f3f4f6" }}
+        >
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td align="center" style={{ padding: "20px 0" }}>
+                  {/* Main Content Container - usually limited to 600px/640px for email */}
+                  <table
+                    width="600"
+                    {...tableProps}
+                    style={{
+                      ...tableStyle,
+                      backgroundColor: "#ffffff",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <tbody>
+                      <tr>
+                        <td>{children}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      );
     },
   },
 };
