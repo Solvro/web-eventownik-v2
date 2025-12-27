@@ -1,14 +1,14 @@
-import type { Config, Content } from "@measured/puck";
+import type { Config, Slot } from "@measured/puck";
 import {
   ALargeSmall,
-  ChevronsRightLeft,
+  // ChevronsRightLeft,
   ChevronsUpDown,
-  Columns3,
+  // Columns3,
   DotSquare,
   ImageUpscale,
   LinkIcon,
   Mail,
-  Rows3,
+  // Rows3,
   Type,
 } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -51,21 +51,21 @@ interface ParagraphFields extends TypographyFields {
   content: string;
 }
 
-interface GridFields extends LayoutFields, AppearanceFields {
-  content: Content;
-  columns: number;
-  columnGap: number;
-  rows: number;
-  rowGap: number;
-}
+// interface GridFields extends LayoutFields, AppearanceFields {
+//   content: Content;
+//   columns: number;
+//   columnGap: number;
+//   rows: number;
+//   rowGap: number;
+// }
 
-interface FlexFields extends LayoutFields, AppearanceFields {
-  content: Content;
-  direction: "row" | "column";
-  align: "start" | "center" | "end" | "stretch";
-  justify: "start" | "center" | "end" | "stretch";
-  gap: number;
-}
+// interface FlexFields extends LayoutFields, AppearanceFields {
+//   content: Content;
+//   direction: "row" | "column";
+//   align: "start" | "center" | "end" | "stretch";
+//   justify: "start" | "center" | "end" | "stretch";
+//   gap: number;
+// }
 
 interface ImageFields extends LayoutFields {
   src: string;
@@ -78,12 +78,18 @@ interface UnorderedListFields extends TypographyFields {
   listStyleType: string;
 }
 
+interface ContainerFields extends LayoutFields, AppearanceFields {
+  columns: Record<"content", Slot>[];
+  numZones: number;
+}
+
 interface Components {
   Heading: HeadingFields;
   Paragraph: ParagraphFields;
   UnorderedList: UnorderedListFields;
-  Grid: GridFields;
-  Flex: FlexFields;
+  // Grid: GridFields;
+  // Flex: FlexFields;
+  Container: ContainerFields;
   Divider: {
     height: string;
   } & AppearanceFields;
@@ -283,157 +289,126 @@ export const puckConfig: Config<Components> = {
         listStyleType: "disc",
       },
     },
-    Grid: {
-      label: "Kontener (Grid)",
+    // Grid: {
+    //   label: "Kontener (Grid)",
+    //   fields: {
+    //     content: {
+    //       type: "slot",
+    //       label: "Bloki w kontenerze",
+    //     },
+    //     columns: {
+    //       type: "number",
+    //       label: "Kolumny (nieobsługiwane w emailu)",
+    //       labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
+    //       min: 1,
+    //       max: 6,
+    //     },
+    //     columnGap: {
+    //       type: "number",
+    //       label: "Odstęp",
+    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+    //     },
+    //     rows: {
+    //       type: "number",
+    //       label: "Rzędy",
+    //       labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
+    //       min: 1,
+    //       max: 6,
+    //     },
+    //     rowGap: {
+    //       type: "number",
+    //       label: "Odstęp rzędów",
+    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+    //       min: 0,
+    //       max: 100,
+    //     },
+    //     ...withLayout,
+    //     ...withAppearance,
+    //   },
+    //   render: ({
+    //     content: Content,
+    //     layout: { width, margin, padding },
+    //     appearance: {
+    //       color,
+    //       backgroundColor,
+    //       image: {
+    //         backgroundImage,
+    //         backgroundPosition,
+    //         backgroundSize,
+    //         backgroundRepeat,
+    //       },
+    //     },
+    //   }) => {
+    //     return (
+    //       <table
+    //         width={width === "auto" ? "100%" : width}
+    //         {...tableProps}
+    //         style={{
+    //           ...tableStyle,
+    //           margin: `${margin}px auto`,
+    //           backgroundColor,
+    //           backgroundImage: `url('${backgroundImage}')`,
+    //           backgroundPosition,
+    //           backgroundSize,
+    //           backgroundRepeat,
+    //           color,
+    //         }}
+    //       >
+    //         <tbody>
+    //           <tr>
+    //             <td style={{ padding: `${padding}px` }}>
+    //               <Content />
+    //             </td>
+    //           </tr>
+    //         </tbody>
+    //       </table>
+    //     );
+    //   },
+    //   defaultProps: {
+    //     columns: 1,
+    //     columnGap: 0,
+    //     rows: 1,
+    //     rowGap: 0,
+    //     content: [],
+    //     layout: {
+    //       width: "auto",
+    //       height: "auto",
+    //       margin: "0",
+    //       padding: "0",
+    //     },
+    //     appearance: {
+    //       color: "#000000",
+    //       backgroundColor: "#FFFFFF",
+    //       image: {
+    //         backgroundImage: "",
+    //         backgroundPosition: "center",
+    //         backgroundSize: "cover",
+    //         backgroundRepeat: "no-repeat",
+    //       },
+    //     },
+    //   },
+    // },
+    Container: {
+      label: "Kontener",
       fields: {
-        content: {
-          type: "slot",
-          label: "Bloki w kontenerze",
-        },
         columns: {
-          type: "number",
-          label: "Kolumny (nieobsługiwane w emailu)",
-          labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
-          min: 1,
-          max: 6,
-        },
-        columnGap: {
-          type: "number",
-          label: "Odstęp",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-        },
-        rows: {
-          type: "number",
-          label: "Rzędy",
-          labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
-          min: 1,
-          max: 6,
-        },
-        rowGap: {
-          type: "number",
-          label: "Odstęp rzędów",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          min: 0,
-          max: 100,
-        },
-        ...withLayout,
-        ...withAppearance,
-      },
-      render: ({
-        content: Content,
-        layout: { width, margin, padding },
-        appearance: {
-          color,
-          backgroundColor,
-          image: {
-            backgroundImage,
-            backgroundPosition,
-            backgroundSize,
-            backgroundRepeat,
-          },
-        },
-      }) => {
-        return (
-          <table
-            width={width === "auto" ? "100%" : width}
-            {...tableProps}
-            style={{
-              ...tableStyle,
-              margin: `${margin}px auto`,
-              backgroundColor,
-              backgroundImage: `url('${backgroundImage}')`,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-              color,
-            }}
-          >
-            <tbody>
-              <tr>
-                <td style={{ padding: `${padding}px` }}>
-                  <Content />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        );
-      },
-      defaultProps: {
-        columns: 1,
-        columnGap: 0,
-        rows: 1,
-        rowGap: 0,
-        content: [],
-        layout: {
-          width: "auto",
-          height: "auto",
-          margin: "0",
-          padding: "0",
-        },
-        appearance: {
-          color: "#000000",
-          backgroundColor: "#FFFFFF",
-          image: {
-            backgroundImage: "",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          },
-        },
-      },
-    },
-    Flex: {
-      label: "Kontener (Flex)",
-      fields: {
-        content: {
-          type: "slot",
           label: "Bloki w kontenerze",
+          type: "array",
+          arrayFields: {
+            content: { label: "Blok", type: "slot" },
+          },
+          visible: false,
         },
-        direction: {
-          type: "select",
-          label: "Kierunek",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "W prawo", value: "row" },
-            { label: "W dół", value: "column" },
-          ],
-        },
-        align: {
-          type: "select",
-          label: "Wyrównanie",
-          labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Do lewej", value: "start" },
-            { label: "Do środka", value: "center" },
-            { label: "Do prawej", value: "end" },
-          ],
-        },
-        justify: {
-          type: "select",
-          label: "Justowanie",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Do góry", value: "start" },
-            { label: "Do środka", value: "center" },
-            { label: "Do dołu", value: "end" },
-          ],
-        },
-        gap: {
+        numZones: {
+          label: "Liczba kolumn",
           type: "number",
-          label: "Odstęp",
-          labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-          min: 0,
-          max: 100,
         },
         ...withLayout,
         ...withAppearance,
       },
       defaultProps: {
-        direction: "column",
-        align: "start",
-        justify: "start",
-        gap: 0,
-        content: [],
+        columns: [],
+        numZones: 2,
         layout: {
           width: "auto",
           height: "auto",
@@ -451,9 +426,29 @@ export const puckConfig: Config<Components> = {
           },
         },
       },
-      render: ({
-        content: Content,
-        layout: { width, margin, padding },
+      resolveData: (data, parameters) => {
+        if (
+          !(parameters.changed.numZones ?? false) ||
+          data.props.numZones < 0
+        ) {
+          return data;
+        }
+
+        const newData = { ...data, props: { ...data.props } };
+        newData.props.columns = [];
+
+        // Rebuild slots based on numZones
+        for (let iterator = 0; iterator < newData.props.numZones; iterator++) {
+          newData.props.columns.push(
+            data.props.columns[iterator] ?? { content: [] },
+          );
+        }
+
+        return newData;
+      },
+      render({
+        columns,
+        layout: { margin, padding },
         appearance: {
           color,
           backgroundColor,
@@ -464,11 +459,10 @@ export const puckConfig: Config<Components> = {
             backgroundRepeat,
           },
         },
-      }) => {
+      }) {
         return (
           <table
-            width={width === "auto" ? "100%" : width}
-            {...tableProps}
+            width={"100%"}
             style={{
               ...tableStyle,
               margin: `${margin}px auto`,
@@ -478,19 +472,132 @@ export const puckConfig: Config<Components> = {
               backgroundSize,
               backgroundRepeat,
               color,
+              padding,
             }}
+            {...tableProps}
           >
             <tbody>
               <tr>
-                <td style={{ padding: `${padding}px` }}>
-                  <Content />
-                </td>
+                {columns.map(({ content: Content }, index) => (
+                  <td key={index} className="min-w-16">
+                    <Content />
+                  </td>
+                ))}
               </tr>
             </tbody>
           </table>
         );
       },
     },
+    // Flex: {
+    //   label: "Kontener (Flex)",
+    //   fields: {
+    //     content: {
+    //       type: "slot",
+    //       label: "Bloki w kontenerze",
+    //     },
+    //     direction: {
+    //       type: "select",
+    //       label: "Kierunek",
+    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+    //       options: [
+    //         { label: "W prawo", value: "row" },
+    //         { label: "W dół", value: "column" },
+    //       ],
+    //     },
+    //     align: {
+    //       type: "select",
+    //       label: "Wyrównanie",
+    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
+    //       options: [
+    //         { label: "Do lewej", value: "start" },
+    //         { label: "Do środka", value: "center" },
+    //         { label: "Do prawej", value: "end" },
+    //       ],
+    //     },
+    //     justify: {
+    //       type: "select",
+    //       label: "Justowanie",
+    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+    //       options: [
+    //         { label: "Do góry", value: "start" },
+    //         { label: "Do środka", value: "center" },
+    //         { label: "Do dołu", value: "end" },
+    //       ],
+    //     },
+    //     gap: {
+    //       type: "number",
+    //       label: "Odstęp",
+    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+    //       min: 0,
+    //       max: 100,
+    //     },
+    //     ...withLayout,
+    //     ...withAppearance,
+    //   },
+    //   defaultProps: {
+    //     direction: "column",
+    //     align: "start",
+    //     justify: "start",
+    //     gap: 0,
+    //     content: [],
+    //     layout: {
+    //       width: "auto",
+    //       height: "auto",
+    //       margin: "0",
+    //       padding: "0",
+    //     },
+    //     appearance: {
+    //       color: "#000000",
+    //       backgroundColor: "#FFFFFF",
+    //       image: {
+    //         backgroundImage: "",
+    //         backgroundPosition: "center",
+    //         backgroundSize: "cover",
+    //         backgroundRepeat: "no-repeat",
+    //       },
+    //     },
+    //   },
+    //   render: ({
+    //     content: Content,
+    //     layout: { width, margin, padding },
+    //     appearance: {
+    //       color,
+    //       backgroundColor,
+    //       image: {
+    //         backgroundImage,
+    //         backgroundPosition,
+    //         backgroundSize,
+    //         backgroundRepeat,
+    //       },
+    //     },
+    //   }) => {
+    //     return (
+    //       <table
+    //         width={width === "auto" ? "100%" : width}
+    //         {...tableProps}
+    //         style={{
+    //           ...tableStyle,
+    //           margin: `${margin}px auto`,
+    //           backgroundColor,
+    //           backgroundImage: `url('${backgroundImage}')`,
+    //           backgroundPosition,
+    //           backgroundSize,
+    //           backgroundRepeat,
+    //           color,
+    //         }}
+    //       >
+    //         <tbody>
+    //           <tr>
+    //             <td style={{ padding: `${padding}px` }}>
+    //               <Content />
+    //             </td>
+    //           </tr>
+    //         </tbody>
+    //       </table>
+    //     );
+    //   },
+    // },
     Divider: {
       label: "Odstęp",
       fields: {
@@ -616,7 +723,7 @@ export const puckConfig: Config<Components> = {
     },
     layout: {
       title: "Układ",
-      components: ["Grid", "Flex", "Divider"],
+      components: ["Container", "Divider"],
     },
     media: {
       title: "Media",
