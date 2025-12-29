@@ -207,7 +207,7 @@ export function CreateEventForm() {
           ...event,
           startDate,
           endDate,
-          image: base64Image,
+          photoUrl: base64Image,
           coorganizers:
             event.coorganizers.length === 1 && !event.coorganizers[0].email
               ? []
