@@ -64,7 +64,7 @@ function LoginForm() {
           duration: 2000,
         });
         const redirectUrl = redirectTo ?? "/dashboard/events";
-        router.replace(redirectUrl);
+        router.push(redirectUrl);
       } else {
         toast({
           variant: "destructive",

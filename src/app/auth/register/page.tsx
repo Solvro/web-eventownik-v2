@@ -68,7 +68,7 @@ function RegisterForm() {
         });
       } else {
         const redirectUrl = redirectTo ?? "/dashboard/events";
-        router.replace(redirectUrl);
+        router.push(redirectUrl);
       }
     } catch (error) {
       console.error("Registration failed", error);

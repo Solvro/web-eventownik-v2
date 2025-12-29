@@ -12,6 +12,7 @@ export interface NewEventForm
   attributes: FormAttributeBase[];
 }
 
+// TODO: Uncomment `isOpen` stuff once its fixed by backend
 export const newEventFormAtom = atom<NewEventForm>({
   isOpen: true,
   isFirstForm: false,

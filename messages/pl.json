@@ -3,7 +3,9 @@
     "notFound": "Nie znaleziono wydarzenia 😪",
     "registration": "Rejestracja na wydarzenie",
     "fillForm": "Wypełnij formularz, aby się zarejestrować",
-    "addToCalendar": "Dodaj do kalendarza"
+    "addToCalendar": "Dodaj do kalendarza",
+    "registerForThisEvent": "Zapisz się na to wydarzenie",
+    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku"
   },
   "Form": {
     "invalidEmail": "Nieprawidłowy adres email.",

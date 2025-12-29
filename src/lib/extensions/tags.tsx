@@ -88,38 +88,10 @@ const MESSAGE_TAGS: MessageTag[] = [
     category: EVENT_CATEGORY,
   },
   {
-    title: "Slug wydarzenia",
-    description: "Zamienia się w slug wydarzenia",
-    value: "/event_slug",
-    color: "green",
-    category: EVENT_CATEGORY,
-  },
-  {
-    title: "Kolor wydarzenia",
-    description: "Zamienia się w wybrany kolor wydarzenia",
-    value: "/event_primary_color",
-    color: "teal",
-    category: EVENT_CATEGORY,
-  },
-  {
     title: "Email uczestnika",
     description: "Zamienia się w email uczestnika",
     value: "/participant_email",
     color: "blue",
-    category: PARTICIPANT_CATEGORY,
-  },
-  {
-    title: "ID uczestnika",
-    description: "Zamienia się w ID uczestnika",
-    value: "/participant_id",
-    color: "indigo",
-    category: PARTICIPANT_CATEGORY,
-  },
-  {
-    title: "Slug uczestnika",
-    description: "Zamienia się w slug uczestnika",
-    value: "/participant_slug",
-    color: "purple",
     category: PARTICIPANT_CATEGORY,
   },
   {
@@ -187,11 +159,11 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
           // NOTE: Updating the position twice looks silly here, but without it
           // the suggestion list initially appears far away from the text
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
 
           document.body.append(component.element);
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
         },
 
         async onUpdate(props: SuggestionProps) {
@@ -201,7 +173,7 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
             return;
           }
 
-          await updatePosition(props.editor, component.element as HTMLElement);
+          await updatePosition(props.editor, component.element);
         },
 
         onKeyDown(props: SuggestionKeyDownProps) {

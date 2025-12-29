@@ -32,10 +32,12 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
       </div>
       <div className="flex grow flex-col items-center justify-center gap-2 text-center">
         <p className="text-lg font-bold">{form.name}</p>
+        {/*
         <p className="text-muted-foreground">
           {new Date(form.startDate).toLocaleDateString()} -{" "}
           {new Date(form.endDate).toLocaleDateString()}
         </p>
+        */}
       </div>
     </div>
   );
