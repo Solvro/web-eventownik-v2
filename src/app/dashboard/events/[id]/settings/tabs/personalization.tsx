@@ -155,7 +155,7 @@ export function Personalization({ event, saveFormRef }: TabProps) {
                         width={1000}
                         height={1000}
                         alt="Podgląd zdjęcia wydarzenia"
-                        className="h-full rounded-md object-cover"
+                        className="h-full rounded-md bg-(--event-primary-color)/5 object-contain"
                       />
                     )}
                   </FormLabel>
