@@ -4,6 +4,7 @@ import { formatISO } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
+import { generateFileFromPhotoUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -85,18 +86,7 @@ export async function updateEvent(
       event.photoUrl !== unmodifiedEvent.photoUrl
     ) {
       try {
-        const photoResponse = await fetch(event.photoUrl);
-        if (!photoResponse.ok) {
-          throw new Error(
-            `Photo fetch failed with status: ${photoResponse.status.toString()}`,
-          );
-        }
-
-        const blob = await photoResponse.blob();
-        const filename =
-          event.photoUrl.split("/").pop() ??
-          `event-${Date.now().toString()}.${blob.type.split("/")[1] || "jpg"}`;
-        const photoFile = new File([blob], filename, { type: blob.type });
+        const photoFile = await generateFileFromPhotoUrl(event.photoUrl);
         formData.append("photo", photoFile);
       } catch (error) {
         console.error("[updateEvent] Error processing photo:", error);
