@@ -5,8 +5,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import type { FlattenedParticipant } from "@/types/participant";
 
-interface SortButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SortButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   column: Column<
     FlattenedParticipant,
     string | number | boolean | Date | null | undefined
