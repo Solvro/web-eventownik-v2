@@ -7,10 +7,7 @@ import {
   Container,
   Eye,
   FoldVertical,
-  // Grid,
-  Heading,
   Image,
-  List,
   Redo2,
   Save,
   Sidebar,
@@ -46,13 +43,9 @@ import { PUCK_ICON_CLASSNAME } from "./common";
 type PuckDispatch = (action: PuckAction) => void;
 
 const COMPONENT_ICONS = {
-  Heading: <Heading className={PUCK_ICON_CLASSNAME} />,
-  Paragraph: <Type className={PUCK_ICON_CLASSNAME} />,
-  // Grid: <Grid className={PUCK_ICON_CLASSNAME} />,
-  // Flex: <Container className={PUCK_ICON_CLASSNAME} />,
+  RichText: <Type className={PUCK_ICON_CLASSNAME} />,
   Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
   Image: <Image className={PUCK_ICON_CLASSNAME} />,
-  UnorderedList: <List className={PUCK_ICON_CLASSNAME} />,
   Container: <Container className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<
   keyof typeof puckConfig.components,

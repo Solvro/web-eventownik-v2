@@ -1,29 +1,18 @@
+"use client";
+
 import type { Config, Slot } from "@measured/puck";
 import {
-  ALargeSmall,
-  // ChevronsRightLeft,
   ChevronsUpDown,
-  // Columns3,
-  DotSquare,
   ImageUpscale,
   LinkIcon,
   Mail,
-  // Rows3,
   Type,
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
-import type {
-  AppearanceFields,
-  LayoutFields,
-  TypographyFields,
-} from "./common";
-import {
-  PUCK_ICON_CLASSNAME,
-  withAppearance,
-  withLayout,
-  withTypography,
-} from "./common";
+import type { AppearanceFields, LayoutFields } from "./common";
+import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
+import { PuckRichText } from "./puck-rich-text";
 
 interface EmailCSSProperties extends CSSProperties {
   msoTableLspace?: string;
@@ -42,40 +31,10 @@ const tableProps = {
   border: 0,
 };
 
-interface HeadingFields extends TypographyFields {
-  title: string;
-  level: number;
-}
-
-interface ParagraphFields extends TypographyFields {
-  content: string;
-}
-
-// interface GridFields extends LayoutFields, AppearanceFields {
-//   content: Content;
-//   columns: number;
-//   columnGap: number;
-//   rows: number;
-//   rowGap: number;
-// }
-
-// interface FlexFields extends LayoutFields, AppearanceFields {
-//   content: Content;
-//   direction: "row" | "column";
-//   align: "start" | "center" | "end" | "stretch";
-//   justify: "start" | "center" | "end" | "stretch";
-//   gap: number;
-// }
-
 interface ImageFields extends LayoutFields {
   src: string;
   alt: string;
   objectFit: CSSProperties["objectFit"];
-}
-
-interface UnorderedListFields extends TypographyFields {
-  items: Record<"content", string>[];
-  listStyleType: string;
 }
 
 interface ContainerFields extends LayoutFields, AppearanceFields {
@@ -83,311 +42,38 @@ interface ContainerFields extends LayoutFields, AppearanceFields {
   numZones: number;
 }
 
-interface Components {
-  Heading: HeadingFields;
-  Paragraph: ParagraphFields;
-  UnorderedList: UnorderedListFields;
-  // Grid: GridFields;
-  // Flex: FlexFields;
-  Container: ContainerFields;
-  Divider: {
-    height: string;
-  } & AppearanceFields;
-  Image: ImageFields;
+interface RichTextFields {
+  content: string;
+  id?: string;
 }
 
-function HeadingComponent({ title, level }: { title: string; level: number }) {
-  const style = { margin: 0 };
-  switch (level) {
-    case 1: {
-      return <h1 style={style}>{title}</h1>;
-    }
-    case 2: {
-      return <h2 style={style}>{title}</h2>;
-    }
-    case 3: {
-      return <h3 style={style}>{title}</h3>;
-    }
-    default: {
-      return <h1 style={style}>{title}</h1>;
-    }
-  }
+interface DividerFields extends AppearanceFields {
+  height: string;
+}
+
+interface Components {
+  RichText: RichTextFields;
+  Container: ContainerFields;
+  Divider: DividerFields;
+  Image: ImageFields;
 }
 
 export const puckConfig: Config<Components> = {
   components: {
-    Heading: {
-      label: "Nagłówek",
+    RichText: {
+      label: "Tekst",
       fields: {
-        title: {
-          type: "textarea",
-          contentEditable: true,
-          label: "Treść",
-          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
-        },
-        level: {
-          type: "select",
-          label: "Stopień",
-          labelIcon: <ALargeSmall className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "1", value: 1 },
-            { label: "2", value: 2 },
-            { label: "3", value: 3 },
-          ],
-        },
-        ...withTypography,
+        content: { type: "text", visible: false },
+        id: { type: "text", visible: false },
       },
       defaultProps: {
-        title: "Nagłówek",
-        level: 1,
-        typography: {
-          fontWeight: "700",
-          textAlign: "left",
-          fontSize: 24,
-          color: "inherit",
-        },
+        content: "",
+        id: "",
       },
-      render: ({ level, title, typography }) => {
-        return (
-          <table width="100%" {...tableProps} style={tableStyle}>
-            <tbody>
-              <tr>
-                <td
-                  style={{
-                    textAlign: typography.textAlign,
-                    fontWeight: typography.fontWeight,
-                    fontSize: typography.fontSize,
-                    color: typography.color,
-                    padding: "16px",
-                    fontFamily: "sans-serif",
-                  }}
-                >
-                  <HeadingComponent level={level} title={title} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        );
+      render: ({ content, id }) => {
+        return <PuckRichText initialContent={content} id={id} />;
       },
     },
-    Paragraph: {
-      label: "Akapit",
-      fields: {
-        content: {
-          type: "textarea",
-          contentEditable: true,
-          label: "Treść",
-          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
-        },
-        ...withTypography,
-      },
-      defaultProps: {
-        content: "Lorem ipsum dolor sit amet",
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-      },
-      render: ({ content, typography }) => {
-        return (
-          <table width="100%" {...tableProps} style={tableStyle}>
-            <tbody>
-              <tr>
-                <td
-                  style={{
-                    textAlign: typography.textAlign,
-                    fontWeight: typography.fontWeight,
-                    fontSize: typography.fontSize,
-                    color: typography.color,
-                    padding: "16px",
-                    fontFamily: "sans-serif",
-                  }}
-                >
-                  <p style={{ margin: 0, lineHeight: "1.5" }}>{content}</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        );
-      },
-    },
-    UnorderedList: {
-      label: "Lista nieuporządkowana",
-      fields: {
-        items: {
-          type: "array",
-          label: "Elementy listy",
-          arrayFields: {
-            content: { label: "Treść punktu", type: "textarea" },
-          },
-          getItemSummary: (_, index) =>
-            `Element #${((index ?? 0) + 1).toString()}`,
-        },
-        listStyleType: {
-          type: "select",
-          label: "Rodzaj punktorów",
-          labelIcon: <DotSquare className={PUCK_ICON_CLASSNAME} />,
-          options: [
-            { label: "Kółko", value: "disc" },
-            { label: "Okrąg", value: "circle" },
-            { label: "Kwadrat", value: "square" },
-            { label: "Cyfry", value: "decimal" },
-            { label: "Małe litery", value: "lower-alpha" },
-            { label: "Wielkie litery", value: "upper-alpha" },
-          ],
-        },
-        ...withTypography,
-      },
-      render({
-        items,
-        listStyleType,
-        typography: { fontWeight, textAlign, fontSize, color },
-      }) {
-        return (
-          <table width="100%" {...tableProps} style={tableStyle}>
-            <tbody>
-              <tr>
-                <td
-                  style={{
-                    padding: "16px",
-                    color,
-                    fontSize,
-                    fontWeight,
-                    fontFamily: "sans-serif",
-                  }}
-                >
-                  <ul
-                    style={{
-                      listStyleType,
-                      margin: 0,
-                      paddingLeft: "20px",
-                      textAlign,
-                    }}
-                  >
-                    {items.map(({ content }) => (
-                      <li key={content} style={{ marginBottom: "4px" }}>
-                        {content}
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        );
-      },
-      defaultProps: {
-        typography: {
-          fontWeight: "400",
-          textAlign: "left",
-          fontSize: 16,
-          color: "inherit",
-        },
-        items: [],
-        listStyleType: "disc",
-      },
-    },
-    // Grid: {
-    //   label: "Kontener (Grid)",
-    //   fields: {
-    //     content: {
-    //       type: "slot",
-    //       label: "Bloki w kontenerze",
-    //     },
-    //     columns: {
-    //       type: "number",
-    //       label: "Kolumny (nieobsługiwane w emailu)",
-    //       labelIcon: <Columns3 className={PUCK_ICON_CLASSNAME} />,
-    //       min: 1,
-    //       max: 6,
-    //     },
-    //     columnGap: {
-    //       type: "number",
-    //       label: "Odstęp",
-    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-    //     },
-    //     rows: {
-    //       type: "number",
-    //       label: "Rzędy",
-    //       labelIcon: <Rows3 className={PUCK_ICON_CLASSNAME} />,
-    //       min: 1,
-    //       max: 6,
-    //     },
-    //     rowGap: {
-    //       type: "number",
-    //       label: "Odstęp rzędów",
-    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-    //       min: 0,
-    //       max: 100,
-    //     },
-    //     ...withLayout,
-    //     ...withAppearance,
-    //   },
-    //   render: ({
-    //     content: Content,
-    //     layout: { width, margin, padding },
-    //     appearance: {
-    //       color,
-    //       backgroundColor,
-    //       image: {
-    //         backgroundImage,
-    //         backgroundPosition,
-    //         backgroundSize,
-    //         backgroundRepeat,
-    //       },
-    //     },
-    //   }) => {
-    //     return (
-    //       <table
-    //         width={width === "auto" ? "100%" : width}
-    //         {...tableProps}
-    //         style={{
-    //           ...tableStyle,
-    //           margin: `${margin}px auto`,
-    //           backgroundColor,
-    //           backgroundImage: `url('${backgroundImage}')`,
-    //           backgroundPosition,
-    //           backgroundSize,
-    //           backgroundRepeat,
-    //           color,
-    //         }}
-    //       >
-    //         <tbody>
-    //           <tr>
-    //             <td style={{ padding: `${padding}px` }}>
-    //               <Content />
-    //             </td>
-    //           </tr>
-    //         </tbody>
-    //       </table>
-    //     );
-    //   },
-    //   defaultProps: {
-    //     columns: 1,
-    //     columnGap: 0,
-    //     rows: 1,
-    //     rowGap: 0,
-    //     content: [],
-    //     layout: {
-    //       width: "auto",
-    //       height: "auto",
-    //       margin: "0",
-    //       padding: "0",
-    //     },
-    //     appearance: {
-    //       color: "#000000",
-    //       backgroundColor: "#FFFFFF",
-    //       image: {
-    //         backgroundImage: "",
-    //         backgroundPosition: "center",
-    //         backgroundSize: "cover",
-    //         backgroundRepeat: "no-repeat",
-    //       },
-    //     },
-    //   },
-    // },
     Container: {
       label: "Kontener",
       fields: {
@@ -489,7 +175,6 @@ export const puckConfig: Config<Components> = {
         );
       },
     },
-    // Flex: {
     //   label: "Kontener (Flex)",
     //   fields: {
     //     content: {
@@ -719,7 +404,7 @@ export const puckConfig: Config<Components> = {
   categories: {
     typography: {
       title: "Tekst",
-      components: ["Heading", "Paragraph", "UnorderedList"],
+      components: ["RichText"],
     },
     layout: {
       title: "Układ",
