@@ -88,6 +88,8 @@ export const puckConfig: Config<PuckComponents> = {
         numZones: {
           label: "Liczba kolumn",
           type: "number",
+          min: 2,
+          max: 6,
         },
         ...withLayout,
         ...withAppearance,
