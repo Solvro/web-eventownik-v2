@@ -40,8 +40,6 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { PUCK_ICON_CLASSNAME } from "./common";
 
-/* eslint-disable no-console */
-
 type PuckDispatch = (action: PuckAction) => void;
 
 const COMPONENT_ICONS = {
@@ -59,11 +57,11 @@ const COMPONENT_ICONS = {
  * Used to display current document schema.
  */
 function SaveButton(appState: AppState) {
-  console.log("save button re-render");
   return (
     <Button
       variant="outline"
       onClick={() => {
+        // eslint-disable-next-line no-console
         console.log(appState.data);
       }}
     >
@@ -136,17 +134,7 @@ function Toolbar({
       <div className="flex justify-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="eventGhost"
-              onClick={() => {
-                console.log(
-                  "%c[Puck Composition] Going BACKWARDS in history",
-                  "font-size: 1.75rem; color: red; fontWeight: bold",
-                );
-                back();
-              }}
-              disabled={!hasPast}
-            >
+            <Button variant="eventGhost" onClick={back} disabled={!hasPast}>
               <Undo2 />
             </Button>
           </TooltipTrigger>
@@ -156,10 +144,7 @@ function Toolbar({
           <TooltipTrigger asChild>
             <Button
               variant="eventGhost"
-              onClick={() => {
-                console.log("[Puck Composition] Going FORWARDS in history");
-                forward();
-              }}
+              onClick={forward}
               disabled={!hasFuture}
             >
               <Redo2 />
@@ -354,16 +339,6 @@ function PreviewDialog() {
 function PuckComposition({ config }: { config: Config }) {
   // TODO(refactor): Suboptimal for performance
   const { appState, dispatch, history } = usePuck();
-
-  console.log(
-    "[Puck Composition] Editor content (appState):",
-    appState.data.content,
-  );
-  console.log(
-    "[Puck Composition] Editor history (histories):",
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-    history.histories.map((item) => item.state.data.content[0]?.props.content),
-  );
 
   return (
     <div className="flex h-208.75 flex-col">

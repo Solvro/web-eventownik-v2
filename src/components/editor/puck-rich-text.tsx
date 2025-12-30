@@ -24,50 +24,39 @@ function PuckRichText({ externalContent, id }: PuckRichTextProps) {
 
   const isSelected = selectedItem?.props.id === id;
 
-  // Mode switch
+  // Native (as opposed to React's "synthetic" ones) events interception
   useEffect(() => {
     const element = wrapperRef.current;
-    if (element === null) {
+    if (element === null || !isSelected) {
       return;
     }
 
-    const stopPropagation = (event: Event) => {
+    const stopNativePropagation = (event: Event) => {
       event.stopPropagation();
     };
 
-    // Text selection fix pt.1
-    const preventDragStart = (event: Event) => {
-      event.stopPropagation();
-      event.preventDefault();
-    };
-
-    if (isSelected) {
-      element.addEventListener("pointerdown", stopPropagation);
-      element.addEventListener("mousedown", stopPropagation);
-      element.addEventListener("click", stopPropagation);
-      element.addEventListener("keydown", stopPropagation);
-
-      // Text selection fix pt.2
-      element.addEventListener("dragstart", preventDragStart);
-
-      element.style.cursor = "text";
-    } else {
-      element.removeEventListener("pointerdown", stopPropagation);
-      element.removeEventListener("mousedown", stopPropagation);
-      element.removeEventListener("click", stopPropagation);
-      element.removeEventListener("keydown", stopPropagation);
-      element.removeEventListener("dragstart", preventDragStart);
-
-      element.style.cursor = "default";
-    }
+    // We listen for 'pointerdown' because dnd-kit uses Pointer Events by default.
+    element.addEventListener("pointerdown", stopNativePropagation);
+    element.addEventListener("mousedown", stopNativePropagation);
 
     return () => {
-      element.removeEventListener("pointerdown", stopPropagation);
-      element.removeEventListener("mousedown", stopPropagation);
-      element.removeEventListener("click", stopPropagation);
-      element.removeEventListener("keydown", stopPropagation);
-      element.removeEventListener("dragstart", preventDragStart);
+      element.removeEventListener("pointerdown", stopNativePropagation);
+      element.removeEventListener("mousedown", stopNativePropagation);
     };
+  }, [isSelected]);
+
+  // NOTE: Autofocus Prosemirror on Puck block selection. Required, otherwise double-clicking
+  // is required to focus the editor and a single click just selects the block
+  useEffect(() => {
+    if (isSelected && wrapperRef.current !== null) {
+      const editable = wrapperRef.current.querySelector(".ProseMirror");
+
+      if (editable !== null) {
+        setTimeout(() => {
+          (editable as HTMLElement).focus();
+        }, 10);
+      }
+    }
   }, [isSelected]);
 
   // Sync External Updates (Undo/Redo)
@@ -136,15 +125,47 @@ function PuckRichText({ externalContent, id }: PuckRichTextProps) {
   }, [debouncedContent]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={wrapperRef}
       className="puck-richtext-container"
+      // Disable browser native drag API (Ghost image)
+      draggable={isSelected ? false : undefined}
       style={{
         minHeight: "24px",
-        userSelect: "text",
-        isolation: "isolate",
+        cursor: isSelected ? "text" : "default",
+        position: "relative",
+        zIndex: isSelected ? 10 : undefined,
+      }}
+      // React Event Handlers (Still good for internal logic/safety)
+      onClick={(event) => {
+        if (isSelected) {
+          event.stopPropagation();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (isSelected) {
+          event.stopPropagation();
+        }
+      }}
+      // Safety net for the browser native drag
+      onDragStart={(event) => {
+        if (isSelected) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
       }}
     >
+      {/* CSS to force correct cursor/selection styles */}
+      <style>{`
+        .puck-richtext-container .ProseMirror,
+        .puck-richtext-container .ProseMirror * {
+          user-select: text !important;
+          -webkit-user-select: text !important;
+          cursor: text !important;
+        }
+      `}</style>
+
       <RichTextEditor
         value={localContent}
         onChange={setLocalContent}
