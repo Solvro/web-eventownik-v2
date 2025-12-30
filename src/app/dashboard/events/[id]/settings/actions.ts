@@ -4,7 +4,7 @@ import { formatISO } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
-import { generateFileFromPhotoUrl } from "@/lib/event";
+import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -86,7 +86,7 @@ export async function updateEvent(
       event.photoUrl !== unmodifiedEvent.photoUrl
     ) {
       try {
-        const photoFile = await generateFileFromPhotoUrl(event.photoUrl);
+        const photoFile = await generateFileFromDataUrl(event.photoUrl);
         formData.append("photo", photoFile);
       } catch (error) {
         console.error("[updateEvent] Error processing photo:", error);

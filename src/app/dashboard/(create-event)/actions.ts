@@ -3,7 +3,7 @@
 import { formatISO } from "date-fns";
 
 import { API_URL } from "@/lib/api";
-import { generateFileFromPhotoUrl } from "@/lib/event";
+import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
@@ -52,7 +52,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (event.photoUrl) {
     try {
-      const photoFile = await generateFileFromPhotoUrl(event.photoUrl);
+      const photoFile = await generateFileFromDataUrl(event.photoUrl);
       formData.append("photo", photoFile);
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);
