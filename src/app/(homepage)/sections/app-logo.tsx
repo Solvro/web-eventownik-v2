@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import type { StaticImageData } from "next/image";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import DarkLogo from "@/../public/logo-icon-dark.svg";
 import LightLogo from "@/../public/logo-icon-light.svg";
@@ -19,8 +20,13 @@ export function AppLogo({
   forceTheme,
 }: { forceTheme?: "dark" | "light" } = {}) {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState<boolean>(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted ? (
     <Link href="/">
       <Image
         src={forceTheme ? getSource(forceTheme) : getSource(resolvedTheme)}
@@ -28,5 +34,7 @@ export function AppLogo({
         className="h-8 w-9 sm:h-10 sm:w-11"
       />
     </Link>
+  ) : (
+    <div className="h-8 w-9 sm:h-10 sm:w-11"></div>
   );
 }
