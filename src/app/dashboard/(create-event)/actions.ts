@@ -115,7 +115,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           errors: { message: string }[];
         };
         console.error(
-          `[saveEvent] Failed to add co-organizer ${coorganizer.email}:`,
+          "[saveEvent] Failed to add co-organizer %s:",
+          coorganizer.email,
           errorData,
         );
         coOrganizerErrors.push(
@@ -124,7 +125,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       }
     } catch (error) {
       console.error(
-        `[saveEvent] Error adding co-organizer ${coorganizer.email}:`,
+        "[saveEvent] Error adding co-organizer %s:",
+        coorganizer.email,
         error,
       );
       coOrganizerErrors.push(
@@ -176,7 +178,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           errors: { message: string }[];
         };
         console.error(
-          `[saveEvent] Failed to add attribute ${attribute.name}:`,
+          "[saveEvent] Failed to add attribute %s:",
+          attribute.name,
           errorData,
         );
         attributeErrors.push(
@@ -185,7 +188,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       }
     } catch (error) {
       console.error(
-        `[saveEvent] Error adding attribute ${attribute.name}:`,
+        "[saveEvent] Error adding attribute %s:",
+        attribute.name,
         error,
       );
       attributeErrors.push(
