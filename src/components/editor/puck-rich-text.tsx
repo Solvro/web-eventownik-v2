@@ -1,23 +1,23 @@
 "use client";
 
+import type { Config } from "@measured/puck";
 import { usePuck } from "@measured/puck";
 import { useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 
+import type { PuckComponents } from "./config";
 import { RichTextEditor } from "./rich-text";
-
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 interface PuckRichTextProps {
   id: string;
-  initialContent: string;
+  externalContent: string;
 }
 
-function PuckRichText({ initialContent, id }: PuckRichTextProps) {
-  const { appState, dispatch, selectedItem } = usePuck();
+function PuckRichText({ externalContent, id }: PuckRichTextProps) {
+  const { appState, dispatch, selectedItem } =
+    usePuck<Config<PuckComponents>>();
 
-  const [localContent, setLocalContent] = useState(initialContent);
+  const [localContent, setLocalContent] = useState(externalContent);
   const [debouncedContent] = useDebounce(localContent, 300);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -44,7 +44,7 @@ function PuckRichText({ initialContent, id }: PuckRichTextProps) {
     if (isSelected) {
       element.addEventListener("pointerdown", stopPropagation);
       element.addEventListener("mousedown", stopPropagation);
-      // element.addEventListener("click", stopPropagation);
+      element.addEventListener("click", stopPropagation);
       element.addEventListener("keydown", stopPropagation);
 
       // Text selection fix pt.2
@@ -54,7 +54,7 @@ function PuckRichText({ initialContent, id }: PuckRichTextProps) {
     } else {
       element.removeEventListener("pointerdown", stopPropagation);
       element.removeEventListener("mousedown", stopPropagation);
-      // element.removeEventListener("click", stopPropagation);
+      element.removeEventListener("click", stopPropagation);
       element.removeEventListener("keydown", stopPropagation);
       element.removeEventListener("dragstart", preventDragStart);
 
@@ -64,33 +64,61 @@ function PuckRichText({ initialContent, id }: PuckRichTextProps) {
     return () => {
       element.removeEventListener("pointerdown", stopPropagation);
       element.removeEventListener("mousedown", stopPropagation);
-      // element.removeEventListener("click", stopPropagation);
+      element.removeEventListener("click", stopPropagation);
       element.removeEventListener("keydown", stopPropagation);
       element.removeEventListener("dragstart", preventDragStart);
     };
   }, [isSelected]);
 
-  // 3. Sync External Updates (Undo/Redo)
+  // Sync External Updates (Undo/Redo)
+  // NOTE: We actually need an effect here. Tried my best to avoid it but seems needed for now.
+  // eslint-disable-next-line react-you-might-not-need-an-effect/no-reset-all-state-on-prop-change
   useEffect(() => {
-    if (initialContent !== localContent) {
-      setLocalContent(initialContent);
+    if (externalContent !== localContent) {
+      // eslint-disable-next-line react-you-might-not-need-an-effect/no-derived-state
+      setLocalContent(externalContent);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialContent]);
+  }, [externalContent]);
 
-  // 4. Sync Internal Updates (Typing)
+  /**
+   * NOTE: This snapshot is crucial for internal update sync. Puck seems to be returning
+   * new instances of `dispatch` and `selectedItem` on every render. Using "raw" values as deps in the effect,
+   * we create an exhaustive deps warning, hence why we create a snapshot and only depend on
+   * the "raw" debouncedContent value instead.
+   */
+  const puckSnapshot = useRef({
+    appState,
+    externalContent,
+    dispatch,
+    selectedItem,
+    id,
+  });
+  puckSnapshot.current = {
+    appState,
+    externalContent,
+    dispatch,
+    selectedItem,
+    id,
+  };
+
+  // Sync Internal Updates (Typing)
   useEffect(() => {
-    if (debouncedContent === initialContent) {
+    const {
+      appState: appStateSnapshot,
+      externalContent: externalContentSnapshot,
+      dispatch: dispatchSnapshot,
+      selectedItem: selectedItemSnapshot,
+      id: idSnapshot,
+    } = puckSnapshot.current;
+
+    if (debouncedContent === externalContentSnapshot) {
       return;
     }
 
-    // Fallback logic for safety
-    const targetId = id || selectedItem?.props.id;
-    if (targetId === null) {
-      return;
-    }
+    const targetId = idSnapshot || selectedItemSnapshot?.props.id;
 
-    const newContent = appState.data.content.map((item) => {
+    const newContent = appStateSnapshot.data.content.map((item) => {
       if (item.props.id === targetId) {
         return {
           ...item,
@@ -100,18 +128,12 @@ function PuckRichText({ initialContent, id }: PuckRichTextProps) {
       return item;
     });
 
-    dispatch({
+    dispatchSnapshot({
       type: "setData",
-      data: { ...appState.data, content: newContent },
+      data: { ...appStateSnapshot.data, content: newContent },
+      recordHistory: true,
     });
-  }, [
-    debouncedContent,
-    appState.data,
-    dispatch,
-    id,
-    initialContent,
-    selectedItem,
-  ]);
+  }, [debouncedContent]);
 
   return (
     <div

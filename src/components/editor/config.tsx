@@ -51,14 +51,14 @@ interface DividerFields extends AppearanceFields {
   height: string;
 }
 
-interface Components {
+export interface PuckComponents {
   RichText: RichTextFields;
   Container: ContainerFields;
   Divider: DividerFields;
   Image: ImageFields;
 }
 
-export const puckConfig: Config<Components> = {
+export const puckConfig: Config<PuckComponents> = {
   components: {
     RichText: {
       label: "Tekst",
@@ -67,11 +67,11 @@ export const puckConfig: Config<Components> = {
         id: { type: "text", visible: false },
       },
       defaultProps: {
-        content: "",
+        content: "<p></p>",
         id: "",
       },
       render: ({ content, id }) => {
-        return <PuckRichText initialContent={content} id={id} />;
+        return <PuckRichText externalContent={content} id={id} />;
       },
     },
     Container: {
