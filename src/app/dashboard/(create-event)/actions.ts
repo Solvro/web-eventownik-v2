@@ -52,7 +52,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (event.photoUrl) {
     try {
-      const photoFile = await generateFileFromDataUrl(event.photoUrl);
+      const photoFile = generateFileFromDataUrl(event.photoUrl);
       formData.append("photo", photoFile);
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);

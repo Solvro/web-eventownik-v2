@@ -86,7 +86,7 @@ export async function updateEvent(
       event.photoUrl !== unmodifiedEvent.photoUrl
     ) {
       try {
-        const photoFile = await generateFileFromDataUrl(event.photoUrl);
+        const photoFile = generateFileFromDataUrl(event.photoUrl);
         formData.append("photo", photoFile);
       } catch (error) {
         console.error("[updateEvent] Error processing photo:", error);
