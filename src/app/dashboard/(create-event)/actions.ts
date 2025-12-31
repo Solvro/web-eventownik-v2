@@ -204,13 +204,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     warnings.push(...attributeErrors);
   }
 
-  // Log final summary
   if (warnings.length > 0) {
     console.warn(
       `[saveEvent] Event ${eventId} created with ${warnings.length.toString()} warnings`,
     );
-  } else {
-    console.warn(`[saveEvent] Event ${eventId} created successfully`);
   }
 
   return {
