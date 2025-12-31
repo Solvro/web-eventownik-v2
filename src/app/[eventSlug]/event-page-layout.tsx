@@ -37,7 +37,8 @@ export function EventPageLayout({
     <ViewTransition>
       <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
         <EventPrimaryColorSetter
-          primaryColor={event.primaryColor ?? "#3672fd"}
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing,@typescript-eslint/strict-boolean-expressions
+          primaryColor={event.primaryColor || "#3672fd"}
         />
         <div
           className="flex-1 text-[#f0f0ff]"
