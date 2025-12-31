@@ -1,7 +1,7 @@
 import { computePosition, flip, shift } from "@floating-ui/dom";
-import type { Editor } from "@tiptap/core";
 import { Mention } from "@tiptap/extension-mention";
-import { ReactRenderer, mergeAttributes, posToDOMRect } from "@tiptap/react";
+import { ReactRenderer, mergeAttributes } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import type {
   SuggestionKeyDownProps,
   SuggestionOptions,
@@ -10,6 +10,10 @@ import type {
 import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
 
 import { TagsList } from "@/components/tags-list";
+
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 
 type LooseAutocomplete<T extends string> = T | (string & {});
 type MessageTagColor = LooseAutocomplete<
@@ -104,26 +108,57 @@ const MESSAGE_TAGS: MessageTag[] = [
   },
 ];
 
-const updatePosition = async (editor: Editor, element: HTMLElement) => {
+/**
+ * NOTE: This function assumes that the TipTap editor with Tags extensions mounted is located in a Puck editor instance
+ */
+const updatePosition = async (
+  editor: Editor,
+  element: HTMLElement,
+  getClientRect: (() => DOMRect | null) | null | undefined,
+) => {
   const virtualElement = {
-    getBoundingClientRect: () =>
-      posToDOMRect(
-        editor.view,
-        editor.state.selection.from,
-        editor.state.selection.to,
-      ),
+    getBoundingClientRect: () => {
+      let rect = getClientRect?.();
+
+      const isInvalidRect =
+        !rect ||
+        (rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0);
+
+      if (isInvalidRect) {
+        const { from } = editor.state.selection;
+        const cursorRect = editor.view.coordsAtPos(from);
+        rect = new DOMRect(cursorRect.left, cursorRect.top, 0, 0);
+      }
+
+      const iframeWindow = editor.view.dom.ownerDocument.defaultView;
+
+      if (iframeWindow?.frameElement && rect) {
+        const iframeRect = iframeWindow.frameElement.getBoundingClientRect();
+
+        rect = new DOMRect(
+          rect.left + iframeRect.left,
+          rect.top + iframeRect.top,
+          rect.width,
+          rect.height,
+        );
+      }
+
+      return rect ?? new DOMRect(0, 0, 0, 0);
+    },
   };
 
   await computePosition(virtualElement, element, {
     placement: "bottom-start",
-    strategy: "absolute",
-    middleware: [shift(), flip()],
-  }).then(({ x, y, strategy }) => {
-    element.style.pointerEvents = "auto";
-    element.style.width = "256px";
-    element.style.position = strategy;
-    element.style.left = `${x.toString()}px`;
-    element.style.top = `${y.toString()}px`;
+    strategy: "fixed",
+    middleware: [shift({ padding: 10 }), flip()],
+  }).then(({ x, y }) => {
+    Object.assign(element.style, {
+      position: "fixed",
+      left: `${x.toString()}px`,
+      top: `${y.toString()}px`,
+      pointerEvents: "auto",
+      zIndex: "9999",
+    });
   });
 };
 
@@ -132,16 +167,20 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
     char: "/",
     items: ({ query }: { query: string }) => {
       const q = query.toLowerCase();
+
       return suggestionList.filter((item) => {
         const searchTargets = [
           item.title,
+
           ...(item.category?.searchBy ?? []),
         ].map((s) => s.toLowerCase());
+
         return searchTargets.some((t) => t.includes(q));
       });
     },
     render: () => {
       let component: ReactRenderer;
+      let popup: HTMLElement;
 
       return {
         onStart: async (props: SuggestionProps) => {
@@ -150,30 +189,18 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
             editor: props.editor,
           });
 
-          if (props.clientRect === null) {
-            return;
-          }
+          popup = component.element;
 
-          component.element.setAttribute("position", "absolute");
+          await updatePosition(props.editor, popup, props.clientRect);
 
-          // NOTE: Updating the position twice looks silly here, but without it
-          // the suggestion list initially appears far away from the text
+          document.body.append(popup);
 
-          await updatePosition(props.editor, component.element);
-
-          document.body.append(component.element);
-
-          await updatePosition(props.editor, component.element);
+          await updatePosition(props.editor, popup, props.clientRect);
         },
 
         async onUpdate(props: SuggestionProps) {
           component.updateProps(props);
-
-          if (props.clientRect === null) {
-            return;
-          }
-
-          await updatePosition(props.editor, component.element);
+          await updatePosition(props.editor, popup, props.clientRect);
         },
 
         onKeyDown(props: SuggestionKeyDownProps) {
@@ -181,14 +208,12 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
             component.destroy();
             return true;
           }
-
-          // @ts-expect-error: TODO, fix later - this was copied from TipTap docs
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+          // @ts-expect-error: ReactRenderer types
           return component.ref?.onKeyDown(props.event);
         },
 
         onExit() {
-          component.element.remove();
+          popup.remove();
           component.destroy();
         },
       };
