@@ -19,7 +19,7 @@ export const AttributeTypeOptions = () =>
           </div>
         </SelectItem>
       </TooltipTrigger>
-      <TooltipContent side="right">
+      <TooltipContent side="left" className="pointer-coarse:hidden">
         <p>{type.description ?? type.title}</p>
       </TooltipContent>
     </Tooltip>

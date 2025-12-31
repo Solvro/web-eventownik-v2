@@ -55,11 +55,7 @@ export const CoOrganizerItem = memo(
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent
-            side="right"
-            align="start"
-            className="bg-accent w-min"
-          >
+          <PopoverContent side="right" align="start" className="w-min">
             <div className="flex flex-col gap-2">
               <span className="text-sm leading-none font-medium">
                 Tymczasowo nie można rozdzielać uprawnień

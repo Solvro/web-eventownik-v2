@@ -25,21 +25,24 @@ export function SortableAttributeItem({
   return (
     <div ref={setNodeRef} style={style}>
       <div className="flex gap-2 rounded-lg">
-        <div
-          className="my-2 inline-flex h-9 w-9 cursor-move items-center justify-center rounded-md border border-dashed"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical className="text-muted-foreground h-4 w-4" />
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <div
+            className="my-2 inline-flex h-9 w-9 cursor-move items-center justify-center rounded-md border border-dashed pointer-coarse:hidden"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="text-muted-foreground h-4 w-4" />
+          </div>
+          <Button
+            variant="eventGhost"
+            size="icon"
+            onClick={onRemove}
+            className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          variant="eventGhost"
-          size="icon"
-          onClick={onRemove}
-          className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+
         <AttributeItem {...props} />
       </div>
     </div>

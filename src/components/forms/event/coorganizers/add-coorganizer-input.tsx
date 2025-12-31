@@ -62,7 +62,7 @@ export function AddCoOrganizerInput({
             <Plus className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="bg-accent w-min">
+        <PopoverContent className="w-min">
           <div className="flex flex-col gap-2">
             <span className="text-sm leading-none font-medium">
               Tymczasowo nie można rozdzielać uprawnień

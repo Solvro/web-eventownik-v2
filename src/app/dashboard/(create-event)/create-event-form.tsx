@@ -317,7 +317,7 @@ export function CreateEventForm() {
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:overflow-y-auto">
+      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
         <DialogHeader className="sr-only">
           <DialogTitle>Stwórz formularz</DialogTitle>
         </DialogHeader>
