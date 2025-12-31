@@ -176,8 +176,8 @@ export function Functionalities() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col-reverse sm:flex-row sm:gap-8">
-                <div className="flex min-w-3xs flex-col gap-8 pt-4 pb-8 pl-4 sm:gap-16 sm:py-16 sm:pl-16">
+              <div className="flex flex-col-reverse sm:flex-row">
+                <div className="flex min-w-3xs flex-col gap-8 px-4 pt-4 pb-8 sm:max-w-[60%] sm:gap-16 sm:py-16 sm:pr-0 sm:pl-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
                       Nowe
@@ -199,7 +199,7 @@ export function Functionalities() {
                 <Image
                   src="/assets/landing/functionalities/ipads-mockup.png"
                   alt="Strona wydarzenia"
-                  className="w-full object-cover object-left pt-8 sm:w-md sm:pt-0"
+                  className="overflow-hidden object-cover object-left pt-8 sm:w-md sm:pt-0"
                   width={2000}
                   height={1000}
                 />
