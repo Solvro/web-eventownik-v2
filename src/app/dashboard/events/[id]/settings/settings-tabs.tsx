@@ -97,8 +97,6 @@ export function EventSettingsTabs({
     CoOrganizerChange[]
   >([]);
 
-  const [attributes, setAttributes] =
-    useState<EventAttribute[]>(unmodifiedAttributes);
   const [attributesChanges, setAttributesChanges] = useState<AttributeChange[]>(
     [],
   );
@@ -386,8 +384,7 @@ export function EventSettingsTabs({
                 coOrganizers,
                 setCoOrganizers,
                 setCoOrganizersChanges,
-                attributes,
-                setAttributes,
+                attributes: unmodifiedAttributes,
                 setAttributesChanges,
               })}
             </Tabs.Content>

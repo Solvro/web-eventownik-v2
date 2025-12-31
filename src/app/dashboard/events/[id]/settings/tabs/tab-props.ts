@@ -10,6 +10,5 @@ export interface TabProps {
   setCoOrganizers: Dispatch<SetStateAction<CoOrganizer[]>>;
   setCoOrganizersChanges: Dispatch<SetStateAction<CoOrganizerChange[]>>;
   attributes: EventAttribute[];
-  setAttributes: Dispatch<SetStateAction<EventAttribute[]>>;
   setAttributesChanges: Dispatch<SetStateAction<AttributeChange[]>>;
 }

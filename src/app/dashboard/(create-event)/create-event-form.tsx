@@ -129,12 +129,13 @@ export function CreateEventForm() {
       description: "Podaj podstawowe informacje o wydarzeniu",
       icon: <CalendarIcon />,
       content: <GeneralInfoForm />,
-      onSubmit: () => {
+      onSubmit: (values: EventSchema) => {
+        const currentSlug = form.getValues("slug");
         form.setValue(
           "slug",
-          event.slug === ""
-            ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
-            : event.slug,
+          currentSlug === ""
+            ? values.name.toLowerCase().replaceAll(/\s+/g, "-")
+            : currentSlug,
         );
         setCurrentStep((value) => value + 1);
       },
@@ -148,9 +149,6 @@ export function CreateEventForm() {
       icon: <SettingsIcon />,
       content: <PersonalizationForm />,
       onSubmit: async (values: EventSchema) => {
-        if (!(await form.trigger())) {
-          return { success: false, event: null };
-        }
         /**
          * before going to the next step,
          * we have to check if submitted slug is not already used

@@ -86,7 +86,6 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   }
 
   const eventId = data.id;
-  console.warn(`[saveEvent] Event created successfully with ID: ${eventId}`);
 
   const coOrganizerErrors: string[] = [];
   let coOrganizersAdded = 0;
