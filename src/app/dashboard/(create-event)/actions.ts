@@ -1,8 +1,9 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
+import { formatISO } from "date-fns";
 
 import { API_URL } from "@/lib/api";
+import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
@@ -12,34 +13,33 @@ export async function isSlugTaken(slug: string) {
   return response.ok;
 }
 
-export async function saveEvent(event: Event) {
+interface SaveEventResult {
+  id?: string;
+  errors?: { message: string }[];
+  warnings?: string[];
+}
+
+export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {
     throw new Error("Invalid session");
   }
   const { bearerToken } = session;
 
+  const warnings: string[] = [];
+
   const formData = new FormData();
 
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
+  formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
   formData.append("termsLink", event.termsLink ?? "");
-
-  // NOTE: Backend expects ISO 9075 format but returns ISO 8601 format for
-  // reasons unknown to anyone.
-  formData.append(
-    "startDate",
-    formatISO9075(event.startDate, { representation: "complete" }),
-  );
-  formData.append(
-    "endDate",
-    formatISO9075(event.endDate, { representation: "complete" }),
-  );
-
+  formData.append("startDate", formatISO(event.startDate));
+  formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
-  formData.append("primaryColor", event.color);
+  formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
 
   for (const _link of event.socialMediaLinks) {
@@ -50,13 +50,16 @@ export async function saveEvent(event: Event) {
     }
   }
 
-  if (event.image) {
-    const photo = await fetch(event.image)
-      .then(async (response) => response.blob())
-      .then((blob) => {
-        return new File([blob], "File name", { type: "image/jpeg" });
-      });
-    formData.append("photo", photo);
+  if (event.photoUrl) {
+    try {
+      const photoFile = generateFileFromDataUrl(event.photoUrl);
+      formData.append("photo", photoFile);
+    } catch (error) {
+      console.error("[saveEvent] Error processing photo:", error);
+      return {
+        errors: [{ message: "Failed to process event photo" }],
+      };
+    }
   }
 
   const response = await fetch(`${API_URL}/events`, {
@@ -70,82 +73,145 @@ export async function saveEvent(event: Event) {
   if (!response.ok) {
     const error = (await response.json()) as { errors: { message: string }[] };
     console.error(
-      `[saveEvent action] Failed to create a new event: ${error.errors[0].message}`,
+      `[saveEvent] Failed to create event: ${error.errors[0]?.message ?? "Unknown error"}`,
     );
     return { errors: error.errors };
   }
 
   const data = (await response.json()) as Record<"id", string>;
 
-  if ("id" in data) {
-    try {
-      for (const coorganizer of event.coorganizers) {
-        const coorganizerResponse = await fetch(
-          `${API_URL}/events/${data.id}/organizers`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: coorganizer.email,
-              permissionsIds: [1], //coOrganizer.permissions.map((perm) => perm.id), // Temporary only one permission
-            }),
-          },
-        );
-        if (!coorganizerResponse.ok) {
-          console.error(
-            "[saveEvent action] Error when adding coorganizer:",
-            coorganizer,
-          );
-          return {
-            errors: [],
-          };
-        }
-      }
-    } catch (error) {
-      console.error("[saveEvent] Error when adding coorganizers:", error);
-      return {
-        errors: [],
-      };
-    }
+  if (!("id" in data)) {
+    console.error("[saveEvent] No event ID returned from server");
+    return { errors: [{ message: "Failed to create event" }] };
+  }
 
+  const eventId = data.id;
+
+  const coOrganizerErrors: string[] = [];
+  let coOrganizersAdded = 0;
+
+  for (const coorganizer of event.coorganizers) {
     try {
-      for (const attribute of event.attributes) {
-        const attributeResponse = await fetch(
-          `${API_URL}/events/${data.id}/attributes`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: attribute.name,
-              type: attribute.type,
-              slug: attribute.slug,
-              showInList: attribute.showInList,
-              options:
-                (attribute.options ?? []).length > 0
-                  ? attribute.options
-                  : undefined,
-            }),
+      const coorganizerResponse = await fetch(
+        `${API_URL}/events/${eventId}/organizers`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            email: coorganizer.email,
+            permissionsIds: [1],
+          }),
+        },
+      );
+
+      if (coorganizerResponse.ok) {
+        coOrganizersAdded++;
+      } else {
+        const errorData = (await coorganizerResponse.json()) as {
+          errors: { message: string }[];
+        };
+        console.error(
+          "[saveEvent] Failed to add co-organizer %s:",
+          coorganizer.email,
+          errorData,
         );
-        if (!attributeResponse.ok) {
-          console.error("[saveEvent] Error when adding attribute:", attribute);
-          return {
-            errors: [],
-          };
-        }
+        coOrganizerErrors.push(
+          `Failed to add co-organizer ${coorganizer.email}. You can add them later in settings.`,
+        );
       }
     } catch (error) {
-      console.error("[saveEvent] Error when adding attributes:", error);
-      return {
-        errors: [],
-      };
+      console.error(
+        "[saveEvent] Error adding co-organizer %s:",
+        coorganizer.email,
+        error,
+      );
+      coOrganizerErrors.push(
+        `Error adding co-organizer ${coorganizer.email}. You can add them later in settings.`,
+      );
     }
   }
-  return data;
+
+  if (coOrganizerErrors.length > 0) {
+    console.warn(
+      `[saveEvent] Added ${coOrganizersAdded.toString()}/${event.coorganizers.length.toString()} co-organizers`,
+    );
+    warnings.push(...coOrganizerErrors);
+  }
+
+  const attributeErrors: string[] = [];
+  let attributesAdded = 0;
+
+  for (const attribute of event.attributes) {
+    try {
+      const attributeResponse = await fetch(
+        `${API_URL}/events/${eventId}/attributes`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: attribute.name,
+            type: attribute.type,
+            slug: attribute.slug,
+            showInList: attribute.showInList,
+            options:
+              (attribute.options ?? []).length > 0
+                ? attribute.options
+                : undefined,
+            order: attribute.order,
+            isSensitiveData: false,
+            reason: null,
+          }),
+        },
+      );
+
+      if (attributeResponse.ok) {
+        attributesAdded++;
+      } else {
+        const errorData = (await attributeResponse.json()) as {
+          errors: { message: string }[];
+        };
+        console.error(
+          "[saveEvent] Failed to add attribute %s:",
+          attribute.name,
+          errorData,
+        );
+        attributeErrors.push(
+          `Failed to add attribute ${attribute.name}. You can add it later in settings.`,
+        );
+      }
+    } catch (error) {
+      console.error(
+        "[saveEvent] Error adding attribute %s:",
+        attribute.name,
+        error,
+      );
+      attributeErrors.push(
+        `Error adding attribute ${attribute.name}. You can add it later in settings.`,
+      );
+    }
+  }
+
+  if (attributeErrors.length > 0) {
+    console.warn(
+      `[saveEvent] Added ${attributesAdded.toString()}/${event.attributes.length.toString()} attributes`,
+    );
+    warnings.push(...attributeErrors);
+  }
+
+  if (warnings.length > 0) {
+    console.warn(
+      `[saveEvent] Event ${eventId} created with ${warnings.length.toString()} warnings`,
+    );
+  }
+
+  return {
+    id: eventId,
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
 }
