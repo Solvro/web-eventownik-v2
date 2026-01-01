@@ -30,9 +30,9 @@ export async function createEventForm(eventId: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      startDate: formatISO9075(form.startDate),
+      startDate: formatISO9075(new Date()), //formatISO9075(form.startDate),
       attributes: form.attributes,
-      endDate: formatISO9075(form.endDate),
+      endDate: null, //formatISO9075(form.endDate),
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
     }),

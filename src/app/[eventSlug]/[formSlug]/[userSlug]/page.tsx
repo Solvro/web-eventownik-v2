@@ -16,7 +16,12 @@ import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "./form-generator";
 
 interface FormPageProps {
-  params: Promise<{ eventSlug: string; formSlug: string; userSlug: string }>;
+  params: Promise<{
+    eventSlug: string;
+    formSlug: string;
+    userSlug: string;
+    locale: string;
+  }>;
 }
 
 async function getEvent(eventSlug: string) {
@@ -118,7 +123,11 @@ export default async function FormPage({ params }: FormPageProps) {
   }
 
   return (
-    <EventPageLayout event={event} description={form.description}>
+    <EventPageLayout
+      event={event}
+      description={form.description}
+      variant="form"
+    >
       <h2 className="text-center text-3xl font-bold md:text-4xl">
         {form.name}
       </h2>

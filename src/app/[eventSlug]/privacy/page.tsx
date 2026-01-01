@@ -9,7 +9,7 @@ import type { Event } from "@/types/event";
 import { EventPageLayout } from "../event-page-layout";
 
 interface EventPageProps {
-  params: Promise<{ eventSlug: string }>;
+  params: Promise<{ eventSlug: string; locale: string }>;
 }
 
 export async function generateMetadata({
@@ -54,7 +54,11 @@ export default async function EventPage({ params }: EventPageProps) {
   const event = (await eventResponse.json()) as Event;
 
   return (
-    <EventPageLayout event={event} description={event.description ?? ""}>
+    <EventPageLayout
+      event={event}
+      description={event.description ?? ""}
+      variant="form"
+    >
       <h2 className="text-center text-3xl leading-relaxed font-bold md:text-4xl">
         Polityka Prywatności wydarzenia <br /> „{event.name}”
       </h2>

@@ -30,11 +30,12 @@ export interface Event {
   endDate: Date;
   location: string | undefined;
   organizer: string | undefined;
-  image: string;
-  color: string;
+  photoUrl: string;
+  primaryColor: string;
   participantsNumber: number;
   socialMediaLinks: { label?: string; link: string }[];
   slug: string;
+  contactEmail: string | undefined;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
   termsLink: string | undefined;
@@ -48,11 +49,12 @@ export const eventAtom = atom<Event>({
   endDate: new Date(new Date().setHours(24, 0, 0, 0)),
   location: "",
   organizer: "",
-  image: "",
-  color: "#3672fd",
+  photoUrl: "",
+  primaryColor: "#3672fd",
   participantsNumber: 1,
   socialMediaLinks: [],
   slug: "",
+  contactEmail: "",
   coorganizers: [],
   attributes: [],
   termsLink: "",

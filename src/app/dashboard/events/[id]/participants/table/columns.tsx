@@ -37,18 +37,32 @@ export function generateColumns(
   const baseColumns = [
     columnHelper.display({
       id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllRowsSelected() ||
-            (table.getIsSomeRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => {
-            table.toggleAllRowsSelected(Boolean(value));
-          }}
-          aria-label="Wybierz wszystkie"
-        ></Checkbox>
-      ),
+      header: ({ table }) => {
+        const pageRows = table.getPaginationRowModel().rows;
+        const allSelectedOnPage =
+          pageRows.length > 0 && pageRows.every((r) => r.getIsSelected());
+        const someSelectedOnPage = pageRows.some((r) => r.getIsSelected());
+        const hasAnySelection =
+          table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
+        return (
+          <Checkbox
+            checked={
+              allSelectedOnPage || (someSelectedOnPage && "indeterminate")
+            }
+            onCheckedChange={(value) => {
+              const shouldSelect = Boolean(value);
+              if (!shouldSelect && hasAnySelection) {
+                table.toggleAllRowsSelected(false);
+              } else {
+                for (const r of pageRows) {
+                  r.toggleSelected(shouldSelect);
+                }
+              }
+            }}
+            aria-label="Wybierz wszystkie na stronie"
+          ></Checkbox>
+        );
+      },
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}

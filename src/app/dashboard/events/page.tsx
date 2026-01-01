@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import {
   AlertCircle,
-  AlertCircleIcon,
   Calendar1,
   CalendarDays,
   CircleHelpIcon,
@@ -94,19 +93,6 @@ export default async function EventListPage() {
             ) : null}
           </div>
         </div>
-        <Alert>
-          <AlertCircleIcon />
-          <AlertTitle className="line-clamp-0">
-            Oficjalna premiera Eventownika już wkrótce!
-          </AlertTitle>
-          <AlertDescription className="text-foreground inline">
-            Jeśli chcesz stworzyć i udostępnić wydarzenie już teraz - odezwij
-            się do nas:{" "}
-            <a href="mailto:eventownik@pwr.edu.pl" className="hover:underline">
-              eventownik@pwr.edu.pl
-            </a>
-          </AlertDescription>
-        </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
             events.map((event) => (
@@ -114,7 +100,10 @@ export default async function EventListPage() {
                 key={event.id}
                 className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
               >
-                <div className="relative">
+                <Link
+                  className="relative"
+                  href={`/dashboard/events/${event.id.toString()}`}
+                >
                   <Image
                     src={
                       event.photoUrl == null
@@ -140,12 +129,14 @@ export default async function EventListPage() {
                       </EventInfoBlock>
                     </div>
                   </div>
-                </div>
+                </Link>
                 <div className="flex flex-1 flex-col justify-between p-4">
                   <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-                    {event.name}
+                    <Link href={`/dashboard/events/${event.id.toString()}`}>
+                      {event.name}
+                    </Link>
                   </h3>
-                  <div className="flex w-full">
+                  <div className="flex w-full items-center justify-between">
                     <Button asChild variant="ghost">
                       <Link href={`/dashboard/events/${event.id.toString()}`}>
                         <CircleHelpIcon className="mr-2 size-4" />
@@ -155,6 +146,7 @@ export default async function EventListPage() {
                     <ShareButton
                       path={event.slug}
                       variant="icon"
+                      className="size-12"
                       buttonVariant="ghost"
                     />
                   </div>

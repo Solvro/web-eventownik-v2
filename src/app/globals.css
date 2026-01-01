@@ -173,6 +173,7 @@
   --tag-brown-bg: #2b1a14;
   --tag-brown-text: #d2a679;
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -315,4 +316,11 @@
 .image-fade {
   -webkit-mask-image: linear-gradient(to right, transparent, black 70%);
   mask-image: linear-gradient(to right, transparent, black 70%);
+}
+
+::view-transition-new(event-background),
+::view-transition-old(event-background) {
+  height: 100%;
+  overflow: clip;
+  object-fit: cover;
 }

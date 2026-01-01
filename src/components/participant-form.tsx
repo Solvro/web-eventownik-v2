@@ -372,6 +372,7 @@ export function ParticipantForm({
             variant="eventDefault"
             disabled={form.formState.isSubmitting || isAwaitingCaptcha}
             className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            style={{ viewTransitionName: "register-button" }}
           >
             {form.formState.isSubmitting ? (
               <>
