@@ -148,6 +148,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      aria-label="Godzina rozpoczęcia"
                       {...field}
                     />
                   </FormControl>
@@ -211,6 +212,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      aria-label="Godzina zakończenia"
                       {...field}
                     />
                   </FormControl>

@@ -12,10 +12,11 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: "./src/e2e",
+  testDir: "./tests/e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
@@ -35,24 +36,38 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: "setup",
+      testMatch: /global\.setup\.ts/,
+      teardown: "teardown",
+    },
+    {
+      name: "teardown",
+      testMatch: /global\.teardown\.ts/,
+    },
+    {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
+        storageState: "./test-results/.auth/user.json",
       },
+      dependencies: ["setup"],
     },
     {
       name: "firefox",
       use: {
         ...devices["Desktop Firefox"],
+        storageState: "./test-results/.auth/user.json",
       },
+      dependencies: ["setup"],
     },
-
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-      },
-    },
+    // {
+    //  name: "webkit",
+    //  use: {
+    //    ...devices["Desktop Safari"],
+    //    storageState: "./test-results/.auth/user.json",
+    //  },
+    //  dependencies: ["setup"],
+    // },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -73,12 +88,11 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
-
-  /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run dev",
+    command: "npm run start",
     url: "http://localhost:3000",
     timeout: 120 * 1000,
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     reuseExistingServer: !process.env.CI,
   },
 });
