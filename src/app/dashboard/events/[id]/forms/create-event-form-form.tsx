@@ -67,7 +67,7 @@ function CreateEventFormForm({
             onConfirm();
           }}
         />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 overflow-y-auto">
           {currentStep === 0 && (
             <GeneralInfoForm
               goToNextStep={() => {

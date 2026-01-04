@@ -259,6 +259,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                     </FormDescription>
                     <WysiwygEditor
                       className="h-[200px]"
+                      editorClassName="h-22"
                       content={field.value}
                       onChange={field.onChange}
                       disabled={form.watch("isFirstForm")}
