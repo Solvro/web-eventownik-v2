@@ -103,6 +103,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
+    "@faker-js/faker": "^10.2.0",
     "@next/eslint-plugin-next": "16.0.4",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.0.15",
