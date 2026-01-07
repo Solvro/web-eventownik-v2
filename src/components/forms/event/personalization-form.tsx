@@ -220,6 +220,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                       <FormControl>
                         <Input
                           placeholder="Facebook"
+                          aria-label={`Social media label ${index}`}
                           {...register(
                             `socialMediaLinks.${index}.label` as const,
                           )}
@@ -229,6 +230,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         <Input
                           type="url"
                           placeholder="https://fb.me/knsolvro"
+                          aria-label={`Social media link ${index}`}
                           {...register(
                             `socialMediaLinks.${index}.link` as const,
                           )}
@@ -242,6 +244,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         onClick={() => {
                           remove(index);
                         }}
+                        aria-label={`Remove social media link ${index}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -254,7 +257,10 @@ export function PersonalizationForm({ className }: { className?: string }) {
                     )}
                     {formState.errors.socialMediaLinks?.[index]?.link
                       ?.message != null && (
-                      <p className="text-sm text-[0.8rem] font-medium text-red-500">
+                      <p
+                        className="text-sm text-[0.8rem] font-medium text-red-500"
+                        data-testid={`social-media-link-error-${index.toString()}`}
+                      >
                         {formState.errors.socialMediaLinks[index].link.message}
                       </p>
                     )}
