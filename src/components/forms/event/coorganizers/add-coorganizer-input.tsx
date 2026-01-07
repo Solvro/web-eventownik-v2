@@ -58,7 +58,7 @@ export function AddCoOrganizerInput({
             onClick={() => {
               setSelectedPermissions([6, 5, 4, 3]);
             }}
-            aria-label="Add co-organizer"
+            aria-label="Dodaj współorganizatora"
           >
             <Plus className="h-4 w-4" />
           </Button>

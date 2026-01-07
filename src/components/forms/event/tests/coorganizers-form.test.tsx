@@ -61,7 +61,9 @@ function renderComponent(
   const addCoorganizerInput = screen.getByPlaceholderText(
     "Wprowadź email współorganizatora",
   );
-  const addCoorganizerTrigger = screen.getByLabelText("Add co-organizer");
+  const addCoorganizerTrigger = screen.getByLabelText(
+    "Dodaj współorganizatora",
+  );
   return {
     user,
     addCoorganizerInput,
