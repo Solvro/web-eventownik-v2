@@ -64,11 +64,13 @@ function TestWrapper({
     <FormProvider {...methods}>
       <DndContext onDragEnd={vi.fn()}>
         <form
+          noValidate
           onSubmit={methods.handleSubmit(() => {
             /* empty */
           })}
         >
           {children}
+          <button type="submit">Submit</button>
         </form>
       </DndContext>
     </FormProvider>
@@ -93,11 +95,32 @@ function renderComponent(
 
   const nameInput = screen.getByPlaceholderText("Nazwa nowego atrybutu");
   const addButton = screen.getByRole("button", { name: /dodaj/i });
+  const submitButton = screen.getByRole("button", { name: "Submit" });
 
   return {
     user,
     nameInput,
     addButton,
+    submitButton,
+  };
+}
+
+/**
+ * Helper to create test attribute data with consistent structure
+ */
+function createTestAttribute(
+  overrides: Partial<NewEventAttribute> = {},
+): NewEventAttribute {
+  return {
+    name: faker.commerce.productName(),
+    type: "text",
+    slug: faker.lorem.slug(),
+    options: [],
+    showInList: true,
+    order: 0,
+    isSensitiveData: false,
+    reason: null,
+    ...overrides,
   };
 }
 
@@ -114,18 +137,7 @@ describe("AttributesForm", () => {
 
   describe("Form Initial Values", () => {
     it("should render initial attributes", () => {
-      const initialAttributes = [
-        {
-          name: "T-shirt Size",
-          type: "text",
-          slug: "t-shirt-size",
-          options: [],
-          showInList: true,
-          order: 0,
-          isSensitiveData: false,
-          reason: null,
-        },
-      ];
+      const initialAttributes = [createTestAttribute()];
       renderComponent({}, { attributes: initialAttributes });
 
       expect(screen.getByText(initialAttributes[0].name)).toBeInTheDocument();
@@ -135,27 +147,14 @@ describe("AttributesForm", () => {
   describe("Interactions", () => {
     it("should enable add button when text is entered", async () => {
       const { user, nameInput, addButton } = renderComponent();
-      await user.type(nameInput, "New Attribute");
+      await user.type(nameInput, faker.commerce.productName());
       expect(addButton).not.toBeDisabled();
-    });
-
-    it("should add an attribute when add button is clicked", async () => {
-      const onAdd = vi.fn();
-      const { user, nameInput, addButton } = renderComponent({ onAdd });
-      const attributeName = "Test Attribute";
-
-      await user.type(nameInput, attributeName);
-      await user.click(addButton);
-
-      expect(screen.getByText(attributeName)).toBeInTheDocument();
-      expect(nameInput).toHaveValue("");
-      expect(onAdd).toHaveBeenCalled();
     });
 
     it("should add an attribute on Enter key press", async () => {
       const onAdd = vi.fn();
       const { user, nameInput } = renderComponent({ onAdd });
-      const attributeName = "Another Attribute";
+      const attributeName = faker.commerce.productName();
 
       await user.type(nameInput, `${attributeName}{enter}`);
 
@@ -166,55 +165,42 @@ describe("AttributesForm", () => {
 
     it("should remove an attribute when remove is clicked", async () => {
       const onRemove = vi.fn();
-      const attributeName = "Attribute to remove";
       const initialAttributes = [
-        {
-          name: attributeName,
-          type: "text",
-          slug: "to-remove",
-          options: [],
-          showInList: true,
-          order: 0,
-          isSensitiveData: false,
-          reason: null,
-        },
+        createTestAttribute({ name: "Attribute to remove" }),
       ];
-      renderComponent({ onRemove }, { attributes: initialAttributes });
+      const { user } = renderComponent(
+        { onRemove },
+        { attributes: initialAttributes },
+      );
 
       const removeButton = screen.getByRole("button", { name: "Remove" });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
 
-      expect(screen.queryByText(attributeName)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(initialAttributes[0].name),
+      ).not.toBeInTheDocument();
       expect(onRemove).toHaveBeenCalledWith(0, initialAttributes[0]);
     });
 
     it("should call onUpdate when an item is updated", async () => {
       const onUpdate = vi.fn();
-      const initialAttributes = [
-        {
-          name: "Initial Name",
-          type: "text",
-          slug: "initial",
-          options: [],
-          showInList: true,
-          order: 0,
-          isSensitiveData: false,
-          reason: null,
-        },
-      ];
-      renderComponent({ onUpdate }, { attributes: initialAttributes });
+      const initialAttributes = [createTestAttribute({ name: "Initial Name" })];
+      const { user } = renderComponent(
+        { onUpdate },
+        { attributes: initialAttributes },
+      );
       const updateButton = screen.getByRole("button", { name: "Update" });
-      await userEvent.click(updateButton);
+      await user.click(updateButton);
 
       expect(onUpdate).toHaveBeenCalled();
     });
   });
 
   describe("Callbacks", () => {
-    it("should call onAdd with correct data", async () => {
+    it("should call onAdd with correct data when add button is clicked", async () => {
       const onAdd = vi.fn();
       const { user, nameInput, addButton } = renderComponent({ onAdd });
-      const attributeName = "Callback Test";
+      const attributeName = faker.commerce.productName();
 
       await user.type(nameInput, attributeName);
       await user.click(addButton);
@@ -225,48 +211,35 @@ describe("AttributesForm", () => {
       expect(addedAttribute.name).toBe(attributeName);
       expect(addedAttribute.type).toBe("text");
       expect(addedAttribute.order).toBe(0);
+      // Also verify the input was cleared and attribute is displayed
+      expect(nameInput).toHaveValue("");
+      expect(screen.getByText(attributeName)).toBeInTheDocument();
     });
 
     it("should call onRemove with correct index and data", async () => {
       const onRemove = vi.fn();
-      const initialAttributes = [
-        {
-          name: "To Be Removed",
-          type: "text",
-          slug: "rem",
-          options: [],
-          showInList: true,
-          order: 0,
-          isSensitiveData: false,
-          reason: null,
-        },
-      ];
-      renderComponent({ onRemove }, { attributes: initialAttributes });
+      const initialAttributes = [createTestAttribute()];
+      const { user } = renderComponent(
+        { onRemove },
+        { attributes: initialAttributes },
+      );
 
       const removeButton = screen.getByRole("button", { name: "Remove" });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
 
       expect(onRemove).toHaveBeenCalledWith(0, initialAttributes[0]);
     });
 
     it("should call onUpdate with correct index and data", async () => {
       const onUpdate = vi.fn();
-      const initialAttributes = [
-        {
-          name: "Initial",
-          type: "text",
-          slug: "upd",
-          options: [],
-          showInList: true,
-          order: 0,
-          isSensitiveData: false,
-          reason: null,
-        },
-      ];
-      renderComponent({ onUpdate }, { attributes: initialAttributes });
+      const initialAttributes = [createTestAttribute({ name: "Initial" })];
+      const { user } = renderComponent(
+        { onUpdate },
+        { attributes: initialAttributes },
+      );
 
       const updateButton = screen.getByRole("button", { name: "Update" });
-      await userEvent.click(updateButton);
+      await user.click(updateButton);
 
       expect(onUpdate).toHaveBeenCalledWith(
         0,

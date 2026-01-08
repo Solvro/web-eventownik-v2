@@ -34,6 +34,7 @@ function TestWrapper({
   return (
     <FormProvider {...methods}>
       <form
+        noValidate
         onSubmit={methods.handleSubmit(() => {
           /* empty */
         })}
@@ -125,6 +126,8 @@ describe("GeneralInfoForm", () => {
     it("should render description label and editor", () => {
       renderComponent();
       expect(screen.getByText("Opis")).toBeInTheDocument();
+      // Note: The WysiwygEditor uses Tiptap which renders contentEditable divs
+      // Full editor interaction testing requires Tiptap-specific setup
     });
 
     it("should not show date picker popovers initially", () => {
@@ -270,7 +273,9 @@ describe("GeneralInfoForm", () => {
         locationInput,
         organizerInput,
         contactEmailInput,
+        startDateButton,
         startTimeInput,
+        endDateButton,
         endTimeInput,
       } = renderComponent(defaultValues);
 
@@ -278,6 +283,12 @@ describe("GeneralInfoForm", () => {
       expect(locationInput).toHaveValue(defaultValues.location);
       expect(organizerInput).toHaveValue(defaultValues.organizer);
       expect(contactEmailInput).toHaveValue(defaultValues.contactEmail);
+      expect(startDateButton).toHaveTextContent(
+        format(defaultValues.startDate, "PPP"),
+      );
+      expect(endDateButton).toHaveTextContent(
+        format(defaultValues.endDate, "PPP"),
+      );
       expect(startTimeInput).toHaveValue(defaultValues.startTime);
       expect(endTimeInput).toHaveValue(defaultValues.endTime);
     });
@@ -292,6 +303,19 @@ describe("GeneralInfoForm", () => {
 
       expect(
         await screen.findByText("Nazwa nie może być pusta."),
+      ).toBeInTheDocument();
+    });
+
+    it("should show error for invalid email format", async () => {
+      const { user, nameInput, contactEmailInput, submitButton } =
+        renderComponent();
+
+      await user.type(nameInput, "Test Event");
+      await user.type(contactEmailInput, "invalid-email");
+      await user.click(submitButton);
+
+      expect(
+        await screen.findByText("Nieprawidłowy adres email"),
       ).toBeInTheDocument();
     });
 

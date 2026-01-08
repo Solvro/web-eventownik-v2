@@ -56,7 +56,7 @@ function renderComponent(
     </TestWrapper>,
   );
 
-  const photoInput = screen.getByLabelText(/dodaj zdjęcie/i);
+  const photoInput = screen.getByLabelText(/wybierz zdjęcie wydarzenia/i);
   const colorInput = screen.getByLabelText("Kolor wydarzenia");
   const participantsNumberInput = screen.getByRole("spinbutton", {
     name: "Liczba uczestników",
@@ -182,14 +182,10 @@ describe("PersonalizationForm", () => {
     });
 
     it("should show image preview after file selection", async () => {
-      const { user } = renderComponent();
+      const { user, photoInput } = renderComponent();
       const file = new File(["hello"], "hello.png", { type: "image/png" });
 
-      const uploadLabel = screen.getByText(/dodaj zdjęcie/i).closest("label");
-      if (uploadLabel === null) {
-        throw new Error("Label not found");
-      }
-      await user.upload(uploadLabel, file);
+      await user.upload(photoInput, file);
 
       const image = await screen.findByAltText("Podgląd zdjęcia wydarzenia");
       expect(image).toBeInTheDocument();
@@ -203,6 +199,7 @@ describe("PersonalizationForm", () => {
   describe("Form Initial Values", () => {
     it("should render with provided default values", () => {
       const defaultValues = {
+        photoUrl: "blob:http://localhost:3000/hello.png",
         primaryColor: faker.color.rgb(),
         participantsNumber: faker.number.int(),
         termsLink: faker.internet.url(),
@@ -212,20 +209,20 @@ describe("PersonalizationForm", () => {
         }),
       };
 
-      renderComponent(defaultValues);
+      const { colorInput, participantsNumberInput, termsLinkInput, slugInput } =
+        renderComponent(defaultValues);
 
-      expect(screen.getByLabelText("Kolor wydarzenia")).toHaveValue(
-        defaultValues.primaryColor,
+      // Verify photo preview is displayed
+      const photoPreview = screen.getByAltText("Podgląd zdjęcia wydarzenia");
+      expect(photoPreview).toBeInTheDocument();
+      expect(photoPreview).toHaveAttribute("src", defaultValues.photoUrl);
+
+      expect(colorInput).toHaveValue(defaultValues.primaryColor);
+      expect(participantsNumberInput).toHaveValue(
+        defaultValues.participantsNumber,
       );
-      expect(
-        screen.getByRole("spinbutton", { name: "Liczba uczestników" }),
-      ).toHaveValue(defaultValues.participantsNumber);
-      expect(
-        screen.getByRole("textbox", { name: "Link do regulaminu" }),
-      ).toHaveValue(defaultValues.termsLink);
-      expect(screen.getByRole("textbox", { name: /slug/i })).toHaveValue(
-        defaultValues.slug,
-      );
+      expect(termsLinkInput).toHaveValue(defaultValues.termsLink);
+      expect(slugInput).toHaveValue(defaultValues.slug);
       for (const socialMediaLink of defaultValues.socialMediaLinks) {
         expect(
           screen.getByDisplayValue(socialMediaLink.label),
@@ -283,6 +280,7 @@ describe("PersonalizationForm", () => {
 
       expect(await screen.findByText(/nieprawidłowy URL/i)).toBeInTheDocument();
     });
+
     it("should handle multiple social media links independently", async () => {
       const { user, addSocialMediaLinkButton, submitButton, slugInput } =
         renderComponent();
@@ -307,12 +305,13 @@ describe("PersonalizationForm", () => {
 
       await user.click(submitButton);
 
-      // Check error only on second
+      // Check error only on second - first link has no error
       expect(
-        screen.queryByTestId("social-media-link-error-0"),
+        screen.queryByRole("alert", { name: "Social media link 0 error" }),
       ).not.toBeInTheDocument();
+      // Second link has validation error
       expect(
-        await screen.findByTestId("social-media-link-error-1"),
+        await screen.findByRole("alert", { name: "Social media link 1 error" }),
       ).toHaveTextContent("Nieprawidłowy URL");
     });
   });

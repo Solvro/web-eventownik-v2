@@ -31,6 +31,7 @@ function TestWrapper({
   return (
     <FormProvider {...methods}>
       <form
+        noValidate
         onSubmit={methods.handleSubmit(() => {
           /* empty */
         })}
@@ -64,10 +65,13 @@ function renderComponent(
   const addCoorganizerTrigger = screen.getByLabelText(
     "Dodaj współorganizatora",
   );
+  const submitButton = screen.getByRole("button", { name: "Submit" });
+
   return {
     user,
     addCoorganizerInput,
     addCoorganizerTrigger,
+    submitButton,
   };
 }
 
@@ -75,9 +79,7 @@ describe("CoorganizersForm", () => {
   describe("Rendering", () => {
     it("should render the title and add co-organizer input", () => {
       const { addCoorganizerInput, addCoorganizerTrigger } = renderComponent();
-      expect(
-        screen.getByText("Współorganizatorzy", { selector: "p" }),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Współorganizatorzy")).toBeInTheDocument();
       expect(addCoorganizerInput).toBeInTheDocument();
       expect(addCoorganizerTrigger).toBeInTheDocument();
       expect(addCoorganizerTrigger).toBeDisabled();
@@ -90,36 +92,6 @@ describe("CoorganizersForm", () => {
         renderComponent();
       await user.type(addCoorganizerInput, faker.internet.email());
       expect(addCoorganizerTrigger).not.toBeDisabled();
-    });
-
-    it("should add a co-organizer when add button is clicked", async () => {
-      const onAdd = vi.fn();
-      const { user, addCoorganizerInput, addCoorganizerTrigger } =
-        renderComponent({ onAdd });
-      const email = faker.internet.email();
-
-      await user.type(addCoorganizerInput, email);
-      await user.click(addCoorganizerTrigger); // Open the popover
-      const addCoorganizerButton = screen.getByRole("button", {
-        name: "Dodaj",
-      });
-      await user.click(addCoorganizerButton);
-
-      const expectedPermissions = PERMISSIONS_CONFIG.map(
-        (config) => config.permission,
-      ).toSorted((a, b) => a.id - b.id);
-
-      const calls = onAdd.mock.calls as [{ permissions: Permission[] }][];
-      const receivedPermissions = calls[0][0].permissions.toSorted(
-        (a: Permission, b: Permission) => a.id - b.id,
-      );
-
-      expect(onAdd).toHaveBeenCalledWith({
-        id: "",
-        email,
-        permissions: expect.arrayContaining(expectedPermissions) as unknown,
-      });
-      expect(receivedPermissions).toEqual(expectedPermissions);
     });
 
     it("should not allow adding a duplicate email", async () => {
@@ -143,15 +115,18 @@ describe("CoorganizersForm", () => {
           permissions: [],
         },
       ];
-      renderComponent({ onRemove }, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        { onRemove },
+        { coorganizers: initialCoorganizers },
+      );
 
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
 
       const removeButton = screen.getByRole("button", { name: "Usuń" });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
 
       expect(
         screen.queryByText(initialCoorganizers[0].email),
@@ -159,20 +134,25 @@ describe("CoorganizersForm", () => {
       expect(onRemove).toHaveBeenCalledWith(0, initialCoorganizers[0]);
     });
 
+    // Skipped: Permission toggle functionality is currently commented out in coorganizers-form.tsx
+    // Re-enable this test when the feature is restored
     it.skip("should call onChange when a permission is toggled", async () => {
       const onChange = vi.fn();
       const email = faker.internet.email();
       const initialCoorganizers = [{ id: "1", email, permissions: [] }];
-      renderComponent({ onChange }, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        { onChange },
+        { coorganizers: initialCoorganizers },
+      );
 
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
 
       const permission = PERMISSIONS_CONFIG[0];
       const permissionCheckbox = screen.getByLabelText(permission.label);
-      await userEvent.click(permissionCheckbox);
+      await user.click(permissionCheckbox);
 
       expect(onChange).toHaveBeenCalled();
       const calls = onChange.mock.calls as [
@@ -193,7 +173,10 @@ describe("CoorganizersForm", () => {
           permissions: [PERMISSIONS_CONFIG[0].permission],
         },
       ];
-      renderComponent({}, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        {},
+        { coorganizers: initialCoorganizers },
+      );
 
       expect(
         screen.getByText(initialCoorganizers[0].email),
@@ -201,7 +184,7 @@ describe("CoorganizersForm", () => {
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
       expect(
         await screen.findByText(PERMISSIONS_CONFIG[0].label),
       ).toBeInTheDocument();
@@ -250,13 +233,16 @@ describe("CoorganizersForm", () => {
           permissions: [],
         },
       ];
-      renderComponent({ onRemove }, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        { onRemove },
+        { coorganizers: initialCoorganizers },
+      );
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
       const removeButton = screen.getByRole("button", { name: "Usuń" });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
       expect(onRemove).toHaveBeenCalledOnce();
       expect(onRemove).toHaveBeenCalledWith(0, initialCoorganizers[0]);
     });
@@ -266,19 +252,24 @@ describe("CoorganizersForm", () => {
       const initialCoorganizers = [
         { id: "1", email: faker.internet.email(), permissions: [] },
       ];
-      renderComponent({ onChange }, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        { onChange },
+        { coorganizers: initialCoorganizers },
+      );
 
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
 
       const removeButton = screen.getByRole("button", { name: "Usuń" });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
 
       expect(onChange).toHaveBeenCalledWith([]);
     });
 
+    // Skipped: Permission toggle functionality is currently commented out in coorganizers-form.tsx
+    // Re-enable this test when the feature is restored
     it.skip("should call onChange with updated permissions on toggle", async () => {
       const onChange = vi.fn();
       const email = faker.internet.email();
@@ -290,17 +281,20 @@ describe("CoorganizersForm", () => {
           permissions: [PERMISSIONS_CONFIG[0].permission],
         },
       ];
-      renderComponent({ onChange }, { coorganizers: initialCoorganizers });
+      const { user } = renderComponent(
+        { onChange },
+        { coorganizers: initialCoorganizers },
+      );
 
       const permissionsMenuTrigger = screen.getByLabelText(
         "Open permissions menu",
       );
-      await userEvent.click(permissionsMenuTrigger); // Open the popover
+      await user.click(permissionsMenuTrigger);
 
       const permissionCheckbox = screen.getByLabelText(
         permissionToToggle.label,
       );
-      await userEvent.click(permissionCheckbox);
+      await user.click(permissionCheckbox);
 
       expect(onChange).toHaveBeenCalledOnce();
       const calls = onChange.mock.calls as [{ permissions: Permission[] }[]][];

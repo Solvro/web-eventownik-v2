@@ -101,6 +101,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 className="hidden"
                 type="file"
                 accept="image/png, image/gif, image/jpeg"
+                aria-label="Wybierz zdjęcie wydarzenia"
                 disabled={formState.isSubmitting}
                 {...processedField}
                 onChange={(event_) => {
@@ -259,7 +260,8 @@ export function PersonalizationForm({ className }: { className?: string }) {
                       ?.message != null && (
                       <p
                         className="text-sm text-[0.8rem] font-medium text-red-500"
-                        data-testid={`social-media-link-error-${index.toString()}`}
+                        role="alert"
+                        aria-label={`Social media link ${index} error`}
                       >
                         {formState.errors.socialMediaLinks[index].link.message}
                       </p>
