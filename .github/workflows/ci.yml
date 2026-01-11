@@ -48,3 +48,22 @@ jobs:
           NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
         run: npm run build
         if: always()
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        env:
+          NEXT_PUBLIC_EVENTOWNIK_API: ${{ vars.NEXT_PUBLIC_EVENTOWNIK_API }}
+          SESSION_SECRET: ${{ vars.SESSION_SECRET }}
+          NEXT_PUBLIC_PHOTO_URL: ${{ vars.NEXT_PUBLIC_PHOTO_URL }}
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: 10000000-ffff-ffff-ffff-000000000001
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v5
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
