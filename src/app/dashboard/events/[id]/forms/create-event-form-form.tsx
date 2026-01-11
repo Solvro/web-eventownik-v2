@@ -39,13 +39,11 @@ function CreateEventFormForm({
       onOpenChange={(open: boolean) => {
         if (open) {
           setDialogOpen(open);
-          setCurrentStep(0);
         } else {
           if (isDirty || isGuardActive) {
             setAlertActive(isDirty || isGuardActive);
           } else {
             setDialogOpen(open);
-            setCurrentStep(0);
           }
         }
       }}
@@ -85,10 +83,6 @@ function CreateEventFormForm({
                 setCurrentStep(0);
               }}
               setDialogOpen={setDialogOpen}
-              // Reset step when form is successfully submitted
-              onFormSubmitted={() => {
-                setCurrentStep(0);
-              }}
             />
           )}
         </div>

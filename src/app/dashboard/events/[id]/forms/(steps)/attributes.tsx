@@ -19,13 +19,11 @@ function AttributesForm({
   attributes,
   goToPreviousStep,
   setDialogOpen,
-  onFormSubmitted,
 }: {
   eventId: string;
   attributes: EventAttribute[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onFormSubmitted?: () => void;
 }) {
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,9 +66,6 @@ function AttributesForm({
           endDate: new Date(new Date().setHours(24, 0, 0, 0)),
           attributes: [],
         });
-
-        // Reset step in parent component
-        onFormSubmitted?.();
 
         setDialogOpen(false);
 
