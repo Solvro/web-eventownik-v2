@@ -1,39 +1,18 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-//import { format } from "date-fns";
-import {
-  //CalendarArrowDownIcon,
-  //CalendarArrowUpIcon,
-  Loader,
-  Save,
-} from "lucide-react";
+import { Loader, Save } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import type { z } from "zod";
 
 import { AttributesReorder } from "@/components/attributes-manager";
-import { WysiwygEditor } from "@/components/editor";
+import {
+  EventFormGeneralInfoSchema,
+  GeneralInfoForm,
+} from "@/components/forms/event-form/general-info-form";
 import { Button } from "@/components/ui/button";
-//import { Calendar } from "@/components/ui/calendar";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-/*
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-*/
-import { Switch } from "@/components/ui/switch";
+import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
@@ -41,17 +20,6 @@ import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
 import { updateEventForm } from "../actions";
-
-const EventFormSchema = z.object({
-  name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
-  description: z.string().nonempty({ message: "Opis jest wymagany" }),
-  startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-  startDate: z.date(),
-  endDate: z.date(),
-  isFirstForm: z.boolean(),
-  isOpen: z.boolean().default(true),
-});
 
 interface EventFormEditFormProps {
   eventId: string;
@@ -67,8 +35,8 @@ function EventFormEditForm({
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
   >(formToEdit.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)));
-  const form = useForm<z.infer<typeof EventFormSchema>>({
-    resolver: zodResolver(EventFormSchema),
+  const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({
+    resolver: zodResolver(EventFormGeneralInfoSchema),
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
@@ -86,7 +54,7 @@ function EventFormEditForm({
     form.formState.isDirty,
   );
 
-  async function onSubmit(values: z.infer<typeof EventFormSchema>) {
+  async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
       const result = await updateEventForm(eventId, formToEdit.id.toString(), {
         ...formToEdit,
@@ -125,216 +93,7 @@ function EventFormEditForm({
       />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="flex max-w-xl flex-col gap-8">
-          <div className="w-full space-y-8">
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nazwa formularza</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Podaj nazwę formularza"
-                      // https://github.com/orgs/react-hook-form/discussions/10964?sort=new#discussioncomment-8481087
-                      disabled={form.formState.isSubmitting ? true : undefined}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.name?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            {/*
-            <div className="space-y-2">
-              <FormLabel>Data otwarcia</FormLabel>
-              <div className="flex flex-row items-center gap-4">
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className="w-[240px] pl-3 text-left font-normal"
-                              disabled={
-                                form.formState.isSubmitting ? true : undefined
-                              }
-                            >
-                              {format(field.value, "PPP")}
-                              <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            className="z-50"
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.startDate?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="startTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          disabled={
-                            form.formState.isSubmitting ? true : undefined
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.startTime?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <FormLabel>Data zamknięcia</FormLabel>
-              <div className="flex flex-row items-center gap-4">
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className="w-[240px] pl-3 text-left font-normal"
-                              disabled={
-                                form.formState.isSubmitting ? true : undefined
-                              }
-                            >
-                              {format(field.value, "PPP")}
-                              <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            className="z-50"
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date: Date) =>
-                              new Date(date) <=
-                              new Date(form.getValues("startDate"))
-                            }
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.endDate?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="endTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          disabled={
-                            form.formState.isSubmitting ? true : undefined
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage className="text-sm text-red-500">
-                        {form.formState.errors.endTime?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-
-              </div>
-            </div>
-            */}
-          </div>
-          <div className="flex flex-col gap-8">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Opis formularza</FormLabel>
-                  <FormDescription>
-                    W przypadku formularza rejestracyjnego, zamiast poniższej
-                    zawartości wyświetli się opis wydarzenia
-                  </FormDescription>
-                  <WysiwygEditor
-                    content={field.value}
-                    onChange={field.onChange}
-                    disabled={form.watch("isFirstForm")}
-                  />
-                  <FormMessage>
-                    {form.formState.errors.description?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="isFirstForm"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex w-fit flex-col">
-                  <FormLabel>Formularz rejestracyjny?</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="m-0"
-                      disabled={form.formState.isSubmitting ? true : undefined}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="isOpen"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex w-fit flex-col">
-                  <FormLabel>Włączony?</FormLabel>
-                  <FormDescription>
-                    Określa, czy formularz przyjmuje nowe zgłoszenia
-                  </FormDescription>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="m-0"
-                      disabled={form.formState.isSubmitting ? true : undefined}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+          <GeneralInfoForm />
           <AttributesReorder
             attributes={eventAttributes}
             includedAttributes={includedAttributes}

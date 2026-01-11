@@ -6,8 +6,8 @@ import { ArrowRight, Lightbulb, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
+import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
   Form,

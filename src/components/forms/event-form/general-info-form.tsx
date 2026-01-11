@@ -1,24 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-//import { endOfYesterday, format, isSameDay } from "date-fns";
-import { useAtom } from "jotai";
-import {
-  ArrowRight,
-  BookOpenText,
-  //CalendarArrowDownIcon,
-  //CalendarArrowUpIcon,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
-import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
-import { newEventFormAtom } from "@/atoms/new-event-form-atom";
 import { WysiwygEditor } from "@/components/editor";
-import { Button } from "@/components/ui/button";
-//import { Calendar } from "@/components/ui/calendar";
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -27,17 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-/*
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-*/
 import { Switch } from "@/components/ui/switch";
-import { useAutoSave } from "@/hooks/use-autosave";
+import { cn } from "@/lib/utils";
 
-const EventFormGeneralInfoSchema = z.object({
+export const EventFormGeneralInfoSchema = z.object({
   name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
   description: z.string().nonempty({ message: "Opis jest wymagany" }),
   startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
@@ -46,8 +25,7 @@ const EventFormGeneralInfoSchema = z.object({
   endDate: z.date(),
   isFirstForm: z.boolean().default(false),
   isOpen: z.boolean().default(true),
-});
-/* 
+}); /* 
   .refine(
     (schema) => {
       const startDate = new Date(schema.startDate);
@@ -69,57 +47,35 @@ const EventFormGeneralInfoSchema = z.object({
   );
   */
 
-function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
-  const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
+interface GeneralInfoFormProps {
+  className?: string;
+}
 
-  const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({
-    resolver: zodResolver(EventFormGeneralInfoSchema),
-    defaultValues: {
-      name: newEventForm.name,
-      description: newEventForm.description,
-      startTime: newEventForm.startTime,
-      endTime: newEventForm.endTime,
-      startDate: newEventForm.startDate,
-      endDate: newEventForm.endDate,
-      isFirstForm: newEventForm.isFirstForm,
-      isOpen: newEventForm.isOpen,
-    },
-  });
-
-  useAutoSave(setNewEventForm, form);
+export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
+  const { control, formState, watch } =
+    useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
   return (
-    <FormContainer
-      description="Podstawowe dane"
-      icon={<BookOpenText />}
-      step="1/2"
-      title="Krok 1"
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
-            <div className="w-full space-y-8">
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nazwa formularza</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Podaj nazwę formularza"
-                        {...field}
-                        disabled={form.formState.isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.name?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
+    <div className={cn("flex flex-col gap-8", className)}>
+      <FormField
+        name="name"
+        control={control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Nazwa formularza</FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="Podaj nazwę formularza"
+                disabled={formState.isSubmitting ? true : undefined}
+                {...field}
               />
-              {/*
+            </FormControl>
+            <FormMessage>{formState.errors.name?.message}</FormMessage>
+          </FormItem>
+        )}
+      />
+      {/*
               <div className="space-y-2">
                 <FormLabel>Data otwarcia</FormLabel>
                 <div className="flex flex-row items-center gap-4">
@@ -137,7 +93,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 disabled={form.formState.isSubmitting}
                               >
                                 {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
-              {/*
+      {/*
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
@@ -199,7 +155,7 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                                 disabled={form.formState.isSubmitting}
                               >
                                 {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
-              {/*
+      {/*
                                 {field.value
                                   ? format(field.value, "PPP")
                                   : "Wybierz datę"}
@@ -244,80 +200,64 @@ function GeneralInfoForm({ goToNextStep }: { goToNextStep: () => void }) {
                 </FormMessage>
               </div>
               */}
-            </div>
+      <FormField
+        control={control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Opis formularza</FormLabel>
+            <FormDescription>
+              W przypadku formularza rejestracyjnego, zamiast poniższej
+              zawartości wyświetli się opis wydarzenia
+            </FormDescription>
+            <WysiwygEditor
+              content={field.value}
+              onChange={field.onChange}
+              disabled={watch("isFirstForm")}
+            />
+            <FormMessage>{formState.errors.description?.message}</FormMessage>
+          </FormItem>
+        )}
+      />
 
-            <div className="flex flex-col gap-8">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Opis formularza</FormLabel>
-                    <FormDescription>
-                      W przypadku formularza rejestracyjnego, zamiast poniższej
-                      zawartości wyświetli się opis wydarzenia
-                    </FormDescription>
-                    <WysiwygEditor
-                      className="h-[200px]"
-                      editorClassName="h-22"
-                      content={field.value}
-                      onChange={field.onChange}
-                      disabled={form.watch("isFirstForm")}
-                    />
-                    <FormMessage>
-                      {form.formState.errors.description?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
+      <FormField
+        name="isFirstForm"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex w-fit flex-col">
+            <FormLabel>Formularz rejestracyjny?</FormLabel>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className="m-0"
+                disabled={formState.isSubmitting ? true : undefined}
               />
-              <FormField
-                name="isFirstForm"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex w-fit flex-col">
-                    <FormLabel>Formularz rejestracyjny?</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={form.formState.isSubmitting}
-                        className="m-0"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="isOpen"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex w-fit flex-col">
+            <FormLabel>Włączony?</FormLabel>
+            <FormDescription>
+              Określa, czy formularz przyjmuje nowe zgłoszenia
+            </FormDescription>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className="m-0"
+                disabled={formState.isSubmitting ? true : undefined}
               />
-              <FormField
-                name="isOpen"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex w-fit flex-col">
-                    <FormLabel>Włączony?</FormLabel>
-                    <FormDescription>
-                      Określa, czy formularz przyjmuje nowe zgłoszenia
-                    </FormDescription>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={form.formState.isSubmitting}
-                        className="m-0"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <Button variant="eventGhost" type="submit">
-              <ArrowRight /> Przejdź dalej
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </FormContainer>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }
-
-export { GeneralInfoForm };
