@@ -8,7 +8,7 @@
     "dev": "next dev --turbopack",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint .",
+    "lint": "eslint . --cache",
     "prepare": "husky || true",
     "start": "next start",
     "test": "vitest",

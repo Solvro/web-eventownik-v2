@@ -34,10 +34,12 @@ function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
         <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
           {form.name}
         </p>
+        {/*
         <p className="text-muted-foreground">
           {new Date(form.startDate).toLocaleDateString()} -{" "}
           {new Date(form.endDate).toLocaleDateString()}
         </p>
+        */}
       </div>
     </div>
   );
