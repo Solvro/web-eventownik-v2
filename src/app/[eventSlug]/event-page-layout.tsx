@@ -37,6 +37,7 @@ export function EventPageLayout({
     <ViewTransition>
       <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
         <EventPrimaryColorSetter
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing,@typescript-eslint/strict-boolean-expressions
           primaryColor={event.primaryColor || "#3672fd"}
         />
         <div
@@ -134,7 +135,7 @@ export function EventPageLayout({
                   </div>
                 </div>
                 <ScrollArea
-                  className="min-h-0"
+                  className="min-h-0 pr-3 text-justify"
                   style={{ viewTransitionName: "event-description" }}
                 >
                   <div className="max-h-72">

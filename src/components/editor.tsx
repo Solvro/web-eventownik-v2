@@ -19,6 +19,7 @@ function WysiwygEditor({
   disabled,
   extensions = [],
   className,
+  editorClassName,
   isEmailEditor = false,
 }: {
   content: string;
@@ -26,6 +27,7 @@ function WysiwygEditor({
   disabled?: boolean;
   extensions?: Extensions;
   className?: string;
+  editorClassName?: string;
   /**
    * If true, enables tag-related buttons in menu and default CSS styling for editor content.
    */
@@ -51,8 +53,10 @@ function WysiwygEditor({
     },
     editorProps: {
       attributes: {
-        class:
+        class: cn(
           "pb-4 focus:outline-none cursor-text h-[200px] overflow-y-auto leading-relaxed resize-y",
+          editorClassName,
+        ),
       },
       handleKeyDown: (_, event) => {
         if (event.key === "Enter") {
@@ -79,7 +83,7 @@ function WysiwygEditor({
       )}
     >
       <EditorMenuBar editor={editor} isEmailEditor={isEmailEditor} />
-      <ScrollArea className="h-[200px]">
+      <ScrollArea className="h-full">
         <EditorContent
           editor={editor}
           className={

@@ -22,7 +22,7 @@ export default function DashboardLayout({
         <header className="flex justify-between p-4">
           <Navbar authButton={<AuthButton />} />
         </header>
-        <main className="flex min-h-[calc(100vh-96px)] flex-col px-4 py-8">
+        <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
           {children}
         </main>
       </div>
