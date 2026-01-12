@@ -57,7 +57,7 @@ jobs:
           NEXT_PUBLIC_EVENTOWNIK_API: ${{ vars.NEXT_PUBLIC_EVENTOWNIK_API }}
           SESSION_SECRET: ${{ vars.SESSION_SECRET }}
           NEXT_PUBLIC_PHOTO_URL: ${{ vars.NEXT_PUBLIC_PHOTO_URL }}
-          NEXT_PUBLIC_HCAPTCHA_SITEKEY: 10000000-ffff-ffff-ffff-000000000001
+          NEXT_PUBLIC_HCAPTCHA_SITEKEY: ${{ secrets.NEXT_PUBLIC_HCAPTCHA_SITEKEY }}
         run: npx playwright test
 
       - name: Upload Playwright report
