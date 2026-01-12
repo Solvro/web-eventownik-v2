@@ -48,7 +48,9 @@ async function EmailTemplateEntry({
         />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-2 text-center">
-        <p className="text-lg font-bold">{emailTemplate.name}</p>
+        <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
+          {emailTemplate.name}
+        </p>
         <EmailTriggerLabel trigger={emailTemplate.trigger} />
       </div>
     </div>

@@ -114,7 +114,7 @@ export default async function DashboardEventPage({
         }
         width={400}
         height={400}
-        className="aspect-square max-h-96 w-full rounded-xl object-cover xl:w-auto"
+        className="aspect-square max-h-96 w-full rounded-xl bg-(--event-primary-color)/5 object-contain xl:w-auto"
         alt={`Zdjęcie wydarzenia ${event.name}`}
       />
     </div>

@@ -1,143 +1,150 @@
-# Eventownik aplikacja webowa
+# <img src="https://github.com/Solvro/web-testownik/blob/main/public/favicon/192x192.png?raw=true" width="24"> Eventownik Solvro – Frontend
 
-![Solvro banner](https://github.com/Solvro/backend-topwr-sks/blob/main/assets/solvro_dark.png#gh-dark-mode-only)
-![Solvro banner](https://github.com/Solvro/backend-topwr-sks/blob/main/assets/solvro_dark.png#gh-light-mode-only)
+<div align="center">
 
-## 🚀 About
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Tailwind](https://img.shields.io/badge/tailwind-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Motto](https://img.shields.io/badge/%23Wytrzyma-%23e4efff?style=for-the-badge&logo=Motto&logoColor=white)
 
-Eventownik is a software solution designed to support event organization, with a focus on Wrocław University of Science and Technology activities.
+**Aplikacja do organizacji wydarzeń dla studentów Politechniki Wrocławskiej**
 
-## 🔥 Features
+[Odwiedź aplikację](https://eventownik.solvro.pl) • [Dokumentacja](https://docs.solvro.pl/projects/eventownik/handbook/) • [Backend V2](https://github.com/Solvro/backend-eventownik-v2) • [Backend V3](https://github.com/Solvro/backend-eventownik-v3)
 
-- Creating events
-- Configuring events
-- Adding assistant organizers
-- Creating participant attributes
-- Managing participants
-- Creating forms
-- Creating emails
-- Sending emails (personalized, trigger emails)
-
-## 👨‍🔧 Team
-
-- [Antoni Czaplicki](https://github.com/Antoni-Czaplicki) - Tech Lead
-- [Maciej Król](https://github.com/maciejkrol18) - Frontend Developer
-- [Maciej Malinowski](https://github.com/mejsiejdev) - Frontend Developer
-- [Tymon Jędryczka](https://github.com/jedryczkatymon) - Frontend Developer
-- [Wojciech Kosmalski](https://github.com/chewmanji) - Frontend Developer, Project Manager
-- [Maciej Talarczyk](https://github.com/muclx) - UI/UX Designer
-
-## 👀 Technologies
-
-- ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-- ![React.js](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-- ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-- ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-- ![Coolify](https://img.shields.io/badge/Coolify-9D00FF?style=for-the-badge&logo=coolify&logoColor=white)
-
-## 🔧 Development
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Solvro/web-eventownik-v2.git
-```
-
-### 2. Install Dependencies
-
-```bash
-cd web-eventownik-v2
-npm i
-```
-
-### 3. Configure Environment
-
-Copy and paste `.env.example` file in the root directory, rename the copy to `.env` and set the following content:
-
-```env
-TODO
-```
-
-### 4. Run the Project
-
-```bash
-npm run dev
-```
-
-### 5. View the Application
-
-Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-- 🐛 Report bugs or suggest improvements
-- 🌟 Request new features
-- 🧪 Test and provide feedback
-
-## 🔄 Git Workflow
-
-> Don't worry if you forget any steps – our automatic GitHub Action will run checks and notify you of any issues.
-
-### 📘 Solvro GitHub Handbook
-
-Check out our [detailed GitHub workflow guide](https://docs.solvro.pl/github).
-
-### 🔐 SSH Setup
-
-For Windows users, follow this [SSH setup tutorial](https://www.youtube.com/watch?v=vExsOTgIOGw).
-
-### 🌿 Feature Development Workflow
-
-1. Checkout and update main:
-
-   ```bash
-   git checkout main
-   git pull origin main
-   git fetch
-   ```
-
-2. Create a feature branch:
-
-   ```bash
-   git checkout -b feat/{issue_number}-my-feature-branch
-   ```
-
-3. Make your changes and commit:
-
-   ```bash
-   git add .
-   git commit -m "My changes description"
-   ```
-
-4. Push to remote:
-
-   ```bash
-   git push origin feat/{issue_number}-my-feature-branch
-   ```
-
-5. Create a Pull Request on GitHub
-
-### ⚠️ Important Reminders
-
-- Never push directly to the main branch
-- Always commit before checking out to a different branch
-- After successful merge, clean up:
-
-  ```bash
-  git branch -d feat/{issue_number}-my-feature-branch
-  git push origin --delete feat/{issue_number}-my-feature-branch
-  ```
-
-## 📞 Contact
-
-For questions or suggestions, reach out to us:
-
-- ✉️ Email: <kn.solvro@pwr.edu.pl>
-- 🌐 Website: [solvro.pwr.edu.pl](https://solvro.pwr.edu.pl/)
-- 📘 Facebook: [KN Solvro](https://www.facebook.com/knsolvro)
+</div>
 
 ---
 
-We appreciate your interest in our project! 🥰
+## O projekcie
+
+**Eventownik Solvro** to aplikacja webowa tworzona przez [KN Solvro](https://github.com/Solvro), której celem jest ułatwienie organizacji wydarzeń studenckich na Politechnice Wrocławskiej.
+
+Aplikacja umożliwia tworzenie i konfigurację wydarzeń, zarządzanie uczestnikami, formularzami oraz komunikacją mailową, tworząc kompletne rozwiązanie dla organizatorów wydarzeń.
+
+## Funkcjonalności
+
+- Tworzenie i konfiguracja wydarzeń
+- Dodawanie współorganizatorów
+- Definiowanie atrybutów uczestników
+- Zarządzanie uczestnikami
+- Tworzenie formularzy rejestracyjnych
+- Tworzenie szablonów maili
+- Wysyłka maili (spersonalizowanych oraz wyzwalanych)
+
+## Uruchomienie lokalne
+
+### Wymagania
+
+- [Node.js](https://nodejs.org/) (zalecana wersja LTS)
+- npm (dostarczany z Node.js)
+
+### Instalacja
+
+1. **Sklonuj repozytorium**
+
+   ```bash
+   git clone https://github.com/Solvro/web-eventownik-v2.git
+   cd web-eventownik-v2
+   ```
+
+2. **Zainstaluj zależności**
+
+   ```bash
+   npm install
+   ```
+
+3. **Uruchom serwer deweloperski**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Otwórz przeglądarkę** i przejdź do `http://localhost:3000`
+
+## Dostępne skrypty
+
+| Komenda                | Opis                                      |
+| ---------------------- | ----------------------------------------- |
+| `npm run dev`          | Uruchamia serwer deweloperski (Turbopack) |
+| `npm run build`        | Buduje aplikację do produkcji             |
+| `npm run start`        | Uruchamia zbudowaną aplikację             |
+| `npm run lint`         | Sprawdza kod za pomocą ESLint             |
+| `npm run format`       | Formatuje kod za pomocą Prettier          |
+| `npm run format:check` | Sprawdza formatowanie kodu                |
+| `npm run typecheck`    | Sprawdza typy TypeScript                  |
+| `npm run test`         | Uruchamia testy (Vitest)                  |
+| `npm run test:ui`      | Uruchamia UI Vitest                       |
+
+## Stack technologiczny
+
+- **Framework:** [Next.js](https://nextjs.org/) (v16) + [React](https://react.dev/) (v19)
+- **Język:** [TypeScript](https://www.typescriptlang.org/)
+- **Stylowanie:** [Tailwind CSS](https://tailwindcss.com/)
+- **Komponenty UI:** [shadcn/ui](https://ui.shadcn.com/)
+- **Ikony:** [Lucide React](https://lucide.dev/)
+- **Edytor WYSIWYG:** [Tiptap](https://tiptap.dev/)
+- **Global state:** [Jotai](https://jotai.org/)
+- **Walidacja:** [Zod](https://zod.dev/)
+- **Animacje:** [Motion](https://motion.dev/)
+- **Testy :** [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)
+
+## Kontrybucja
+
+Chcesz pomóc w rozwoju Eventownika? Super.
+
+1. Sforkuj repozytorium (jeśli nie jesteś w zespole)
+2. Stwórz branch dla swojej zmiany
+3. Commituj zmiany zgodnie z Conventional Commits
+4. Zpushuj branch
+5. Otwórz Pull Request
+6. Zlinkuj issues, które chcesz rozwiązać (jeśli takie są)
+
+### Format commitów
+
+Stosujemy standard **Conventional Commits**.
+
+```bash
+<type>(opcjonalny scope): opis w czasie teraźniejszym
+```
+
+**Przykłady**
+
+```
+feat(events): add event duplication
+fix(forms): correct validation edge case
+docs: update readme
+refactor(mail): simplify editor logic
+test(events): add missing unit tests
+```
+
+## Zgłaszanie problemów
+
+- Problemy dotyczące **frontendu** zgłaszaj w tym repozytorium.
+- Problemy dotyczące **backendu** (API, logika serwera, baza danych) zgłaszaj w repozytorium backendu:
+  [https://github.com/Solvro/backend-eventownik-v2](https://github.com/Solvro/backend-eventownik-v2)
+
+## Aktualny zespół
+
+- [Maciej Król](https://github.com/maciejkrol18) – **Frontend Tech Lead**
+- [Antoni Czaplicki](https://github.com/Antoni-Czaplicki) – Frontend Developer
+- [Bohdan Koshkin](https://github.com/ShadowCatP) – Frontend Developer
+- [Bohdan Moshenets](https://github.com/moshenetsb) – Frontend Developer
+- [Maciej Malinowski](https://github.com/mejsiejdev) – Frontend Developer
+- [Maksymilian Tarasiuk](https://github.com/maks1u) - Frontend Developer
+- [Wincenty Wensker](https://github.com/kitkacy) - UI/UX Designer
+- [Maciej Talarczyk](https://github.com/muclx) – UI/UX Designer
+
+## Kontakt
+
+- **Email:** [kn.solvro@pwr.edu.pl](mailto:kn.solvro@pwr.edu.pl)
+- **Organizacja:** [KN Solvro](https://github.com/Solvro)
+- **Strona:** [https://solvro.pwr.edu.pl](https://solvro.pwr.edu.pl)
+
+---
+
+<div align="center">
+
+Stworzone przez [KN Solvro](https://github.com/Solvro) dla studentów Politechniki Wrocławskiej
+
+</div>
