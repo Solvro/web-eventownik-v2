@@ -307,6 +307,7 @@ export function CreateEventForm() {
         onCancel={onCancel}
         onConfirm={() => {
           setCurrentStep(0);
+          form.reset();
           onConfirm();
         }}
       />
