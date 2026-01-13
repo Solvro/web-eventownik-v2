@@ -44,7 +44,7 @@ export function AttributeInputFile({
   setError,
   resetField,
   setFiles,
-  lastUpdate = null,
+  lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   attribute: FormAttribute;

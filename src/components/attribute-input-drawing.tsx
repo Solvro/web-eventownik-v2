@@ -20,7 +20,7 @@ export function AttributeInputDrawing({
   setError,
   resetField,
   setFiles,
-  lastUpdate = null,
+  lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   attribute: FormAttribute;
@@ -147,7 +147,7 @@ export function AttributeInputDrawing({
                 onChange={(event_) => {
                   setStrokeColor(event_.target.value);
                 }}
-                className="invisible h-0 w-0"
+                className="pointer-events-none h-0 w-0 p-4 opacity-0"
                 aria-label="Wybór koloru"
               />
             </label>
