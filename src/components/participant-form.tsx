@@ -221,6 +221,42 @@ export function ParticipantForm({
    * we don't rely on it to show the success screen.
    */
   async function handleFormSubmit(values: z.infer<typeof formSchema>) {
+    // Validate required file/drawing attributes
+    const requiredFileDrawingAttributes = sortedAttributes.filter(
+      (attribute) =>
+        attribute.isRequired &&
+        (attribute.type === "file" || attribute.type === "drawing"),
+    );
+
+    let hasValidationErrors = false;
+
+    for (const attribute of requiredFileDrawingAttributes) {
+      const hasFile = files.some(
+        (file) => file.name === attribute.id.toString(),
+      );
+      const hasExistingValue =
+        userData?.attributes.some(
+          (userAttribute) =>
+            userAttribute.id === attribute.id &&
+            userAttribute.meta.pivot_value !== "" &&
+            userAttribute.meta.pivot_value.length > 0,
+        ) ?? false;
+
+      if (!hasFile && !hasExistingValue) {
+        hasValidationErrors = true;
+        form.setError(attribute.id.toString(), {
+          message:
+            attribute.type === "file"
+              ? "To pole wymaga wgrania pliku."
+              : "To pole wymaga narysowania czegoś.",
+        });
+      }
+    }
+
+    if (hasValidationErrors) {
+      return;
+    }
+
     if (hCaptchaToken === null) {
       pendingFormData.current = values;
 
