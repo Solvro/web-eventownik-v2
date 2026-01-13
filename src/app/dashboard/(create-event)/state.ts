@@ -10,6 +10,7 @@ export const AttributeTypes = [
   "number",
   "textarea",
   "file",
+  "drawing",
   "select",
   "multiselect",
   "block",

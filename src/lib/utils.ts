@@ -72,7 +72,10 @@ const validationRules: Record<
     requiredString(attribute).regex(PHONE_REGEX, {
       message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być numerem telefonu.`,
     }),
+  // TODO: After upgrade to zod v4 we could use z.file() and simplify the validation and file handling
+  // https://zod.dev/api?id=files
   file: () => z.any(),
+  drawing: () => z.any(),
   block: () => z.any(),
 };
 

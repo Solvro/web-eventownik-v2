@@ -11,6 +11,7 @@ import {
   ListTodo,
   Mail,
   Palette,
+  Pencil,
   Smartphone,
   SquareDashedMousePointer,
 } from "lucide-react";
@@ -47,6 +48,12 @@ export const ATTRIBUTE_TYPES: {
     title: "Plik",
     description: "Przesłanie pliku każdego typu",
     icon: <CloudUpload />,
+  },
+  {
+    value: "drawing",
+    title: "Rysunek",
+    description: "Szybki rysunek od ręki",
+    icon: <Pencil />,
   },
   {
     value: "select",
