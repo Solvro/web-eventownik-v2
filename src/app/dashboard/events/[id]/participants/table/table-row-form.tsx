@@ -27,6 +27,7 @@ import type { FlattenedParticipant } from "@/types/participant";
 import { updateParticipant } from "../actions";
 import { DeleteParticipantDialog } from "./delete-dialog";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
+import { DrawingPreviewButton } from "./drawing-preview-button";
 import { EditParticipantButton } from "./edit-button";
 
 interface TableRowFormProps {
@@ -215,6 +216,15 @@ export function TableRowForm({
                       eventId={eventId}
                       participant={row.original}
                     />
+                  ) : attribute?.type === "drawing" &&
+                    row.original[attribute.id] !== null &&
+                    row.original[attribute.id] !== undefined &&
+                    row.original[attribute.id] !== "" ? (
+                    <DrawingPreviewButton
+                      attribute={attribute}
+                      eventId={eventId}
+                      participant={row.original}
+                    />
                   ) : attribute?.type === "textarea" ? (
                     // TODO: Maybe find a better solution for this
                     <div className="w-xs">
@@ -277,6 +287,15 @@ export function TableRowForm({
                           row.original[attribute.id] !== undefined &&
                           row.original[attribute.id] !== "" ? (
                           <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : attribute.type === "drawing" &&
+                          row.original[attribute.id] !== null &&
+                          row.original[attribute.id] !== undefined &&
+                          row.original[attribute.id] !== "" ? (
+                          <DrawingPreviewButton
                             attribute={attribute}
                             eventId={eventId}
                             participant={row.original}

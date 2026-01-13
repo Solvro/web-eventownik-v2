@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AttributeInput } from "@/components/attribute-input";
+import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,7 +93,10 @@ export function ParticipantForm({
     defaultValues: {
       ...(includeEmail && { email: "" }),
       ...userData?.attributes
-        .filter((attribute) => attribute.type !== "file")
+        .filter(
+          (attribute) =>
+            attribute.type !== "file" && attribute.type !== "drawing",
+        )
         .reduce<Record<string, string>>((accumulator, attribute) => {
           accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
           return accumulator;
@@ -295,6 +299,19 @@ export function ParticipantForm({
                 <FormControl>
                   {attribute.type === "file" ? (
                     <AttributeInputFile
+                      attribute={attribute}
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      setFiles={setFiles}
+                      lastUpdate={
+                        userData?.attributes.find(
+                          (attribute_) => attribute_.id === attribute.id,
+                        )?.meta.pivot_updated_at ?? null
+                      }
+                    />
+                  ) : attribute.type === "drawing" ? (
+                    <AttributeInputDrawing
                       attribute={attribute}
                       field={field}
                       setError={form.control.setError}

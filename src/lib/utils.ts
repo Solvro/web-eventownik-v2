@@ -73,6 +73,7 @@ const validationRules: Record<
       message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być numerem telefonu.`,
     }),
   file: () => z.any(),
+  drawing: () => z.any(),
   block: () => z.any(),
 };
 
