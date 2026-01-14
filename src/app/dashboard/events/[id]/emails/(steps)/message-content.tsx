@@ -53,9 +53,11 @@ function getTitlePlaceholder(trigger: string) {
     case "form_filled": {
       return "Dziękujemy za wypełnienie formularza!";
     }
-    case "attribute_changed": {
-      return "Otrzymaliśmy Twoją wpłatę";
-    }
+    // NOTE: Commented out because this trigger is not yet implemented on the backend.
+    // Uncomment when the backend supports this feature.
+    // case "attribute_changed": {
+    //   return "Otrzymaliśmy Twoją wpłatę";
+    // }
     default: {
       return "Nowa wiadomość od organizatorów";
     }
