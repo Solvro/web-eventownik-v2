@@ -197,6 +197,7 @@ export function generateColumns(
               case "checkbox":
               case "tel":
               case "file":
+              case "drawing":
               case "multiselect":
               default: {
                 return info.getValue();

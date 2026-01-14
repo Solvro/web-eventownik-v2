@@ -34,6 +34,7 @@ import {
   EventPersonalizationFormSchema,
   PersonalizationForm,
 } from "@/components/forms/event/personalization-form";
+import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,7 +51,6 @@ import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn, getBase64FromUrl } from "@/lib/utils";
 
 import { isSlugTaken, saveEvent } from "./actions";
-import { FormContainer } from "./form-container";
 import { eventAtom } from "./state";
 
 export function CreateEventForm() {

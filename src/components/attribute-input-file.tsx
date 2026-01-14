@@ -44,36 +44,38 @@ export function AttributeInputFile({
   setError,
   resetField,
   setFiles,
-  lastUpdate = null,
+  lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   attribute: FormAttribute;
-  setError: UseFormSetError<{
-    email: string;
-  }>;
-  resetField: UseFormResetField<{
-    email: string;
-  }>;
+  setError: UseFormSetError<FieldValues>;
+  resetField: UseFormResetField<FieldValues>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   lastUpdate: string | null;
 }) {
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file !== undefined && validateFile(file)) {
+
+    if (file === undefined) {
+      setFiles((previousFiles) =>
+        previousFiles.filter(
+          (existingFile) => existingFile.name !== attribute.id.toString(),
+        ),
+      );
+      return;
+    }
+
+    if (validateFile(file)) {
       const fileWithAttributeIdAsName = new File(
         [file],
         attribute.id.toString(),
       );
       setFiles((previousFiles) => {
-        if (
-          previousFiles.some(
-            (existingFile) =>
-              existingFile.name === fileWithAttributeIdAsName.name,
-          )
-        ) {
-          return previousFiles;
-        }
-        return [...previousFiles, fileWithAttributeIdAsName];
+        const filtered = previousFiles.filter(
+          (existingFile) =>
+            existingFile.name !== fileWithAttributeIdAsName.name,
+        );
+        return [...filtered, fileWithAttributeIdAsName];
       });
     }
   }
@@ -81,11 +83,9 @@ export function AttributeInputFile({
   function validateFile(file: File) {
     const result = fileSchema.safeParse(file);
     if (result.success) {
-      /* @ts-expect-error zod schema object are dynamic */
       resetField(attribute.id.toString());
       return true;
     } else {
-      /* @ts-expect-error zod schema object are dynamic */
       setError(attribute.id.toString(), {
         message: result.error.errors[0].message,
       });
@@ -105,7 +105,6 @@ export function AttributeInputFile({
       <Input
         type="file"
         id={attribute.id.toString()}
-        required={attribute.isRequired ? lastUpdate == null : false}
         {...field}
         onChange={handleFileChange}
       />
