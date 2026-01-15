@@ -76,7 +76,7 @@ tests/
 
 ## Technology Stack
 
-- **Framework:** Next.js with App Router and Turbopack
+- **Framework:** Next.js 16 with App Router and React 19
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS
 - **State Management:** Jotai for client-side state
@@ -95,6 +95,8 @@ NEXT_PUBLIC_EVENTOWNIK_API=<backend API URL>
 SESSION_SECRET=<session encryption secret>
 NEXT_PUBLIC_PHOTO_URL=<backend photo URL>
 NEXT_PUBLIC_HCAPTCHA_SITEKEY=<hCaptcha site key>
+NEXT_PUBLIC_OTEL_METRICS_ENDPOINT=<SigNoz OTLP endpoint>
+NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME=<service name for SigNoz>
 ```
 
 ## Key Development Patterns
@@ -177,7 +179,9 @@ For multi-step dialog forms, use a `steps` array configuration with content and 
 const steps: { content: React.ReactNode; onSubmit: SubmitHandler<FormSchema> }[] = [
   {
     content: <StepOneFields />,
-    onSubmit: () => setCurrentStep(1),
+    onSubmit: () => {
+      setCurrentStep(1);
+    },
   },
   {
     content: <StepTwoFields />,
@@ -232,11 +236,21 @@ Accessibility is essential for both users and testing. Follow these patterns:
 
 #### Error Messages
 
+Form Errors
+
+- Use the FormMessage component for displaying errors in React Hook Form based forms
+
+```typescript
+<FormMessage>{formState.errors.fieldName?.message}</FormMessage>
+```
+
+Other errors
+
 - Use `role="alert"` for validation error messages
 - Add `aria-label` to distinguish between multiple errors
 
 ```typescript
-{error && (
+{error === null ? null : (
   <p
     role="alert"
     aria-label={`${fieldName} error`}
@@ -255,7 +269,9 @@ Accessibility is essential for both users and testing. Follow these patterns:
 ```typescript
 <button
   aria-label={`Remove item ${index}`}
-  onClick={() => remove(index)}
+  onClick={() => {
+    remove(index);
+  }}
 >
   <TrashIcon />
 </button>
