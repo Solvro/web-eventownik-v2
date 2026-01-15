@@ -183,6 +183,8 @@ function CreateEventFormForm({
         onCancel={onCancel}
         onConfirm={() => {
           setCurrentStep(0);
+          form.reset();
+          setIncludedAttributes([]);
           onConfirm();
         }}
       />
