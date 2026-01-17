@@ -14,6 +14,8 @@ import {
   Heading3,
   ImageIcon,
   Italic,
+  List,
+  ListOrdered,
   SlashSquare,
   Tag,
 } from "lucide-react";
@@ -112,6 +114,30 @@ function EditorMenuBar({
           title="Nagłówek stopnia trzeciego"
         >
           <Heading3 />
+        </Button>
+      </div>
+      <div>
+        <Button
+          size="icon"
+          variant={
+            editor.isActive("bulletList") ? "eventDefault" : "eventGhost"
+          }
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          title="Lista punktowa"
+        >
+          <List />
+        </Button>
+        <Button
+          size="icon"
+          variant={
+            editor.isActive("orderedList") ? "eventDefault" : "eventGhost"
+          }
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          title="Lista numerowana"
+        >
+          <ListOrdered />
         </Button>
       </div>
       <div>
