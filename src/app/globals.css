@@ -278,6 +278,36 @@
   margin-bottom: 0;
 }
 
+/* Lists */
+.email-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-block: 13px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-block: 13px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor li {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-block: 4px;
+}
+
+.email-editor li p {
+  margin-block: 0;
+}
+
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
