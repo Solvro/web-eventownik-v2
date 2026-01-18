@@ -54,7 +54,7 @@ function WysiwygEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "pb-4 focus:outline-none cursor-text h-[200px] overflow-y-auto leading-relaxed resize-y",
+          "pb-4 focus:outline-none cursor-text leading-relaxed",
           editorClassName,
         ),
       },
@@ -75,7 +75,7 @@ function WysiwygEditor({
   return (
     <div
       className={cn(
-        "border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[60px] max-w-[974px] resize-y flex-col overflow-hidden rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         disabled === undefined || !disabled
           ? ""
           : "pointer-events-none cursor-not-allowed opacity-50",
@@ -83,12 +83,10 @@ function WysiwygEditor({
       )}
     >
       <EditorMenuBar editor={editor} isEmailEditor={isEmailEditor} />
-      <ScrollArea className="h-full">
+      <ScrollArea className="min-h-0 flex-1">
         <EditorContent
           editor={editor}
-          className={
-            isEmailEditor ? "email-editor text-black dark:text-white" : ""
-          }
+          className={isEmailEditor ? "text-black dark:text-white" : ""}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
