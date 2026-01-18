@@ -59,7 +59,9 @@ function EditorMenuBar({
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              variant={editor.isActive("italic") ? "eventDefault" : "eventGhost"}
+              variant={
+                editor.isActive("italic") ? "eventDefault" : "eventGhost"
+              }
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
             >
@@ -331,7 +333,9 @@ function EditorMenuBar({
                 <Tag />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wstaw znacznik wartości atrybutu uczestnika</TooltipContent>
+            <TooltipContent>
+              Wstaw znacznik wartości atrybutu uczestnika
+            </TooltipContent>
           </Tooltip>
         </div>
       ) : null}
