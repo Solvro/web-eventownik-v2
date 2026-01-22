@@ -186,7 +186,7 @@ export function AttributeItem({
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom">Wskazówki</TooltipContent>
+                  <TooltipContent side="top">Wskazówki</TooltipContent>
                 </Tooltip>
 
                 <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
@@ -196,10 +196,9 @@ export function AttributeItem({
                     </DialogTitle>
                     <div className="[&>p]:my-2">
                       <p>
-                        Dane wrażliwe to szczególna kategoria danych osobowych.
-                        Jako organizator możesz je zbierać tylko wtedy, gdy jest
-                        to niezbędne i gdy cel oraz podstawa prawna
-                        przetwarzania są opisane w Polityce Prywatności
+                        Dane wrażliwe to informacje o prywatnym charakterze. Ich
+                        gromadzenie wymaga uzasadnienia celu, z którym każdy
+                        uczestnik może zapoznać się w Polityce Prywatności
                         wydarzenia.
                       </p>
                       <p>
