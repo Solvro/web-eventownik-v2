@@ -14,13 +14,20 @@ import {
   horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { PlusIcon } from "lucide-react";
+import { HelpCircle, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +38,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
@@ -156,9 +168,49 @@ export function AttributeItem({
               }}
               defaultChecked={attribute.isSensitiveData}
             />
-            <Label htmlFor={`isSensitiveData-${index.toString()}`}>
-              Wrażliwe dane
-            </Label>
+            <div className="flex flex-row items-center gap-0.5">
+              <Label htmlFor={`isSensitiveData-${index.toString()}`}>
+                Wrażliwe dane
+              </Label>
+
+              <Dialog>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label="Wyjaśnienie czym są wrażliwe dane"
+                      >
+                        <HelpCircle />
+                      </Button>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Wskazówki</TooltipContent>
+                </Tooltip>
+
+                <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">
+                      Czym są wrażliwe dane?
+                    </DialogTitle>
+                    <div className="[&>p]:my-2">
+                      <p>
+                        Dane wrażliwe to szczególna kategoria danych osobowych.
+                        Jako organizator możesz je zbierać tylko wtedy, gdy jest
+                        to niezbędne i gdy cel oraz podstawa prawna
+                        przetwarzania są opisane w Polityce Prywatności
+                        wydarzenia.
+                      </p>
+                      <p>
+                        <b>Przykłady:</b> stan zdrowia, przekonania religijne,
+                        poglądy polityczne, dane biometryczne.
+                      </p>
+                    </div>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
       </div>
