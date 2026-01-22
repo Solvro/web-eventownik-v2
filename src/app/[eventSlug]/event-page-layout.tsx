@@ -55,7 +55,7 @@ export function EventPageLayout({
         >
           <div
             className={cn(
-              "container mx-auto flex h-dvh flex-1 flex-col justify-between overflow-hidden p-4",
+              "container mx-auto flex flex-1 flex-col justify-between overflow-hidden p-4 sm:h-dvh",
             )}
           >
             <nav className="flex w-full flex-wrap items-center justify-between sm:pl-8">
@@ -135,10 +135,10 @@ export function EventPageLayout({
                   </div>
                 </div>
                 <ScrollArea
-                  className="min-h-0 pr-3 text-justify"
+                  className="min-h-24 pr-3 text-justify"
                   style={{ viewTransitionName: "event-description" }}
                 >
-                  <div className="max-h-72">
+                  <div className="min-[321px]:max-h-72">
                     <SanitizedContent contentToSanitize={description} />
                   </div>
                 </ScrollArea>
