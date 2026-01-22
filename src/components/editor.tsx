@@ -72,6 +72,14 @@ function WysiwygEditor({
     }
   }, [disabled, editor]);
 
+  // update the editor content when the content prop changes
+  // this is needed to reset the editor content when form.reset() is called
+  useEffect(() => {
+    if (editor != null && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
   return (
     <div
       className={cn(
