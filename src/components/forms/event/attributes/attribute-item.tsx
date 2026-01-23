@@ -168,7 +168,7 @@ export function AttributeItem({
               }}
               defaultChecked={attribute.isSensitiveData}
             />
-            <div className="flex flex-row items-center gap-0.5">
+            <div className="flex items-center gap-2">
               <Label htmlFor={`isSensitiveData-${index.toString()}`}>
                 Wrażliwe dane
               </Label>
@@ -181,12 +181,13 @@ export function AttributeItem({
                         size="icon"
                         variant="ghost"
                         aria-label="Wyjaśnienie czym są wrażliwe dane"
+                        className="size-4"
                       >
                         <HelpCircle />
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Wskazówki</TooltipContent>
+                  <TooltipContent side="top">Wskazówka</TooltipContent>
                 </Tooltip>
 
                 <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
@@ -194,7 +195,7 @@ export function AttributeItem({
                     <DialogTitle className="text-2xl">
                       Czym są wrażliwe dane?
                     </DialogTitle>
-                    <div className="[&>p]:my-2">
+                    <div className="[&>p]:my-2 [&>p]:text-left sm:[&>p]:text-justify">
                       <p>
                         Dane wrażliwe to informacje o prywatnym charakterze. Ich
                         gromadzenie wymaga uzasadnienia celu, z którym każdy
@@ -202,8 +203,8 @@ export function AttributeItem({
                         wydarzenia.
                       </p>
                       <p>
-                        <b>Przykłady:</b> stan zdrowia, przekonania religijne,
-                        poglądy polityczne, dane biometryczne.
+                        <strong>Przykłady:</strong> stan zdrowia, przekonania
+                        religijne, poglądy polityczne, dane biometryczne.
                       </p>
                     </div>
                   </DialogHeader>
