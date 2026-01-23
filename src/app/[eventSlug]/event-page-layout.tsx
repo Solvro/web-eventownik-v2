@@ -135,7 +135,7 @@ export function EventPageLayout({
                   </div>
                 </div>
                 <ScrollArea
-                  className="min-h-0 pr-3 text-justify"
+                  className="min-h-0 pr-3 sm:text-justify"
                   style={{ viewTransitionName: "event-description" }}
                 >
                   <div className="max-h-72">
