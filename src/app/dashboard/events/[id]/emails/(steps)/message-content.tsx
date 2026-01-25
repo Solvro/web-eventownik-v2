@@ -70,12 +70,14 @@ function MessageContentForm({
   eventForms,
   goToPreviousStep,
   setDialogOpen,
+  setCurrentStep,
 }: {
   eventId: string;
   eventAttributes: EventAttribute[];
   eventForms: EventForm[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
@@ -121,6 +123,7 @@ function MessageContentForm({
       });
 
       setDialogOpen(false);
+      setCurrentStep(0);
 
       setTimeout(() => {
         router.refresh();
