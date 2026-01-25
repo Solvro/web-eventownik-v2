@@ -358,7 +358,10 @@ export function EventSettingsTabs({
       <UnsavedChangesAlert
         active={navGuard.active}
         onCancel={navGuard.reject}
-        onConfirm={navGuard.accept}
+        onConfirm={() => {
+          navGuard.accept();
+          setIsDirty(false);
+        }}
       />
       <Form {...form}>
         <Tabs.Root
