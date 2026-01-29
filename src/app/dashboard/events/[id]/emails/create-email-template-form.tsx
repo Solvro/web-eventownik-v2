@@ -90,6 +90,7 @@ function CreateEmailTemplateForm({
                 setCurrentStep(0);
               }}
               setDialogOpen={setDialogOpen}
+              setCurrentStep={setCurrentStep}
             />
           )}
         </div>

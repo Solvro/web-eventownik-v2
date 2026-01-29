@@ -1,10 +1,7 @@
-import { useSetAtom } from "jotai";
-
 import { AttributesForm } from "@/components/forms/event/attributes-form";
 import type { EventAttribute } from "@/types/attributes";
 
 import type { AttributeChange } from "../change-types";
-import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 type AttributeFormData = Pick<
@@ -38,8 +35,6 @@ const toChangeData = (
 });
 
 export function Attributes({ attributes, setAttributesChanges }: TabProps) {
-  const setIsDirty = useSetAtom(areSettingsDirty);
-
   // Track the original IDs to map form changes back to EventAttribute[]
   const originalAttributesMap = new Map(
     attributes.map((attribute, index) => [index, attribute]),
@@ -57,7 +52,6 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
       };
       return [...previous, newChange];
     });
-    setIsDirty(true);
   };
 
   const handleUpdate = (index: number, attribute: AttributeFormData) => {
@@ -76,7 +70,6 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
       };
       return [...previous, newChange];
     });
-    setIsDirty(true);
   };
 
   const handleRemove = (index: number, attribute: AttributeFormData) => {
@@ -95,7 +88,6 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
       };
       return [...previous, newChange];
     });
-    setIsDirty(true);
   };
 
   return (
