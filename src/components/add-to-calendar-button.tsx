@@ -27,17 +27,17 @@ export function AddToCalendarButton({ event }: { event: Event }) {
           <span className="hidden md:inline"> {t("addToCalendar")}</span>
         </EventInfoDiv>
       </DialogTrigger>
-      <DialogContent className="max-w-85 md:max-w-100">
+      <DialogContent className="w-95/100 max-w-md">
         <DialogTitle></DialogTitle>
         <div className="space-y-6">
           <div className="grid">
-            <span className="break mb-2 max-w-80 text-3xl font-bold">
+            <span className="break mb-2 max-w-80 truncate text-3xl font-bold">
               {event.name}
             </span>
             <div className="flex items-start gap-3">
               <CalendarClock
                 size={60}
-                className="text-muted-foreground shrink-0"
+                className="text-muted-foreground shrink-0 stroke-1"
               />
               <div>
                 <div className="font-medium">
@@ -52,9 +52,14 @@ export function AddToCalendarButton({ event }: { event: Event }) {
             </div>
 
             {event.location == null ? null : (
-              <div className="mt-4 flex items-center gap-2">
-                <MapPin size={20} className="text-muted-foreground shrink-0" />
-                <span className="text-muted-foreground">{event.location}</span>
+              <div className="mt-4 flex items-start gap-2">
+                <MapPin
+                  size={20}
+                  className="text-muted-foreground mt-0.5 shrink-0"
+                />
+                <span className="text-muted-foreground line-clamp-2">
+                  {event.location}
+                </span>
               </div>
             )}
           </div>
@@ -71,7 +76,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
               <Image
                 src="/assets/logo/googlecalendar.svg"
                 alt="Google Calendar"
-                className="invert"
+                className="dark:invert"
                 width={20}
                 height={20}
               />
@@ -88,7 +93,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
               <Image
                 src="/assets/logo/apple.svg"
                 alt="Apple"
-                className="invert"
+                className="dark:invert"
                 width={20}
                 height={20}
               />
