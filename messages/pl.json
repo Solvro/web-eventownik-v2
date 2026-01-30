@@ -14,6 +14,7 @@
     "registrationSuccess": "Twoja rejestracja przebiegła pomyślnie!",
     "registrationFailed": "Rejestracja na wydarzenie nie powiodła się.\\nSpróbuj ponownie później",
     "registrationFailedTitle": "Rejestracja na wydarzenie nie powiodła się",
+    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
     "tryAgainLater": "Spróbuj ponownie później",
     "serverError": "Błąd serwera",
     "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",

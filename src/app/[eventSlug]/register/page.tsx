@@ -75,7 +75,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         zgadzasz się na warunki zawarte w<br />
         <Link
           href={`/${event.slug}/privacy`}
-          className="text-[var(--event-primary-color)]/90"
+          className="text-(--event-primary-color)/90"
           target="_blank"
         >
           polityce prywatności
@@ -88,7 +88,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
             oraz{" "}
             <Link
               href={event.termsLink}
-              className="text-[var(--event-primary-color)]/90"
+              className="text-(--event-primary-color)/90"
               target="_blank"
             >
               regulaminie
