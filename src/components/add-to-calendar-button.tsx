@@ -26,17 +26,17 @@ export function AddToCalendarButton({ event }: { event: Event }) {
           <span className="hidden md:inline"> {t("addToCalendar")}</span>
         </EventInfoDiv>
       </DialogTrigger>
-      <DialogContent className="w-80">
+      <DialogContent className="max-w-75 md:max-w-100">
         <DialogTitle>{t("addToCalendar")}</DialogTitle>
         <div className="space-y-2">
-          <div className="flex flex-col gap-2">
+          <div className="grid gap-2 md:grid-cols-2">
             <Button
               onClick={(event_) => {
                 event_.preventDefault();
                 addToGoogleCalendar(event);
               }}
               variant={"outline"}
-              className="justify-start"
+              className="grow justify-start"
             >
               <Image
                 src="/assets/logo/googlecalendar.svg"
@@ -53,7 +53,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
                 downloadICSFile(event);
               }}
               variant={"outline"}
-              className="justify-start"
+              className="grow justify-start"
             >
               <Download size={20} />
               {t("download")}

@@ -6,7 +6,7 @@
     "addToCalendar": "Dodaj do kalendarza",
     "registerForThisEvent": "Zapisz się na to wydarzenie",
     "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
-    "download": "Pobierz"
+    "download": "Pobierz (.ics)"
   },
   "Form": {
     "invalidEmail": "Nieprawidłowy adres email.",
