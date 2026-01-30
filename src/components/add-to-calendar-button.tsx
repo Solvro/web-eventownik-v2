@@ -29,7 +29,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
       </DialogTrigger>
       <DialogContent className="max-w-85 md:max-w-100">
         <DialogTitle></DialogTitle>
-        <div className="-mt-8 space-y-6">
+        <div className="space-y-6">
           <div className="grid">
             <span className="break mb-2 max-w-80 text-3xl font-bold">
               {event.name}

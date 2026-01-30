@@ -1,4 +1,5 @@
 import { createEvent } from "ics";
+import sanitize from "sanitize-html";
 
 import type { Event } from "@/types/event";
 
@@ -9,7 +10,12 @@ export function downloadICSFile(event: Event) {
   const endDate = new Date(event.endDate);
   const { error, value } = createEvent({
     title: event.name,
-    description: event.description ?? undefined,
+    description:
+      event.description == null
+        ? undefined
+        : sanitize(event.description, {
+            allowedTags: [],
+          }),
     start: [
       startDate.getFullYear(),
       startDate.getMonth() + 1,
