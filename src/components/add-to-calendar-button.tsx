@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarClock, CalendarPlus, Download, MapPin } from "lucide-react";
+import { CalendarClock, CalendarPlus, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -64,7 +64,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
             )}
           </div>
 
-          <div className="grid gap-2 md:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               onClick={(event_) => {
                 event_.preventDefault();
@@ -98,17 +98,6 @@ export function AddToCalendarButton({ event }: { event: Event }) {
                 height={20}
               />
               Apple
-            </Button>
-            <Button
-              onClick={(event_) => {
-                event_.preventDefault();
-                downloadICSFile(event);
-              }}
-              variant={"outline"}
-              className="col-span-2 grow justify-start"
-            >
-              <Download size={20} />
-              {t("download")}
             </Button>
           </div>
         </div>
