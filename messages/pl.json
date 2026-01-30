@@ -5,7 +5,8 @@
     "fillForm": "Wypełnij formularz, aby się zarejestrować",
     "addToCalendar": "Dodaj do kalendarza",
     "registerForThisEvent": "Zapisz się na to wydarzenie",
-    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku"
+    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
+    "download": "Pobierz"
   },
   "Form": {
     "invalidEmail": "Nieprawidłowy adres email.",
