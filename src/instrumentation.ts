@@ -21,16 +21,22 @@ export function register() {
     typeof serviceNameEnv === "string" && serviceNameEnv.trim() !== ""
       ? serviceNameEnv
       : "eventownik-web";
-  const endpointEnv = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  const endpointEnv = process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_ENDPOINT;
   const endpoint =
     typeof endpointEnv === "string" && endpointEnv.trim() !== ""
       ? endpointEnv.replace(/\/$/, "")
       : "https://ingest.signoz.b.solvro.pl";
 
+  const ingestionKey = process.env.SIGNOZ_INGESTION_KEY;
+
   registerOTel({
     serviceName,
     traceExporter: new OTLPHttpJsonTraceExporter({
       url: `${endpoint}/v1/traces`,
+      headers:
+        ingestionKey != null && ingestionKey.trim().length > 0
+          ? { "signoz-ingestion-key": ingestionKey }
+          : undefined,
     }),
   });
 }

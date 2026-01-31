@@ -2,7 +2,7 @@
 
 import { metrics } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
   MeterProvider,
   PeriodicExportingMetricReader,
@@ -22,7 +22,7 @@ export function initializeWebVitals() {
     "https://ingest.signoz.b.solvro.pl";
   const endpoint = rawEndpoint.replace(/\/$/, "");
 
-  const resource = new Resource({
+  const resource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]:
       process.env.NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME ??
       "eventownik-web-frontend",
