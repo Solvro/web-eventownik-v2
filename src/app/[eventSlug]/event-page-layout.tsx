@@ -41,7 +41,7 @@ export function EventPageLayout({
           primaryColor={event.primaryColor || "#3672fd"}
         />
         <div
-          className="flex-1 text-[#f0f0ff]"
+          className="flex flex-1 text-[#f0f0ff]"
           style={{
             backgroundImage: `${showForm ? "linear-gradient(to bottom, #1F1F1F40, #000000)" : "linear-gradient(to bottom, #1F1F1F40, #00000096, #000000b5)"}, url(${
               event.photoUrl == null
