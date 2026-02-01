@@ -58,7 +58,7 @@ export function EventPageLayout({
               "container mx-auto flex flex-1 flex-col justify-between overflow-hidden p-4 sm:h-dvh",
             )}
           >
-            <nav className="flex w-full flex-wrap items-center justify-between sm:pl-8">
+            <nav className="flex w-full flex-wrap items-center justify-between max-sm:gap-3 sm:pl-8">
               <div style={{ viewTransitionName: "app-logo" }}>
                 <AppLogo forceTheme="dark" />
               </div>
@@ -68,16 +68,16 @@ export function EventPageLayout({
               >
                 <LanguageSwitch
                   variant="ghost"
-                  className="hover:bg-background/20 bg-background/10 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
+                  className="hover:bg-background/20 bg-background/10 max-sm:hover:bg-background/30 max-sm:bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
                 />
                 <ThemeSwitch
                   variant="ghost"
-                  className="hover:bg-background/20 bg-background/10 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
+                  className="hover:bg-background/20 bg-background/10 max-sm:hover:bg-background/30 max-sm:bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
                 />
               </div>
             </nav>
             <div className="flex min-h-0 flex-col gap-2">
-              <div className="flex min-h-0 flex-col px-4 py-8 sm:px-8">
+              <div className="flex min-h-0 flex-col pt-8 sm:px-8">
                 <h1
                   className="mb-4 text-4xl font-bold md:text-5xl"
                   style={{ viewTransitionName: "event-title" }}
