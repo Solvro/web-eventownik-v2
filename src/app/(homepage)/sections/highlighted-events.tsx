@@ -108,7 +108,7 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-[600px] min-w-0 -translate-x-1/2 overflow-hidden sm:aspect-[25/16] md:w-full"
+      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-[600px] min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
       onClick={() => {
         onClick(index);
       }}
@@ -140,7 +140,7 @@ function CarouselImage({
             {title}
           </h3>
           {description == null ? null : (
-            <p className="w-7/8 text-xs max-[370px]:line-clamp-2 max-[320px]:line-clamp-1 sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
+            <p className="w-7/8 text-xs max-[370px]:line-clamp-3 sm:w-4/5 sm:text-lg md:w-3/4">
               {description}
             </p>
           )}

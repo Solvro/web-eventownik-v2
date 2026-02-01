@@ -53,11 +53,7 @@ export function EventPageLayout({
             viewTransitionName: "event-background",
           }}
         >
-          <div
-            className={cn(
-              "container mx-auto flex flex-1 flex-col justify-between overflow-hidden p-4 sm:h-dvh",
-            )}
-          >
+          <div className="container mx-auto flex flex-1 flex-col justify-between overflow-hidden p-4 sm:h-dvh">
             <nav className="flex w-full flex-wrap items-center justify-between max-sm:gap-3 sm:pl-8">
               <div style={{ viewTransitionName: "app-logo" }}>
                 <AppLogo forceTheme="dark" />
@@ -68,11 +64,11 @@ export function EventPageLayout({
               >
                 <LanguageSwitch
                   variant="ghost"
-                  className="hover:bg-background/20 bg-background/10 max-sm:hover:bg-background/30 max-sm:bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
+                  className="hover:bg-background/30 bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
                 />
                 <ThemeSwitch
                   variant="ghost"
-                  className="hover:bg-background/20 bg-background/10 max-sm:hover:bg-background/30 max-sm:bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
+                  className="hover:bg-background/30 bg-background/20 backdrop-blur-xs hover:text-[#f0f0ff] hover:backdrop-blur-sm"
                 />
               </div>
             </nav>
@@ -138,7 +134,7 @@ export function EventPageLayout({
                   className="min-h-0 pr-3 sm:text-justify"
                   style={{ viewTransitionName: "event-description" }}
                 >
-                  <div className="min-[321px]:max-h-72">
+                  <div className="max-h-72 sm:h-auto">
                     <SanitizedContent contentToSanitize={description} />
                   </div>
                 </ScrollArea>
