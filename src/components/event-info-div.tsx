@@ -13,7 +13,7 @@ export function EventInfoDiv({
   return (
     <div
       className={cn(
-        "bg-accent/10 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-xs",
+        "bg-accent/50 flex w-fit items-center gap-x-2 rounded-lg px-2 py-1 backdrop-blur-xs",
         className,
       )}
       {...props}
