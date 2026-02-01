@@ -13,7 +13,6 @@ import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PHOTO_URL } from "@/lib/api";
-import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.png";
