@@ -117,7 +117,7 @@ function Event({
               <div className="w-full space-y-6">
                 <p className="text-4xl font-semibold">{name}</p>
                 <p className="text-sm font-medium">{organizer}</p>
-                <ScrollArea className="h-38 pr-3 text-justify">
+                <ScrollArea className="h-38 pr-3 sm:text-justify">
                   <SanitizedContent contentToSanitize={description ?? ""} />
                 </ScrollArea>
               </div>

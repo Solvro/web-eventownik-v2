@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Tabs from "@radix-ui/react-tabs";
 import { formatISO9075, getHours, getMinutes } from "date-fns";
-import { useAtomValue, useSetAtom } from "jotai";
 import { Loader, Save, Trash2 } from "lucide-react";
-import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,6 +29,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -38,7 +37,6 @@ import type { Event } from "@/types/event";
 
 import { deleteEvent, updateEvent } from "./actions";
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
-import { areSettingsDirty } from "./settings-context";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
@@ -89,10 +87,7 @@ export function EventSettingsTabs({
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
-  const [event, setEvent] = useState(unmodifiedEvent);
-
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
-
   const [coOrganizersChanges, setCoOrganizersChanges] = useState<
     CoOrganizerChange[]
   >([]);
@@ -108,9 +103,6 @@ export function EventSettingsTabs({
   const router = useRouter();
 
   const [isSaving, setIsSaving] = useState(false);
-
-  const isDirty = useAtomValue(areSettingsDirty);
-  const setIsDirty = useSetAtom(areSettingsDirty);
 
   const parseSocialMediaLinks = (
     links: string[] | null,
@@ -168,18 +160,11 @@ export function EventSettingsTabs({
     },
   });
 
-  useEffect(() => {
-    setEvent(unmodifiedEvent);
-    return () => {
-      setEventPrimaryColors(unmodifiedEvent.primaryColor);
-    };
-  }, [unmodifiedEvent]);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
 
-  useEffect(() => {
-    if (form.formState.isDirty) {
-      setIsDirty(true);
-    }
-  }, [form.formState.isDirty, setIsDirty]);
+  setEventPrimaryColors(form.getValues("primaryColor"));
 
   const handleTabChange = async (newValue: string) => {
     const isValid = await form.trigger();
@@ -218,7 +203,7 @@ export function EventSettingsTabs({
     values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
 
     const newEvent: Event = {
-      ...event,
+      ...unmodifiedEvent,
       name: values.name,
       description: values.description ?? "",
       startDate: formatISO9075(values.startDate, {
@@ -245,8 +230,6 @@ export function EventSettingsTabs({
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
     };
-
-    setEvent(newEvent);
 
     try {
       const base64Image =
@@ -309,8 +292,7 @@ export function EventSettingsTabs({
       } else {
         setCoOrganizersChanges([]);
         setAttributesChanges([]);
-        setEvent(eventResult);
-        setIsDirty(false);
+        form.reset(values);
         toast({
           variant: "default",
           title: "Zapisano zmiany w wydarzeniu",
@@ -330,7 +312,6 @@ export function EventSettingsTabs({
 
   const handleDeleteEvent = async () => {
     const result = await deleteEvent(unmodifiedEvent.id);
-    // setIsDirty(false);
     if ("errors" in result) {
       toast({
         variant: "destructive",
@@ -349,16 +330,12 @@ export function EventSettingsTabs({
     setIsDeleteEventDialogOpen(false);
   };
 
-  const navGuard = useNavigationGuard({
-    enabled: isDirty,
-  });
-
   return (
     <>
       <UnsavedChangesAlert
-        active={navGuard.active}
-        onCancel={navGuard.reject}
-        onConfirm={navGuard.accept}
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
       />
       <Form {...form}>
         <Tabs.Root

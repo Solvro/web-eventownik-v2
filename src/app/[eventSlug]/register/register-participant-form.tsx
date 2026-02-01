@@ -17,6 +17,14 @@ export function RegisterParticipantForm({ event }: { event: Event }) {
     );
   }
 
+  if (!event.firstForm.isOpen) {
+    return (
+      <div>
+        <p className="text-sm text-red-500">{t("registrationDisabled")}</p>
+      </div>
+    );
+  }
+
   return (
     <ParticipantForm
       attributes={event.firstForm.attributes}

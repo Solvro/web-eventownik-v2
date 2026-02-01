@@ -79,7 +79,7 @@ export default async function DashboardEventPage({
         <div className="flex min-h-0 flex-1 flex-col gap-6">
           {event.description != null && event.description.trim() !== "" ? (
             <div className="max-h-[50vh] min-h-0 overflow-auto xl:max-h-full">
-              <ScrollArea className="h-full pr-3 text-justify">
+              <ScrollArea className="h-full pr-3 md:text-justify">
                 <SanitizedContent contentToSanitize={event.description} />
               </ScrollArea>
             </div>
