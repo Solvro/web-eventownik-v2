@@ -244,10 +244,12 @@ export function CreateEventForm() {
 
             setEvent({
               name: "",
-              description: "",
+              description: "<p></p>",
               // Tomorrow, midnight
               startDate: new Date(new Date().setHours(24, 0, 0, 0)),
               endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              startTime: "12:00",
+              endTime: "12:00",
               location: "",
               organizer: "",
               photoUrl: "",
@@ -307,6 +309,7 @@ export function CreateEventForm() {
         onCancel={onCancel}
         onConfirm={() => {
           setCurrentStep(0);
+          form.reset();
           onConfirm();
         }}
       />

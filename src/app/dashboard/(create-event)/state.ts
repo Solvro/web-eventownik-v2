@@ -10,6 +10,7 @@ export const AttributeTypes = [
   "number",
   "textarea",
   "file",
+  "drawing",
   "select",
   "multiselect",
   "block",
@@ -27,7 +28,9 @@ export interface Event {
   name: string;
   description: string | undefined;
   startDate: Date;
+  startTime: string;
   endDate: Date;
+  endTime: string;
   location: string | undefined;
   organizer: string | undefined;
   photoUrl: string;
@@ -47,6 +50,8 @@ export const eventAtom = atom<Event>({
   // Tomorrow, midnight
   startDate: new Date(new Date().setHours(24, 0, 0, 0)),
   endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  startTime: "12:00",
+  endTime: "12:00",
   location: "",
   organizer: "",
   photoUrl: "",

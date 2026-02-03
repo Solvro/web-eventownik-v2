@@ -281,8 +281,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             <WysiwygEditor
               content={getValues("description") ?? ""}
               onChange={field.onChange}
-              editorClassName="min-h-[150px] h-full resize-none"
-              className="overflow-hidden"
+              editorClassName="min-h-[150px] h-full"
             />
             <FormMessage>{formState.errors.description?.message}</FormMessage>
           </FormItem>

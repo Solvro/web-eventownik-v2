@@ -57,7 +57,7 @@ function CreateEmailTemplateForm({
           <SquarePlus className="h-6 w-6" /> Stwórz szablon
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:overflow-y-auto">
         <DialogHeader className="sr-only">
           <DialogTitle>Stwórz szablon</DialogTitle>
         </DialogHeader>
@@ -90,6 +90,7 @@ function CreateEmailTemplateForm({
                 setCurrentStep(0);
               }}
               setDialogOpen={setDialogOpen}
+              setCurrentStep={setCurrentStep}
             />
           )}
         </div>

@@ -80,16 +80,28 @@ export default async function EventListPage() {
           <div className="flex items-center gap-2">
             <CreateEventForm />
             {isSuperAdmin ? (
-              <Button
-                asChild
-                variant="ghost"
-                className="border border-amber-400 bg-amber-200/50 hover:bg-amber-200/70 dark:border-amber-400/70 dark:bg-amber-200/20 dark:hover:bg-amber-200/30"
-              >
-                <Link href="/dashboard/admin">
-                  <Shield />
-                  Panel superadmina
-                </Link>
-              </Button>
+              <>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="hidden border border-amber-400 bg-amber-200/50 hover:bg-amber-200/70 sm:inline-flex dark:border-amber-400/70 dark:bg-amber-200/20 dark:hover:bg-amber-200/30"
+                >
+                  <Link href="/dashboard/admin">
+                    <Shield />
+                    Panel superadmina
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  className="ml-auto size-12 border border-amber-400 bg-amber-200/50 hover:bg-amber-200/70 sm:hidden dark:border-amber-400/70 dark:bg-amber-200/20 dark:hover:bg-amber-200/30"
+                >
+                  <Link href="/dashboard/admin">
+                    <Shield />
+                  </Link>
+                </Button>
+              </>
             ) : null}
           </div>
         </div>

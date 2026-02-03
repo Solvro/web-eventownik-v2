@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AttributeInput } from "@/components/attribute-input";
+import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,7 +93,10 @@ export function ParticipantForm({
     defaultValues: {
       ...(includeEmail && { email: "" }),
       ...userData?.attributes
-        .filter((attribute) => attribute.type !== "file")
+        .filter(
+          (attribute) =>
+            attribute.type !== "file" && attribute.type !== "drawing",
+        )
         .reduce<Record<string, string>>((accumulator, attribute) => {
           accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
           return accumulator;
@@ -217,6 +221,42 @@ export function ParticipantForm({
    * we don't rely on it to show the success screen.
    */
   async function handleFormSubmit(values: z.infer<typeof formSchema>) {
+    // Validate required file/drawing attributes
+    const requiredFileDrawingAttributes = sortedAttributes.filter(
+      (attribute) =>
+        attribute.isRequired &&
+        (attribute.type === "file" || attribute.type === "drawing"),
+    );
+
+    let hasValidationErrors = false;
+
+    for (const attribute of requiredFileDrawingAttributes) {
+      const hasFile = files.some(
+        (file) => file.name === attribute.id.toString(),
+      );
+      const hasExistingValue =
+        userData?.attributes.some(
+          (userAttribute) =>
+            userAttribute.id === attribute.id &&
+            userAttribute.meta.pivot_value !== "" &&
+            userAttribute.meta.pivot_value.length > 0,
+        ) ?? false;
+
+      if (!hasFile && !hasExistingValue) {
+        hasValidationErrors = true;
+        form.setError(attribute.id.toString(), {
+          message:
+            attribute.type === "file"
+              ? "To pole wymaga wgrania pliku."
+              : "To pole wymaga narysowania czegoś.",
+        });
+      }
+    }
+
+    if (hasValidationErrors) {
+      return;
+    }
+
     if (hCaptchaToken === null) {
       pendingFormData.current = values;
 
@@ -295,6 +335,19 @@ export function ParticipantForm({
                 <FormControl>
                   {attribute.type === "file" ? (
                     <AttributeInputFile
+                      attribute={attribute}
+                      field={field}
+                      setError={form.control.setError}
+                      resetField={form.resetField}
+                      setFiles={setFiles}
+                      lastUpdate={
+                        userData?.attributes.find(
+                          (attribute_) => attribute_.id === attribute.id,
+                        )?.meta.pivot_updated_at ?? null
+                      }
+                    />
+                  ) : attribute.type === "drawing" ? (
+                    <AttributeInputDrawing
                       attribute={attribute}
                       field={field}
                       setError={form.control.setError}

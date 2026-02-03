@@ -1,10 +1,7 @@
-import { useSetAtom } from "jotai";
-
 import { CoorganizersForm } from "@/components/forms/event/coorganizers-form";
 import type { CoOrganizer, Permission } from "@/types/co-organizer";
 
 import type { CoOrganizerChange } from "../change-types";
-import { areSettingsDirty } from "../settings-context";
 import type { TabProps } from "./tab-props";
 
 export function CoOrganizers({
@@ -12,8 +9,6 @@ export function CoOrganizers({
   setCoOrganizers,
   setCoOrganizersChanges,
 }: TabProps) {
-  const setIsDirty = useSetAtom(areSettingsDirty);
-
   const originalCoOrganizersMap = new Map(
     coOrganizers.map((coOrganizer, index) => [index, coOrganizer]),
   );
@@ -34,7 +29,6 @@ export function CoOrganizers({
     );
 
     setCoOrganizers(updatedCoOrganizers);
-    setIsDirty(true);
   };
 
   const handleAdd = (coorganizer: {
@@ -56,7 +50,6 @@ export function CoOrganizers({
       };
       return [...previous, newChange];
     });
-    setIsDirty(true);
   };
 
   const handleRemove = (
@@ -76,7 +69,6 @@ export function CoOrganizers({
       };
       return [...previous, newChange];
     });
-    setIsDirty(true);
   };
 
   return (

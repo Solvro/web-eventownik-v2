@@ -27,6 +27,7 @@ import type { FlattenedParticipant } from "@/types/participant";
 import { updateParticipant } from "../actions";
 import { DeleteParticipantDialog } from "./delete-dialog";
 import { DownloadAttributeFileButton } from "./download-file-attribute-button";
+import { DrawingPreviewButton } from "./drawing-preview-button";
 import { EditParticipantButton } from "./edit-button";
 
 interface TableRowFormProps {
@@ -163,6 +164,7 @@ export function TableRowForm({
           className={cn(
             "[&>td:last-of-type]:sticky [&>td:last-of-type]:right-[-1px] [&>td:last-of-type>button]:backdrop-blur-lg",
             isEditMode && "bg-accent/30",
+            row.getIsExpanded() && "border-l-primary border-l-2",
           )}
         >
           {row.getVisibleCells().map((cell) => {
@@ -211,6 +213,15 @@ export function TableRowForm({
                     row.original[attribute.id] !== undefined &&
                     row.original[attribute.id] !== "" ? (
                     <DownloadAttributeFileButton
+                      attribute={attribute}
+                      eventId={eventId}
+                      participant={row.original}
+                    />
+                  ) : attribute?.type === "drawing" &&
+                    row.original[attribute.id] !== null &&
+                    row.original[attribute.id] !== undefined &&
+                    row.original[attribute.id] !== "" ? (
+                    <DrawingPreviewButton
                       attribute={attribute}
                       eventId={eventId}
                       participant={row.original}
@@ -277,6 +288,15 @@ export function TableRowForm({
                           row.original[attribute.id] !== undefined &&
                           row.original[attribute.id] !== "" ? (
                           <DownloadAttributeFileButton
+                            attribute={attribute}
+                            eventId={eventId}
+                            participant={row.original}
+                          />
+                        ) : attribute.type === "drawing" &&
+                          row.original[attribute.id] !== null &&
+                          row.original[attribute.id] !== undefined &&
+                          row.original[attribute.id] !== "" ? (
+                          <DrawingPreviewButton
                             attribute={attribute}
                             eventId={eventId}
                             participant={row.original}
