@@ -136,9 +136,11 @@ function CarouselImage({
         />
         <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-2 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-4 py-8 text-left text-white sm:gap-4 sm:px-8 sm:py-16">
           <Badge>{year}</Badge>
-          <h3 className="text-2xl font-semibold sm:text-3xl">{title}</h3>
+          <h3 className="text-2xl font-semibold max-sm:text-xl sm:text-3xl">
+            {title}
+          </h3>
           {description == null ? null : (
-            <p className="w-7/8 text-xs sm:w-4/5 sm:text-base md:w-3/4 md:text-lg">
+            <p className="w-7/8 text-xs max-[370px]:line-clamp-3 sm:w-4/5 sm:text-lg md:w-3/4">
               {description}
             </p>
           )}
