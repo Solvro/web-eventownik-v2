@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 
+import { useEditorActiveState } from "@/hooks/use-editor-active-state";
 import { getBase64FromUrl } from "@/lib/utils";
 
 import { Button } from "./ui/button";
@@ -34,19 +35,20 @@ function EditorMenuBar({
   isEmailEditor?: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const activeState = useEditorActiveState(editor);
 
   if (editor === null) {
     return <div className="h-8">Ładowanie menu...</div>;
   }
 
   return (
-    <div className="flex gap-4 pb-4">
+    <div className="flex flex-wrap gap-4 pb-4">
       <div>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              variant={editor.isActive("bold") ? "eventDefault" : "eventGhost"}
+              variant={activeState.bold ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
             >
@@ -59,9 +61,7 @@ function EditorMenuBar({
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              variant={
-                editor.isActive("italic") ? "eventDefault" : "eventGhost"
-              }
+              variant={activeState.italic ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
             >
@@ -74,7 +74,7 @@ function EditorMenuBar({
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              variant={editor.isActive("code") ? "eventDefault" : "eventGhost"}
+              variant={activeState.code ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleCode().run()}
             >
@@ -84,97 +84,7 @@ function EditorMenuBar({
           <TooltipContent>Kod (czcionka mono)</TooltipContent>
         </Tooltip>
       </div>
-      <div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant={
-                editor.isActive("heading", { level: 1 })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-            >
-              <Heading1 />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia pierwszego</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant={
-                editor.isActive("heading", { level: 2 })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-            >
-              <Heading2 />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia drugiego</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant={
-                editor.isActive("heading", { level: 3 })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-            >
-              <Heading3 />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia trzeciego</TooltipContent>
-        </Tooltip>
-      </div>
-      <div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant={
-                editor.isActive("bulletList") ? "eventDefault" : "eventGhost"
-              }
-              type="button"
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-            >
-              <List />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Lista punktowa</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant={
-                editor.isActive("orderedList") ? "eventDefault" : "eventGhost"
-              }
-              type="button"
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            >
-              <ListOrdered />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Lista numerowana</TooltipContent>
-        </Tooltip>
-      </div>
+
       <div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -182,11 +92,7 @@ function EditorMenuBar({
               size="icon"
               type="button"
               onClick={() => editor.chain().focus().setTextAlign("left").run()}
-              variant={
-                editor.isActive({ textAlign: "left" })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
+              variant={activeState.alignLeft ? "eventDefault" : "eventGhost"}
             >
               <AlignLeft />
             </Button>
@@ -205,11 +111,7 @@ function EditorMenuBar({
                   editor.chain().focus().setTextAlign("center").run();
                 }
               }}
-              variant={
-                editor.isActive({ textAlign: "center" })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
+              variant={activeState.alignCenter ? "eventDefault" : "eventGhost"}
             >
               <AlignCenter />
             </Button>
@@ -228,11 +130,7 @@ function EditorMenuBar({
                   editor.chain().focus().setTextAlign("right").run();
                 }
               }}
-              variant={
-                editor.isActive({ textAlign: "right" })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
+              variant={activeState.alignRight ? "eventDefault" : "eventGhost"}
             >
               <AlignRight />
             </Button>
@@ -251,11 +149,7 @@ function EditorMenuBar({
                   editor.chain().focus().setTextAlign("justify").run();
                 }
               }}
-              variant={
-                editor.isActive({ textAlign: "justify" })
-                  ? "eventDefault"
-                  : "eventGhost"
-              }
+              variant={activeState.alignJustify ? "eventDefault" : "eventGhost"}
             >
               <AlignJustify />
             </Button>
@@ -263,6 +157,83 @@ function EditorMenuBar({
           <TooltipContent>Justowanie</TooltipContent>
         </Tooltip>
       </div>
+      <div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.bulletList ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+            >
+              <List />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Lista punktowa</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.orderedList ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            >
+              <ListOrdered />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Lista numerowana</TooltipContent>
+        </Tooltip>
+      </div>
+
+      <div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.heading1 ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 1 }).run()
+              }
+            >
+              <Heading1 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Nagłówek stopnia pierwszego</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.heading2 ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 2 }).run()
+              }
+            >
+              <Heading2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Nagłówek stopnia drugiego</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.heading3 ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 3 }).run()
+              }
+            >
+              <Heading3 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Nagłówek stopnia trzeciego</TooltipContent>
+        </Tooltip>
+      </div>
+
       <input
         type="file"
         className="sr-only"
@@ -283,7 +254,7 @@ function EditorMenuBar({
             size="icon"
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            variant={editor.isActive("image") ? "eventDefault" : "eventGhost"}
+            variant="eventGhost"
           >
             <ImageIcon />
           </Button>
@@ -298,7 +269,7 @@ function EditorMenuBar({
                 size="icon"
                 type="button"
                 onClick={() => editor.chain().focus().insertContent("/").run()}
-                variant={editor.isActive("mention") ? "default" : "ghost"}
+                variant="ghost"
               >
                 <SlashSquare />
               </Button>
@@ -313,7 +284,7 @@ function EditorMenuBar({
                 onClick={() =>
                   editor.chain().focus().insertContent("/formularz").run()
                 }
-                variant={editor.isActive("mention") ? "default" : "ghost"}
+                variant="ghost"
               >
                 <FileSpreadsheet />
               </Button>
@@ -328,7 +299,7 @@ function EditorMenuBar({
                 onClick={() =>
                   editor.chain().focus().insertContent("/atrybut").run()
                 }
-                variant={editor.isActive("mention") ? "default" : "ghost"}
+                variant="ghost"
               >
                 <Tag />
               </Button>
