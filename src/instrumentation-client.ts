@@ -15,13 +15,7 @@ import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
 import { API_URL } from "@/lib/api";
 
-let isInitialized = false;
-
 export function initializeTracing() {
-  if (typeof window === "undefined" || isInitialized) {
-    return;
-  }
-
   const rawEndpoint = process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_ENDPOINT;
   const serviceName = process.env.NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME;
 
@@ -74,6 +68,6 @@ export function initializeTracing() {
     ],
     tracerProvider: provider,
   });
-
-  isInitialized = true;
 }
+
+initializeTracing();
