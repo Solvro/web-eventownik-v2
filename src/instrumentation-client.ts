@@ -23,21 +23,24 @@ import { onCLS, onINP, onLCP } from "web-vitals";
 import { API_URL } from "@/lib/api";
 
 function initializeTracing() {
-  const rawEndpoint = process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_ENDPOINT;
-  const serviceName = process.env.NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME;
-
-  if (
-    rawEndpoint == null ||
-    rawEndpoint === "" ||
-    serviceName == null ||
-    serviceName === ""
-  ) {
-    return;
-  }
+  const rawEndpoint =
+    process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_ENDPOINT ??
+    "http://localhost:4318";
+  const serviceName =
+    process.env.NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME ?? "eventownik-frontend";
 
   const endpoint = rawEndpoint.replace(/\/$/, "");
 
-  const apiHostname = new URL(API_URL).hostname;
+  let apiHostname: string;
+
+  try {
+    apiHostname = new URL(API_URL).hostname;
+  } catch {
+    console.error(
+      "[Client-side Instrumentation] Unable to parse API URL. Skipping initialization.",
+    );
+    return;
+  }
 
   const exporter = new OTLPTraceExporter({
     url: `${endpoint}/v1/traces`,
@@ -63,7 +66,7 @@ function initializeTracing() {
     instrumentations: [
       new DocumentLoadInstrumentation(),
       new FetchInstrumentation({
-        ignoreUrls: [/localhost:3000\/_next\//, /\/api\/telemetry/],
+        ignoreUrls: [/localhost(?::\d+)?\/_next\//, /\/api\/telemetry/],
         propagateTraceHeaderCorsUrls: [apiRegex],
       }),
       new UserInteractionInstrumentation({
