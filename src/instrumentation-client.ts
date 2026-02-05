@@ -138,4 +138,8 @@ function initializeWebVitals() {
 }
 
 initializeTracing();
-initializeWebVitals();
+
+const webVitalsEnabled = process.env.NEXT_PUBLIC_ENABLE_WEB_VITALS === "false";
+if (webVitalsEnabled) {
+  initializeWebVitals();
+}
