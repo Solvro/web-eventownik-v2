@@ -37,12 +37,13 @@ import {
 import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
@@ -288,7 +289,7 @@ export function CreateEventForm() {
   useAutoSave(setEvent, form);
 
   return (
-    <Dialog
+    <Credenza
       open={dialogOpen}
       onOpenChange={(open: boolean) => {
         if (open) {
@@ -313,82 +314,84 @@ export function CreateEventForm() {
           onConfirm();
         }}
       />
-      <DialogTrigger asChild>
+      <CredenzaTrigger asChild>
         <Button variant="outline">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
-      </DialogTrigger>
-      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz formularz</DialogTitle>
-        </DialogHeader>
-        <FormContainer
-          step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
-          title={steps[currentStep].title}
-          description={steps[currentStep].description}
-          icon={steps[currentStep].icon}
-        >
-          <Form {...form}>
-            <form
-              className="flex w-full flex-col items-end gap-4"
-              onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
-            >
-              {steps[currentStep].content}
-              <div
-                className={cn(
-                  "flex w-full flex-row items-center gap-4",
-                  currentStep === 0 ? "justify-end" : "justify-between",
-                )}
+      </CredenzaTrigger>
+      <CredenzaContent className="sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
+        <CredenzaHeader className="sr-only">
+          <CredenzaTitle>Stwórz formularz</CredenzaTitle>
+        </CredenzaHeader>
+        <CredenzaBody className="mt-4 max-h-[90vh] overflow-y-scroll">
+          <FormContainer
+            step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
+            title={steps[currentStep].title}
+            description={steps[currentStep].description}
+            icon={steps[currentStep].icon}
+          >
+            <Form {...form}>
+              <form
+                className="flex w-full flex-col items-end gap-4"
+                onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
               >
-                {currentStep !== 0 && (
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    onClick={() => {
-                      setCurrentStep((value) => value - 1);
-                    }}
-                    disabled={form.formState.isSubmitting}
-                  >
-                    <ArrowLeft /> Wróć
-                  </Button>
-                )}
-                {currentStep === steps.length - 1 ? (
-                  <Button
-                    className="w-min"
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <SquarePlus />
-                    )}{" "}
-                    Dodaj wydarzenie
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-min"
-                    variant="ghost"
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <>
-                        Zapisywanie danych...{" "}
+                {steps[currentStep].content}
+                <div
+                  className={cn(
+                    "flex w-full flex-row items-center gap-4",
+                    currentStep === 0 ? "justify-end" : "justify-between",
+                  )}
+                >
+                  {currentStep !== 0 && (
+                    <Button
+                      variant="ghost"
+                      type="button"
+                      onClick={() => {
+                        setCurrentStep((value) => value - 1);
+                      }}
+                      disabled={form.formState.isSubmitting}
+                    >
+                      <ArrowLeft /> Wróć
+                    </Button>
+                  )}
+                  {currentStep === steps.length - 1 ? (
+                    <Button
+                      className="w-min"
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                    >
+                      {form.formState.isSubmitting ? (
                         <Loader2 className="animate-spin" />
-                      </>
-                    ) : (
-                      <>
-                        Dalej <ArrowRight />
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </form>
-          </Form>
-        </FormContainer>
-      </DialogContent>
-    </Dialog>
+                      ) : (
+                        <SquarePlus />
+                      )}{" "}
+                      Dodaj wydarzenie
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-min"
+                      variant="ghost"
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <>
+                          Zapisywanie danych...{" "}
+                          <Loader2 className="animate-spin" />
+                        </>
+                      ) : (
+                        <>
+                          Dalej <ArrowRight />
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </FormContainer>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   );
 }

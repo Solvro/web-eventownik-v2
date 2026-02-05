@@ -75,7 +75,11 @@ export default async function RootLayout({
       suppressHydrationWarning={true}
       data-scroll-behavior="smooth"
     >
-      <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
+      <body
+        // eslint-disable-next-line react/no-unknown-property
+        //vaul-drawer-wrapper=""
+        className={cn(spaceGrotesk.variable, "font-sans antialiased")}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
             <NextTopLoader />
