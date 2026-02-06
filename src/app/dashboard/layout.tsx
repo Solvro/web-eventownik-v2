@@ -17,7 +17,11 @@ export default function DashboardLayout({
   children: Readonly<React.ReactNode>;
 }) {
   return (
-    <div className="min-h-screen">
+    <div
+      // eslint-disable-next-line react/no-unknown-property
+      vaul-drawer-wrapper=""
+      className="bg-background min-h-screen"
+    >
       <div className="container mx-auto">
         <header className="flex justify-between p-4">
           <Navbar authButton={<AuthButton />} />
