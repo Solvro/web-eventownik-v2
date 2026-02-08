@@ -319,78 +319,76 @@ export function CreateEventForm() {
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </CredenzaTrigger>
-      <CredenzaContent className="sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
+      <CredenzaContent className="max-w-4xl">
         <CredenzaHeader className="sr-only">
           <CredenzaTitle>Stwórz formularz</CredenzaTitle>
         </CredenzaHeader>
-        <CredenzaBody className="mt-4 max-h-[90vh] overflow-y-scroll">
-          <FormContainer
-            step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
-            title={steps[currentStep].title}
-            description={steps[currentStep].description}
-            icon={steps[currentStep].icon}
-          >
-            <Form {...form}>
-              <form
-                className="flex w-full flex-col items-end gap-4"
-                onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
+        <FormContainer
+          step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
+          title={steps[currentStep].title}
+          description={steps[currentStep].description}
+          icon={steps[currentStep].icon}
+        >
+          <Form {...form}>
+            <form
+              className="flex w-full flex-col items-end gap-4"
+              onSubmit={form.handleSubmit(steps[currentStep].onSubmit)}
+            >
+              {steps[currentStep].content}
+              <div
+                className={cn(
+                  "flex w-full flex-row items-center gap-4",
+                  currentStep === 0 ? "justify-end" : "justify-between",
+                )}
               >
-                {steps[currentStep].content}
-                <div
-                  className={cn(
-                    "flex w-full flex-row items-center gap-4",
-                    currentStep === 0 ? "justify-end" : "justify-between",
-                  )}
-                >
-                  {currentStep !== 0 && (
-                    <Button
-                      variant="ghost"
-                      type="button"
-                      onClick={() => {
-                        setCurrentStep((value) => value - 1);
-                      }}
-                      disabled={form.formState.isSubmitting}
-                    >
-                      <ArrowLeft /> Wróć
-                    </Button>
-                  )}
-                  {currentStep === steps.length - 1 ? (
-                    <Button
-                      className="w-min"
-                      disabled={form.formState.isSubmitting}
-                      type="submit"
-                    >
-                      {form.formState.isSubmitting ? (
+                {currentStep !== 0 && (
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={() => {
+                      setCurrentStep((value) => value - 1);
+                    }}
+                    disabled={form.formState.isSubmitting}
+                  >
+                    <ArrowLeft /> Wróć
+                  </Button>
+                )}
+                {currentStep === steps.length - 1 ? (
+                  <Button
+                    className="w-min"
+                    disabled={form.formState.isSubmitting}
+                    type="submit"
+                  >
+                    {form.formState.isSubmitting ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <SquarePlus />
+                    )}{" "}
+                    Dodaj wydarzenie
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-min"
+                    variant="ghost"
+                    disabled={form.formState.isSubmitting}
+                    type="submit"
+                  >
+                    {form.formState.isSubmitting ? (
+                      <>
+                        Zapisywanie danych...{" "}
                         <Loader2 className="animate-spin" />
-                      ) : (
-                        <SquarePlus />
-                      )}{" "}
-                      Dodaj wydarzenie
-                    </Button>
-                  ) : (
-                    <Button
-                      className="w-min"
-                      variant="ghost"
-                      disabled={form.formState.isSubmitting}
-                      type="submit"
-                    >
-                      {form.formState.isSubmitting ? (
-                        <>
-                          Zapisywanie danych...{" "}
-                          <Loader2 className="animate-spin" />
-                        </>
-                      ) : (
-                        <>
-                          Dalej <ArrowRight />
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </Form>
-          </FormContainer>
-        </CredenzaBody>
+                      </>
+                    ) : (
+                      <>
+                        Dalej <ArrowRight />
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </form>
+          </Form>
+        </FormContainer>
       </CredenzaContent>
     </Credenza>
   );

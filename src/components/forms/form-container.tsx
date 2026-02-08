@@ -12,11 +12,18 @@ export function FormContainer({
   icon: Readonly<React.ReactNode>;
 }) {
   return (
-    <div className="flex w-full flex-col gap-12 sm:max-h-200">
-      <p className="absolute -mt-0.5 text-sm">{step}</p>
+    <div
+      key={step}
+      className="flex max-h-200 w-full flex-col gap-12 overflow-y-auto p-4 md:p-0"
+    >
       <div className="flex w-full flex-col items-center gap-4">
-        <div className="flex rounded-full border border-neutral-300 p-3">
-          {icon}
+        <div className="grid w-full grid-cols-3 items-start">
+          <p className="text-sm">{step}</p>
+          <div className="flex justify-center">
+            <div className="rounded-full border border-neutral-300 p-3">
+              {icon}
+            </div>
+          </div>
         </div>
         <div className="space-y-1 text-center">
           <p className="text-neutral-500">{title}</p>
