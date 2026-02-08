@@ -38,7 +38,6 @@ import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
   Credenza,
-  CredenzaBody,
   CredenzaContent,
   CredenzaHeader,
   CredenzaTitle,
