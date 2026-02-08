@@ -35,7 +35,11 @@ export function EventPageLayout({
 
   return (
     <ViewTransition>
-      <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
+      <div
+        // eslint-disable-next-line react/no-unknown-property
+        vaul-drawer-wrapper=""
+        className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row"
+      >
         <EventPrimaryColorSetter
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing,@typescript-eslint/strict-boolean-expressions
           primaryColor={event.primaryColor || "#3672fd"}
