@@ -92,21 +92,23 @@ export const textCaseData: TestCaseData = {
       },
     },
 
-    {
-      id: 1002,
-      eventId: 250,
-      name: "VIP Upgrade Notification",
-      trigger: "attribute_changed",
-      triggerValue: "ticket_type", // AI generated slop - idk if it makes any sense
-      triggerValue2: "VIP", // AI generated slop - idk if it makes any sense
-      createdAt: "2024-11-08T16:45:30.000Z",
-      updatedAt: "2025-02-01T11:18:42.000Z",
-      meta: {
-        failedCount: "1",
-        pendingCount: "0",
-        sentCount: "23",
-      },
-    },
+    // NOTE: Commented out because the attribute_changed trigger is not yet implemented on the backend.
+    // Uncomment when the backend supports this feature.
+    // {
+    //   id: 1002,
+    //   eventId: 250,
+    //   name: "VIP Upgrade Notification",
+    //   trigger: "attribute_changed",
+    //   triggerValue: "ticket_type", // AI generated slop - idk if it makes any sense
+    //   triggerValue2: "VIP", // AI generated slop - idk if it makes any sense
+    //   createdAt: "2024-11-08T16:45:30.000Z",
+    //   updatedAt: "2025-02-01T11:18:42.000Z",
+    //   meta: {
+    //     failedCount: "1",
+    //     pendingCount: "0",
+    //     sentCount: "23",
+    //   },
+    // },
   ],
 };
 

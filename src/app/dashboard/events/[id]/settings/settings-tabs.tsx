@@ -1,14 +1,20 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Tabs from "@radix-ui/react-tabs";
-import { useAtomValue, useSetAtom } from "jotai";
+import { formatISO9075, getHours, getMinutes } from "date-fns";
 import { Loader, Save, Trash2 } from "lucide-react";
-import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { setEventPrimaryColors } from "@/components/event-primary-color";
+import { EventAttributesFormSchema } from "@/components/forms/event/attributes/schema";
+import { EventCoorganizersFormSchema } from "@/components/forms/event/coorganizers/schema";
+import { EventGeneralInfoSchema } from "@/components/forms/event/general-info-form";
+import { EventPersonalizationFormSchema } from "@/components/forms/event/personalization-form";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,20 +26,30 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 import { deleteEvent, updateEvent } from "./actions";
-import { areSettingsDirty } from "./settings-context";
+import type { AttributeChange, CoOrganizerChange } from "./change-types";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
 import { General } from "./tabs/general-info";
 import { Personalization } from "./tabs/personalization";
 import type { TabProps } from "./tabs/tab-props";
+
+const EventSettingsSchema = z.intersection(
+  EventGeneralInfoSchema,
+  z.intersection(
+    EventPersonalizationFormSchema,
+    z.intersection(EventCoorganizersFormSchema, EventAttributesFormSchema),
+  ),
+);
 
 type TabComponent = (props: TabProps) => JSX.Element;
 
@@ -41,12 +57,12 @@ const TABS: { name: string; value: string; component: TabComponent }[] = [
   {
     name: "Ogólne",
     value: "general",
-    component: (props) => <General {...props} />,
+    component: () => <General />,
   },
   {
     name: "Personalizacja",
     value: "personalization",
-    component: (props) => <Personalization {...props} />,
+    component: () => <Personalization />,
   },
   {
     name: "Współorganizatorzy",
@@ -71,23 +87,14 @@ export function EventSettingsTabs({
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
-  const [event, setEvent] = useState(unmodifiedEvent);
-
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
+  const [coOrganizersChanges, setCoOrganizersChanges] = useState<
+    CoOrganizerChange[]
+  >([]);
 
-  const [coOrganizersChanges, setCoOrganizersChanges] = useState({
-    added: [] as CoOrganizer[],
-    updated: [] as CoOrganizer[],
-    deleted: [] as CoOrganizer[],
-  });
-
-  const [attributes, setAttributes] =
-    useState<EventAttribute[]>(unmodifiedAttributes);
-  const [attributesChanges, setAttributesChanges] = useState({
-    added: [] as EventAttribute[],
-    updated: [] as EventAttribute[],
-    deleted: [] as EventAttribute[],
-  });
+  const [attributesChanges, setAttributesChanges] = useState<AttributeChange[]>(
+    [],
+  );
 
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
 
@@ -95,38 +102,88 @@ export function EventSettingsTabs({
 
   const router = useRouter();
 
-  const saveFormRef = useRef<
-    () => Promise<{ success: boolean; event: Event | null }>
-    // eslint-disable-next-line @typescript-eslint/require-await
-  >(async () => {
-    return { success: true, event };
-  });
-
   const [isSaving, setIsSaving] = useState(false);
 
-  const isDirty = useAtomValue(areSettingsDirty);
-  const setIsDirty = useSetAtom(areSettingsDirty);
+  const parseSocialMediaLinks = (
+    links: string[] | null,
+  ): { label?: string; link: string }[] => {
+    if (links === null) {
+      return [];
+    }
+    return links.map((link) => {
+      const markdownMatch = /\[(.*?)]\((.*?)\)/.exec(link);
+      if (markdownMatch !== null) {
+        return { label: markdownMatch[1], link: markdownMatch[2] };
+      }
+      return { label: undefined, link };
+    });
+  };
 
-  useEffect(() => {
-    setEvent(unmodifiedEvent);
-    return () => {
-      setEventPrimaryColors(unmodifiedEvent.primaryColor);
-    };
-  }, [unmodifiedEvent]);
+  const form = useForm<z.infer<typeof EventSettingsSchema>>({
+    resolver: zodResolver(EventSettingsSchema),
+    defaultValues: {
+      // General Info fields
+      name: unmodifiedEvent.name,
+      description: unmodifiedEvent.description ?? "",
+      startDate: new Date(unmodifiedEvent.startDate),
+      startTime: `${getHours(unmodifiedEvent.startDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.startDate).toString().padStart(2, "0")}`,
+      endDate: new Date(unmodifiedEvent.endDate),
+      endTime: `${getHours(unmodifiedEvent.endDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.endDate).toString().padStart(2, "0")}`,
+      location: unmodifiedEvent.location ?? "",
+      organizer: unmodifiedEvent.organizer ?? "",
+      termsLink: unmodifiedEvent.termsLink ?? "",
+      // Personalization fields
+      photoUrl: unmodifiedEvent.photoUrl ?? undefined,
+      primaryColor: unmodifiedEvent.primaryColor,
+      participantsNumber: unmodifiedEvent.participantsCount ?? 100,
+      socialMediaLinks: parseSocialMediaLinks(unmodifiedEvent.socialMediaLinks),
+      slug: unmodifiedEvent.slug,
+      contactEmail: unmodifiedEvent.contactEmail ?? undefined,
+      // Co-organizers fields
+      coorganizers: unmodifiedCoOrganizers.map((coOrganizer) => ({
+        id: coOrganizer.id?.toString() ?? "",
+        email: coOrganizer.email,
+        permissions: coOrganizer.permissions,
+      })),
+      // Attributes fields
+      attributes: unmodifiedAttributes.map((attribute) => ({
+        id: attribute.id,
+        name: attribute.name,
+        slug: attribute.slug ?? "",
+        type: attribute.type,
+        options: attribute.options ?? [],
+        showInList: attribute.showInList,
+        isSensitiveData: attribute.isSensitiveData,
+        reason: attribute.reason ?? "",
+        order: attribute.order ?? 0,
+      })),
+    },
+  });
+
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
+    form.formState.isDirty,
+  );
+
+  setEventPrimaryColors(form.getValues("primaryColor"));
 
   const handleTabChange = async (newValue: string) => {
-    // Check if form validation passes before allowing tab change
-    const { success, event: newEvent } = await saveFormRef.current();
-    if (success && newEvent != null) {
+    const isValid = await form.trigger();
+
+    if (isValid) {
       setActiveTabValue(newValue);
-      setEvent(newEvent);
     }
   };
 
   const saveForm = async () => {
     setIsSaving(true);
-    const { success, event: newEvent } = await saveFormRef.current();
-    if (!success || newEvent == null) {
+
+    const isValid = await form.trigger();
+
+    if (!isValid) {
+      console.error(
+        "[EventSettingsTabs] Form validation failed:",
+        form.formState.errors,
+      );
       toast({
         variant: "destructive",
         title: "Nie udało się zapisać wydarzenia!",
@@ -135,10 +192,48 @@ export function EventSettingsTabs({
       setIsSaving(false);
       return;
     }
-    setEvent(newEvent);
+
+    const values = form.getValues();
+
+    values.startDate.setHours(Number.parseInt(values.startTime.split(":")[0]));
+    values.startDate.setMinutes(
+      Number.parseInt(values.startTime.split(":")[1]),
+    );
+    values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
+    values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
+
+    const newEvent: Event = {
+      ...unmodifiedEvent,
+      name: values.name,
+      description: values.description ?? "",
+      startDate: formatISO9075(values.startDate, {
+        representation: "complete",
+      }),
+      endDate: formatISO9075(values.endDate, { representation: "complete" }),
+      location: values.location ?? "",
+      organizer: values.organizer ?? "",
+      termsLink: values.termsLink ?? "",
+      photoUrl: values.photoUrl ?? null,
+      primaryColor: values.primaryColor,
+      participantsCount: values.participantsNumber,
+      socialMediaLinks: values.socialMediaLinks
+        .map((link: { label?: string; link: string }) => {
+          if (link.label != null && link.link) {
+            return `[${link.label}](${link.link})`;
+          } else if (link.link) {
+            return link.link;
+          } else {
+            return "";
+          }
+        })
+        .filter((link: string) => link !== ""),
+      slug: values.slug,
+      contactEmail: values.contactEmail ?? null,
+    };
+
     try {
       const base64Image =
-        newEvent.photoUrl?.startsWith("blob:") === true // Check if image is a blob
+        newEvent.photoUrl?.startsWith("blob:") === true
           ? await getBase64FromUrl(newEvent.photoUrl)
           : newEvent.photoUrl;
       const eventResult = await updateEvent(
@@ -151,25 +246,53 @@ export function EventSettingsTabs({
         attributesChanges,
       );
       if ("errors" in eventResult) {
-        toast({
-          variant: "destructive",
-          title: "Nie udało się zapisać wydarzenia!",
-          description: `Spróbuj zapisać wydarzenie ponownie.\n${eventResult.errors
-            .map((error) => error.message)
-            .join("\n")}`,
-        });
+        const eventErrors = eventResult.errors.filter(
+          (error) => "section" in error && error.section === "event",
+        );
+        const coOrganizerErrors = eventResult.errors.filter(
+          (error) => "section" in error && error.section === "coOrganizers",
+        );
+        const attributeErrors = eventResult.errors.filter(
+          (error) => "section" in error && error.section === "attributes",
+        );
+        const otherErrors = eventResult.errors.filter(
+          (error) => !("section" in error),
+        );
+
+        if (eventErrors.length > 0 || otherErrors.length > 0) {
+          toast({
+            variant: "destructive",
+            title: "Nie udało się zapisać wydarzenia!",
+            description: `Spróbuj zapisać wydarzenie ponownie.\n${[
+              ...eventErrors,
+              ...otherErrors,
+            ]
+              .map((error) => error.message)
+              .join("\n")}`,
+          });
+        } else {
+          // Event saved, but some co-organizers or attributes failed
+          const errorSections = [];
+          if (coOrganizerErrors.length > 0) {
+            errorSections.push("współorganizatorów");
+          }
+          if (attributeErrors.length > 0) {
+            errorSections.push("atrybutów");
+          }
+
+          toast({
+            variant: "destructive",
+            title: "Wydarzenie zapisane z błędami",
+            description: `Wydarzenie zostało zaktualizowane, ale wystąpiły problemy z: ${errorSections.join(", ")}. Odśwież stronę i spróbuj ponownie.`,
+          });
+
+          setCoOrganizersChanges([]);
+          setAttributesChanges([]);
+        }
       } else {
-        setCoOrganizersChanges({
-          added: [],
-          updated: [],
-          deleted: [],
-        });
-        setAttributesChanges({
-          added: [],
-          updated: [],
-          deleted: [],
-        });
-        setIsDirty(false);
+        setCoOrganizersChanges([]);
+        setAttributesChanges([]);
+        form.reset(values);
         toast({
           variant: "default",
           title: "Zapisano zmiany w wydarzeniu",
@@ -189,7 +312,6 @@ export function EventSettingsTabs({
 
   const handleDeleteEvent = async () => {
     const result = await deleteEvent(unmodifiedEvent.id);
-    setIsDirty(false);
     if ("errors" in result) {
       toast({
         variant: "destructive",
@@ -208,97 +330,98 @@ export function EventSettingsTabs({
     setIsDeleteEventDialogOpen(false);
   };
 
-  const navGuard = useNavigationGuard({
-    enabled: isDirty,
-  });
-
   return (
     <>
       <UnsavedChangesAlert
-        active={navGuard.active}
-        onCancel={navGuard.reject}
-        onConfirm={navGuard.accept}
+        active={isGuardActive}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
       />
-      <Tabs.Root
-        value={activeTabValue}
-        className="space-y-6"
-        onValueChange={handleTabChange}
-      >
-        {/* Tabs Navigation */}
-        <Tabs.List className="border-gray-250 flex w-fit flex-wrap justify-center space-x-2 rounded-xl border p-1 shadow-xs">
-          {TABS.map((tab) => (
-            <Tabs.Trigger
-              key={tab.value}
-              value={tab.value}
-              className="rounded-lg px-4 py-1 transition-colors hover:bg-[var(--event-primary-color)]/10 data-[state=active]:bg-[var(--event-primary-color)] data-[state=active]:text-[var(--event-primary-foreground-color)] data-[state=active]:hover:bg-[var(--event-primary-color)]/90"
-            >
-              {tab.name}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-
-        {/* Active Tab Content */}
-        {TABS.map((tab) => (
-          <Tabs.Content key={tab.value} value={tab.value}>
-            {tab.component({
-              event,
-              saveFormRef,
-              coOrganizers,
-              setCoOrganizers,
-              setCoOrganizersChanges,
-              attributes,
-              setAttributes,
-              setAttributesChanges,
-            })}
-          </Tabs.Content>
-        ))}
-      </Tabs.Root>
-      <div className="max-w-80/full flex justify-between gap-2 pt-4">
-        <Button variant="eventDefault" onClick={saveForm} disabled={isSaving}>
-          {isSaving ? <Loader className="animate-spin" /> : <Save />} Zapisz
-        </Button>
-        {activeTabValue === "general" && (
-          <AlertDialog
-            open={isDeleteEventDialogOpen}
-            onOpenChange={setIsDeleteEventDialogOpen}
-          >
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                className="bg-background hover:bg-destructive/10 border border-red-500 text-red-500"
+      <Form {...form}>
+        <Tabs.Root
+          value={activeTabValue}
+          className="flex-1 space-y-6"
+          onValueChange={handleTabChange}
+        >
+          <Tabs.List className="border-gray-250 flex w-fit flex-wrap justify-center space-x-2 rounded-xl border p-1 shadow-xs">
+            {TABS.map((tab) => (
+              <Tabs.Trigger
+                key={tab.value}
+                value={tab.value}
+                className="rounded-lg px-4 py-1 transition-colors hover:bg-[var(--event-primary-color)]/10 data-[state=active]:bg-[var(--event-primary-color)] data-[state=active]:text-[var(--event-primary-foreground-color)] data-[state=active]:hover:bg-[var(--event-primary-color)]/90"
               >
-                <Trash2 />
-                Usuń wydarzenie
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogTitle>
-                Czy na pewno chcesz usunąć to wydarzenie?
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-900">
-                Po usunięciu wydarzenia nie będzie można go przywrócić.
-              </AlertDialogDescription>
-              <AlertDialogFooter className="flex gap-x-4">
-                <AlertDialogCancel
-                  className={buttonVariants({
-                    variant: "outline",
-                  })}
+                {tab.name}
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+
+          {TABS.map((tab) => (
+            <Tabs.Content key={tab.value} value={tab.value} className="flex-1">
+              {tab.component({
+                coOrganizers,
+                setCoOrganizers,
+                setCoOrganizersChanges,
+                attributes: unmodifiedAttributes,
+                setAttributesChanges,
+              })}
+            </Tabs.Content>
+          ))}
+        </Tabs.Root>
+        <div className="flex w-full justify-between gap-2">
+          <Button variant="eventDefault" onClick={saveForm} disabled={isSaving}>
+            {isSaving ? <Loader className="animate-spin" /> : <Save />} Zapisz
+          </Button>
+          {activeTabValue === "general" && (
+            <AlertDialog
+              open={isDeleteEventDialogOpen}
+              onOpenChange={setIsDeleteEventDialogOpen}
+            >
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="bg-background hover:bg-destructive/10 hidden border border-red-500 text-red-500 sm:inline-flex"
                 >
-                  Anuluj
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDeleteEvent}
-                  className={buttonVariants({
-                    variant: "destructive",
-                  })}
+                  <Trash2 />
+                  Usuń wydarzenie
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="bg-background hover:bg-destructive/10 size-12 border border-red-500 text-red-500 sm:hidden"
                 >
-                  Usuń
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-      </div>
+                  <Trash2 />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogTitle>
+                  Czy na pewno chcesz usunąć to wydarzenie?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-gray-900">
+                  Po usunięciu wydarzenia nie będzie można go przywrócić.
+                </AlertDialogDescription>
+                <AlertDialogFooter className="flex gap-x-4">
+                  <AlertDialogCancel
+                    className={buttonVariants({
+                      variant: "outline",
+                    })}
+                  >
+                    Anuluj
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteEvent}
+                    className={buttonVariants({
+                      variant: "destructive",
+                    })}
+                  >
+                    Usuń
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      </Form>
     </>
   );
 }

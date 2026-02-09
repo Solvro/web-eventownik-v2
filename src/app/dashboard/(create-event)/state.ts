@@ -10,6 +10,7 @@ export const AttributeTypes = [
   "number",
   "textarea",
   "file",
+  "drawing",
   "select",
   "multiselect",
   "block",
@@ -27,14 +28,17 @@ export interface Event {
   name: string;
   description: string | undefined;
   startDate: Date;
+  startTime: string;
   endDate: Date;
+  endTime: string;
   location: string | undefined;
   organizer: string | undefined;
-  image: string;
-  color: string;
+  photoUrl: string;
+  primaryColor: string;
   participantsNumber: number;
   socialMediaLinks: { label?: string; link: string }[];
   slug: string;
+  contactEmail: string | undefined;
   coorganizers: CoOrganizer[];
   attributes: EventAttribute[];
   termsLink: string | undefined;
@@ -46,13 +50,16 @@ export const eventAtom = atom<Event>({
   // Tomorrow, midnight
   startDate: new Date(new Date().setHours(24, 0, 0, 0)),
   endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  startTime: "12:00",
+  endTime: "12:00",
   location: "",
   organizer: "",
-  image: "",
-  color: "#3672fd",
+  photoUrl: "",
+  primaryColor: "#3672fd",
   participantsNumber: 1,
   socialMediaLinks: [],
   slug: "",
+  contactEmail: "",
   coorganizers: [],
   attributes: [],
   termsLink: "",

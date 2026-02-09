@@ -6,8 +6,8 @@ import { ArrowRight, Lightbulb, Zap } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
+import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,7 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+// NOTE: Input import is commented out because it's used by the attribute_changed trigger
+// which is not yet implemented on the backend. Uncomment when the backend supports this feature.
+// import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -44,12 +46,14 @@ const EventEmailTemplateTriggerTypeSchema = z
       if (data.trigger === "form_filled") {
         return data.triggerValue !== undefined && data.triggerValue !== "";
       }
-      if (data.trigger === "attribute_changed") {
-        return (
-          (data.triggerValue !== undefined && data.triggerValue !== "") ||
-          (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
-        );
-      }
+      // NOTE: Commented out because this trigger is not yet implemented on the backend.
+      // Uncomment when the backend supports this feature.
+      // if (data.trigger === "attribute_changed") {
+      //   return (
+      //     (data.triggerValue !== undefined && data.triggerValue !== "") ||
+      //     (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
+      //   );
+      // }
       return true;
     },
     {
@@ -75,7 +79,9 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
 }
 
 function TriggerConfigurationInputs({
-  eventAttributes,
+  // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
+  // which uses it is not yet implemented on the backend. Rename back when the backend supports this feature.
+  eventAttributes: _eventAttributes,
   eventForms,
   trigger,
   form,
@@ -136,52 +142,54 @@ function TriggerConfigurationInputs({
         </div>
       );
     }
-    case "attribute_changed": {
-      return (
-        <div className="flex flex-col gap-2">
-          <FormField
-            control={form.control}
-            name="triggerValue"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Atrybut</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Wybierz atrybut" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {eventAttributes.map((attribute) => (
-                      <SelectItem
-                        key={attribute.id}
-                        value={String(attribute.id)}
-                      >
-                        {attribute.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="triggerValue2"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="tak" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      );
-    }
+    // NOTE: Commented out because this trigger is not yet implemented on the backend.
+    // Uncomment when the backend supports this feature.
+    // case "attribute_changed": {
+    //   return (
+    //     <div className="flex flex-col gap-2">
+    //       <FormField
+    //         control={form.control}
+    //         name="triggerValue"
+    //         render={({ field }) => (
+    //           <FormItem className="space-y-3">
+    //             <FormLabel>Atrybut</FormLabel>
+    //             <Select onValueChange={field.onChange}>
+    //               <FormControl>
+    //                 <SelectTrigger>
+    //                   <SelectValue placeholder="Wybierz atrybut" />
+    //                 </SelectTrigger>
+    //               </FormControl>
+    //               <SelectContent>
+    //                 {eventAttributes.map((attribute) => (
+    //                   <SelectItem
+    //                     key={attribute.id}
+    //                     value={String(attribute.id)}
+    //                   >
+    //                     {attribute.name}
+    //                   </SelectItem>
+    //                 ))}
+    //               </SelectContent>
+    //             </Select>
+    //             <FormMessage />
+    //           </FormItem>
+    //         )}
+    //       />
+    //       <FormField
+    //         control={form.control}
+    //         name="triggerValue2"
+    //         render={({ field }) => (
+    //           <FormItem className="space-y-3">
+    //             <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
+    //             <FormControl>
+    //               <Input type="text" placeholder="tak" {...field} />
+    //             </FormControl>
+    //             <FormMessage />
+    //           </FormItem>
+    //         )}
+    //       />
+    //     </div>
+    //   );
+    // }
   }
 }
 

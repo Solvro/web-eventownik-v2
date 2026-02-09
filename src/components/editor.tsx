@@ -19,6 +19,7 @@ function WysiwygEditor({
   disabled,
   extensions = [],
   className,
+  editorClassName,
   isEmailEditor = false,
 }: {
   content: string;
@@ -26,6 +27,7 @@ function WysiwygEditor({
   disabled?: boolean;
   extensions?: Extensions;
   className?: string;
+  editorClassName?: string;
   /**
    * If true, enables tag-related buttons in menu and default CSS styling for editor content.
    */
@@ -51,8 +53,10 @@ function WysiwygEditor({
     },
     editorProps: {
       attributes: {
-        class:
-          "pb-4 focus:outline-none cursor-text h-[200px] overflow-y-auto leading-relaxed resize-y",
+        class: cn(
+          "pb-4 focus:outline-none cursor-text leading-relaxed",
+          editorClassName,
+        ),
       },
       handleKeyDown: (_, event) => {
         if (event.key === "Enter") {
@@ -68,10 +72,18 @@ function WysiwygEditor({
     }
   }, [disabled, editor]);
 
+  // update the editor content when the content prop changes
+  // this is needed to reset the editor content when form.reset() is called
+  useEffect(() => {
+    if (editor != null && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
   return (
     <div
       className={cn(
-        "border-input placeholder:text-muted-foreground focus-visible:ring-ring min-h-[60px] max-w-[974px] rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[60px] max-w-[974px] resize-y flex-col overflow-hidden rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         disabled === undefined || !disabled
           ? ""
           : "pointer-events-none cursor-not-allowed opacity-50",
@@ -79,12 +91,10 @@ function WysiwygEditor({
       )}
     >
       <EditorMenuBar editor={editor} isEmailEditor={isEmailEditor} />
-      <ScrollArea className="h-[200px]">
+      <ScrollArea className="min-h-0 flex-1">
         <EditorContent
           editor={editor}
-          className={
-            isEmailEditor ? "email-editor text-black dark:text-white" : ""
-          }
+          className={isEmailEditor ? "text-black dark:text-white" : ""}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

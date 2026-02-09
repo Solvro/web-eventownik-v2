@@ -59,8 +59,8 @@ export default async function DashboardEventSettingsPage({
 
   return (
     <>
-      <h1 className="pb-8 text-3xl font-bold">Edytuj wydarzenie</h1>
-      <div className="">
+      <h1 className="mb-6 text-3xl font-bold">Edytuj wydarzenie</h1>
+      <div className="flex flex-1 flex-col">
         <EventSettingsTabs
           unmodifiedEvent={event}
           unmodifiedCoOrganizers={coOrganizers}

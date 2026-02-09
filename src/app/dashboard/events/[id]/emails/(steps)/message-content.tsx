@@ -8,9 +8,9 @@ import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { FormContainer } from "@/app/dashboard/(create-event)/form-container";
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
 import { WysiwygEditor } from "@/components/editor";
+import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -53,9 +53,11 @@ function getTitlePlaceholder(trigger: string) {
     case "form_filled": {
       return "Dziękujemy za wypełnienie formularza!";
     }
-    case "attribute_changed": {
-      return "Otrzymaliśmy Twoją wpłatę";
-    }
+    // NOTE: Commented out because this trigger is not yet implemented on the backend.
+    // Uncomment when the backend supports this feature.
+    // case "attribute_changed": {
+    //   return "Otrzymaliśmy Twoją wpłatę";
+    // }
     default: {
       return "Nowa wiadomość od organizatorów";
     }
@@ -68,12 +70,14 @@ function MessageContentForm({
   eventForms,
   goToPreviousStep,
   setDialogOpen,
+  setCurrentStep,
 }: {
   eventId: string;
   eventAttributes: EventAttribute[];
   eventForms: EventForm[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
@@ -119,6 +123,7 @@ function MessageContentForm({
       });
 
       setDialogOpen(false);
+      setCurrentStep(0);
 
       setTimeout(() => {
         router.refresh();

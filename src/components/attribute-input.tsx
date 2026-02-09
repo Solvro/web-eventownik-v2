@@ -182,6 +182,10 @@ export function AttributeInput({
       // Handled in ./attribute-input-file.tsx
       break;
     }
+    case "drawing": {
+      // Handled in ./attribute-input-drawing.tsx
+      break;
+    }
     case "block": {
       if (eventBlocks === undefined || userData === undefined) {
         return (

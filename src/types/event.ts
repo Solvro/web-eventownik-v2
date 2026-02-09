@@ -11,7 +11,7 @@ export interface Event {
   endDate: string;
   firstFormId: number;
   location: string | null;
-  primaryColor: string;
+  primaryColor: string | null;
   organizer: string | null;
   participantsCount: number | null;
   contactEmail: string | null;
