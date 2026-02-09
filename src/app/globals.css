@@ -97,7 +97,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --puck-font-family: "Space Grotesk", sans-serif !important;
   --tag-red-bg: #ffe5e5;
   --tag-red-text: #b30000;
   --tag-orange-bg: #fff1e0;
@@ -195,6 +194,142 @@
   }
 }
 
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: hsl(0 0% 73%);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Email editor typography */
+.email-editor {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h1,
+.email-editor h2,
+.email-editor h3,
+.email-editor h4,
+.email-editor h5,
+.email-editor h6 {
+  font-weight: 700;
+}
+
+/* Shared heading sizes */
+.ProseMirror h1,
+.event-description h1 {
+  font-size: 24px;
+}
+.ProseMirror h2,
+.event-description h2 {
+  font-size: 20px;
+}
+.ProseMirror h3,
+.event-description h3 {
+  font-size: 18px;
+}
+.ProseMirror h4,
+.event-description h4 {
+  font-size: 16px;
+}
+.ProseMirror h5,
+.event-description h5 {
+  font-size: 14px;
+}
+.ProseMirror h6,
+.event-description h6 {
+  font-size: 13px;
+}
+
+/* Email editor exclusive heading spacing */
+.email-editor h1 {
+  line-height: 1.3;
+  margin-block: 18px;
+}
+.email-editor h2 {
+  line-height: 1.3;
+  margin-block: 16px;
+}
+.email-editor h3 {
+  line-height: 1.3;
+  margin-block: 15px;
+}
+.email-editor h4 {
+  line-height: 1.4;
+  margin: 10px 0 5px 0;
+}
+.email-editor h5,
+.email-editor h6 {
+  line-height: 1.4;
+  margin: 8px 0 4px 0;
+}
+
+/* Paragraph & list item styling */
+.email-editor p,
+.email-editor li,
+.ProseMirror p,
+.ProseMirror li,
+.event-description p,
+.event-description li {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.ProseMirror p,
+.ProseMirror li {
+  font-size: 14px;
+}
+
+.email-editor p {
+  margin-block: 13px;
+}
+
+.event-description p {
+  min-height: 1rem;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists block margins */
+.email-editor ul,
+.ProseMirror ul,
+.event-description ul,
+.email-editor ol,
+.ProseMirror ol,
+.event-description ol {
+  margin-block: 13px;
+  padding-left: 1.5rem;
+}
+
+.email-editor ul,
+.ProseMirror ul,
+.event-description ul {
+  list-style-type: disc;
+}
+
+.email-editor ol,
+.ProseMirror ol,
+.event-description ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror li,
+.event-description li {
+  margin-block: 4px;
+}
+
+/* Reset margins for paragraphs inside lists to prevent double spacing */
+.ProseMirror li p,
+.event-description li p,
+.email-editor li p {
+  margin-block: 0;
+}
+
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -240,145 +375,6 @@
   height: 100%;
   overflow: clip;
   object-fit: cover;
-}
-
-/* WYSIWYG editors */
-
-.ProseMirror p.is-editor-empty:first-child::before {
-  color: hsl(0 0% 73%);
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-
-.ProseMirror h1 {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.3;
-  padding-block: 18px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror h2 {
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.3;
-  padding-block: 16px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror h3 {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.3;
-  padding-block: 15px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror h4 {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.4;
-  padding: 10px 0 5px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror h5 {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-  padding: 8px 0 4px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror h6 {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
-  padding: 8px 0 4px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror p {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
-  padding-block: 13px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror p:last-child {
-  padding-bottom: 0;
-}
-
-#email-root .ProseMirror p:last-child {
-  padding-bottom: 13px !important;
-}
-
-.ProseMirror ul,
-.ProseMirror ol {
-  padding: 12px 0;
-  padding: 0 0 0 24px;
-
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-}
-
-.ProseMirror ul {
-  list-style: disc;
-}
-
-.ProseMirror ol {
-  list-style: decimal;
-}
-
-.ProseMirror li {
-  padding: 4px 0;
-  padding: 0;
-
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.ProseMirror ul ul,
-.ProseMirror ol ul {
-  list-style: circle;
-}
-
-.ProseMirror ol ol,
-.ProseMirror ul ol {
-  list-style: lower-alpha;
-}
-
-.ProseMirror ul ul,
-.ProseMirror ul ol,
-.ProseMirror ol ul,
-.ProseMirror ol ol {
-  padding: 6px 0;
-}
-
-#email-root .ProseMirror {
-  min-height: 1.5em;
-  padding: 0 0.5ch;
-  outline: none;
-  z-index: 10;
-  position: relative;
 }
 
 .puck-richtext-wrapper .ProseMirror {
