@@ -2,12 +2,12 @@ import { HelpCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import {
   Tooltip,
   TooltipContent,
@@ -16,22 +16,22 @@ import {
 
 export function HelpDialog() {
   return (
-    <Dialog>
+    <Credenza>
       <Tooltip>
         <TooltipTrigger asChild>
-          <DialogTrigger asChild>
+          <CredenzaTrigger asChild>
             <Button size="icon" variant="outline">
               <HelpCircle />
             </Button>
-          </DialogTrigger>
+          </CredenzaTrigger>
         </TooltipTrigger>
         <TooltipContent>Wskazówki</TooltipContent>
       </Tooltip>
-      <DialogContent aria-describedby={undefined}>
-        <DialogHeader>
-          <DialogTitle className="text-2xl">
+      <CredenzaContent className="text-left" aria-describedby={undefined}>
+        <CredenzaHeader>
+          <CredenzaTitle className="text-2xl">
             Jak korzystać z tabeli?
-          </DialogTitle>
+          </CredenzaTitle>
           <div className="[&>p]:my-2">
             <h2 className="text-lg font-bold">Wielokrotne sortowanie</h2>
             <p>
@@ -51,8 +51,8 @@ export function HelpDialog() {
               wieku.
             </p>
           </div>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+        </CredenzaHeader>
+      </CredenzaContent>
+    </Credenza>
   );
 }
