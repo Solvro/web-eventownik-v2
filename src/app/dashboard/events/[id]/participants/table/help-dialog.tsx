@@ -27,7 +27,7 @@ export function HelpDialog() {
         </TooltipTrigger>
         <TooltipContent>Wskazówki</TooltipContent>
       </Tooltip>
-      <CredenzaContent className="text-left" aria-describedby={undefined}>
+      <CredenzaContent aria-describedby={undefined}>
         <CredenzaHeader>
           <CredenzaTitle className="text-2xl">
             Jak korzystać z tabeli?
