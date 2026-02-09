@@ -202,105 +202,102 @@
   pointer-events: none;
 }
 
-/* Headers */
-.ProseMirror h1 {
-  font-size: 24px;
+.email-editor {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+.email-editor h1,
+.email-editor h2,
+.email-editor h3,
+.email-editor h4,
+.email-editor h5,
+.email-editor h6 {
   font-weight: 700;
+}
+
+.email-editor h1 {
   line-height: 1.3;
   margin-block: 18px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
-
-.ProseMirror h2 {
-  font-size: 20px;
-  font-weight: 700;
+.email-editor h2 {
   line-height: 1.3;
   margin-block: 16px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
-
-.ProseMirror h3 {
-  font-size: 18px;
-  font-weight: 700;
+.email-editor h3 {
   line-height: 1.3;
   margin-block: 15px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
-
-.ProseMirror h4 {
-  font-size: 16px;
-  font-weight: 700;
+.email-editor h4 {
   line-height: 1.4;
   margin: 10px 0 5px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
-
-.ProseMirror h5 {
-  font-size: 14px;
-  font-weight: 700;
+.email-editor h5 {
   line-height: 1.4;
   margin: 8px 0 4px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
-
-.ProseMirror h6 {
-  font-size: 13px;
-  font-weight: 700;
+.email-editor h6 {
   line-height: 1.4;
   margin: 8px 0 4px 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
 
-/* Paragraphs */
-.ProseMirror p {
-  font-size: 14px;
+.email-editor p,
+.email-editor li {
   font-weight: 400;
   line-height: 1.5;
+}
+
+.email-editor p {
   margin-block: 13px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+}
+
+.ProseMirror h1 {
+  font-size: 24px;
+}
+.ProseMirror h2 {
+  font-size: 20px;
+}
+.ProseMirror h3 {
+  font-size: 18px;
+}
+.ProseMirror h4 {
+  font-size: 16px;
+}
+.ProseMirror h5 {
+  font-size: 14px;
+}
+.ProseMirror h6 {
+  font-size: 13px;
+}
+.ProseMirror p,
+.ProseMirror li {
+  font-size: 14px;
 }
 
 .ProseMirror p:last-child {
   margin-bottom: 0;
 }
 
-/* Lists */
 .ProseMirror ul {
   list-style-type: disc;
   padding-left: 1.5rem;
+}
+
+.email-editor ul {
   margin-block: 13px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
 
 .ProseMirror ol {
   list-style-type: decimal;
   padding-left: 1.5rem;
+}
+
+.email-editor ol {
   margin-block: 13px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
 }
 
 .ProseMirror li {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
   margin-block: 4px;
 }
 
