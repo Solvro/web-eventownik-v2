@@ -8,12 +8,13 @@ import { z } from "zod";
 import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import {
   Form,
   FormControl,
@@ -86,26 +87,26 @@ function SendMailForm({
   }
 
   return (
-    <Dialog>
+    <Credenza>
       <Tooltip>
         <TooltipTrigger asChild>
-          <DialogTrigger asChild>
+          <CredenzaTrigger asChild>
             <Button size="icon" variant="outline" aria-label="Wyślij maila">
               <Mail />
             </Button>
-          </DialogTrigger>
+          </CredenzaTrigger>
         </TooltipTrigger>
         <TooltipContent>Wyślij maila</TooltipContent>
       </Tooltip>
-      <DialogContent aria-describedby={undefined}>
-        <DialogHeader className="sr-only">
-          <DialogTitle>Wyślij maila</DialogTitle>
-        </DialogHeader>
+      <CredenzaContent aria-describedby={undefined}>
+        <CredenzaHeader className="sr-only">
+          <CredenzaTitle>Wyślij maila</CredenzaTitle>
+        </CredenzaHeader>
         <FormContainer
           description="Wybierz szablon maila"
           icon={<TextIcon />}
-          step="1/1"
-          title="Krok 1"
+          step=""
+          title=""
         >
           {emails === null ? (
             <div className="flex flex-col items-center justify-center gap-4">
@@ -166,7 +167,7 @@ function SendMailForm({
                   </pre>
                 </ScrollArea>
 
-                <div className="flex justify-end">
+                <div className="flex w-full flex-col justify-end gap-2 md:flex-row">
                   <Button
                     type="submit"
                     variant="eventDefault"
@@ -179,13 +180,22 @@ function SendMailForm({
                     )}{" "}
                     Wyślij
                   </Button>
+                  <CredenzaClose asChild>
+                    <Button
+                      variant="outline"
+                      className="block md:hidden"
+                      disabled={form.formState.isSubmitting}
+                    >
+                      Anuluj
+                    </Button>
+                  </CredenzaClose>
                 </div>
               </form>
             </Form>
           )}
         </FormContainer>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   );
 }
 
