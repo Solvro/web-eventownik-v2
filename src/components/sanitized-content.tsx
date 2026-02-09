@@ -11,7 +11,6 @@ function SanitizedContent({
 }) {
   const sanitized = sanitizeHtml(contentToSanitize, {
     allowedAttributes: {
-      p: ["style"],
       a: ["href", "name", "target"],
       img: ["src", "srcset", "alt", "title", "width", "height", "loading"],
     },
