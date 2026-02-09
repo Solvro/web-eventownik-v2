@@ -15,7 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { cn } from "@/lib/utils";
+import { CATEGORY_LABELS, EVENT_CATEGORIES } from "@/types/categories";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
@@ -39,6 +41,7 @@ export const EventPersonalizationFormSchema = z.object({
     .string()
     .min(3, "Slug musi mieć co najmniej 3 znaki")
     .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
+  categories: z.array(z.enum(EVENT_CATEGORIES)),
 });
 
 export function PersonalizationForm({ className }: { className?: string }) {
@@ -52,6 +55,11 @@ export function PersonalizationForm({ className }: { className?: string }) {
   });
 
   const imageValue = watch("photoUrl");
+
+  const categoryOptions = EVENT_CATEGORIES.map((category) => ({
+    label: CATEGORY_LABELS[category],
+    value: category,
+  }));
 
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
@@ -154,6 +162,26 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   }}
                 />
               </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="categories"
+          control={control}
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Kategorie</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  options={categoryOptions}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  placeholder="Wybierz kategorie..."
+                  variant="default"
+                  maxCount={3}
+                />
+              </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
