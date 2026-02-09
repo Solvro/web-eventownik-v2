@@ -22,12 +22,12 @@ import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -173,10 +173,10 @@ export function AttributeItem({
                 Wrażliwe dane
               </Label>
 
-              <Dialog>
+              <Credenza>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
+                    <CredenzaTrigger asChild>
                       <Button
                         size="icon"
                         variant="ghost"
@@ -185,16 +185,16 @@ export function AttributeItem({
                       >
                         <HelpCircle />
                       </Button>
-                    </DialogTrigger>
+                    </CredenzaTrigger>
                   </TooltipTrigger>
                   <TooltipContent side="top">Wskazówka</TooltipContent>
                 </Tooltip>
 
-                <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">
+                <CredenzaContent className="md:max-w-lg lg:max-w-3xl">
+                  <CredenzaHeader>
+                    <CredenzaTitle className="text-2xl">
                       Czym są wrażliwe dane?
-                    </DialogTitle>
+                    </CredenzaTitle>
                     <div className="[&>p]:my-2 [&>p]:text-left sm:[&>p]:text-justify">
                       <p>
                         Dane wrażliwe to informacje o prywatnym charakterze. Ich
@@ -207,9 +207,9 @@ export function AttributeItem({
                         religijne, poglądy polityczne, dane biometryczne.
                       </p>
                     </div>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
+                  </CredenzaHeader>
+                </CredenzaContent>
+              </Credenza>
             </div>
           </div>
         </div>
