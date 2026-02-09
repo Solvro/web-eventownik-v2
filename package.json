@@ -23,6 +23,11 @@
     "@solvro/config": {
       "@next/eslint-plugin-next": "^16.0.1"
     },
+    "@vercel/otel": {
+      "@opentelemetry/api": "^1.9.0",
+      "@opentelemetry/resources": "^2.5.0",
+      "@opentelemetry/sdk-trace-base": "^2.5.0"
+    },
     "next-navigation-guard": {
       "next": "^16.0.0"
     }
