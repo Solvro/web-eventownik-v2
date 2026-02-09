@@ -288,7 +288,7 @@
 }
 
 .event-description p {
-  min-height: 1ch;
+  min-height: 1rem;
 }
 
 .ProseMirror p:last-child {
