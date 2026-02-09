@@ -134,7 +134,10 @@ export function EventPageLayout({
                   style={{ viewTransitionName: "event-description" }}
                 >
                   <div className="max-h-72 sm:h-auto">
-                    <SanitizedContent contentToSanitize={description} />
+                    <SanitizedContent
+                      contentToSanitize={description}
+                      className="event-description"
+                    />
                   </div>
                 </ScrollArea>
                 {!showForm && children}
