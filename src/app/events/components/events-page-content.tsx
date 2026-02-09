@@ -1,12 +1,10 @@
 "use client";
 
-import type { QueryFunctionContext } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { addMonths, format } from "date-fns";
+import { addMonths } from "date-fns";
 import { CalendarIcon, Loader2Icon } from "lucide-react";
 import { startTransition, useState } from "react";
 
-import { API_URL } from "@/lib/api";
 import type { EventCategory } from "@/types/categories";
 import type { Event } from "@/types/event";
 
@@ -14,15 +12,15 @@ import { MOCK_EVENTS } from "../mock-events";
 import { CategoryFilter } from "./category-filter";
 import { EventCard } from "./event-card";
 
-function getEventsUrl() {
-  const now = new Date();
-  const sixMonthsLater = addMonths(now, 6);
+// function getEventsUrl() {
+//   const now = new Date();
+//   const sixMonthsLater = addMonths(now, 6);
 
-  const formattedStart = format(now, "yyyy-MM-dd");
-  const formattedEnd = format(sixMonthsLater, "yyyy-MM-dd");
+//   const formattedStart = format(now, "yyyy-MM-dd");
+//   const formattedEnd = format(sixMonthsLater, "yyyy-MM-dd");
 
-  return `${API_URL}/events/public?from=${formattedStart}&to=${formattedEnd}`;
-}
+//   return `${API_URL}/events/public?from=${formattedStart}&to=${formattedEnd}`;
+// }
 
 function filterMockEventsNext6Months(): Event[] {
   const now = new Date();
@@ -36,33 +34,23 @@ function filterMockEventsNext6Months(): Event[] {
   });
 }
 
-async function fetchEvents(
-  _context: QueryFunctionContext<[string]>,
-): Promise<Event[]> {
-  const url = getEventsUrl();
+// async function fetchEvents(
+//   _context: QueryFunctionContext<[string]>,
+// ): Promise<Event[]> {
+//   const url = getEventsUrl();
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      if (process.env.NODE_ENV === "development") {
-        return filterMockEventsNext6Months();
-      }
-      throw new Error("Failed to fetch events");
-    }
-    const events = (await response.json()) as Event[];
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch events");
+//     }
+//     const events = (await response.json()) as Event[];
 
-    if (events.length === 0 && process.env.NODE_ENV === "development") {
-      return filterMockEventsNext6Months();
-    }
-
-    return events;
-  } catch {
-    if (process.env.NODE_ENV === "development") {
-      return filterMockEventsNext6Months();
-    }
-    throw new Error("Failed to fetch events");
-  }
-}
+//     return events;
+//   } catch {
+//     throw new Error("Failed to fetch events");
+//   }
+// }
 
 export function EventsPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<
@@ -75,7 +63,7 @@ export function EventsPageContent() {
     error,
   } = useQuery({
     queryKey: ["public-events-next-6-months"],
-    queryFn: fetchEvents,
+    queryFn: filterMockEventsNext6Months,
   });
 
   const filteredEvents =
