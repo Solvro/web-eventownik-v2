@@ -114,6 +114,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
+    "@faker-js/faker": "^10.2.0",
     "@next/eslint-plugin-next": "16.0.4",
     "@tailwindcss/postcss": "^4.0.15",
     "@testing-library/dom": "^10.4.0",
