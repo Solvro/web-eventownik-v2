@@ -110,6 +110,7 @@ export function CreateEventForm() {
       contactEmail: event.contactEmail,
       coorganizers: [],
       attributes: [],
+      categories: [],
     },
   });
 
@@ -256,6 +257,7 @@ export function CreateEventForm() {
               coorganizers: [],
               attributes: [],
               termsLink: "",
+              categories: [],
             });
 
             // Disable the unsaved changes guard
