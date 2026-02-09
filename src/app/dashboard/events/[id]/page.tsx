@@ -80,7 +80,10 @@ export default async function DashboardEventPage({
           {event.description != null && event.description.trim() !== "" ? (
             <div className="max-h-[50vh] min-h-0 overflow-auto xl:max-h-full">
               <ScrollArea className="h-full pr-3 md:text-justify">
-                <SanitizedContent contentToSanitize={event.description} />
+                <SanitizedContent
+                  contentToSanitize={event.description}
+                  className="event-description"
+                />
               </ScrollArea>
             </div>
           ) : null}

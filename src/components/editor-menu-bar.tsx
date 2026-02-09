@@ -85,78 +85,87 @@ function EditorMenuBar({
         </Tooltip>
       </div>
 
-      <div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              type="button"
-              onClick={() => editor.chain().focus().setTextAlign("left").run()}
-              variant={activeState.alignLeft ? "eventDefault" : "eventGhost"}
-            >
-              <AlignLeft />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Wyrównanie do lewej</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              type="button"
-              onClick={() => {
-                if (editor.isActive({ textAlign: "center" })) {
-                  editor.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor.chain().focus().setTextAlign("center").run();
+      {isEmailEditor === undefined ? null : isEmailEditor ? (
+        <div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                type="button"
+                onClick={() =>
+                  editor.chain().focus().setTextAlign("left").run()
                 }
-              }}
-              variant={activeState.alignCenter ? "eventDefault" : "eventGhost"}
-            >
-              <AlignCenter />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Wyrównanie do środka</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              type="button"
-              onClick={() => {
-                if (editor.isActive({ textAlign: "right" })) {
-                  editor.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor.chain().focus().setTextAlign("right").run();
+                variant={activeState.alignLeft ? "eventDefault" : "eventGhost"}
+              >
+                <AlignLeft />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Wyrównanie do lewej</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                type="button"
+                onClick={() => {
+                  if (editor.isActive({ textAlign: "center" })) {
+                    editor.chain().focus().setTextAlign("left").run();
+                  } else {
+                    editor.chain().focus().setTextAlign("center").run();
+                  }
+                }}
+                variant={
+                  activeState.alignCenter ? "eventDefault" : "eventGhost"
                 }
-              }}
-              variant={activeState.alignRight ? "eventDefault" : "eventGhost"}
-            >
-              <AlignRight />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Wyrównanie w prawo</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              type="button"
-              onClick={() => {
-                if (editor.isActive({ textAlign: "justify" })) {
-                  editor.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor.chain().focus().setTextAlign("justify").run();
+              >
+                <AlignCenter />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Wyrównanie do środka</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                type="button"
+                onClick={() => {
+                  if (editor.isActive({ textAlign: "right" })) {
+                    editor.chain().focus().setTextAlign("left").run();
+                  } else {
+                    editor.chain().focus().setTextAlign("right").run();
+                  }
+                }}
+                variant={activeState.alignRight ? "eventDefault" : "eventGhost"}
+              >
+                <AlignRight />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Wyrównanie w prawo</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                type="button"
+                onClick={() => {
+                  if (editor.isActive({ textAlign: "justify" })) {
+                    editor.chain().focus().setTextAlign("left").run();
+                  } else {
+                    editor.chain().focus().setTextAlign("justify").run();
+                  }
+                }}
+                variant={
+                  activeState.alignJustify ? "eventDefault" : "eventGhost"
                 }
-              }}
-              variant={activeState.alignJustify ? "eventDefault" : "eventGhost"}
-            >
-              <AlignJustify />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Justowanie</TooltipContent>
-        </Tooltip>
-      </div>
+              >
+                <AlignJustify />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Justowanie</TooltipContent>
+          </Tooltip>
+        </div>
+      ) : null}
+
       <div>
         <Tooltip>
           <TooltipTrigger asChild>
