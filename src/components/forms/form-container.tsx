@@ -14,7 +14,7 @@ export function FormContainer({
   return (
     <div
       key={step}
-      className="flex max-h-200 w-full flex-col gap-12 overflow-y-auto p-4 md:p-0"
+      className="flex max-h-144 w-full flex-col gap-8 overflow-y-auto p-4 md:max-h-200 md:gap-12 md:p-0"
     >
       <div className="flex w-full flex-col items-center gap-4">
         <div className="grid w-full grid-cols-3 items-start">
