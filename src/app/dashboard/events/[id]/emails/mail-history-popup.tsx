@@ -22,7 +22,7 @@ function MailHistoryPopup({ email }: { email: SingleEventEmail }) {
           <span className="sr-only">Historia wiadomości</span>
         </Button>
       </CredenzaTrigger>
-      <CredenzaContent className="max-h-96 max-w-3xl">
+      <CredenzaContent className="max-h-96 md:max-w-lg">
         <div className="space-y-4 p-6 md:p-0">
           <CredenzaTitle>Historia wiadomości</CredenzaTitle>
           <EmailHistoryTable email={email} />
