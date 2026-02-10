@@ -272,7 +272,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         name="description"
         render={({ field }) => (
-          <FormItem className="row-span-3 flex flex-col md:col-span-2">
+          <FormItem className="col-span-full flex flex-col">
             <FormLabel>Opis</FormLabel>
             <WysiwygEditor
               content={getValues("description") ?? ""}

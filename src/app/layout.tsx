@@ -8,7 +8,6 @@ import NextTopLoader from "nextjs-toploader";
 
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
-import { WebVitalsProvider } from "@/components/web-vitals-provider";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -80,7 +79,7 @@ export default async function RootLayout({
           <Providers>
             <NextTopLoader />
             <Toaster />
-            <WebVitalsProvider>{children}</WebVitalsProvider>
+            {children}
             <Script
               defer
               src="https://analytics.solvro.pl/script.js"
