@@ -6,12 +6,12 @@ import { useState } from "react";
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import type { EventAttribute } from "@/types/attributes";
@@ -38,7 +38,7 @@ function CreateEmailTemplateForm({
   );
 
   return (
-    <Dialog
+    <Credenza
       open={dialogOpen}
       onOpenChange={(open: boolean) => {
         if (open) {
@@ -52,15 +52,15 @@ function CreateEmailTemplateForm({
         }
       }}
     >
-      <DialogTrigger asChild>
+      <CredenzaTrigger asChild>
         <Button variant="outline" className="w-full sm:w-auto">
           <SquarePlus className="h-6 w-6" /> Stwórz szablon
         </Button>
-      </DialogTrigger>
-      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:overflow-y-auto">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz szablon</DialogTitle>
-        </DialogHeader>
+      </CredenzaTrigger>
+      <CredenzaContent className="max-w-4xl">
+        <CredenzaHeader className="sr-only">
+          <CredenzaTitle>Stwórz szablon</CredenzaTitle>
+        </CredenzaHeader>
         <UnsavedChangesAlert
           active={alertActive}
           setActive={setAlertActive}
@@ -94,8 +94,8 @@ function CreateEmailTemplateForm({
             />
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   );
 }
 
