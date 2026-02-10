@@ -4,11 +4,11 @@ import { TableProperties } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import type { Participant } from "@/types/participant";
 
 import { BlockParticipantsTable } from "./(table)/table";
@@ -19,18 +19,20 @@ function BlockParticipantsPopup({
   participants: Participant[];
 }) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Credenza>
+      <CredenzaTrigger asChild>
         <Button variant="eventGhost" size="icon" title="Uczestnicy bloku">
           <TableProperties />
           <span className="sr-only">Uczestnicy bloku</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-96 max-w-128">
-        <DialogTitle>Uczestnicy bloku</DialogTitle>
-        <BlockParticipantsTable participants={participants} />
-      </DialogContent>
-    </Dialog>
+      </CredenzaTrigger>
+      <CredenzaContent className="max-h-96 md:max-w-lg">
+        <div className="space-y-4 p-6 md:p-0">
+          <CredenzaTitle>Uczestnicy bloku</CredenzaTitle>
+          <BlockParticipantsTable participants={participants} />
+        </div>
+      </CredenzaContent>
+    </Credenza>
   );
 }
 
