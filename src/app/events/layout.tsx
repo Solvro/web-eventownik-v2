@@ -20,10 +20,10 @@ export default function EventsLayout({
           alt=""
           width={3000}
           height={3000}
-          className="absolute inset-0 h-full w-full object-cover opacity-10"
+          className="absolute inset-0 h-full w-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] opacity-10"
         />
 
-        <main className="relative z-10 flex-1">{children}</main>
+        <main className="relative flex-1">{children}</main>
       </div>
 
       <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
