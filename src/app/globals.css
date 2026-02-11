@@ -376,3 +376,9 @@
   overflow: clip;
   object-fit: cover;
 }
+
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
