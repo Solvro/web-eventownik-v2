@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { ArrowUpRightIcon, CalendarIcon, MapPinIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -18,22 +18,58 @@ interface EventCardProps {
 
 function getEventStatus(startDate: Date, endDate: Date) {
   const now = new Date();
+
   if (now < startDate) {
+    const daysLeft = differenceInCalendarDays(startDate, now);
+
+    if (daysLeft === 0) {
+      return {
+        status: "Dzisiaj",
+        className:
+          "bg-[#FF4D4D] text-white dark:bg-[#FF4D4D]/90 dark:text-white shadow-sm",
+      };
+    }
+
+    if (daysLeft === 1) {
+      return {
+        status: "Jutro",
+        className:
+          "bg-[#FF9F1C] text-white dark:bg-[#FF9F1C]/90 dark:text-white shadow-sm",
+      };
+    }
+
+    if (daysLeft <= 3) {
+      return {
+        status: `Za ${daysLeft.toString()} dni`,
+        className:
+          "bg-[#FF4D4D] text-white dark:bg-[#FF4D4D]/90 dark:text-white shadow-sm",
+      };
+    }
+
+    if (daysLeft <= 7) {
+      return {
+        status: `Za ${daysLeft.toString()} dni`,
+        className:
+          "bg-[#FFB703] text-black dark:bg-[#FFB703]/90 dark:text-black shadow-sm",
+      };
+    }
+
     return {
-      status: "Nadchodzące",
+      status: `Za ${daysLeft.toString()} dni`,
       className:
-        "bg-[#88FC61] text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]",
+        "bg-[#2D6A4F] text-white dark:bg-[#2D6A4F]/90 dark:text-white shadow-sm",
     };
   } else if (now >= startDate && now <= endDate) {
     return {
       status: "W trakcie",
-      className: "bg-[#4473E1]/20 text-[#4473E1] dark:text-[#84a9ff]",
+      className:
+        "bg-[#4473E1] text-white dark:bg-[#4473E1]/90 dark:text-white shadow-sm",
     };
   } else {
     return {
       status: "Zakończone",
       className:
-        "bg-gray-300 text-gray-600 dark:bg-gray-700/80 dark:text-gray-300",
+        "bg-gray-400 text-white dark:bg-gray-600 dark:text-gray-200 shadow-sm",
     };
   }
 }
@@ -72,7 +108,7 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <ViewTransition name={`event-${event.id.toString()}`}>
       <div
-        className="group relative h-[400px] w-full cursor-pointer perspective-[1000px]"
+        className="group relative h-full w-full cursor-pointer perspective-[1000px]"
         onClick={handleFlip}
         onKeyDown={(keyboardEvent) => {
           if (keyboardEvent.key === "Enter" || keyboardEvent.key === " ") {
@@ -92,7 +128,7 @@ export function EventCard({ event }: EventCardProps) {
           className="relative h-full w-full"
         >
           <div
-            className="absolute h-full w-full overflow-hidden rounded-3xl bg-white shadow-lg dark:bg-[#1a1a2e]"
+            className="h-full w-full overflow-hidden rounded-3xl bg-white shadow-lg dark:bg-[#1a1a2e]"
             style={{ backfaceVisibility: "hidden" }}
           >
             <div className="flex h-full flex-col">
