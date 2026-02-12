@@ -1,3 +1,5 @@
+import type { LooseAutocomplete } from "@/types/utils";
+
 export const EMAIL_TRIGGERS = [
   {
     name: "Rejestracja uczestnika",
@@ -33,14 +35,80 @@ export const EMAIL_TRIGGERS = [
   },
 ] as const;
 
+type EmailTagColor = LooseAutocomplete<
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "teal"
+  | "blue"
+  | "indigo"
+  | "purple"
+  | "pink"
+  | "brown"
+>;
+
+export interface EmailTag {
+  title: string;
+  description: string;
+  value: string;
+  color: EmailTagColor;
+}
+
 export const EMAIL_TAGS = [
-  { name: "Nazwa wydarzenia", value: "/event_name" },
-  { name: "Data rozpoczęcia wydarzenia", value: "/event_start_date" },
-  { name: "Data zakończenia wydarzenia", value: "/event_end_date" },
-  { name: "Slug wydarzenia", value: "/event_slug" },
-  { name: "Kolor wydarzenia", value: "/event_primary_color" },
-  { name: "Email uczestnika", value: "/participant_email" },
-  { name: "ID uczestnika", value: "/participant_id" },
-  { name: "Slug uczestnika", value: "/participant_slug" },
-  { name: "Data rejestracji uczestnika", value: "/participant_created_at" },
-] as const;
+  {
+    title: "Nazwa wydarzenia",
+    description: "Zamienia się w prawdziwą nazwę wydarzenia",
+    value: "event_name",
+    color: "red",
+  },
+  {
+    title: "Data rozpoczęcia",
+    description: "Zamienia się w datę rozpoczęcia wydarzenia",
+    value: "event_start_date",
+    color: "orange",
+  },
+  {
+    title: "Data zakończenia",
+    description: "Zamienia się w datę zakończenia wydarzenia",
+    value: "event_end_date",
+    color: "yellow",
+  },
+  {
+    title: "Slug wydarzenia",
+    description: "Zamienia się w slug wydarzenia",
+    value: "event_slug",
+    color: "green",
+  },
+  {
+    title: "Kolor wydarzenia",
+    description: "Zamienia się w wybrany kolor wydarzenia",
+    value: "event_primary_color",
+    color: "teal",
+  },
+  {
+    title: "Email uczestnika",
+    description: "Zamienia się w email uczestnika",
+    value: "participant_email",
+    color: "blue",
+  },
+  {
+    title: "ID uczestnika",
+    description: "Zamienia się w ID uczestnika",
+    value: "participant_id",
+    color: "indigo",
+  },
+  {
+    title: "Slug uczestnika",
+    description: "Zamienia się w slug uczestnika",
+    value: "participant_slug",
+    color: "purple",
+  },
+  {
+    title: "Data rejestracji",
+    description:
+      "Zamienia się w datę zarejestrowania się uczestnika na wydarzenie",
+    value: "participant_created_at",
+    color: "pink",
+  },
+] as const satisfies EmailTag[];

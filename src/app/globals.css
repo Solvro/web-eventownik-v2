@@ -376,3 +376,12 @@
   overflow: clip;
   object-fit: cover;
 }
+
+.puck-richtext-wrapper .ProseMirror {
+  user-select: text !important;
+  pointer-events: auto !important;
+}
+
+[data-puck-component="RichText"] * {
+  user-select: text !important;
+}
