@@ -214,7 +214,7 @@ function LoginForm() {
             >
               {form.formState.isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin" /> {t("loggingIn")}...
+                  <Loader2 className="animate-spin" /> {t("loggingIn")}
                 </>
               ) : isAwaitingCaptcha ? (
                 <>
