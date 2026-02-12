@@ -1,16 +1,7 @@
 "use client";
 
 import type { RowData } from "@tanstack/react-table";
-import {
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { flexRender } from "@tanstack/react-table";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -20,6 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useParticipantsData } from "@/hooks/use-participants-data";
+import { useParticipantsTable } from "@/hooks/use-participants-table";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
@@ -27,12 +20,6 @@ import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-import {
-  deleteManyParticipants as deleteManyParticipantsAction,
-  deleteParticipant as deleteParticipantAction,
-} from "../actions";
-import { generateColumns } from "./columns";
-import { flattenParticipants } from "./data";
 import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
@@ -66,70 +53,35 @@ export function ParticipantTable({
   eventId: string;
 }) {
   const { toast } = useToast();
-  const [isQuerying, setIsQuerying] = useState(false);
 
-  const [data, setData] = useState(() => flattenParticipants(participants));
-  const columns = useMemo(
-    () => generateColumns(attributes, blocks ?? [], eventId),
-    [attributes, eventId, blocks],
-  );
-
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
-
-  const table = useReactTable({
-    columns,
+  const {
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
-    state: {
-      globalFilter,
-    },
-    initialState: {
-      pagination: { pageSize: 25, pageIndex: 0 },
-      columnVisibility: {
-        id: false,
-      },
-    },
-    autoResetPageIndex: false,
-    enableMultiSort: true,
+    setData,
+    deleteParticipant: deleteParticipantMutation,
+    deleteManyParticipants: deleteManyParticipantsMutation,
+    isLoading: isQuerying,
+  } = useParticipantsData(eventId, participants);
 
-    meta: {
-      updateData: (rowIndex, value) => {
-        setData((previousData) => {
-          return previousData.map((row, index) => {
-            if (index === rowIndex) {
-              return value;
-            }
-            return row;
-          });
+  const { table, globalFilter } = useParticipantsTable({
+    data,
+    attributes,
+    blocks,
+    eventId,
+    onUpdateData: (rowIndex, value) => {
+      setData((previousData) => {
+        return previousData.map((row, index) => {
+          if (index === rowIndex) {
+            return value;
+          }
+          return row;
         });
-      },
-      setRowLoading: (rowIndex, isLoading) => {
-        setLoadingRows((previous) => ({
-          ...previous,
-          [rowIndex]: isLoading,
-        }));
-      },
-      isRowLoading: (rowIndex) => {
-        return loadingRows[rowIndex];
-      },
+      });
     },
   });
 
   async function deleteParticipant(participantId: number) {
-    setIsQuerying(true);
     try {
-      const { success, error } = await deleteParticipantAction(
-        eventId,
-        participantId.toString(),
-      );
+      const { success, error } = await deleteParticipantMutation(participantId);
 
       if (!success) {
         toast({
@@ -156,18 +108,12 @@ export function ParticipantTable({
         variant: "destructive",
         description: "Wystąpił błąd podczas usuwania uczestnika.",
       });
-    } finally {
-      setIsQuerying(false);
     }
   }
 
   async function deleteManyParticipants(_participants: string[]) {
-    setIsQuerying(true);
     try {
-      const response = await deleteManyParticipantsAction(
-        eventId,
-        _participants,
-      );
+      const response = await deleteManyParticipantsMutation(_participants);
 
       if (response.success) {
         setData((previousData) => {
@@ -192,8 +138,6 @@ export function ParticipantTable({
         variant: "destructive",
         description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
       });
-    } finally {
-      setIsQuerying(false);
     }
   }
 
@@ -219,7 +163,7 @@ export function ParticipantTable({
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
-                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:-right-px [&>th:last-of-type>button]:backdrop-blur-lg"
                   key={headerGroup.id}
                 >
                   {headerGroup.headers.map((header) => {
