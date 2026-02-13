@@ -25,15 +25,14 @@ export function useParticipantsTable({
   data,
   attributes,
   blocks,
-  eventId,
   onUpdateData,
 }: UseParticipantTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const columns = useMemo(
-    () => generateColumns(attributes, blocks ?? [], eventId),
-    [attributes, eventId, blocks],
+    () => generateColumns(attributes, blocks ?? []),
+    [attributes, blocks],
   );
 
   const table = useReactTable<FlattenedParticipant>({
