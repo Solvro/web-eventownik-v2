@@ -32,3 +32,12 @@ export function mockParticipantGet(testCaseData: Participant[]) {
     },
   );
 }
+
+export function mockParticipantsGet(testCaseData: Participant[]) {
+  return http.get<{ eventId: string }>(
+    `${API_URL}/events/:eventId/participants`,
+    () => {
+      return HttpResponse.json(testCaseData);
+    },
+  );
+}
