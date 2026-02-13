@@ -11,14 +11,14 @@ import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-describe("Removing participant", () => {
+// skipped due to expand button no longer being relevant
+describe.skip("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
     server.use(mockParticipantGet(deleteParticipantCaseData.participants));
     cleanup();
   });
 
-  // skipped due to expand button no longer being relevant
   it.skip("should correctly remove participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRow, getExpandedRow, getDataRows } = renderTable(
@@ -90,7 +90,6 @@ describe("Removing participant", () => {
     expect(getDataRows().length).toBe(0);
   });
 
-  // skipped due to expand button no longer being relevant
   it.skip("should correctly handle server error when removing one participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRow, getExpandedRow } = renderTable(
