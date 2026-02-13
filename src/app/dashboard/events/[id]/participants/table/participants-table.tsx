@@ -26,6 +26,14 @@ import { TableRowForm } from "./table-row-form";
 import { getAriaSort } from "./utils";
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    attribute?: Attribute;
+    headerClassName?: string;
+    cellClassName?: string;
+    showInTable: boolean;
+  }
+
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
