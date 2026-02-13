@@ -163,14 +163,12 @@ function LoginForm() {
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.password?.message}
                 </FormMessage>
-                <FormMessage>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="text-muted-foreground block w-full text-right text-sm leading-none hover:underline"
-                  >
-                    {t("forgotPassword")}
-                  </Link>
-                </FormMessage>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-muted-foreground block w-full text-right text-sm leading-none font-medium hover:underline"
+                >
+                  {t("forgotPassword")}
+                </Link>
               </FormItem>
             )}
           />
@@ -214,7 +212,7 @@ function LoginForm() {
             >
               {form.formState.isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin" /> {t("loggingIn")}...
+                  <Loader2 className="animate-spin" /> {t("loggingIn")}
                 </>
               ) : isAwaitingCaptcha ? (
                 <>
