@@ -14,18 +14,32 @@ const team: TeamMember[] = [
     url: "https://www.linkedin.com/in/amelia-sroczy%C5%84ska-bb26ba347/",
   },
   {
-    name: "Dawid Linek",
-    roles: ["Opiekun Projektu"],
+    name: "Roch Mykietów",
+    roles: ["Backend Techlead"],
     image:
-      "https://cms.solvro.pl/assets/77255d90-0ec0-4219-9c81-707cc50babc4?key=member",
-    url: "https://github.com/dawidlinek",
+      "https://cms.solvro.pl/assets/02d03f03-4d1b-40b7-8891-fd6b2463cb23?key=member",
+    url: "https://github.com/loudsheep",
+  },
+
+  {
+    name: "Maciej Król",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/dfa1ac3b-c112-43e3-9004-ced678d91903?key=member",
+    url: "https://github.com/maciejkrol18",
   },
   {
-    name: "Antoni Czaplicki",
-    roles: ["Frontend Techlead"],
+    name: "Viktoriya Kazak",
+    roles: ["Project Manager"],
     image:
-      "https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member",
-    url: "https://github.com/Antoni-Czaplicki",
+      "https://cms.solvro.pl/assets/843908e0-50c3-4618-ad9e-cdba9cd288af?key=member",
+    url: "https://github.com/Vichka005",
+  },
+  {
+    name: "Maciej Talarczyk",
+    roles: ["UI/UX Designer"],
+    image: "/assets/landing/team/maciej-talarczyk.jpg",
+    url: "https://github.com/muclx",
   },
   {
     name: "Szymon Stępień",
@@ -33,12 +47,6 @@ const team: TeamMember[] = [
     image:
       "https://cms.solvro.pl/assets/b9ac68b4-4f97-4cfa-a6f9-f24142050b35?key=member",
     url: "https://github.com/GOLDER303",
-  },
-  {
-    name: "Maciej Talarczyk",
-    roles: ["UI/UX Designer"],
-    image: "/assets/landing/team/maciej-talarczyk.jpg",
-    url: "https://github.com/muclx",
   },
   {
     name: "Dawid Błaszczyk",
@@ -74,6 +82,61 @@ const team: TeamMember[] = [
     url: "https://github.com/ibtyog",
   },
   {
+    name: "Wincenty Wensker",
+    roles: ["UI/UX Designer"],
+    image: "/assets/landing/team/wincenty-wensker.jpg",
+    url: "https://github.com/Kitkacy",
+  },
+  {
+    name: "Dawid Linek",
+    roles: ["Opiekun Projektu"],
+    image:
+      "https://cms.solvro.pl/assets/77255d90-0ec0-4219-9c81-707cc50babc4?key=member",
+    url: "https://github.com/dawidlinek",
+  },
+  {
+    name: "Kamil Kajta",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/e1a5ac2b-c6c1-45e0-a05a-4c66b3777de8?key=member",
+    url: "https://github.com/Kajta134",
+  },
+  {
+    name: "Bohdan Koshkin",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/d2f4b96c-0914-473c-81cd-a13e78d0ec78?key=member",
+    url: "https://github.com/ShadowCatP",
+  },
+  {
+    name: "Jakub Lisowski",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/d768bad2-a54a-484c-b1bd-4a49af80bfc4?key=member",
+    url: "https://github.com/Liseu1",
+  },
+  {
+    name: "Krystian Śliwiński",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/da35db75-1eae-478d-b7ad-6f910df12e76?key=member",
+    url: "https://github.com/Infor-Tech",
+  },
+  {
+    name: "Bohdan Moshenets",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/558ac82a-d274-4742-9cbb-855338839557?key=member",
+    url: "https://github.com/moshenetsb",
+  },
+  {
+    name: "Maksym Tarasiuk",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/051abe8c-ad37-4696-8844-ef7538ed94c7?key=member",
+    url: "https://github.com/maks1u",
+  },
+  {
     name: "Karol Kosmala",
     roles: ["Backend Developer"],
     image: "https://avatars.githubusercontent.com/u/184450490?v=4",
@@ -87,11 +150,11 @@ const team: TeamMember[] = [
     url: "https://github.com/rei-x",
   },
   {
-    name: "Maciej Król",
-    roles: ["Frontend Developer"],
+    name: "Antoni Czaplicki",
+    roles: ["Frontend Techlead"],
     image:
-      "https://cms.solvro.pl/assets/dfa1ac3b-c112-43e3-9004-ced678d91903?key=member",
-    url: "https://github.com/maciejkrol18",
+      "https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member",
+    url: "https://github.com/Antoni-Czaplicki",
   },
   {
     name: "Wojciech Kosmalski",
