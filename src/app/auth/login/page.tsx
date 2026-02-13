@@ -165,7 +165,7 @@ function LoginForm() {
                 </FormMessage>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-muted-foreground block w-full text-right text-sm leading-none hover:underline"
+                  className="text-muted-foreground block w-full text-right text-sm leading-none font-medium hover:underline"
                 >
                   {t("forgotPassword")}
                 </Link>
