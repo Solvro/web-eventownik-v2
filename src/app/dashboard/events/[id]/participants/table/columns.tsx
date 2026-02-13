@@ -2,7 +2,7 @@ import type { Column, Row } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatAttributeValue, getAttributeLabel } from "@/lib/utils";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -12,6 +12,7 @@ import type {
 
 import { FilterButton } from "./filter-button";
 import { SortButton, SortIcon } from "./sort-button";
+import { formatAttributeValue } from "./utils";
 
 export function generateColumns(
   attributes: Attribute[],

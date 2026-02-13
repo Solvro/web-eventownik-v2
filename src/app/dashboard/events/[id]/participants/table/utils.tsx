@@ -1,6 +1,14 @@
+/* eslint-disable @typescript-eslint/switch-exhaustiveness-check */
+/* eslint-disable unicorn/switch-case-braces */
 import type { SortDirection, Table } from "@tanstack/react-table";
+import { format } from "date-fns";
 
-import type { FlattenedParticipant } from "@/types/participant";
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 export function getPaginationInfoText(table: Table<FlattenedParticipant>) {
   const { pageIndex, pageSize } = table.getState().pagination;
@@ -21,4 +29,33 @@ export function getAriaSort(
     return "ascending";
   }
   return "descending";
+}
+
+export function formatAttributeValue(
+  value: ParticipantAttributeValueType,
+  type: Attribute["type"],
+  attributeId: number,
+  blocks: (Block | null)[],
+) {
+  if (value === undefined || value === null || value === "") {
+    return value;
+  }
+
+  switch (type) {
+    case "date":
+      return format(new Date(value as string | number | Date), "dd-MM-yyyy");
+    case "datetime":
+      return format(
+        new Date(value as string | number | Date),
+        "dd-MM-yyyy HH:mm:ss",
+      );
+    case "block": {
+      const rootBlock = blocks.find((b) => b?.attributeId === attributeId);
+      return (
+        rootBlock?.children.find((b) => b.id === Number(value))?.name ?? value
+      );
+    }
+    default:
+      return value;
+  }
 }
