@@ -6,12 +6,12 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { useToast } from "@/hooks/use-toast";
 
 interface DeleteResourcePopupProps {
@@ -56,8 +56,8 @@ function DeleteResourcePopup({
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Credenza>
+      <CredenzaTrigger asChild>
         <Button
           variant="eventGhost"
           size="icon"
@@ -67,22 +67,34 @@ function DeleteResourcePopup({
           <Trash2 />
           <span className="sr-only">Usuń {resourceType.toLowerCase()}</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-96 max-w-96">
+      </CredenzaTrigger>
+      <CredenzaContent className="md:max-h-96 md:max-w-96">
         <div className="sr-only">
-          <DialogTitle>Usuń {resourceType.toLowerCase()}</DialogTitle>
+          <CredenzaTitle>Usuń {resourceType.toLowerCase()}</CredenzaTitle>
         </div>
-        <div className="flex flex-col items-center justify-center gap-4 text-center">
+        <div className="flex flex-col items-center justify-center gap-4 p-4 text-center md:p-0">
           <CircleX className="text-destructive h-14 w-14" />
           <p className="text-lg font-bold">Jesteś pewien?</p>
           <p className="text-sm">
             Czy na pewno chcesz usunąć {resourceType.toLowerCase()}{" "}
             <strong>{resourceName}</strong>?
           </p>
-          <div className="flex gap-2">
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
+            <CredenzaClose asChild>
+              <Button
+                variant="outline"
+                disabled={form.formState.isSubmitting || shouldDisableButtons}
+              >
+                Anuluj
+              </Button>
+            </CredenzaClose>
+            <form
+              className="order-first md:order-last"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <Button
                 type="submit"
+                className="w-full"
                 variant="destructive"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
@@ -93,18 +105,10 @@ function DeleteResourcePopup({
                 )}
               </Button>
             </form>
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                disabled={form.formState.isSubmitting || shouldDisableButtons}
-              >
-                Anuluj
-              </Button>
-            </DialogClose>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   );
 }
 

@@ -69,7 +69,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
+    <div className="flex grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4 md:max-w-lg">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -223,9 +223,9 @@ function TriggerTypeForm({
       title="Krok 1"
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-4">
           <h2 className="font-semibold">Wybierz rodzaj wyzwalacza</h2>
-          <div className="flex justify-between">
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
             <FormField
               control={form.control}
               name="trigger"

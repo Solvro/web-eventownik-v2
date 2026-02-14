@@ -37,12 +37,12 @@ import {
 import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
@@ -283,7 +283,7 @@ export function CreateEventForm() {
   useAutoSave(setEvent, form);
 
   return (
-    <Dialog
+    <Credenza
       open={dialogOpen}
       onOpenChange={(open: boolean) => {
         if (open) {
@@ -308,15 +308,15 @@ export function CreateEventForm() {
           onConfirm();
         }}
       />
-      <DialogTrigger asChild>
+      <CredenzaTrigger asChild>
         <Button variant="outline">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
-      </DialogTrigger>
-      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz formularz</DialogTitle>
-        </DialogHeader>
+      </CredenzaTrigger>
+      <CredenzaContent className="max-w-4xl">
+        <CredenzaHeader className="sr-only">
+          <CredenzaTitle>Stwórz formularz</CredenzaTitle>
+        </CredenzaHeader>
         <FormContainer
           step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
           title={steps[currentStep].title}
@@ -383,7 +383,7 @@ export function CreateEventForm() {
             </form>
           </Form>
         </FormContainer>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   );
 }

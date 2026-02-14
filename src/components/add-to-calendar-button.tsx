@@ -7,11 +7,11 @@ import Image from "next/image";
 
 import { EventInfoDiv } from "@/components/event-info-div";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { addToGoogleCalendar, downloadICSFile } from "@/lib/calendar";
 import type { Event } from "@/types/event";
 
@@ -20,16 +20,16 @@ import { Button } from "./ui/button";
 export function AddToCalendarButton({ event }: { event: Event }) {
   const t = useTranslations("Event");
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Credenza>
+      <CredenzaTrigger asChild>
         <EventInfoDiv className="hover:bg-accent/20 cursor-pointer">
           <CalendarPlus size={20} />
           <span className="hidden md:inline"> {t("addToCalendar")}</span>
         </EventInfoDiv>
-      </DialogTrigger>
-      <DialogContent className="w-95/100 max-w-md">
-        <DialogTitle></DialogTitle>
-        <div className="space-y-6">
+      </CredenzaTrigger>
+      <CredenzaContent className="max-w-md md:w-95/100">
+        <CredenzaTitle className="sr-only">{t("addToCalendar")}</CredenzaTitle>
+        <div className="space-y-6 p-4 md:p-0">
           <div className="grid">
             <span className="break mb-2 max-w-80 truncate text-3xl font-bold">
               {event.name}
@@ -101,7 +101,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   );
 }

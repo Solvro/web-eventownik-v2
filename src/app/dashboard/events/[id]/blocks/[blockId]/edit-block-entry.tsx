@@ -10,12 +10,14 @@ import { z } from "zod";
 import { updateBlock } from "@/app/dashboard/events/[id]/blocks/actions";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import {
   Form,
   FormControl,
@@ -98,7 +100,7 @@ function EditBlockEntry({
   };
 
   return (
-    <Dialog
+    <Credenza
       open={dialogOpen}
       onOpenChange={(open: boolean) => {
         if (open) {
@@ -112,16 +114,16 @@ function EditBlockEntry({
         }
       }}
     >
-      <DialogTrigger asChild>
+      <CredenzaTrigger asChild>
         <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
           <span className="sr-only">Edytuj blok</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="w-96">
-        <DialogHeader>
-          <DialogTitle>Edytuj blok</DialogTitle>
-        </DialogHeader>
+      </CredenzaTrigger>
+      <CredenzaContent className="md:w-96">
+        <CredenzaHeader>
+          <CredenzaTitle>Edytuj blok</CredenzaTitle>
+        </CredenzaHeader>
         <UnsavedChangesAlert
           active={alertActive}
           setActive={setAlertActive}
@@ -132,59 +134,72 @@ function EditBlockEntry({
             onConfirm();
           }}
         />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nazwa bloku" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="capacity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Maksymalna liczba osób</FormLabel>
-                  <FormDescription>
-                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
-                    miejsc
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Pojemność bloku"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              variant="eventDefault"
-              className="w-full"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <Save />
-              )}{" "}
-              Zapisz
-            </Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+        <CredenzaBody className="pb-4 md:pb-0">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nazwa</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nazwa bloku" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Maksymalna liczba osób</FormLabel>
+                    <FormDescription>
+                      Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
+                      miejsc
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Pojemność bloku"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="submit"
+                  variant="eventDefault"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    <Save />
+                  )}{" "}
+                  Zapisz
+                </Button>
+                <CredenzaClose asChild>
+                  <Button
+                    variant="outline"
+                    className="block w-full md:hidden"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    Anuluj
+                  </Button>
+                </CredenzaClose>
+              </div>
+            </form>
+          </Form>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   );
 }
 
