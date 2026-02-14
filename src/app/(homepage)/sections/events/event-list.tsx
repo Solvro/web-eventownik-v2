@@ -185,16 +185,18 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
           </div>
         )}
       </div>
-      {/*
       <div className="clip-curve flex w-full flex-col items-center justify-center bg-white p-4 dark:bg-[#101011]">
         <Button
+          asChild
           variant={"outline"}
           className="rounded-full border-black bg-transparent text-black transition hover:bg-[#d6d6d6]/50 hover:text-black dark:border-white dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
         >
-          <CircleChevronDown />
-          Pokaż więcej
+          <Link href="/events">
+            Zobacz wszystkie wydarzenia
+            <ArrowUpRight />
+          </Link>
         </Button>
-      </div>*/}
+      </div>
     </section>
   );
 }

@@ -157,6 +157,7 @@ export function EventSettingsTabs({
         reason: attribute.reason ?? "",
         order: attribute.order ?? 0,
       })),
+      categories: unmodifiedEvent.categories,
     },
   });
 
@@ -229,6 +230,7 @@ export function EventSettingsTabs({
         .filter((link: string) => link !== ""),
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
+      categories: values.categories,
     };
 
     try {

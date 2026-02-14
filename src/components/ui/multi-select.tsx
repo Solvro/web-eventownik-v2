@@ -140,10 +140,6 @@ export const MultiSelect = React.forwardRef<
     const [isAnimating, setIsAnimating] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
 
-    React.useEffect(() => {
-      setSelectedValues(defaultValue);
-    }, [defaultValue]);
-
     const filteredOptions = React.useMemo(() => {
       if (!searchQuery) {
         return options;
