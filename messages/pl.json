@@ -60,5 +60,8 @@
     "light": "Jasny",
     "dark": "Ciemny",
     "system": "System"
+  },
+  "Table": {
+    "participantsError": "Nie udało się załadować danych o uczestnikach"
   }
 }

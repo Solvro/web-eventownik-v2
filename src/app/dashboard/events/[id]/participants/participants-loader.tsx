@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import {
   getAttributes,
@@ -11,6 +12,8 @@ import {
 import { ParticipantTable } from "./table/participants-table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
+  const t = useTranslations("Table");
+
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventId],
     queryFn: async () => getAttributes(eventId),
@@ -43,8 +46,7 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     participants == null ||
     attributes == null
   ) {
-    // TODO move error message to localization / improve visuals
-    return <div>Nie udało się załadować danych o uczestnikach</div>;
+    return <div>{t("participantsError")}</div>;
   }
 
   return (

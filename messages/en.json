@@ -60,5 +60,8 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Table": {
+    "participantsError": "Error while loading participant data"
   }
 }
