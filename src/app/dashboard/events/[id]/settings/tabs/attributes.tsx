@@ -55,38 +55,52 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
   };
 
   const handleUpdate = (index: number, attribute: AttributeFormData) => {
-    if (attribute.id == null) {
-      return;
-    }
-
     const original = originalAttributesMap.get(index);
     const updatedAttribute = toChangeData(attribute, original);
 
     setAttributesChanges((previous: AttributeChange[]) => {
+      const existing = previous.find(
+        (change) => change.data.slug === updatedAttribute.slug,
+      );
+
+      if (existing?.type === "delete") {
+        return previous;
+      }
+
+      const filtered = previous.filter(
+        (change) => change.data.slug !== updatedAttribute.slug,
+      );
+
       const newChange: AttributeChange = {
-        type: "update",
+        type: existing?.type === "add" ? "add" : "update",
         data: updatedAttribute,
         timestamp: Date.now(),
       };
-      return [...previous, newChange];
+      return [...filtered, newChange];
     });
   };
 
   const handleRemove = (index: number, attribute: AttributeFormData) => {
-    if (attribute.id == null) {
-      return;
-    }
-
     const original = originalAttributesMap.get(index);
     const attributeToDelete = toChangeData(attribute, original);
 
     setAttributesChanges((previous: AttributeChange[]) => {
+      // Ignore changes for this attribute that were added before (e.g. an update followed by delete)
+      const filtered = previous.filter(
+        (change) => change.data.slug !== attributeToDelete.slug,
+      );
+
+      // If the attribute was newly added and then removed
+      if (attributeToDelete.id == null || attributeToDelete.id < 0) {
+        return filtered;
+      }
+
       const newChange: AttributeChange = {
         type: "delete",
         data: attributeToDelete,
         timestamp: Date.now(),
       };
-      return [...previous, newChange];
+      return [...filtered, newChange];
     });
   };
 
