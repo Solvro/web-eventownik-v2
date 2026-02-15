@@ -1,4 +1,4 @@
-import type { Column, Row } from "@tanstack/react-table";
+import type { Column, Row, Table } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,6 +10,9 @@ import type {
   ParticipantAttributeValueType,
 } from "@/types/participant";
 
+import { getParticipant } from "../actions";
+import { flattenParticipant } from "./data";
+import { ExpandRowCell } from "./expand-row-cell";
 import { FilterButton } from "./filter-button";
 import { SortButton, SortIcon } from "./sort-button";
 import { formatAttributeValue } from "./utils";
@@ -17,6 +20,7 @@ import { formatAttributeValue } from "./utils";
 export function generateColumns(
   attributes: Attribute[],
   blocks: (Block | null)[],
+  eventId: string,
 ) {
   const columnHelper = createColumnHelper<FlattenedParticipant>();
 
@@ -162,7 +166,19 @@ export function generateColumns(
       });
     });
 
-  return [...baseColumns, ...attributeColumns];
+  const expandColumn = columnHelper.display({
+    id: "expand",
+    // TODO: wait for backend for better/different implementation of fetching additional data
+    // header: ({ table }) => <ExpandAllHeader table={table} eventId={eventId} />,
+    cell: ({ row, table }) => (
+      <ExpandRowCell row={row} table={table} eventId={eventId} />
+    ),
+    meta: {
+      showInTable: true,
+    },
+  });
+
+  return [...baseColumns, ...attributeColumns, expandColumn];
 }
 
 interface HeaderWithSortProps {
@@ -184,4 +200,25 @@ function HeaderWithSort({ column, title, truncate }: HeaderWithSortProps) {
       <SortIcon sortingDirection={sortingDirection} />
     </div>
   );
+}
+
+export async function fetchAdditionalParticipantData(
+  row: Row<FlattenedParticipant>,
+  table: Table<FlattenedParticipant>,
+  eventId: string,
+) {
+  if (!row.getIsExpanded() && !row.original.wasExpanded) {
+    table.options.meta?.setRowLoading(row.index, true);
+    const newParticipant = await getParticipant(
+      eventId,
+      row.original.id.toString(),
+    );
+    if (newParticipant !== null) {
+      table.options.meta?.updateData(
+        row.index,
+        flattenParticipant(newParticipant, true),
+      );
+    }
+    table.options.meta?.setRowLoading(row.index, false);
+  }
 }

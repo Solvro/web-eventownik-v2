@@ -26,13 +26,14 @@ export function useParticipantsTable({
   attributes,
   blocks,
   onUpdateData,
+  eventId,
 }: UseParticipantTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const columns = useMemo(
-    () => generateColumns(attributes, blocks ?? []),
-    [attributes, blocks],
+    () => generateColumns(attributes, blocks ?? [], eventId),
+    [attributes, blocks, eventId],
   );
 
   const table = useReactTable<FlattenedParticipant>({
@@ -47,6 +48,7 @@ export function useParticipantsTable({
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: () => true,
     globalFilterFn: "includesString",
 
     meta: {
