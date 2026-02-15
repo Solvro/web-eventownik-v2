@@ -107,7 +107,7 @@ export function AttributesForm({
   };
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="mb-4 flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
         <p className="text-sm leading-none font-medium">Atrybuty</p>
         <p className="text-muted-foreground text-sm leading-none font-medium">
