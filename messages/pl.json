@@ -62,6 +62,15 @@
     "system": "System"
   },
   "Table": {
-    "participantsError": "Nie udało się załadować danych o uczestnikach"
+    "participantsError": "Nie udało się załadować danych o uczestnikach",
+    "participantsNotFound": "Nie znaleziono żadnych pasujących wyników",
+    "deleteParticipantError": "Nie udało się usunąć uczestnika!",
+    "deleteParticipantSuccess": "Pomyślnie usunięto uczestnika",
+    "deleteParticipantErrorDescription": "Wystąpił błąd podczas usuwania uczestnika.",
+    "deleteParticipantsSuccess": "Usunięto uczestników",
+    "deleteParticipantsSuccessDescription": "Usunięto {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
+    "deleteParticipantsError": "Nie udało się grupowo usunąć uczestników!",
+    "deleteParticipantsErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    "participantsTableTitle": "Lista uczestników"
   }
 }

@@ -46,7 +46,7 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     participants == null ||
     attributes == null
   ) {
-    return <div>{t("participantsError")}</div>;
+    return <div className="text-center">{t("participantsError")}</div>;
   }
 
   return (

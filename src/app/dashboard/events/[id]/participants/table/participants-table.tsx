@@ -2,6 +2,7 @@
 
 import type { RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -60,6 +61,8 @@ export function ParticipantTable({
   blocks: (Block | null)[] | null;
   eventId: string;
 }) {
+  const t = useTranslations("Table");
+
   const { toast } = useToast();
 
   const {
@@ -94,7 +97,7 @@ export function ParticipantTable({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Nie udało się usunąć uczestnika!",
+          title: t("deleteParticipantError"),
           description: error,
         });
         return;
@@ -107,14 +110,14 @@ export function ParticipantTable({
       });
       toast({
         variant: "default",
-        title: "Pomyślnie usunięto uczestnika",
+        title: t("deleteParticipantSuccess"),
         description: error,
       });
     } catch {
       toast({
-        title: "Nie udało się usunąć uczestnika!",
+        title: t("deleteParticipantError"),
         variant: "destructive",
-        description: "Wystąpił błąd podczas usuwania uczestnika.",
+        description: t("deleteParticipantErrorDescription"),
       });
     }
   }
@@ -131,20 +134,22 @@ export function ParticipantTable({
         });
         table.resetRowSelection();
         toast({
-          title: "Usunięto uczestników",
-          description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
+          title: t("deleteParticipantsSuccess"),
+          description: t("deleteParticipantsSuccessDescription", {
+            count: _participants.length,
+          }),
         });
       } else {
         toast({
-          title: "Nie udało się grupowo usunąć uczestników!",
+          title: t("deleteParticipantsError"),
           description: response.error,
         });
       }
     } catch {
       toast({
-        title: "Nie udało się grupowo usunąć uczestników!",
+        title: t("deleteParticipantsError"),
         variant: "destructive",
-        description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+        description: t("deleteParticipantsErrorDescription"),
       });
     }
   }
@@ -153,7 +158,7 @@ export function ParticipantTable({
     <>
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex grow justify-between">
-          <h1 className="text-3xl font-bold">Lista uczestników</h1>
+          <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
           <HelpDialog />
         </div>
         <TableMenu
@@ -219,9 +224,7 @@ export function ParticipantTable({
       </ScrollArea>
 
       {table.getRowCount() === 0 ? (
-        <div className="text-center">
-          Nie znaleziono żadnych pasujących wyników
-        </div>
+        <div className="text-center">{t("participantsNotFound")}</div>
       ) : null}
     </>
   );

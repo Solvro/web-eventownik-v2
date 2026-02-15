@@ -62,6 +62,15 @@
     "system": "System"
   },
   "Table": {
-    "participantsError": "Error while loading participant data"
+    "participantsError": "Error while loading participant data",
+    "participantsNotFound": "No results found",
+    "deleteParticipantError": "Failed to delete participant!",
+    "deleteParticipantSuccess": "Participant deleted successfully",
+    "deleteParticipantErrorDescription": "An error occurred while deleting the participant.",
+    "deleteParticipantsSuccess": "Participants deleted",
+    "deleteParticipantsSuccessDescription": "Deleted {count, plural, =1 {1 participant} other {# participants}}",
+    "deleteParticipantsError": "Failed to batch delete participants!",
+    "deleteParticipantsErrorDescription": "An unexpected error occurred. Try again",
+    "participantsTableTitle": "Participants"
   }
 }
