@@ -4,6 +4,8 @@ import { useMemo } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 
+import plMessages from "../../../../../../../../messages/pl.json";
+
 export function Providers({
   children,
 }: Readonly<{
@@ -12,7 +14,7 @@ export function Providers({
   const client = useMemo(() => new QueryClient(), []);
 
   return (
-    <NextIntlClientProvider locale="pl" messages={{}}>
+    <NextIntlClientProvider locale="pl" messages={plMessages}>
       <QueryClientProvider client={client}>
         <Toaster />
         {children}

@@ -15,7 +15,6 @@ import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-// skipped due to expand button no longer being relevant
 describe("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
@@ -24,7 +23,7 @@ describe("Removing participant", () => {
     cleanup();
   });
 
-  it.skip("should correctly remove participant", async () => {
+  it("should correctly remove participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRow, getExpandedRow, getDataRows } = renderTable(
       participants,
@@ -95,7 +94,7 @@ describe("Removing participant", () => {
     expect(getDataRows().length).toBe(0);
   });
 
-  it.skip("should correctly handle server error when removing one participant", async () => {
+  it("should correctly handle server error when removing one participant", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRow, getExpandedRow } = renderTable(
       participants,

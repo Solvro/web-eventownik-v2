@@ -15,8 +15,7 @@ import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-// Skipped due to changing functionality from expand to simple button
-describe.skip("Editing participant", () => {
+describe("Editing participant", () => {
   const rowIndexForEditing = 0;
 
   beforeEach(() => {
