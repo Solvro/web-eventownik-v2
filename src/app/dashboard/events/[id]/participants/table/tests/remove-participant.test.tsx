@@ -5,7 +5,11 @@ import { describe, it } from "vitest";
 import { API_URL } from "@/lib/api";
 import { server } from "@/tests/msw/node";
 
-import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
+import {
+  mockParticipantGet,
+  mockParticipantsGet,
+  mockVerifySession,
+} from "./mocks/mocks";
 import { deleteParticipantCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
 
@@ -15,6 +19,7 @@ describe("Removing participant", () => {
   const rowIndexToRemove = 0;
   beforeEach(() => {
     server.use(mockParticipantGet(deleteParticipantCaseData.participants));
+    server.use(mockParticipantsGet(deleteParticipantCaseData.participants));
     cleanup();
   });
 

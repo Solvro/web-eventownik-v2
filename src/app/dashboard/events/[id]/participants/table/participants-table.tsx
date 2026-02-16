@@ -1,16 +1,8 @@
 "use client";
 
 import type { RowData } from "@tanstack/react-table";
-import {
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { flexRender } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -20,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useParticipantsData } from "@/hooks/use-participants-data";
+import { useParticipantsTable } from "@/hooks/use-participants-table";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
@@ -27,18 +21,20 @@ import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-import {
-  deleteManyParticipants as deleteManyParticipantsAction,
-  deleteParticipant as deleteParticipantAction,
-} from "../actions";
-import { generateColumns } from "./columns";
-import { flattenParticipants } from "./data";
 import { HelpDialog } from "./help-dialog";
 import { TableMenu } from "./table-menu";
 import { TableRowForm } from "./table-row-form";
 import { getAriaSort } from "./utils";
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    attribute?: Attribute;
+    headerClassName?: string;
+    cellClassName?: string;
+    showInTable: boolean;
+  }
+
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
@@ -65,76 +61,43 @@ export function ParticipantTable({
   blocks: (Block | null)[] | null;
   eventId: string;
 }) {
+  const t = useTranslations("Table");
+
   const { toast } = useToast();
-  const [isQuerying, setIsQuerying] = useState(false);
 
-  const [data, setData] = useState(() => flattenParticipants(participants));
-  const columns = useMemo(
-    () => generateColumns(attributes, blocks ?? [], eventId),
-    [attributes, eventId, blocks],
-  );
-
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
-
-  const table = useReactTable({
-    columns,
+  const {
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
-    state: {
-      globalFilter,
-    },
-    initialState: {
-      pagination: { pageSize: 25, pageIndex: 0 },
-      columnVisibility: {
-        id: false,
-      },
-    },
-    autoResetPageIndex: false,
-    enableMultiSort: true,
+    setData,
+    deleteParticipant: deleteParticipantMutation,
+    deleteManyParticipants: deleteManyParticipantsMutation,
+    isLoading: isQuerying,
+  } = useParticipantsData(eventId, participants);
 
-    meta: {
-      updateData: (rowIndex, value) => {
-        setData((previousData) => {
-          return previousData.map((row, index) => {
-            if (index === rowIndex) {
-              return value;
-            }
-            return row;
-          });
+  const { table, globalFilter } = useParticipantsTable({
+    data,
+    attributes,
+    blocks,
+    eventId,
+    onUpdateData: (rowIndex, value) => {
+      setData((previousData) => {
+        return previousData.map((row, index) => {
+          if (index === rowIndex) {
+            return value;
+          }
+          return row;
         });
-      },
-      setRowLoading: (rowIndex, isLoading) => {
-        setLoadingRows((previous) => ({
-          ...previous,
-          [rowIndex]: isLoading,
-        }));
-      },
-      isRowLoading: (rowIndex) => {
-        return loadingRows[rowIndex];
-      },
+      });
     },
   });
 
   async function deleteParticipant(participantId: number) {
-    setIsQuerying(true);
     try {
-      const { success, error } = await deleteParticipantAction(
-        eventId,
-        participantId.toString(),
-      );
+      const { success, error } = await deleteParticipantMutation(participantId);
 
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Nie udało się usunąć uczestnika!",
+          title: t("deleteParticipantError"),
           description: error,
         });
         return;
@@ -147,27 +110,21 @@ export function ParticipantTable({
       });
       toast({
         variant: "default",
-        title: "Pomyślnie usunięto uczestnika",
+        title: t("deleteParticipantSuccess"),
         description: error,
       });
     } catch {
       toast({
-        title: "Nie udało się usunąć uczestnika!",
+        title: t("deleteParticipantError"),
         variant: "destructive",
-        description: "Wystąpił błąd podczas usuwania uczestnika.",
+        description: t("deleteParticipantErrorDescription"),
       });
-    } finally {
-      setIsQuerying(false);
     }
   }
 
   async function deleteManyParticipants(_participants: string[]) {
-    setIsQuerying(true);
     try {
-      const response = await deleteManyParticipantsAction(
-        eventId,
-        _participants,
-      );
+      const response = await deleteManyParticipantsMutation(_participants);
 
       if (response.success) {
         setData((previousData) => {
@@ -177,23 +134,23 @@ export function ParticipantTable({
         });
         table.resetRowSelection();
         toast({
-          title: "Usunięto uczestników",
-          description: `Usunięto ${_participants.length.toString()} ${_participants.length === 1 ? "uczestnika" : "uczestników"}`,
+          title: t("deleteParticipantsSuccess"),
+          description: t("deleteParticipantsSuccessDescription", {
+            count: _participants.length,
+          }),
         });
       } else {
         toast({
-          title: "Nie udało się grupowo usunąć uczestników!",
+          title: t("deleteParticipantsError"),
           description: response.error,
         });
       }
     } catch {
       toast({
-        title: "Nie udało się grupowo usunąć uczestników!",
+        title: t("deleteParticipantsError"),
         variant: "destructive",
-        description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+        description: t("deleteParticipantsErrorDescription"),
       });
-    } finally {
-      setIsQuerying(false);
     }
   }
 
@@ -201,7 +158,7 @@ export function ParticipantTable({
     <>
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex grow justify-between">
-          <h1 className="text-3xl font-bold">Lista uczestników</h1>
+          <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
           <HelpDialog />
         </div>
         <TableMenu
@@ -219,7 +176,7 @@ export function ParticipantTable({
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
-                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:right-[-1px] [&>th:last-of-type>button]:backdrop-blur-lg"
+                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:-right-px [&>th:last-of-type>button]:backdrop-blur-lg"
                   key={headerGroup.id}
                 >
                   {headerGroup.headers.map((header) => {
@@ -267,9 +224,7 @@ export function ParticipantTable({
       </ScrollArea>
 
       {table.getRowCount() === 0 ? (
-        <div className="text-center">
-          Nie znaleziono żadnych pasujących wyników
-        </div>
+        <div className="text-center">{t("participantsNotFound")}</div>
       ) : null}
     </>
   );

@@ -1,30 +1,12 @@
 import type { Table } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, FilterX } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
-import { ExportButton } from "./export-button";
-import { SendMailForm } from "./send-mail-form";
-import { getPaginationInfoText } from "./utils";
+import { TablePagination } from "./table-pagination";
+import { TableSelectionInfo } from "./table-selection-info";
+import { TableToolbar } from "./table-toolbar";
 
 export function TableMenu({
   table,
@@ -47,165 +29,27 @@ export function TableMenu({
   );
   const [isUserSearching, setIsUserSearching] = useState(false);
 
-  const selectedCount = table.getSelectedRowModel().rows.length;
-  const pageRows = table.getPaginationRowModel().rows;
-  const totalFilteredCount = table.getFilteredRowModel().rows.length;
-  const allSelectedOnPage =
-    pageRows.length > 0 && pageRows.every((r) => r.getIsSelected());
-  const hasMoreThanOnePage = totalFilteredCount > pageRows.length;
-  const isAllRowsSelected = table.getIsAllRowsSelected();
-
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
       <div className="flex items-center gap-x-2">
-        <Input
-          className="h-10 w-32"
-          placeholder="Wyszukaj..."
-          value={globalFilter}
-          onChange={(event) => {
-            // TODO maybe some debouncing?
-            setIsUserSearching(true);
-            const searchValue = event.target.value;
-            table.setGlobalFilter(searchValue);
-
-            if (
-              pageBeforeSearch > 0 &&
-              table.getState().pagination.pageIndex > 0
-            ) {
-              table.firstPage();
-            } else if (searchValue === "") {
-              table.setPageIndex(pageBeforeSearch);
-              setIsUserSearching(false);
-            }
-          }}
-        ></Input>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={() => {
-                table.resetColumnFilters();
-              }}
-              size="icon"
-              variant="outline"
-              aria-label="Resetuj wszystkie filtry"
-            >
-              <FilterX />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Resetuj wszystkie filtry</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={() => {
-                table.resetSorting();
-              }}
-              size="icon"
-              variant="outline"
-              aria-label="Resetuj sortowanie"
-            >
-              <ArrowUpDown />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Resetuj sortowanie</TooltipContent>
-        </Tooltip>
-        <SendMailForm
+        <TableToolbar
+          table={table}
+          globalFilter={globalFilter}
           eventId={eventId}
-          targetParticipants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original)}
           emails={emails}
-        />
-        <ExportButton eventId={eventId} />
-        <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
-          participants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original.id.toString())}
           deleteManyParticipants={deleteManyParticipants}
+          pageBeforeSearch={pageBeforeSearch}
+          setIsUserSearching={setIsUserSearching}
         />
-        {selectedCount === 0 ? null : (
-          <div className="text-muted-foreground flex items-center gap-x-2 text-sm">
-            <span>Wybrano {selectedCount}</span>
-            {allSelectedOnPage && hasMoreThanOnePage && !isAllRowsSelected ? (
-              <Button
-                variant="link"
-                size="sm"
-                className="text-primary h-auto p-0"
-                onClick={() => {
-                  table.toggleAllRowsSelected(true);
-                }}
-              >
-                Zaznacz wszystkich ({totalFilteredCount})
-              </Button>
-            ) : null}
-            {isAllRowsSelected && hasMoreThanOnePage ? (
-              <span className="text-primary">
-                (wszyscy z {totalFilteredCount})
-              </span>
-            ) : null}
-          </div>
-        )}
+        <TableSelectionInfo table={table} />
       </div>
-      <div className="ml-auto flex items-center gap-x-2">
-        <Select
-          onValueChange={(value) => {
-            table.setPageSize(
-              value === "all"
-                ? table.getFilteredRowModel().rows.length
-                : Number(value),
-            );
-          }}
-          defaultValue={table.getState().pagination.pageSize.toString()}
-        >
-          <SelectTrigger className="h-10 w-20">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Wierszy na stronę</SelectLabel>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-              <SelectItem value="all">Wszystkie</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <span className="mr-2">{getPaginationInfoText(table)}</span>
-        <div className="flex gap-x-0">
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => {
-              table.previousPage();
-              if (!isUserSearching) {
-                setPageBeforeSearch((previous) => {
-                  return previous - 1;
-                });
-              }
-            }}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!table.getCanNextPage()}
-            onClick={() => {
-              table.nextPage();
-              if (!isUserSearching) {
-                setPageBeforeSearch((previous) => {
-                  return previous + 1;
-                });
-              }
-            }}
-          >
-            <ChevronRight />
-          </Button>
-        </div>
-      </div>
+
+      <TablePagination
+        table={table}
+        isUserSearching={isUserSearching}
+        setPageBeforeSearch={setPageBeforeSearch}
+      />
     </div>
   );
 }

@@ -1,8 +1,13 @@
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
 import { verifySession } from "@/lib/session";
+import type { Attribute } from "@/types/attributes";
 
 import {
   getAttributes,
@@ -10,6 +15,7 @@ import {
   getEmails,
   getParticipants,
 } from "./actions";
+import { ParticipantsLoader } from "./participants-loader";
 
 export const metadata: Metadata = {
   title: "Uczestnicy",
@@ -26,33 +32,35 @@ export default async function DashboardEventParticipantsPage({
   }
   const { id } = await params;
 
-  const participantsData = getParticipants(id);
-  const attributesData = getAttributes(id);
-  const emailsData = getEmails(id);
+  const queryClient = new QueryClient();
 
-  const [participants, attributes, emails] = await Promise.all([
-    participantsData,
-    attributesData,
-    emailsData,
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["participants", id],
+      queryFn: async () => getParticipants(id),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["attributes", id],
+      queryFn: async () => getAttributes(id),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["emails", id],
+      queryFn: async () => getEmails(id),
+    }),
   ]);
-  const blocks = await getBlocks(id, attributes ?? []);
+
+  const attributes = queryClient.getQueryData<Attribute[]>(["attributes", id]);
+
+  if (attributes != null) {
+    await queryClient.prefetchQuery({
+      queryKey: ["blocks", id, attributes],
+      queryFn: async () => getBlocks(id, attributes),
+    });
+  }
 
   return (
-    <div>
-      {participants == null || attributes == null ? (
-        <div>Nie udało się załadować danych o uczestnikach</div>
-      ) : (
-        <ParticipantTable
-          participants={participants.toSorted(
-            (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-          )}
-          attributes={attributes}
-          emails={emails}
-          blocks={blocks}
-          eventId={id}
-        />
-      )}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ParticipantsLoader eventId={id} />
+    </HydrationBoundary>
   );
 }

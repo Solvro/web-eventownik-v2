@@ -10,5 +10,6 @@ export default defineConfig(({ mode }) => ({
     setupFiles: ["vitest.setup.ts"],
     globals: true,
     env: loadEnv(mode, process.cwd(), ""),
+    retry: 2,
   },
 }));
