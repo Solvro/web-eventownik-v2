@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader, Trash2, XCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   AlertDialog,
@@ -29,6 +30,8 @@ export function DeleteManyParticipantsDialog({
   participants: string[];
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
+  const t = useTranslations("Table");
+
   return participants.length === 0 ? (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -41,55 +44,61 @@ export function DeleteManyParticipantsDialog({
           <Trash2 />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Najpierw zaznacz uczestników do usunięcia</TooltipContent>
+      <TooltipContent>{t("deleteManyTooltip")}</TooltipContent>
     </Tooltip>
   ) : (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          title="Grupowe usuwanie uczestników"
-          className="text-red-500"
-          disabled={isQuerying}
-          size="icon"
-          aria-label="Usuń zaznaczone wiersze"
-        >
-          {isQuerying ? <Loader className="animate-spin" /> : <Trash2 />}
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="flex flex-col items-center">
-        <AlertDialogHeader className="flex flex-col items-center">
-          <AlertDialogTitle className="flex flex-col items-center self-center">
-            <XCircle strokeWidth={1} stroke={"red"} size={64} />
-            Jesteś pewny?
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-foreground text-center text-pretty">
-            Zamierzasz jednocześnie usunąć{" "}
-            <strong>{participants.length}</strong>{" "}
-            {participants.length === 1 ? "uczestnika" : "uczestników"}. Tej
-            operacji nie będzie można cofnąć.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="flex gap-x-4">
-          <AlertDialogAction
-            onClick={async () => {
-              await deleteManyParticipants(participants);
-            }}
-            className={buttonVariants({
-              variant: "destructive",
-            })}
-          >
-            Usuń
-          </AlertDialogAction>
-          <AlertDialogCancel
-            className={buttonVariants({
-              variant: "outline",
-            })}
-          >
-            Anuluj
-          </AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Tooltip>
+      <AlertDialog>
+        <TooltipTrigger asChild>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              title={t("deleteManyTitle")}
+              className="text-red-500"
+              disabled={isQuerying}
+              size="icon"
+              aria-label={t("deleteSelectedRows")}
+            >
+              {isQuerying ? <Loader className="animate-spin" /> : <Trash2 />}
+            </Button>
+          </AlertDialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          {t("deleteManySelectedTooltip", { count: participants.length })}
+        </TooltipContent>
+        <AlertDialogContent className="flex flex-col items-center">
+          <AlertDialogHeader className="flex flex-col items-center">
+            <AlertDialogTitle className="flex flex-col items-center self-center">
+              <XCircle strokeWidth={1} stroke={"red"} size={64} />
+              {t("deleteConfirmTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground text-center text-pretty">
+              {t("deleteManyConfirmDescription", {
+                count: participants.length,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-x-4">
+            <AlertDialogAction
+              onClick={async () => {
+                await deleteManyParticipants(participants);
+              }}
+              className={buttonVariants({
+                variant: "destructive",
+              })}
+            >
+              {t("deleteButton")}
+            </AlertDialogAction>
+            <AlertDialogCancel
+              className={buttonVariants({
+                variant: "outline",
+              })}
+            >
+              {t("cancelButton")}
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </Tooltip>
   );
 }

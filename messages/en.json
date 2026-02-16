@@ -85,7 +85,16 @@
     "helpTitle": "How to use the table?",
     "helpMultiSortTitle": "Multi-sorting",
     "helpMultiSortDescription1": "To sort by multiple columns at once, hold down the <strong>Shift</strong> key and click the headers of the columns you want to sort by.",
-    "helpMultiSortDescription2": "The sorting priority will correspond to the order in which you click the columns, e.g.:<br></br>Clicking the <i>Name</i> column first, and then (holding <strong>Shift</strong>!) the <i>Age</i> column,<br></br>data will be sorted first by name, and then by age."
+    "helpMultiSortDescription2": "The sorting priority will correspond to the order in which you click the columns, e.g.:<br></br>Clicking the <i>Name</i> column first, and then (holding <strong>Shift</strong>!) the <i>Age</i> column,<br></br>data will be sorted first by name, and then by age.",
+    "deleteManyTooltip": "Select participants to delete first",
+    "deleteManySelectedTooltip": "Delete {count, plural, =1 {1 selected participant} other {# selected participants}}",
+    "deleteManyTitle": "Batch delete participants",
+    "deleteSelectedRows": "Delete selected rows",
+    "deleteButton": "Delete",
+    "cancelButton": "Cancel",
+    "deleteConfirmTitle": "Are you sure?",
+    "deleteManyConfirmDescription": "You are about to delete {count, plural, =1 {1 participant} other {# participants}} at once. This operation cannot be undone",
+    "deleteSingleConfirmDescription": "Are you sure you want to delete this participant? This operation cannot be undone"
   },
   "SendMail": {
     "selectTemplate": "Select a template",
