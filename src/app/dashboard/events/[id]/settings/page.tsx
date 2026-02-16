@@ -56,6 +56,7 @@ export default async function DashboardEventSettingsPage({
     notFound();
   }
   const attributes = (await attributesResponse.json()) as EventAttribute[];
+  attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <>
