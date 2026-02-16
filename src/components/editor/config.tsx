@@ -1,6 +1,6 @@
 "use client";
 
-import type { Config, Slot } from "@measured/puck";
+import type { Config, Slot } from "@puckeditor/core";
 import {
   ChevronsUpDown,
   ImageUpscale,
@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
+import { setupSuggestions } from "@/lib/extensions/tags";
+
 import type { AppearanceFields, LayoutFields } from "./common";
 import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
-import { PuckRichText } from "./puck-rich-text";
 
 interface EmailCSSProperties extends CSSProperties {
   msoTableLspace?: string;
@@ -42,13 +43,12 @@ interface ContainerFields extends LayoutFields, AppearanceFields {
   numZones: number;
 }
 
-interface RichTextFields {
-  content: string;
-  id?: string;
-}
-
 interface DividerFields extends AppearanceFields {
   height: string;
+}
+
+interface RichTextFields {
+  content: string;
 }
 
 export interface PuckComponents {
@@ -63,16 +63,16 @@ export const puckConfig: Config<PuckComponents> = {
     RichText: {
       label: "Tekst",
       fields: {
-        content: { type: "text", visible: false },
-        id: { type: "text", visible: false },
+        content: {
+          type: "richtext",
+          label: "Zawartość",
+          tiptap: {
+            extensions: [...setupSuggestions([])],
+          },
+        },
       },
-      defaultProps: {
-        content: "<p></p>",
-        id: "",
-      },
-      render: ({ content, id }) => {
-        return <PuckRichText externalContent={content} id={id} />;
-      },
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      render: ({ content }) => <>{content}</>,
     },
     Container: {
       label: "Kontener",

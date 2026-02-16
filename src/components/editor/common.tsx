@@ -1,12 +1,12 @@
-import { FieldLabel } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
 import type {
   CustomField,
   NumberField,
   ObjectField,
   SelectField,
   TextField,
-} from "@measured/puck";
-import "@measured/puck/no-external.css";
+} from "@puckeditor/core";
+import "@puckeditor/core/no-external.css";
 import {
   AlignLeft,
   Bold,

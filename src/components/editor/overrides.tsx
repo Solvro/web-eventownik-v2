@@ -1,7 +1,7 @@
 "use client";
 
-import { FieldLabel } from "@measured/puck";
-import type { Config, Overrides } from "@measured/puck";
+import { FieldLabel } from "@puckeditor/core";
+import type { Config, Overrides } from "@puckeditor/core";
 
 import { Input } from "@/components/ui/input";
 import {

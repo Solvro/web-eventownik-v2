@@ -1,8 +1,8 @@
 "use client";
 
-import { Drawer, Puck, Render, useGetPuck, usePuck } from "@measured/puck";
-import type { AppState, Config, PuckAction } from "@measured/puck";
-import "@measured/puck/no-external.css";
+import { Drawer, Puck, Render, useGetPuck, usePuck } from "@puckeditor/core";
+import type { AppState, Config, PuckAction } from "@puckeditor/core";
+import "@puckeditor/core/no-external.css";
 import {
   Container,
   Eye,

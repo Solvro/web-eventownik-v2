@@ -1,7 +1,7 @@
 "use client";
 
-import { Puck } from "@measured/puck";
-import "@measured/puck/no-external.css";
+import { Puck } from "@puckeditor/core";
+import "@puckeditor/core/no-external.css";
 
 import { PuckComposition } from "@/components/editor/composition";
 import { puckConfig } from "@/components/editor/config";
