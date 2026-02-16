@@ -53,7 +53,6 @@ export function DeleteManyParticipantsDialog({
           <AlertDialogTrigger asChild>
             <Button
               variant="outline"
-              title={t("deleteManyTitle")}
               className="text-red-500"
               disabled={isQuerying}
               size="icon"

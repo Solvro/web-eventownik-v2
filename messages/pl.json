@@ -94,7 +94,8 @@
     "cancelButton": "Anuluj",
     "deleteConfirmTitle": "Jesteś pewny?",
     "deleteManyConfirmDescription": "Zamierzasz jednocześnie usunąć {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}. Tej operacji nie będzie można cofnąć",
-    "deleteSingleConfirmDescription": "Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie można cofnąć"
+    "deleteSingleConfirmDescription": "Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie można cofnąć",
+    "rowNumberTitle": "Lp."
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",

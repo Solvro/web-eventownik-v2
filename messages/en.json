@@ -94,7 +94,8 @@
     "cancelButton": "Cancel",
     "deleteConfirmTitle": "Are you sure?",
     "deleteManyConfirmDescription": "You are about to delete {count, plural, =1 {1 participant} other {# participants}} at once. This operation cannot be undone",
-    "deleteSingleConfirmDescription": "Are you sure you want to delete this participant? This operation cannot be undone"
+    "deleteSingleConfirmDescription": "Are you sure you want to delete this participant? This operation cannot be undone",
+    "rowNumberTitle": "No."
   },
   "SendMail": {
     "selectTemplate": "Select a template",
