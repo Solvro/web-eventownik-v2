@@ -117,6 +117,7 @@
   --tag-pink-text: #b3006b;
   --tag-brown-bg: #f2e6e0;
   --tag-brown-text: #5c3d2e;
+  --puck-font-family: "Space Grotesk", sans-serif !important;
 }
 
 .dark {
@@ -172,6 +173,7 @@
   --tag-pink-text: #ff66b2;
   --tag-brown-bg: #2b1a14;
   --tag-brown-text: #d2a679;
+  --puck-font-family: "Space Grotesk", sans-serif !important;
 }
 
 @layer base {
