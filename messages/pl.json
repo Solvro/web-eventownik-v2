@@ -94,5 +94,11 @@
     "selectPlaceholder": "Wybierz szablon z listy",
     "confirmRecipients": "Zamierzasz wysłać tą wiadomość do {count, plural, one {# uczestnika} other {# uczestników}} z następującymi adresami:",
     "send": "Wyślij"
+  },
+  "Export": {
+    "failed": "Eksport nie powiódł się!",
+    "unknownError": "Wystąpił nieznany błąd",
+    "tryAgain": "Spróbuj ponownie",
+    "exportToExcel": "Eksportuj do Excela"
   }
 }

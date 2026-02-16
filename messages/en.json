@@ -94,5 +94,11 @@
     "selectPlaceholder": "Select a template from the list",
     "confirmRecipients": "You are about to send this message to {count, plural, one {# participant} other {# participants}} with the following addresses:",
     "send": "Send"
+  },
+  "Export": {
+    "failed": "Export failed!",
+    "unknownError": "An unknown error occurred",
+    "tryAgain": "Try again",
+    "exportToExcel": "Export to Excel"
   }
 }
