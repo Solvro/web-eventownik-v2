@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 
 import type { PuckComponents } from "./config";
 
@@ -77,16 +76,12 @@ export const overrides: Partial<Overrides<Config<PuckComponents>>> = {
         </>
       );
     },
-    textarea: ({ onChange, name, value, field }) => (
+    richtext: ({ field, name }) => (
       <>
         <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-        <Textarea
-          value={value as string}
-          onChange={(event) => {
-            onChange(event.currentTarget.value);
-          }}
-          className="text-foreground"
-        />
+        <span className="text-foreground-muted text-sm">
+          Zacznij edytować tekst poprzez kliknięcie na blok w mailu
+        </span>
       </>
     ),
   },

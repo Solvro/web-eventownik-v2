@@ -67,6 +67,7 @@ export const puckConfig: Config<PuckComponents> = {
         content: {
           type: "richtext",
           label: "Zawartość",
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
           contentEditable: true,
           tiptap: {
             extensions: [...setupSuggestions([])],
