@@ -1,6 +1,7 @@
 "use client";
 
 import type { Config, Slot } from "@puckeditor/core";
+import { Placeholder } from "@tiptap/extension-placeholder";
 import {
   ChevronsUpDown,
   ImageUpscale,
@@ -14,7 +15,7 @@ import { setupSuggestions } from "@/lib/extensions/tags";
 
 import type { AppearanceFields, LayoutFields } from "./common";
 import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
-import { InlineRichTextMenu } from "./richtext-menus";
+import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
 
 interface EmailCSSProperties extends CSSProperties {
   msoTableLspace?: string;
@@ -70,11 +71,15 @@ export const puckConfig: Config<PuckComponents> = {
           labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
           contentEditable: true,
           tiptap: {
-            extensions: [...setupSuggestions([])],
+            extensions: [
+              Placeholder.configure({ placeholder: "Zacznij pisać..." }),
+              ...setupSuggestions([]),
+            ],
           },
           renderInlineMenu: ({ editor }) => (
             <InlineRichTextMenu editor={editor} />
           ),
+          renderMenu: ({ editor }) => <SidebarRichTextMenu editor={editor} />,
         },
       },
       defaultProps: {

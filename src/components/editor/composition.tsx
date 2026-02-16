@@ -272,6 +272,8 @@ function FieldsPanel({ appState }: { appState: AppState }) {
       <div
         className={cn(
           "overflow-y-auto border-l border-(--event-primary-color)/50 [&>form]:w-58.5",
+          // Rich text editor
+          "[&_.tiptap]:bg-transparent!",
           // Each field entry - outside of field groups, exclusive to block (e.g. no. of columns in grid)
           "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-(--event-primary-color)/50!",
           // All field groups containers (as in commons - e.g. the div holding font size field in case of typography)

@@ -76,13 +76,5 @@ export const overrides: Partial<Overrides<Config<PuckComponents>>> = {
         </>
       );
     },
-    richtext: ({ field, name }) => (
-      <>
-        <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-        <span className="text-foreground-muted text-sm">
-          Zacznij edytować tekst poprzez kliknięcie na blok w mailu
-        </span>
-      </>
-    ),
   },
 };
