@@ -80,7 +80,12 @@
     "allSelected": "(all {count})",
     "rowsPerPage": "Rows per page",
     "allRows": "All",
-    "paginationInfo": "{start}-{end} of {total}"
+    "paginationInfo": "{start}-{end} of {total}",
+    "helpTooltip": "Tips",
+    "helpTitle": "How to use the table?",
+    "helpMultiSortTitle": "Multi-sorting",
+    "helpMultiSortDescription1": "To sort by multiple columns at once, hold down the <strong>Shift</strong> key and click the headers of the columns you want to sort by.",
+    "helpMultiSortDescription2": "The sorting priority will correspond to the order in which you click the columns, e.g.:<br></br>Clicking the <i>Name</i> column first, and then (holding <strong>Shift</strong>!) the <i>Age</i> column,<br></br>data will be sorted first by name, and then by age."
   },
   "SendMail": {
     "selectTemplate": "Select a template",

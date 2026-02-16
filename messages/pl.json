@@ -80,7 +80,12 @@
     "allSelected": "(wszyscy z {count})",
     "rowsPerPage": "Wierszy na stronę",
     "allRows": "Wszystkie",
-    "paginationInfo": "{start}-{end} z {total}"
+    "paginationInfo": "{start}-{end} z {total}",
+    "helpTooltip": "Wskazówki",
+    "helpTitle": "Jak korzystać z tabeli?",
+    "helpMultiSortTitle": "Wielokrotne sortowanie",
+    "helpMultiSortDescription1": "Chcąc posortować po wielu kolumnach naraz, przytrzymaj przycisk <strong>Shift</strong> i kliknij nagłówki kolumn, po których chcesz posortować dane.",
+    "helpMultiSortDescription2": "Priorytet sortowania będzie odpowiadał kolejności klikania w kolejne kolumny, np.:<br></br>Klikając najpierw kolumnę <i>Imię</i>, a potem (z wciśniętym <strong>Shift</strong>-em !) kolumnę <i>Wiek</i>,<br></br>dane zostaną posortowane najpierw według imion, a potem według wieku."
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",
