@@ -71,6 +71,15 @@
     "deleteParticipantsSuccessDescription": "Deleted {count, plural, =1 {1 participant} other {# participants}}",
     "deleteParticipantsError": "Failed to batch delete participants!",
     "deleteParticipantsErrorDescription": "An unexpected error occurred. Try again",
-    "participantsTableTitle": "Participants"
+    "participantsTableTitle": "Participants",
+    "searchPlaceholder": "Search...",
+    "resetFilters": "Reset filters",
+    "resetSorting": "Reset sorting",
+    "selectedCount": "Selected {count}",
+    "selectAll": "Select all ({count})",
+    "allSelected": "(all {count})",
+    "rowsPerPage": "Rows per page",
+    "allRows": "All",
+    "paginationInfo": "{start}-{end} of {total}"
   }
 }

@@ -10,6 +10,8 @@ import { AppLogo } from "@/components/app-logo";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
+import { LanguageSwitch } from "./language-switch";
+
 const navigation = [
   // { name: "Dashboard", href: "/dashboard" },
   { name: "Wydarzenia", href: "/dashboard/events" },
@@ -59,6 +61,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
               </div>
             </div>
             <div className="hidden sm:flex sm:items-center sm:gap-2">
+              <LanguageSwitch />
               <ThemeSwitch />
               {authButton}
             </div>

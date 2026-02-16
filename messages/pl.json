@@ -71,6 +71,15 @@
     "deleteParticipantsSuccessDescription": "Usunięto {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
     "deleteParticipantsError": "Nie udało się grupowo usunąć uczestników!",
     "deleteParticipantsErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
-    "participantsTableTitle": "Lista uczestników"
+    "participantsTableTitle": "Lista uczestników",
+    "searchPlaceholder": "Wyszukaj...",
+    "resetFilters": "Resetuj wszystkie filtry",
+    "resetSorting": "Resetuj sortowanie",
+    "selectedCount": "Wybrano {count}",
+    "selectAll": "Zaznacz wszystkich ({count})",
+    "allSelected": "(wszyscy z {count})",
+    "rowsPerPage": "Wierszy na stronę",
+    "allRows": "Wszystkie",
+    "paginationInfo": "{start}-{end} z {total}"
   }
 }

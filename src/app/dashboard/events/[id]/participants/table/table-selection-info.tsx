@@ -1,4 +1,5 @@
 import type { Table } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -8,6 +9,7 @@ interface TableSelectionInfoProps {
 }
 
 export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
+  const t = useTranslations("Table");
   const selectedCount = table.getSelectedRowModel().rows.length;
   const pageRows = table.getPaginationRowModel().rows;
   const totalFilteredCount = table.getFilteredRowModel().rows.length;
@@ -23,7 +25,7 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
 
   return (
     <div className="text-muted-foreground flex items-center gap-x-2 text-sm">
-      <span>Wybrano {selectedCount}</span>
+      <span>{t("selectedCount", { count: selectedCount })}</span>
       {allSelectedOnPage && hasMoreThanOnePage && !isAllRowsSelected ? (
         <Button
           variant="link"
@@ -33,11 +35,13 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
             table.toggleAllRowsSelected(true);
           }}
         >
-          Zaznacz wszystkich ({totalFilteredCount})
+          {t("selectAll", { count: totalFilteredCount })}
         </Button>
       ) : null}
       {isAllRowsSelected && hasMoreThanOnePage ? (
-        <span className="text-primary">(wszyscy z {totalFilteredCount})</span>
+        <span className="text-primary">
+          {t("allSelected", { count: totalFilteredCount })}
+        </span>
       ) : null}
     </div>
   );

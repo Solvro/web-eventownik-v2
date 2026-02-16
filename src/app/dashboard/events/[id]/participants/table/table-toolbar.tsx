@@ -1,5 +1,6 @@
 import type { Table } from "@tanstack/react-table";
 import { ArrowUpDown, FilterX } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -37,11 +38,13 @@ export function TableToolbar({
   pageBeforeSearch,
   setIsUserSearching,
 }: TableToolbarProps) {
+  const t = useTranslations("Table");
+
   return (
     <>
       <Input
         className="h-10 w-32"
-        placeholder="Wyszukaj..."
+        placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
           setIsUserSearching(true);
@@ -67,12 +70,12 @@ export function TableToolbar({
             }}
             size="icon"
             variant="outline"
-            aria-label="Resetuj wszystkie filtry"
+            aria-label={t("resetFilters")}
           >
             <FilterX />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Resetuj wszystkie filtry</TooltipContent>
+        <TooltipContent>{t("resetFilters")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -82,12 +85,12 @@ export function TableToolbar({
             }}
             size="icon"
             variant="outline"
-            aria-label="Resetuj sortowanie"
+            aria-label={t("resetSorting")}
           >
             <ArrowUpDown />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Resetuj sortowanie</TooltipContent>
+        <TooltipContent>{t("resetSorting")}</TooltipContent>
       </Tooltip>
       <SendMailForm
         eventId={eventId}
