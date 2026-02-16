@@ -7,6 +7,7 @@ export function useEditorActiveState(editor: Editor | null) {
   const [activeState, setActiveState] = useState<EditorActiveState>({
     bold: false,
     italic: false,
+    underline: false,
     code: false,
     heading1: false,
     heading2: false,
@@ -28,6 +29,7 @@ export function useEditorActiveState(editor: Editor | null) {
       setActiveState({
         bold: editor.isActive("bold"),
         italic: editor.isActive("italic"),
+        underline: editor.isActive("underline"),
         code: editor.isActive("code"),
         heading1: editor.isActive("heading", { level: 1 }),
         heading2: editor.isActive("heading", { level: 2 }),

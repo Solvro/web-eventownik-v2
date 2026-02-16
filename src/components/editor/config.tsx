@@ -14,6 +14,7 @@ import { setupSuggestions } from "@/lib/extensions/tags";
 
 import type { AppearanceFields, LayoutFields } from "./common";
 import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
+import { InlineRichTextMenu } from "./richtext-menus";
 
 interface EmailCSSProperties extends CSSProperties {
   msoTableLspace?: string;
@@ -66,10 +67,17 @@ export const puckConfig: Config<PuckComponents> = {
         content: {
           type: "richtext",
           label: "Zawartość",
+          contentEditable: true,
           tiptap: {
             extensions: [...setupSuggestions([])],
           },
+          renderInlineMenu: ({ editor }) => (
+            <InlineRichTextMenu editor={editor} />
+          ),
         },
+      },
+      defaultProps: {
+        content: "<p></p>",
       },
       // eslint-disable-next-line react/jsx-no-useless-fragment
       render: ({ content }) => <>{content}</>,

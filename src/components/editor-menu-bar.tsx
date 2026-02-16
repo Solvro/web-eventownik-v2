@@ -18,6 +18,7 @@ import {
   ListOrdered,
   SlashSquare,
   Tag,
+  Underline,
 } from "lucide-react";
 import { useRef } from "react";
 
@@ -69,6 +70,19 @@ function EditorMenuBar({
             </Button>
           </TooltipTrigger>
           <TooltipContent>Kursywa</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={activeState.underline ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() => editor.chain().focus().toggleUnderline().run()}
+            >
+              <Underline />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Podkreślenie</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>

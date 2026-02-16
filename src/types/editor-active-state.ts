@@ -1,6 +1,7 @@
 export interface EditorActiveState {
   bold: boolean;
   italic: boolean;
+  underline: boolean;
   code: boolean;
   heading1: boolean;
   heading2: boolean;
