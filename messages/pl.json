@@ -81,5 +81,18 @@
     "rowsPerPage": "Wierszy na stronę",
     "allRows": "Wszystkie",
     "paginationInfo": "{start}-{end} z {total}"
+  },
+  "SendMail": {
+    "selectTemplate": "Wybierz szablon",
+    "successTitle": "Wysłano wiadomości",
+    "errorTitle": "Nie udało się wysłać wiadomości!",
+    "sendMail": "Wyślij maila",
+    "step1": "Krok 1",
+    "selectTemplateDescription": "Wybierz szablon maila",
+    "fetchError": "Nie udało się pobrać szablonów",
+    "refresh": "Odśwież",
+    "selectPlaceholder": "Wybierz szablon z listy",
+    "confirmRecipients": "Zamierzasz wysłać tą wiadomość do {count, plural, one {# uczestnika} other {# uczestników}} z następującymi adresami:",
+    "send": "Wyślij"
   }
 }
