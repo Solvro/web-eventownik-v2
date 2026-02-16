@@ -1,6 +1,5 @@
 "use client";
 
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { Loader, Trash2, XCircle } from "lucide-react";
 
 import {
@@ -15,6 +14,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function DeleteManyParticipantsDialog({
   isQuerying,
@@ -26,29 +30,19 @@ export function DeleteManyParticipantsDialog({
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
   return participants.length === 0 ? (
-    <Tooltip.Provider delayDuration={0}>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <Button
-            variant="outline"
-            className="text-red-500 hover:cursor-not-allowed hover:text-red-500 disabled:pointer-events-auto"
-            size="icon"
-            disabled={true}
-          >
-            <Trash2 />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content
-            className="text-foreground rounded bg-white px-3 py-2 text-sm dark:bg-gray-900"
-            sideOffset={5}
-          >
-            Najpierw zaznacz uczestników do usunięcia
-            <Tooltip.Arrow className="fill-white dark:fill-gray-900" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="outline"
+          className="text-red-500 hover:cursor-not-allowed hover:text-red-500 disabled:pointer-events-auto"
+          size="icon"
+          disabled={true}
+        >
+          <Trash2 />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Najpierw zaznacz uczestników do usunięcia</TooltipContent>
+    </Tooltip>
   ) : (
     <AlertDialog>
       <AlertDialogTrigger asChild>
