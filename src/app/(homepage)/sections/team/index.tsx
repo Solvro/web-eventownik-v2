@@ -8,7 +8,7 @@ import type { TeamMember } from "./team-member";
 const team: TeamMember[] = [
   {
     name: "Amelia Sroczyńska",
-    roles: ["Project Manager"],
+    roles: ["Product Owner"],
     image:
       "https://cms.solvro.pl/assets/8b57e57a-e701-4d9a-88e5-c254e9299fee?key=member",
     url: "https://www.linkedin.com/in/amelia-sroczy%C5%84ska-bb26ba347/",
