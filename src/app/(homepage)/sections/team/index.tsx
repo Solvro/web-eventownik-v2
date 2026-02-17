@@ -23,7 +23,7 @@ const team: TeamMember[] = [
 
   {
     name: "Maciej Król",
-    roles: ["Frontend Developer"],
+    roles: ["Frontend Techlead"],
     image:
       "https://cms.solvro.pl/assets/dfa1ac3b-c112-43e3-9004-ced678d91903?key=member",
     url: "https://github.com/maciejkrol18",
@@ -151,7 +151,7 @@ const team: TeamMember[] = [
   },
   {
     name: "Antoni Czaplicki",
-    roles: ["Frontend Techlead"],
+    roles: ["Frontend Developer"],
     image:
       "https://cms.solvro.pl/assets/e1424e35-9130-486b-9a5d-49771b6ea6eb?key=member",
     url: "https://github.com/Antoni-Czaplicki",
