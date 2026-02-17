@@ -38,7 +38,7 @@ const team: TeamMember[] = [
   {
     name: "Maciej Talarczyk",
     roles: ["UI/UX Designer"],
-    image: "/assets/landing/team/maciej-talarczyk.jpg",
+    image: "/assets/landing/team/maciej-talarczyk.webp",
     url: "https://github.com/muclx",
   },
   {
@@ -58,7 +58,7 @@ const team: TeamMember[] = [
   {
     name: "Marek Kocik",
     roles: ["Backend Developer"],
-    image: "/assets/landing/team/marek-kocik.jpg",
+    image: "/assets/landing/team/marek-kocik.webp",
     url: "https://github.com/huskyybtw",
   },
   {
@@ -71,7 +71,7 @@ const team: TeamMember[] = [
   {
     name: "Kamil Ramocki",
     roles: ["Backend Developer"],
-    image: "/assets/landing/team/kamil-ramocki.jpg",
+    image: "/assets/landing/team/kamil-ramocki.webp",
     url: "https://github.com/kamilramocki",
   },
   {
@@ -84,7 +84,7 @@ const team: TeamMember[] = [
   {
     name: "Wincenty Wensker",
     roles: ["UI/UX Designer"],
-    image: "/assets/landing/team/wincenty-wensker.jpg",
+    image: "/assets/landing/team/wincenty-wensker.webp",
     url: "https://github.com/Kitkacy",
   },
   {
@@ -208,19 +208,19 @@ const team: TeamMember[] = [
   {
     name: "Bartek Płochocki",
     roles: ["Devops Engineer"],
-    image: "/assets/landing/team/bartek-plochocki.jpg",
+    image: "/assets/landing/team/bartek-plochocki.webp",
     url: "https://github.com/Bartkooo",
   },
   {
     name: "Jeremiasz Lizak",
     roles: ["Devops Engineer"],
-    image: "/assets/landing/team/jeremiasz-lizak.jpg",
+    image: "/assets/landing/team/jeremiasz-lizak.webp",
     url: "https://github.com/JLizak",
   },
   {
     name: "Daria Totoszko",
     roles: ["Marketing Coordinator"],
-    image: "/assets/landing/team/daria-totoszko.jpg",
+    image: "/assets/landing/team/daria-totoszko.webp",
     url: "https://github.com/DariaTotoszko",
   },
 ];

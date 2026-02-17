@@ -214,7 +214,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#ffc94b]"></span>
           </div>
           <Image
-            src="/assets/landing/functionalities/organizer-1.jpg"
+            src="/assets/landing/functionalities/organizer-1.webp"
             alt=""
             width={200}
             height={200}
@@ -231,7 +231,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#fd36fa]"></span>
           </div>
           <Image
-            src="/assets/landing/functionalities/organizer-2.jpg"
+            src="/assets/landing/functionalities/organizer-2.webp"
             alt=""
             width={200}
             height={200}
@@ -248,7 +248,7 @@ const asideContents = new Map<string, React.ReactNode>([
             <span className="h-24 border-l-2 border-dashed border-[#3089dc]"></span>
           </div>
           <Image
-            src="/assets/landing/functionalities/organizer-3.jpg"
+            src="/assets/landing/functionalities/organizer-3.webp"
             alt=""
             width={200}
             height={200}

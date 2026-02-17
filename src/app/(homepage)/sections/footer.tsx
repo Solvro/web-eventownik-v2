@@ -149,7 +149,7 @@ export function Footer() {
           </div>
 
           <Image
-            src={"/assets/landing/footer_bg.jpg"}
+            src={"/assets/landing/footer_bg.webp"}
             alt=""
             width={1600}
             height={500}

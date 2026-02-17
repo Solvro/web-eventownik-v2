@@ -22,7 +22,7 @@ export default function Home() {
           <Functionalities />
         </div>
         <Image
-          src={"/assets/landing/footer_bg.jpg"}
+          src={"/assets/landing/footer_bg.webp"}
           alt=""
           width={3000}
           height={3000}
