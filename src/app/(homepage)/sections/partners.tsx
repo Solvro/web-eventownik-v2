@@ -17,21 +17,21 @@ export function Partners() {
         <ScrollArea>
           <div className="flex w-full flex-col items-center justify-evenly gap-16 px-16 py-8 lg:flex-row">
             <Image
-              src={"/assets/logo/pwr.png"}
+              src={"/assets/logo/pwr.webp"}
               alt={"Politechnika Wrocławska"}
               width={300}
               height={300}
               className="max-h-12 w-auto dark:invert"
             />
             <Image
-              src={"/assets/logo/solvro_black.png"}
+              src={"/assets/logo/solvro_black.webp"}
               alt={"Koło Naukowe Solvro"}
               width={300}
               height={300}
               className="max-h-12 w-auto dark:invert"
             />
             <Image
-              src={"/assets/logo/wuzetka.png"}
+              src={"/assets/logo/wuzetka.webp"}
               alt={"Samorząd Studencki Wydziału Zarządzania"}
               width={300}
               height={300}

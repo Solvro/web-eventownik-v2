@@ -15,7 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PHOTO_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
-import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.png";
+import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.webp";
 
 interface EventPageLayoutProps {
   event: Event;

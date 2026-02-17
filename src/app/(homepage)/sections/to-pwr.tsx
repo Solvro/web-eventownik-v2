@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import ToPwrBg from "@/../public/assets/landing/topwr/topwr_bg.png";
+import ToPwrBg from "@/../public/assets/landing/topwr/topwr_bg.webp";
 
 const parentVariants = {
   hidden: {
@@ -104,7 +104,7 @@ export function ToPWr() {
                   target="_blank"
                 >
                   <Image
-                    src={"/assets/landing/topwr/google_play.png"}
+                    src={"/assets/landing/topwr/google_play.webp"}
                     alt={"Pobierz z google play"}
                     width={160}
                     height={50}
@@ -118,7 +118,7 @@ export function ToPWr() {
                   target="_blank"
                 >
                   <Image
-                    src={"/assets/landing/topwr/apple_store.png"}
+                    src={"/assets/landing/topwr/apple_store.webp"}
                     alt={"Pobierz z app store"}
                     width={144}
                     height={50}

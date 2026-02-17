@@ -113,7 +113,7 @@ export function Functionalities() {
                 />
               </div>
               <Image
-                src="/assets/landing/functionalities/event-creation.png"
+                src="/assets/landing/functionalities/event-creation.webp"
                 alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
                 className="image-fade order-first h-full rounded-3xl object-cover pt-8 sm:pt-16 lg:order-last lg:max-w-5xl lg:-translate-x-[20%]"
                 width={2000}
@@ -153,7 +153,7 @@ export function Functionalities() {
                         className="border-input flex h-min flex-row gap-6 rounded-2xl border bg-[#f7f7f7] p-6 dark:bg-[#151515]"
                       >
                         <Image
-                          src={"/assets/landing/gmail.png"}
+                          src={"/assets/landing/gmail.webp"}
                           alt="Gmail logo"
                           className="size-10"
                           width={40}
@@ -197,7 +197,7 @@ export function Functionalities() {
                   />
                 </div>
                 <Image
-                  src="/assets/landing/functionalities/ipads-mockup.png"
+                  src="/assets/landing/functionalities/ipads-mockup.webp"
                   alt="Strona wydarzenia"
                   className="overflow-hidden object-cover object-left pt-8 sm:w-md sm:pt-0"
                   width={2000}
@@ -208,7 +208,7 @@ export function Functionalities() {
             {/* Step 2 */}
             <div className="z-20 grid w-full grid-cols-1 items-center gap-8 bg-white px-4 pt-4 pb-8 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
               <Image
-                src="/assets/landing/functionalities/iphones-mockup.png"
+                src="/assets/landing/functionalities/iphones-mockup.webp"
                 alt="Widok formularza"
                 className="h-auto w-full rounded-3xl p-2"
                 width={500}

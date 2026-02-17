@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.webp";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

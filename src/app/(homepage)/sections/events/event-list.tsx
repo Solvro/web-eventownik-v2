@@ -30,7 +30,7 @@ function Event({
 }) {
   const eventPhoto =
     photoUrl === null
-      ? "/assets/event-photo-placeholder.png"
+      ? "/assets/event-photo-placeholder.webp"
       : `${PHOTO_URL}/${photoUrl}`;
 
   // Helper to render date range using date-fns

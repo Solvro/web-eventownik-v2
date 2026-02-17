@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.webp";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";

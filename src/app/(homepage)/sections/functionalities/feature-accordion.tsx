@@ -48,7 +48,7 @@ const asideContents = new Map<string, React.ReactNode>([
     >
       <div className="relative grid h-full w-full max-w-3xl grid-cols-5 items-end gap-4 sm:grid-cols-2 sm:gap-0">
         <Image
-          src="/assets/landing/functionalities/mobile-mockup.png"
+          src="/assets/landing/functionalities/mobile-mockup.webp"
           alt="Wygląd Eventownika na urządzeniach mobilnych"
           className="col-span-3 w-full justify-self-end rounded-3xl drop-shadow-[-200px_-35px_50000px_rgba(56,115,255,0.69)] sm:col-span-1 sm:px-8"
           width={2000}
@@ -90,7 +90,7 @@ const asideContents = new Map<string, React.ReactNode>([
           <div className="flex flex-col gap-4 overflow-visible sm:gap-8">
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
               <Image
-                src="/assets/landing/functionalities/instruction-1.png"
+                src="/assets/landing/functionalities/instruction-1.webp"
                 width={500}
                 height={900}
                 className="rounded-4xl"
@@ -99,7 +99,7 @@ const asideContents = new Map<string, React.ReactNode>([
             </div>
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
               <Image
-                src="/assets/landing/functionalities/instruction-2.png"
+                src="/assets/landing/functionalities/instruction-2.webp"
                 width={500}
                 height={900}
                 className="rounded-4xl"
@@ -110,7 +110,7 @@ const asideContents = new Map<string, React.ReactNode>([
           <div className="flex flex-col gap-4 overflow-visible sm:gap-8">
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
               <Image
-                src="/assets/landing/functionalities/instruction-1.png"
+                src="/assets/landing/functionalities/instruction-1.webp"
                 width={500}
                 height={900}
                 alt=""
@@ -119,7 +119,7 @@ const asideContents = new Map<string, React.ReactNode>([
             </div>
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
               <Image
-                src="/assets/landing/functionalities/instruction-3.png"
+                src="/assets/landing/functionalities/instruction-3.webp"
                 width={500}
                 height={900}
                 alt=""
@@ -128,7 +128,7 @@ const asideContents = new Map<string, React.ReactNode>([
             </div>
             <div className="overflow-visible rounded-[2.5rem] border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)]">
               <Image
-                src="/assets/landing/functionalities/instruction-3.png"
+                src="/assets/landing/functionalities/instruction-3.webp"
                 width={500}
                 height={900}
                 alt=""
@@ -257,7 +257,7 @@ const asideContents = new Map<string, React.ReactNode>([
         </div>
       </div>
       <Image
-        src="/assets/landing/functionalities/event-settings.png"
+        src="/assets/landing/functionalities/event-settings.webp"
         alt="Ustawienia współorganizatorów w panelu organizatora"
         className="absolute translate-y-2/3 rounded-4xl border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:translate-y-3/5"
         width={2000}
@@ -275,7 +275,7 @@ const asideContents = new Map<string, React.ReactNode>([
       exit={{ opacity: 0 }}
     >
       <Image
-        src="/assets/landing/functionalities/shield.png"
+        src="/assets/landing/functionalities/shield.webp"
         alt=""
         className="h-full w-auto drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:h-auto sm:w-full sm:max-w-lg"
         width={1000}

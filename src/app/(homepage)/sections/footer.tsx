@@ -51,14 +51,14 @@ export function Footer() {
               rel="noopener noreferrer"
             >
               <Image
-                src="/assets/logo/solvro_black.png"
+                src="/assets/logo/solvro_black.webp"
                 alt="Logo Koła Naukowego Solvro"
                 className="block dark:hidden"
                 width={200}
                 height={200}
               />
               <Image
-                src="/assets/logo/solvro_white.png"
+                src="/assets/logo/solvro_white.webp"
                 alt="Logo Koła Naukowego Solvro"
                 className="hidden dark:block"
                 width={200}
@@ -124,14 +124,14 @@ export function Footer() {
             <div className="z-10 flex w-full flex-col justify-between gap-4 p-4 sm:gap-16 sm:p-16">
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
-                  src="/logo_outline_light.png"
+                  src="/logo_outline_light.webp"
                   alt="Eventownik logo"
                   width="1500"
                   height="1000"
                   className="block dark:hidden"
                 />
                 <Image
-                  src="/logo_outline_dark.png"
+                  src="/logo_outline_dark.webp"
                   alt="Eventownik logo"
                   width="1500"
                   height="1000"

@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.webp";
 import { SanitizedContent } from "@/components/sanitized-content";
 import { ShareButton } from "@/components/share-button";
 import { SocialMediaLink } from "@/components/social-media-link";
