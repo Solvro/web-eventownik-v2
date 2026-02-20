@@ -47,7 +47,7 @@ export default async function DashboardEventBlocksPage({
         {blocks.length > 0 ? (
           blocks.map((block) => (
             <div
-              className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4"
+              className="flex h-64 w-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
               key={block.id}
             >
               <div className="flex grow flex-col items-center justify-center gap-2 text-center">

@@ -129,7 +129,7 @@ export function DashboardSidebar({
           </div>
         ))}
       </nav>
-      <nav className="flex gap-6 sm:hidden">
+      <nav className="fixed bottom-0 left-0 z-1000 flex w-full gap-6 bg-white/70 p-2 shadow-md backdrop-blur-sm sm:hidden dark:bg-gray-900/70 dark:shadow-black/20">
         <ul className="flex w-full justify-around gap-2">
           {[
             ...sections,
