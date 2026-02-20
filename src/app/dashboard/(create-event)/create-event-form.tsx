@@ -309,7 +309,7 @@ export function CreateEventForm() {
         }}
       />
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="w-full">
           <SquarePlus /> Stwórz wydarzenie
         </Button>
       </DialogTrigger>
