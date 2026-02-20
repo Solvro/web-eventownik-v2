@@ -130,7 +130,7 @@ export function DashboardSidebar({
         ))}
       </nav>
       <nav className="fixed bottom-0 left-0 z-1000 flex w-full gap-6 bg-white/70 p-2 shadow-md backdrop-blur-sm sm:hidden dark:bg-gray-900/70 dark:shadow-black/20">
-        <ul className="flex w-full justify-around gap-2">
+        <ul className="flex w-full justify-around">
           {[
             ...sections,
             ...(blocks.length > 0
@@ -152,6 +152,8 @@ export function DashboardSidebar({
                     isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                   }
                   asChild
+                  size="icon"
+                  className="h-10 w-10"
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
