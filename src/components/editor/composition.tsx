@@ -18,7 +18,11 @@ import {
   X,
 } from "lucide-react";
 
-import { puckConfig } from "@/components/editor/config";
+import type {
+  PuckComponents,
+  PuckConfig,
+  getPuckConfig,
+} from "@/components/editor/config";
 import { cn } from "@/lib/utils";
 
 import {
@@ -50,7 +54,7 @@ const COMPONENT_ICONS = {
   Container: <Container className={PUCK_ICON_CLASSNAME} />,
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<
-  keyof typeof puckConfig.components,
+  keyof ReturnType<typeof getPuckConfig>["components"],
   React.ReactElement
 >;
 
@@ -298,7 +302,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   );
 }
 
-function PreviewDialog() {
+function PreviewDialog({ config }: { config: Config<PuckComponents> }) {
   const getPuck = useGetPuck();
   const puck = getPuck();
   return (
@@ -324,7 +328,7 @@ function PreviewDialog() {
               isPreview: true,
             }}
             data={puck.appState.data}
-            config={puckConfig}
+            config={config}
           />
         </div>
         <DialogFooter>
@@ -342,7 +346,7 @@ function PreviewDialog() {
  * It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
  * This component must be rendered within `<Puck/>` component.
  */
-function PuckComposition({ config }: { config: Config }) {
+function PuckComposition({ config }: { config: PuckConfig }) {
   // TODO(refactor): Suboptimal for performance
   const { appState, dispatch, history } = usePuck();
 
@@ -351,7 +355,7 @@ function PuckComposition({ config }: { config: Config }) {
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <div className="flex gap-2">
-          <PreviewDialog />
+          <PreviewDialog config={config} />
           <SaveButton {...appState} />
         </div>
       </div>

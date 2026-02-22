@@ -1,3 +1,5 @@
+"use client";
+
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import { Mention } from "@tiptap/extension-mention";
 import { ReactRenderer, mergeAttributes } from "@tiptap/react";
