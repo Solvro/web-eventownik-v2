@@ -8,6 +8,7 @@ import {
   Eye,
   FoldVertical,
   Image,
+  LinkIcon,
   Redo2,
   Save,
   Sidebar,
@@ -47,6 +48,7 @@ const COMPONENT_ICONS = {
   Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
   Image: <Image className={PUCK_ICON_CLASSNAME} />,
   Container: <Container className={PUCK_ICON_CLASSNAME} />,
+  Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<
   keyof typeof puckConfig.components,
   React.ReactElement
@@ -282,6 +284,8 @@ function FieldsPanel({ appState }: { appState: AppState }) {
           "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-(--event-primary-color)/2!",
           // Labels of field groups
           "[&>form>div_div>div]:text-muted-foreground!",
+          // Fields of type "radio"
+          "[&>form_label:has(input[type=radio])]:border-(--event-primary-color)/20! [&>form_label:has(input[type=radio])_div]:bg-(--event-primary-color)/2!",
           // Fields of type "array"
           "[&>form>div_div>div>div>div>div_button>svg]:stroke-foreground! [&>form_fieldset]:border-none! [&>form>div_div]:border-(--event-primary-color)/20! [&>form>div_div>div>div>div>div]:bg-(--event-primary-color)/10! [&>form>div_div>div>div>div>div_button]:bg-transparent! [&>form>div_div>div>div>div>div_button]:hover:bg-(--event-primary-color)! [&>form>div_div>div>div>div>div>div>div]:bg-transparent!",
           // 'Add item to array field' button

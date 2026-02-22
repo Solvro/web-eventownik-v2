@@ -4,6 +4,7 @@ import type { Config, Slot } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import {
   ChevronsUpDown,
+  ExternalLink,
   ImageUpscale,
   LinkIcon,
   Mail,
@@ -53,11 +54,18 @@ interface RichTextFields {
   content: string;
 }
 
+interface LinkFields extends AppearanceFields {
+  title: string;
+  href: string;
+  target: "_blank" | "_self";
+}
+
 export interface PuckComponents {
   RichText: RichTextFields;
   Container: ContainerFields;
   Divider: DividerFields;
   Image: ImageFields;
+  Link: LinkFields;
 }
 
 export const puckConfig: Config<PuckComponents> = {
@@ -191,114 +199,6 @@ export const puckConfig: Config<PuckComponents> = {
         );
       },
     },
-    //   label: "Kontener (Flex)",
-    //   fields: {
-    //     content: {
-    //       type: "slot",
-    //       label: "Bloki w kontenerze",
-    //     },
-    //     direction: {
-    //       type: "select",
-    //       label: "Kierunek",
-    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-    //       options: [
-    //         { label: "W prawo", value: "row" },
-    //         { label: "W dół", value: "column" },
-    //       ],
-    //     },
-    //     align: {
-    //       type: "select",
-    //       label: "Wyrównanie",
-    //       labelIcon: <ChevronsRightLeft className={PUCK_ICON_CLASSNAME} />,
-    //       options: [
-    //         { label: "Do lewej", value: "start" },
-    //         { label: "Do środka", value: "center" },
-    //         { label: "Do prawej", value: "end" },
-    //       ],
-    //     },
-    //     justify: {
-    //       type: "select",
-    //       label: "Justowanie",
-    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-    //       options: [
-    //         { label: "Do góry", value: "start" },
-    //         { label: "Do środka", value: "center" },
-    //         { label: "Do dołu", value: "end" },
-    //       ],
-    //     },
-    //     gap: {
-    //       type: "number",
-    //       label: "Odstęp",
-    //       labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-    //       min: 0,
-    //       max: 100,
-    //     },
-    //     ...withLayout,
-    //     ...withAppearance,
-    //   },
-    //   defaultProps: {
-    //     direction: "column",
-    //     align: "start",
-    //     justify: "start",
-    //     gap: 0,
-    //     content: [],
-    //     layout: {
-    //       width: "auto",
-    //       height: "auto",
-    //       margin: "0",
-    //       padding: "0",
-    //     },
-    //     appearance: {
-    //       color: "#000000",
-    //       backgroundColor: "#FFFFFF",
-    //       image: {
-    //         backgroundImage: "",
-    //         backgroundPosition: "center",
-    //         backgroundSize: "cover",
-    //         backgroundRepeat: "no-repeat",
-    //       },
-    //     },
-    //   },
-    //   render: ({
-    //     content: Content,
-    //     layout: { width, margin, padding },
-    //     appearance: {
-    //       color,
-    //       backgroundColor,
-    //       image: {
-    //         backgroundImage,
-    //         backgroundPosition,
-    //         backgroundSize,
-    //         backgroundRepeat,
-    //       },
-    //     },
-    //   }) => {
-    //     return (
-    //       <table
-    //         width={width === "auto" ? "100%" : width}
-    //         {...tableProps}
-    //         style={{
-    //           ...tableStyle,
-    //           margin: `${margin}px auto`,
-    //           backgroundColor,
-    //           backgroundImage: `url('${backgroundImage}')`,
-    //           backgroundPosition,
-    //           backgroundSize,
-    //           backgroundRepeat,
-    //           color,
-    //         }}
-    //       >
-    //         <tbody>
-    //           <tr>
-    //             <td style={{ padding: `${padding}px` }}>
-    //               <Content />
-    //             </td>
-    //           </tr>
-    //         </tbody>
-    //       </table>
-    //     );
-    //   },
-    // },
     Divider: {
       label: "Odstęp",
       fields: {
@@ -416,6 +316,74 @@ export const puckConfig: Config<PuckComponents> = {
         );
       },
     },
+    Link: {
+      label: "Link",
+      fields: {
+        title: {
+          type: "text",
+          label: "Tytuł",
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+        },
+        href: {
+          type: "text",
+          label: "Odnośnik",
+          labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+        },
+        target: {
+          type: "radio",
+          options: [
+            { label: "Nowa karta", value: "_blank" },
+            { label: "Aktualna karta", value: "_self" },
+          ],
+          label: "Zachowanie",
+          labelIcon: <ExternalLink className={PUCK_ICON_CLASSNAME} />,
+        },
+        ...withAppearance,
+      },
+      defaultProps: {
+        title: "Kliknij tutaj",
+        href: "",
+        target: "_blank",
+        appearance: {
+          color: "#000000",
+          backgroundColor: "#FFFFFF",
+          image: {
+            backgroundImage: "",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
+        },
+      },
+      render({ title, href, target, appearance: { color, backgroundColor } }) {
+        return (
+          <table width="100%" {...tableProps} style={tableStyle}>
+            <tbody>
+              <tr>
+                <td
+                  align="center"
+                  style={{
+                    padding: "20px 0",
+                    color,
+                    backgroundColor,
+                    width: "fit-content",
+                  }}
+                >
+                  <a
+                    href={href}
+                    target={target}
+                    rel="noreferrer"
+                    style={{ display: "block" }}
+                  >
+                    {title}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        );
+      },
+    },
   },
   categories: {
     typography: {
@@ -428,7 +396,7 @@ export const puckConfig: Config<PuckComponents> = {
     },
     media: {
       title: "Media",
-      components: ["Image"],
+      components: ["Image", "Link"],
     },
   },
   root: {
