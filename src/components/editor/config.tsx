@@ -1,19 +1,32 @@
 "use client";
 
-import type { Config, Slot } from "@puckeditor/core";
+import { FieldLabel } from "@puckeditor/core";
+import type { Config, Field, Slot } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import {
   ChevronsUpDown,
   ExternalLink,
   ImageUpscale,
+  Lightbulb,
   LinkIcon,
   Mail,
+  NotepadText,
   Type,
+  Zap,
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
+import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
+import type { LooseAutocomplete } from "@/types/utils";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import type { AppearanceFields, LayoutFields } from "./common";
 import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
 import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
@@ -68,7 +81,15 @@ export interface PuckComponents {
   Link: LinkFields;
 }
 
-export const puckConfig: Config<PuckComponents> = {
+interface RootSettings {
+  name: string;
+  title: string;
+  trigger: LooseAutocomplete<(typeof EMAIL_TRIGGERS)[number]["value"]>;
+  triggerValue?: string;
+  triggerValue2?: string;
+}
+
+export const puckConfig: Config<PuckComponents, RootSettings> = {
   components: {
     RichText: {
       label: "Tekst",
@@ -401,12 +422,82 @@ export const puckConfig: Config<PuckComponents> = {
   },
   root: {
     label: "Szablon",
-    fields: {
-      name: {
-        type: "text",
-        label: "Nazwa szablonu",
-        labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
-      },
+    resolveFields: (data) => {
+      const defaultFields: Record<
+        keyof Omit<RootSettings, "triggerValue" | "triggerValue2">,
+        Field<string>
+      > = {
+        name: {
+          type: "text",
+          label: "Nazwa szablonu",
+          labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
+        },
+        title: {
+          type: "text",
+          label: "Tytuł wiadomości",
+          labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+        },
+        trigger: {
+          type: "custom",
+          label: "Wyzwalacz",
+          labelIcon: <Zap className={PUCK_ICON_CLASSNAME} />,
+          render: ({ name, onChange, value, field }) => {
+            return (
+              <>
+                <FieldLabel
+                  label={field.label ?? name}
+                  icon={field.labelIcon}
+                />
+                <Select
+                  onValueChange={(selectValue) => {
+                    onChange(selectValue);
+                  }}
+                  defaultValue={value}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wybierz opcję" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EMAIL_TRIGGERS.map((trigger) => (
+                      <SelectItem key={trigger.value} value={trigger.value}>
+                        {trigger.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="mt-4 flex grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
+                  <div className="flex items-center gap-2 text-xs">
+                    <Lightbulb className="size-4" /> Wyjaśnienie
+                  </div>
+                  <p className="text-xs">
+                    {EMAIL_TRIGGERS.find((t) => t.value === value)
+                      ?.description ?? "Wybierz wyzwalacz..."}
+                  </p>
+                </div>
+              </>
+            );
+          },
+        },
+      };
+
+      if (data.props?.trigger === "form_filled") {
+        return {
+          ...defaultFields,
+          triggerValue: {
+            type: "select",
+            label: "Formularz",
+            options: [{ label: "Placeholder", value: "placeholder" }],
+            labelIcon: <NotepadText className={PUCK_ICON_CLASSNAME} />,
+          },
+        };
+      }
+
+      return defaultFields;
+    },
+    defaultProps: {
+      name: "",
+      title: "",
+      trigger: "manual",
     },
     render: ({ children }) => {
       return (
