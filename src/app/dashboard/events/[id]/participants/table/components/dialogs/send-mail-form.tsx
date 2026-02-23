@@ -39,7 +39,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { sendMail } from "../actions";
+import { sendMail } from "../../../actions";
 
 function SendMailForm({
   eventId,

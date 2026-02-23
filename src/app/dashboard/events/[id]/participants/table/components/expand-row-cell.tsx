@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { fetchAdditionalParticipantData } from "./columns";
+import { fetchAdditionalParticipantData } from "../core/columns";
 
 interface ExpandRowCellProps {
   row: Row<FlattenedParticipant>;

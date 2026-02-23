@@ -21,9 +21,9 @@ import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
-import { HelpDialog } from "./help-dialog";
-import { TableMenu } from "./table-menu";
-import { TableRowForm } from "./table-row-form";
+import { HelpDialog } from "../components/dialogs/help-dialog";
+import { TableMenu } from "../components/table-menu";
+import { TableRowForm } from "../components/table-row-form";
 import { getAriaSort } from "./utils";
 
 declare module "@tanstack/react-table" {

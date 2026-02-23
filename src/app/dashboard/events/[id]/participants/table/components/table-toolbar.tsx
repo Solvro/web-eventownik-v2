@@ -13,9 +13,9 @@ import {
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
-import { ExportButton } from "./export-button";
-import { SendMailForm } from "./send-mail-form";
+import { ExportButton } from "./buttons/export-button";
+import { DeleteManyParticipantsDialog } from "./dialogs/delete-many-dialog";
+import { SendMailForm } from "./dialogs/send-mail-form";
 
 interface TableToolbarProps {
   table: Table<FlattenedParticipant>;

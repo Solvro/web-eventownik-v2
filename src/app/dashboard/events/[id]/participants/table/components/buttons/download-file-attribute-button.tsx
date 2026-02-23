@@ -6,7 +6,7 @@ import { downloadFile } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { downloadAttributeFile as downloadAttributeFileAction } from "../actions";
+import { downloadAttributeFile as downloadAttributeFileAction } from "../../../actions";
 
 export function DownloadAttributeFileButton({
   attribute,

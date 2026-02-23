@@ -10,11 +10,11 @@ import type {
   ParticipantAttributeValueType,
 } from "@/types/participant";
 
-import { getParticipant } from "../actions";
+import { getParticipant } from "../../actions";
+import { ExpandRowCell } from "../components/expand-row-cell";
+import { FilterButton } from "../components/filter-button";
+import { SortButton, SortIcon } from "../components/sort-button";
 import { flattenParticipant } from "./data";
-import { ExpandRowCell } from "./expand-row-cell";
-import { FilterButton } from "./filter-button";
-import { SortButton, SortIcon } from "./sort-button";
 import { formatAttributeValue } from "./utils";
 
 export function generateColumns(

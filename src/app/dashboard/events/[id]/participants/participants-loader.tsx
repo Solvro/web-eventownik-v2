@@ -9,7 +9,7 @@ import {
   getEmails,
   getParticipants,
 } from "./actions";
-import { ParticipantTable } from "./table/participants-table";
+import { ParticipantTable } from "./table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const t = useTranslations("Table");

@@ -24,11 +24,11 @@ import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { updateParticipant } from "../actions";
-import { DeleteParticipantDialog } from "./delete-dialog";
-import { DownloadAttributeFileButton } from "./download-file-attribute-button";
-import { DrawingPreviewButton } from "./drawing-preview-button";
-import { EditParticipantButton } from "./edit-button";
+import { updateParticipant } from "../../actions";
+import { DownloadAttributeFileButton } from "./buttons/download-file-attribute-button";
+import { DrawingPreviewButton } from "./buttons/drawing-preview-button";
+import { EditParticipantButton } from "./buttons/edit-button";
+import { DeleteParticipantDialog } from "./dialogs/delete-dialog";
 
 interface TableRowFormProps {
   row: Row<FlattenedParticipant>;
