@@ -29,7 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
+import {
+  PUCK_ICON_CLASSNAME,
+  withAppearance,
+  withContainer,
+  withLayout,
+} from "./common";
 import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
 
 interface EmailCSSProperties extends CSSProperties {
@@ -38,7 +43,7 @@ interface EmailCSSProperties extends CSSProperties {
 }
 
 const tableStyle: EmailCSSProperties = {
-  borderCollapse: "collapse",
+  borderCollapse: "separate",
   msoTableLspace: "0pt",
   msoTableRspace: "0pt",
 };
@@ -47,6 +52,7 @@ const tableProps = {
   cellPadding: "0",
   cellSpacing: "0",
   border: 0,
+  tablelayout: "fixed",
 };
 
 const appearanceDefaults = {
@@ -71,16 +77,26 @@ const layoutDefaults = {
   },
 };
 
+const containerDefaults = {
+  container: {
+    verticalAlign: "middle",
+    borderSpacingHorizontal: 0,
+    borderSpacingVertical: 0,
+  },
+};
+
 /**
  * A `<table>` element wrapper for each container block
  */
 function ContainerWrapper({
   layout,
   appearance,
+  container,
   children,
 }: {
   layout: (typeof layoutDefaults)["layout"];
   appearance: (typeof appearanceDefaults)["appearance"];
+  container: (typeof containerDefaults)["container"];
   children: React.ReactNode;
 }) {
   return (
@@ -88,6 +104,7 @@ function ContainerWrapper({
       width={"100%"}
       style={{
         ...tableStyle,
+        height: `${layout.height}%`,
         margin: `${layout.margin}px auto`,
         backgroundColor: appearance.backgroundColor,
         backgroundImage: `url('${appearance.image.backgroundImage}')`,
@@ -96,6 +113,7 @@ function ContainerWrapper({
         backgroundRepeat: appearance.image.backgroundRepeat,
         color: appearance.color,
         padding: layout.padding,
+        borderSpacing: `${container.borderSpacingHorizontal.toString()}px ${container.borderSpacingVertical.toString()}px`,
       }}
       {...tableProps}
     >
@@ -139,130 +157,6 @@ export const getPuckConfig = ({
         // eslint-disable-next-line react/jsx-no-useless-fragment
         render: ({ content }) => <>{content}</>,
       },
-      Container: {
-        label: "Własny kontener",
-        fields: {
-          columns: {
-            label: "Bloki w kontenerze",
-            type: "array",
-            arrayFields: {
-              content: { label: "Blok", type: "slot" },
-            },
-            visible: false,
-          },
-          numZones: {
-            label: "Liczba kolumn",
-            type: "number",
-            min: 2,
-            max: 6,
-          },
-          ...withLayout,
-          ...withAppearance,
-        },
-        defaultProps: {
-          columns: [],
-          numZones: 2,
-          ...layoutDefaults,
-          ...appearanceDefaults,
-        },
-        resolveData: (data, parameters) => {
-          if (
-            !(parameters.changed.numZones ?? false) ||
-            data.props.numZones < 0
-          ) {
-            return data;
-          }
-
-          const newData = { ...data, props: { ...data.props } };
-          newData.props.columns = [];
-
-          // Rebuild slots based on numZones
-          for (
-            let iterator = 0;
-            iterator < newData.props.numZones;
-            iterator++
-          ) {
-            newData.props.columns.push(
-              data.props.columns[iterator] ?? { content: [] },
-            );
-          }
-
-          return newData;
-        },
-        render({ columns, layout, appearance }) {
-          return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
-              <tr>
-                {columns.map(({ content: Content }, index) => (
-                  <td key={index} className="min-w-16">
-                    <Content />
-                  </td>
-                ))}
-              </tr>
-            </ContainerWrapper>
-          );
-        },
-      },
-      TwoByTwo: {
-        label: "Siatka 2x2",
-        fields: {
-          topLeft: {
-            label: "Górna lewa",
-            type: "slot",
-          },
-          topRight: {
-            label: "Górna prawa",
-            type: "slot",
-          },
-          bottomLeft: {
-            label: "Dolna lewa",
-            type: "slot",
-          },
-          bottomRight: {
-            label: "Dolna prawa",
-            type: "slot",
-          },
-          ...withLayout,
-          ...withAppearance,
-        },
-        defaultProps: {
-          topLeft: [],
-          topRight: [],
-          bottomLeft: [],
-          bottomRight: [],
-          ...layoutDefaults,
-          ...appearanceDefaults,
-        },
-        render({
-          topLeft: TopLeft,
-          topRight: TopRight,
-          bottomLeft: BottomLeft,
-          bottomRight: BottomRight,
-          layout,
-          appearance,
-        }) {
-          return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
-              <tr>
-                <td style={{ width: "50%" }}>
-                  <TopLeft />
-                </td>
-                <td style={{ width: "50%" }}>
-                  <TopRight />
-                </td>
-              </tr>
-              <tr>
-                <td style={{ width: "50%" }}>
-                  <BottomLeft />
-                </td>
-                <td style={{ width: "50%" }}>
-                  <BottomRight />
-                </td>
-              </tr>
-            </ContainerWrapper>
-          );
-        },
-      },
       TwoByOne: {
         label: "Siatka 2x1",
         fields: {
@@ -274,6 +168,7 @@ export const getPuckConfig = ({
             label: "Prawa",
             type: "slot",
           },
+          ...withContainer,
           ...withLayout,
           ...withAppearance,
         },
@@ -282,15 +177,30 @@ export const getPuckConfig = ({
           right: [],
           ...layoutDefaults,
           ...appearanceDefaults,
+          ...containerDefaults,
         },
-        render({ left: Left, right: Right, layout, appearance }) {
+        render({ left: Left, right: Right, layout, appearance, container }) {
           return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
               <tr>
-                <td style={{ width: "50%" }}>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Left />
                 </td>
-                <td style={{ width: "50%" }}>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Right />
                 </td>
               </tr>
@@ -313,6 +223,7 @@ export const getPuckConfig = ({
             label: "Prawa",
             type: "slot",
           },
+          ...withContainer,
           ...withLayout,
           ...withAppearance,
         },
@@ -320,6 +231,7 @@ export const getPuckConfig = ({
           left: [],
           center: [],
           right: [],
+          ...containerDefaults,
           ...layoutDefaults,
           ...appearanceDefaults,
         },
@@ -329,9 +241,14 @@ export const getPuckConfig = ({
           right: Right,
           layout,
           appearance,
+          container,
         }) {
           return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
               <tr>
                 <td style={{ width: "33.33%" }}>
                   <Left />
@@ -366,6 +283,7 @@ export const getPuckConfig = ({
             label: "Kolumna 4",
             type: "slot",
           },
+          ...withContainer,
           ...withLayout,
           ...withAppearance,
         },
@@ -374,6 +292,7 @@ export const getPuckConfig = ({
           col2: [],
           col3: [],
           col4: [],
+          ...containerDefaults,
           ...layoutDefaults,
           ...appearanceDefaults,
         },
@@ -384,9 +303,14 @@ export const getPuckConfig = ({
           col4: Col4,
           layout,
           appearance,
+          container,
         }) {
           return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
               <tr>
                 <td style={{ width: "25%" }}>
                   <Col1 />
@@ -405,6 +329,93 @@ export const getPuckConfig = ({
           );
         },
       },
+      TwoByTwo: {
+        label: "Siatka 2x2",
+        fields: {
+          topLeft: {
+            label: "Górna lewa",
+            type: "slot",
+          },
+          topRight: {
+            label: "Górna prawa",
+            type: "slot",
+          },
+          bottomLeft: {
+            label: "Dolna lewa",
+            type: "slot",
+          },
+          bottomRight: {
+            label: "Dolna prawa",
+            type: "slot",
+          },
+          ...withContainer,
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          topLeft: [],
+          topRight: [],
+          bottomLeft: [],
+          bottomRight: [],
+          ...layoutDefaults,
+          ...appearanceDefaults,
+          ...containerDefaults,
+        },
+        render({
+          topLeft: TopLeft,
+          topRight: TopRight,
+          bottomLeft: BottomLeft,
+          bottomRight: BottomRight,
+          layout,
+          appearance,
+          container,
+        }) {
+          return (
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
+              <tr>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
+                  <TopLeft />
+                </td>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
+                  <TopRight />
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
+                  <BottomLeft />
+                </td>
+                <td
+                  style={{
+                    width: "50%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
+                  <BottomRight />
+                </td>
+              </tr>
+            </ContainerWrapper>
+          );
+        },
+      },
       ThreeByTwo: {
         label: "Siatka 3x2",
         fields: {
@@ -414,6 +425,7 @@ export const getPuckConfig = ({
           bottomLeft: { label: "Dolna lewa", type: "slot" },
           bottomCenter: { label: "Dolna środkowa", type: "slot" },
           bottomRight: { label: "Dolna prawa", type: "slot" },
+          ...withContainer,
           ...withLayout,
           ...withAppearance,
         },
@@ -424,6 +436,7 @@ export const getPuckConfig = ({
           bottomLeft: [],
           bottomCenter: [],
           bottomRight: [],
+          ...containerDefaults,
           ...layoutDefaults,
           ...appearanceDefaults,
         },
@@ -436,9 +449,14 @@ export const getPuckConfig = ({
           bottomRight: BottomRight,
           layout,
           appearance,
+          container,
         }) {
           return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
               <tr>
                 <td style={{ width: "33.33%" }}>
                   <TopLeft />
@@ -477,6 +495,7 @@ export const getPuckConfig = ({
           bottomLeft: { label: "Dolna lewa", type: "slot" },
           bottomCenter: { label: "Dolna środkowa", type: "slot" },
           bottomRight: { label: "Dolna prawa", type: "slot" },
+          ...withContainer,
           ...withLayout,
           ...withAppearance,
         },
@@ -490,6 +509,7 @@ export const getPuckConfig = ({
           bottomLeft: [],
           bottomCenter: [],
           bottomRight: [],
+          ...containerDefaults,
           ...layoutDefaults,
           ...appearanceDefaults,
         },
@@ -505,9 +525,14 @@ export const getPuckConfig = ({
           bottomRight: BottomRight,
           layout,
           appearance,
+          container,
         }) {
           return (
-            <ContainerWrapper layout={layout} appearance={appearance}>
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
               <tr>
                 <td style={{ width: "33.33%" }}>
                   <TopLeft />
@@ -540,6 +565,76 @@ export const getPuckConfig = ({
                 <td style={{ width: "33.33%" }}>
                   <BottomRight />
                 </td>
+              </tr>
+            </ContainerWrapper>
+          );
+        },
+      },
+      CustomContainer: {
+        label: "Własny kontener",
+        fields: {
+          columns: {
+            label: "Bloki w kontenerze",
+            type: "array",
+            arrayFields: {
+              content: { label: "Blok", type: "slot" },
+            },
+            visible: false,
+          },
+          numZones: {
+            label: "Liczba kolumn",
+            type: "number",
+            min: 2,
+            max: 6,
+          },
+          ...withContainer,
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          columns: [],
+          numZones: 2,
+          ...layoutDefaults,
+          ...appearanceDefaults,
+          ...containerDefaults,
+        },
+        resolveData: (data, parameters) => {
+          if (
+            !(parameters.changed.numZones ?? false) ||
+            data.props.numZones < 0
+          ) {
+            return data;
+          }
+
+          const newData = { ...data, props: { ...data.props } };
+          newData.props.columns = [];
+
+          // Rebuild slots based on numZones
+          for (
+            let iterator = 0;
+            iterator < newData.props.numZones;
+            iterator++
+          ) {
+            newData.props.columns.push(
+              data.props.columns[iterator] ?? { content: [] },
+            );
+          }
+
+          return newData;
+        },
+        render({ columns, layout, appearance, container }) {
+          return (
+            <ContainerWrapper
+              layout={layout}
+              appearance={appearance}
+              container={container}
+            >
+              <tr>
+                {columns.map(({ content: Content }, index) => (
+                  <td key={index} className="min-w-16">
+                    <Content />
+                  </td>
+                ))}
               </tr>
             </ContainerWrapper>
           );
@@ -740,13 +835,13 @@ export const getPuckConfig = ({
       layout: {
         title: "Układ",
         components: [
-          "TwoByTwo",
           "TwoByOne",
           "ThreeByOne",
           "FourByOne",
+          "TwoByTwo",
           "ThreeByTwo",
           "ThreeByThree",
-          "Container",
+          "CustomContainer",
           "Divider",
         ],
       },

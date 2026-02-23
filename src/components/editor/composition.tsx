@@ -24,7 +24,6 @@ import {
   X,
 } from "lucide-react";
 
-import type { getPuckConfig } from "@/components/editor/config";
 import { cn } from "@/lib/utils";
 import type { PuckConfig } from "@/types/editor";
 
@@ -60,12 +59,9 @@ const COMPONENT_ICONS = {
   FourByOne: <Columns4 className={PUCK_ICON_CLASSNAME} />,
   ThreeByTwo: <Grid3x2 className={PUCK_ICON_CLASSNAME} />,
   ThreeByThree: <Grid3X3 className={PUCK_ICON_CLASSNAME} />,
-  Container: <Container className={PUCK_ICON_CLASSNAME} />,
+  CustomContainer: <Container className={PUCK_ICON_CLASSNAME} />,
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
-} as const satisfies Record<
-  keyof ReturnType<typeof getPuckConfig>["components"],
-  React.ReactElement
->;
+} as const satisfies Record<keyof PuckConfig["components"], React.ReactElement>;
 
 /**
  * NOTE: Temporary addition during the development of the editor.

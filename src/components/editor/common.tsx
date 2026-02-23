@@ -8,11 +8,13 @@ import type {
 } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
 import {
+  AlignCenterHorizontal,
   AlignLeft,
   Bold,
   Brush,
   ChevronsLeftRight,
   ChevronsUpDown,
+  Container,
   Image,
   ImageUpscale,
   Layout,
@@ -319,5 +321,47 @@ export interface AppearanceFields {
       backgroundSize: string;
       backgroundRepeat: string;
     };
+  };
+}
+
+export const withContainer = {
+  container: {
+    type: "object",
+    label: "Kontener",
+    labelIcon: <Container className={PUCK_ICON_CLASSNAME} />,
+    objectFields: {
+      verticalAlign: {
+        label: "Komórki",
+        labelIcon: <AlignCenterHorizontal className={PUCK_ICON_CLASSNAME} />,
+        type: "select",
+        options: [
+          { label: "Do góry", value: "top" },
+          { label: "Do środka", value: "middle" },
+          { label: "Do dołu", value: "bottom" },
+        ],
+      },
+      borderSpacingHorizontal: {
+        label: "Odstęp poziomy",
+        labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
+        type: "number",
+        min: 0,
+        max: 100,
+      },
+      borderSpacingVertical: {
+        label: "Odstęp pionowy",
+        labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+        type: "number",
+        min: 0,
+        max: 100,
+      },
+    },
+  },
+} as const satisfies CommonFieldsSchema;
+
+export interface ContainerFields {
+  container: {
+    verticalAlign: string;
+    borderSpacingHorizontal: number;
+    borderSpacingVertical: number;
   };
 }

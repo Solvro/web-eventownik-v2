@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 
 import type {
   AppearanceFields,
+  ContainerFields,
   LayoutFields,
 } from "@/components/editor/common";
 import type { EMAIL_TRIGGERS } from "@/lib/emails";
@@ -15,37 +16,43 @@ export interface ImageFields extends LayoutFields {
   objectFit: CSSProperties["objectFit"];
 }
 
-export interface ContainerFields extends LayoutFields, AppearanceFields {
+export interface CustomContainerFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   columns: Record<"content", Slot>[];
   numZones: number;
 }
 
-export interface TwoByTwoFields extends LayoutFields, AppearanceFields {
+export interface TwoByTwoFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   topLeft: Slot;
   topRight: Slot;
   bottomLeft: Slot;
   bottomRight: Slot;
 }
 
-export interface TwoByOneFields extends LayoutFields, AppearanceFields {
+export interface TwoByOneFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   left: Slot;
   right: Slot;
 }
 
-export interface ThreeByOneFields extends LayoutFields, AppearanceFields {
+export interface ThreeByOneFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   left: Slot;
   center: Slot;
   right: Slot;
 }
 
-export interface FourByOneFields extends LayoutFields, AppearanceFields {
+export interface FourByOneFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   col1: Slot;
   col2: Slot;
   col3: Slot;
   col4: Slot;
 }
 
-export interface ThreeByTwoFields extends LayoutFields, AppearanceFields {
+export interface ThreeByTwoFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   topLeft: Slot;
   topCenter: Slot;
   topRight: Slot;
@@ -54,7 +61,8 @@ export interface ThreeByTwoFields extends LayoutFields, AppearanceFields {
   bottomRight: Slot;
 }
 
-export interface ThreeByThreeFields extends LayoutFields, AppearanceFields {
+export interface ThreeByThreeFields
+  extends LayoutFields, AppearanceFields, ContainerFields {
   topLeft: Slot;
   topCenter: Slot;
   topRight: Slot;
@@ -82,7 +90,7 @@ export interface LinkFields extends AppearanceFields {
 
 export interface PuckComponents {
   RichText: RichTextFields;
-  Container: ContainerFields;
+  CustomContainer: CustomContainerFields;
   TwoByTwo: TwoByTwoFields;
   TwoByOne: TwoByOneFields;
   ThreeByOne: ThreeByOneFields;
