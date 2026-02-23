@@ -95,7 +95,7 @@
     "jotai": "^2.12.2",
     "js-cookie": "^3.0.5",
     "js-sha256": "^0.11.0",
-    "lucide-react": "^0.483.0",
+    "lucide-react": "^0.575.0",
     "motion": "^12.23.3",
     "next": "^16.1.5",
     "next-intl": "^4.3.8",

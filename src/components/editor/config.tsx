@@ -61,6 +61,52 @@ interface ContainerFields extends LayoutFields, AppearanceFields {
   numZones: number;
 }
 
+interface TwoByTwoFields extends LayoutFields, AppearanceFields {
+  topLeft: Slot;
+  topRight: Slot;
+  bottomLeft: Slot;
+  bottomRight: Slot;
+}
+
+interface TwoByOneFields extends LayoutFields, AppearanceFields {
+  left: Slot;
+  right: Slot;
+}
+
+interface ThreeByOneFields extends LayoutFields, AppearanceFields {
+  left: Slot;
+  center: Slot;
+  right: Slot;
+}
+
+interface FourByOneFields extends LayoutFields, AppearanceFields {
+  col1: Slot;
+  col2: Slot;
+  col3: Slot;
+  col4: Slot;
+}
+
+interface ThreeByTwoFields extends LayoutFields, AppearanceFields {
+  topLeft: Slot;
+  topCenter: Slot;
+  topRight: Slot;
+  bottomLeft: Slot;
+  bottomCenter: Slot;
+  bottomRight: Slot;
+}
+
+interface ThreeByThreeFields extends LayoutFields, AppearanceFields {
+  topLeft: Slot;
+  topCenter: Slot;
+  topRight: Slot;
+  middleLeft: Slot;
+  middleCenter: Slot;
+  middleRight: Slot;
+  bottomLeft: Slot;
+  bottomCenter: Slot;
+  bottomRight: Slot;
+}
+
 interface DividerFields extends AppearanceFields {
   height: string;
 }
@@ -78,6 +124,12 @@ interface LinkFields extends AppearanceFields {
 export interface PuckComponents {
   RichText: RichTextFields;
   Container: ContainerFields;
+  TwoByTwo: TwoByTwoFields;
+  TwoByOne: TwoByOneFields;
+  ThreeByOne: ThreeByOneFields;
+  FourByOne: FourByOneFields;
+  ThreeByTwo: ThreeByTwoFields;
+  ThreeByThree: ThreeByThreeFields;
   Divider: DividerFields;
   Image: ImageFields;
   Link: LinkFields;
@@ -129,7 +181,7 @@ export const getPuckConfig = ({
         render: ({ content }) => <>{content}</>,
       },
       Container: {
-        label: "Kontener",
+        label: "Własny kontener",
         fields: {
           columns: {
             label: "Bloki w kontenerze",
@@ -229,6 +281,587 @@ export const getPuckConfig = ({
                       <Content />
                     </td>
                   ))}
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      TwoByTwo: {
+        label: "Siatka 2x2",
+        fields: {
+          topLeft: {
+            label: "Górna lewa",
+            type: "slot",
+          },
+          topRight: {
+            label: "Górna prawa",
+            type: "slot",
+          },
+          bottomLeft: {
+            label: "Dolna lewa",
+            type: "slot",
+          },
+          bottomRight: {
+            label: "Dolna prawa",
+            type: "slot",
+          },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          topLeft: [],
+          topRight: [],
+          bottomLeft: [],
+          bottomRight: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          topLeft: TopLeft,
+          topRight: TopRight,
+          bottomLeft: BottomLeft,
+          bottomRight: BottomRight,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "50%" }}>
+                    <TopLeft />
+                  </td>
+                  <td style={{ width: "50%" }}>
+                    <TopRight />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ width: "50%" }}>
+                    <BottomLeft />
+                  </td>
+                  <td style={{ width: "50%" }}>
+                    <BottomRight />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      TwoByOne: {
+        label: "Siatka 2x1",
+        fields: {
+          left: {
+            label: "Lewa",
+            type: "slot",
+          },
+          right: {
+            label: "Prawa",
+            type: "slot",
+          },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          left: [],
+          right: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          left: Left,
+          right: Right,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "50%" }}>
+                    <Left />
+                  </td>
+                  <td style={{ width: "50%" }}>
+                    <Right />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      ThreeByOne: {
+        label: "Siatka 3x1",
+        fields: {
+          left: {
+            label: "Lewa",
+            type: "slot",
+          },
+          center: {
+            label: "Środkowa",
+            type: "slot",
+          },
+          right: {
+            label: "Prawa",
+            type: "slot",
+          },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          left: [],
+          center: [],
+          right: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          left: Left,
+          center: Center,
+          right: Right,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <Left />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <Center />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <Right />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      FourByOne: {
+        label: "Siatka 4x1",
+        fields: {
+          col1: {
+            label: "Kolumna 1",
+            type: "slot",
+          },
+          col2: {
+            label: "Kolumna 2",
+            type: "slot",
+          },
+          col3: {
+            label: "Kolumna 3",
+            type: "slot",
+          },
+          col4: {
+            label: "Kolumna 4",
+            type: "slot",
+          },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          col1: [],
+          col2: [],
+          col3: [],
+          col4: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          col1: Col1,
+          col2: Col2,
+          col3: Col3,
+          col4: Col4,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "25%" }}>
+                    <Col1 />
+                  </td>
+                  <td style={{ width: "25%" }}>
+                    <Col2 />
+                  </td>
+                  <td style={{ width: "25%" }}>
+                    <Col3 />
+                  </td>
+                  <td style={{ width: "25%" }}>
+                    <Col4 />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      ThreeByTwo: {
+        label: "Siatka 3x2",
+        fields: {
+          topLeft: { label: "Górna lewa", type: "slot" },
+          topCenter: { label: "Górna środkowa", type: "slot" },
+          topRight: { label: "Górna prawa", type: "slot" },
+          bottomLeft: { label: "Dolna lewa", type: "slot" },
+          bottomCenter: { label: "Dolna środkowa", type: "slot" },
+          bottomRight: { label: "Dolna prawa", type: "slot" },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          topLeft: [],
+          topCenter: [],
+          topRight: [],
+          bottomLeft: [],
+          bottomCenter: [],
+          bottomRight: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          topLeft: TopLeft,
+          topCenter: TopCenter,
+          topRight: TopRight,
+          bottomLeft: BottomLeft,
+          bottomCenter: BottomCenter,
+          bottomRight: BottomRight,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <TopLeft />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <TopCenter />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <TopRight />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomLeft />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomCenter />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomRight />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
+      ThreeByThree: {
+        label: "Siatka 3x3",
+        fields: {
+          topLeft: { label: "Górna lewa", type: "slot" },
+          topCenter: { label: "Górna środkowa", type: "slot" },
+          topRight: { label: "Górna prawa", type: "slot" },
+          middleLeft: { label: "Środkowa lewa", type: "slot" },
+          middleCenter: { label: "Centrum", type: "slot" },
+          middleRight: { label: "Środkowa prawa", type: "slot" },
+          bottomLeft: { label: "Dolna lewa", type: "slot" },
+          bottomCenter: { label: "Dolna środkowa", type: "slot" },
+          bottomRight: { label: "Dolna prawa", type: "slot" },
+          ...withLayout,
+          ...withAppearance,
+        },
+        defaultProps: {
+          topLeft: [],
+          topCenter: [],
+          topRight: [],
+          middleLeft: [],
+          middleCenter: [],
+          middleRight: [],
+          bottomLeft: [],
+          bottomCenter: [],
+          bottomRight: [],
+          layout: {
+            width: "auto",
+            height: "auto",
+            margin: "0",
+            padding: "0",
+          },
+          appearance: {
+            color: "#000000",
+            backgroundColor: "#FFFFFF",
+            image: {
+              backgroundImage: "",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          },
+        },
+        render({
+          topLeft: TopLeft,
+          topCenter: TopCenter,
+          topRight: TopRight,
+          middleLeft: MiddleLeft,
+          middleCenter: MiddleCenter,
+          middleRight: MiddleRight,
+          bottomLeft: BottomLeft,
+          bottomCenter: BottomCenter,
+          bottomRight: BottomRight,
+          layout: { margin, padding },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
+        }) {
+          return (
+            <table
+              width={"100%"}
+              style={{
+                ...tableStyle,
+                margin: `${margin}px auto`,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+                padding,
+              }}
+              {...tableProps}
+            >
+              <tbody>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <TopLeft />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <TopCenter />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <TopRight />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <MiddleLeft />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <MiddleCenter />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <MiddleRight />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomLeft />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomCenter />
+                  </td>
+                  <td style={{ width: "33.33%" }}>
+                    <BottomRight />
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -395,10 +1028,31 @@ export const getPuckConfig = ({
           title,
           href,
           target,
-          appearance: { color, backgroundColor },
+          appearance: {
+            color,
+            backgroundColor,
+            image: {
+              backgroundImage,
+              backgroundPosition,
+              backgroundSize,
+              backgroundRepeat,
+            },
+          },
         }) {
           return (
-            <table width="100%" {...tableProps} style={tableStyle}>
+            <table
+              width="100%"
+              style={{
+                ...tableStyle,
+                backgroundColor,
+                backgroundImage: `url('${backgroundImage}')`,
+                backgroundPosition,
+                backgroundSize,
+                backgroundRepeat,
+                color,
+              }}
+              {...tableProps}
+            >
               <tbody>
                 <tr>
                   <td
@@ -433,7 +1087,16 @@ export const getPuckConfig = ({
       },
       layout: {
         title: "Układ",
-        components: ["Container", "Divider"],
+        components: [
+          "TwoByTwo",
+          "TwoByOne",
+          "ThreeByOne",
+          "FourByOne",
+          "ThreeByTwo",
+          "ThreeByThree",
+          "Container",
+          "Divider",
+        ],
       },
       media: {
         title: "Media",

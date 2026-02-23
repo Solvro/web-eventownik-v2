@@ -4,9 +4,15 @@ import { Drawer, Puck, Render, useGetPuck, usePuck } from "@puckeditor/core";
 import type { AppState, Config, PuckAction } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
 import {
+  Columns2,
+  Columns3,
+  Columns4,
   Container,
   Eye,
   FoldVertical,
+  Grid2X2,
+  Grid3X3,
+  Grid3x2,
   Image,
   LinkIcon,
   Redo2,
@@ -51,6 +57,12 @@ const COMPONENT_ICONS = {
   RichText: <Type className={PUCK_ICON_CLASSNAME} />,
   Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
   Image: <Image className={PUCK_ICON_CLASSNAME} />,
+  TwoByTwo: <Grid2X2 className={PUCK_ICON_CLASSNAME} />,
+  TwoByOne: <Columns2 className={PUCK_ICON_CLASSNAME} />,
+  ThreeByOne: <Columns3 className={PUCK_ICON_CLASSNAME} />,
+  FourByOne: <Columns4 className={PUCK_ICON_CLASSNAME} />,
+  ThreeByTwo: <Grid3x2 className={PUCK_ICON_CLASSNAME} />,
+  ThreeByThree: <Grid3X3 className={PUCK_ICON_CLASSNAME} />,
   Container: <Container className={PUCK_ICON_CLASSNAME} />,
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<
