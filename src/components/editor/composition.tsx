@@ -24,12 +24,9 @@ import {
   X,
 } from "lucide-react";
 
-import type {
-  PuckComponents,
-  PuckConfig,
-  getPuckConfig,
-} from "@/components/editor/config";
+import type { getPuckConfig } from "@/components/editor/config";
 import { cn } from "@/lib/utils";
+import type { PuckConfig } from "@/types/editor";
 
 import {
   Accordion,
@@ -314,7 +311,7 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   );
 }
 
-function PreviewDialog({ config }: { config: Config<PuckComponents> }) {
+function PreviewDialog({ config }: { config: PuckConfig }) {
   const getPuck = useGetPuck();
   const puck = getPuck();
   return (

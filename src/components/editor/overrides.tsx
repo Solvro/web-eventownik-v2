@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldLabel } from "@puckeditor/core";
-import type { Config, Overrides } from "@puckeditor/core";
+import type { Overrides } from "@puckeditor/core";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -12,10 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import type { PuckConfig } from "@/types/editor";
 
-import type { PuckComponents } from "./config";
-
-export const overrides: Partial<Overrides<Config<PuckComponents>>> = {
+export const overrides: Partial<Overrides<PuckConfig>> = {
   fieldTypes: {
     text: ({ onChange, name, value, field }) => (
       <>

@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldLabel } from "@puckeditor/core";
-import type { Config, Field, Slot } from "@puckeditor/core";
+import type { Field } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import {
   ChevronsUpDown,
@@ -19,8 +19,8 @@ import type { CSSProperties } from "react";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
+import type { PuckConfig, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
-import type { LooseAutocomplete } from "@/types/utils";
 
 import {
   Select,
@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import type { AppearanceFields, LayoutFields } from "./common";
 import { PUCK_ICON_CLASSNAME, withAppearance, withLayout } from "./common";
 import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
 
@@ -50,100 +49,27 @@ const tableProps = {
   border: 0,
 };
 
-interface ImageFields extends LayoutFields {
-  src: string;
-  alt: string;
-  objectFit: CSSProperties["objectFit"];
-}
+const appearanceDefaults = {
+  appearance: {
+    color: "#000000",
+    backgroundColor: "#FFFFFF",
+    image: {
+      backgroundImage: "",
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+    },
+  },
+} as const;
 
-interface ContainerFields extends LayoutFields, AppearanceFields {
-  columns: Record<"content", Slot>[];
-  numZones: number;
-}
-
-interface TwoByTwoFields extends LayoutFields, AppearanceFields {
-  topLeft: Slot;
-  topRight: Slot;
-  bottomLeft: Slot;
-  bottomRight: Slot;
-}
-
-interface TwoByOneFields extends LayoutFields, AppearanceFields {
-  left: Slot;
-  right: Slot;
-}
-
-interface ThreeByOneFields extends LayoutFields, AppearanceFields {
-  left: Slot;
-  center: Slot;
-  right: Slot;
-}
-
-interface FourByOneFields extends LayoutFields, AppearanceFields {
-  col1: Slot;
-  col2: Slot;
-  col3: Slot;
-  col4: Slot;
-}
-
-interface ThreeByTwoFields extends LayoutFields, AppearanceFields {
-  topLeft: Slot;
-  topCenter: Slot;
-  topRight: Slot;
-  bottomLeft: Slot;
-  bottomCenter: Slot;
-  bottomRight: Slot;
-}
-
-interface ThreeByThreeFields extends LayoutFields, AppearanceFields {
-  topLeft: Slot;
-  topCenter: Slot;
-  topRight: Slot;
-  middleLeft: Slot;
-  middleCenter: Slot;
-  middleRight: Slot;
-  bottomLeft: Slot;
-  bottomCenter: Slot;
-  bottomRight: Slot;
-}
-
-interface DividerFields extends AppearanceFields {
-  height: string;
-}
-
-interface RichTextFields {
-  content: string;
-}
-
-interface LinkFields extends AppearanceFields {
-  title: string;
-  href: string;
-  target: "_blank" | "_self";
-}
-
-export interface PuckComponents {
-  RichText: RichTextFields;
-  Container: ContainerFields;
-  TwoByTwo: TwoByTwoFields;
-  TwoByOne: TwoByOneFields;
-  ThreeByOne: ThreeByOneFields;
-  FourByOne: FourByOneFields;
-  ThreeByTwo: ThreeByTwoFields;
-  ThreeByThree: ThreeByThreeFields;
-  Divider: DividerFields;
-  Image: ImageFields;
-  Link: LinkFields;
-}
-
-interface RootSettings {
-  name: string;
-  title: string;
-  trigger: LooseAutocomplete<(typeof EMAIL_TRIGGERS)[number]["value"]>;
-  triggerValue?: string;
-  triggerValue2?: string;
-}
-
-export type PuckConfig = Config<PuckComponents, RootSettings>;
+const layoutDefaults = {
+  layout: {
+    width: "auto",
+    height: "auto",
+    margin: "0",
+    padding: "0",
+  },
+} as const;
 
 export const getPuckConfig = ({
   tags,
@@ -203,22 +129,8 @@ export const getPuckConfig = ({
         defaultProps: {
           columns: [],
           numZones: 2,
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         resolveData: (data, parameters) => {
           if (
@@ -314,22 +226,8 @@ export const getPuckConfig = ({
           topRight: [],
           bottomLeft: [],
           bottomRight: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           topLeft: TopLeft,
@@ -403,22 +301,8 @@ export const getPuckConfig = ({
         defaultProps: {
           left: [],
           right: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           left: Left,
@@ -487,22 +371,8 @@ export const getPuckConfig = ({
           left: [],
           center: [],
           right: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           left: Left,
@@ -580,22 +450,8 @@ export const getPuckConfig = ({
           col2: [],
           col3: [],
           col4: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           col1: Col1,
@@ -669,22 +525,8 @@ export const getPuckConfig = ({
           bottomLeft: [],
           bottomCenter: [],
           bottomRight: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           topLeft: TopLeft,
@@ -774,22 +616,8 @@ export const getPuckConfig = ({
           bottomLeft: [],
           bottomCenter: [],
           bottomRight: [],
-          layout: {
-            width: "auto",
-            height: "auto",
-            margin: "0",
-            padding: "0",
-          },
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...layoutDefaults,
+          ...appearanceDefaults,
         },
         render({
           topLeft: TopLeft,
