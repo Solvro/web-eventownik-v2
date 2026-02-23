@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table/participants-table";
+import { ParticipantTable } from "@/app/dashboard/events/[id]/participants/table";
 import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";

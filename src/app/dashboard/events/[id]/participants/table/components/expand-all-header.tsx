@@ -3,7 +3,7 @@ import type { Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { fetchAdditionalParticipantData } from "./columns";
+import { fetchAdditionalParticipantData } from "../core/columns";
 
 interface ExpandAllHeaderProps {
   table: Table<FlattenedParticipant>;
