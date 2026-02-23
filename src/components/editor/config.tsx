@@ -60,7 +60,7 @@ const appearanceDefaults = {
       backgroundRepeat: "no-repeat",
     },
   },
-} as const;
+};
 
 const layoutDefaults = {
   layout: {
@@ -69,7 +69,40 @@ const layoutDefaults = {
     margin: "0",
     padding: "0",
   },
-} as const;
+};
+
+/**
+ * A `<table>` element wrapper for each container block
+ */
+function ContainerWrapper({
+  layout,
+  appearance,
+  children,
+}: {
+  layout: (typeof layoutDefaults)["layout"];
+  appearance: (typeof appearanceDefaults)["appearance"];
+  children: React.ReactNode;
+}) {
+  return (
+    <table
+      width={"100%"}
+      style={{
+        ...tableStyle,
+        margin: `${layout.margin}px auto`,
+        backgroundColor: appearance.backgroundColor,
+        backgroundImage: `url('${appearance.image.backgroundImage}')`,
+        backgroundPosition: appearance.image.backgroundPosition,
+        backgroundSize: appearance.image.backgroundSize,
+        backgroundRepeat: appearance.image.backgroundRepeat,
+        color: appearance.color,
+        padding: layout.padding,
+      }}
+      {...tableProps}
+    >
+      <tbody>{children}</tbody>
+    </table>
+  );
+}
 
 export const getPuckConfig = ({
   tags,
@@ -156,46 +189,17 @@ export const getPuckConfig = ({
 
           return newData;
         },
-        render({
-          columns,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
-        }) {
+        render({ columns, layout, appearance }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  {columns.map(({ content: Content }, index) => (
-                    <td key={index} className="min-w-16">
-                      <Content />
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                {columns.map(({ content: Content }, index) => (
+                  <td key={index} className="min-w-16">
+                    <Content />
+                  </td>
+                ))}
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -234,53 +238,28 @@ export const getPuckConfig = ({
           topRight: TopRight,
           bottomLeft: BottomLeft,
           bottomRight: BottomRight,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
+          layout,
+          appearance,
         }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "50%" }}>
-                    <TopLeft />
-                  </td>
-                  <td style={{ width: "50%" }}>
-                    <TopRight />
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ width: "50%" }}>
-                    <BottomLeft />
-                  </td>
-                  <td style={{ width: "50%" }}>
-                    <BottomRight />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "50%" }}>
+                  <TopLeft />
+                </td>
+                <td style={{ width: "50%" }}>
+                  <TopRight />
+                </td>
+              </tr>
+              <tr>
+                <td style={{ width: "50%" }}>
+                  <BottomLeft />
+                </td>
+                <td style={{ width: "50%" }}>
+                  <BottomRight />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -304,48 +283,18 @@ export const getPuckConfig = ({
           ...layoutDefaults,
           ...appearanceDefaults,
         },
-        render({
-          left: Left,
-          right: Right,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
-        }) {
+        render({ left: Left, right: Right, layout, appearance }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "50%" }}>
-                    <Left />
-                  </td>
-                  <td style={{ width: "50%" }}>
-                    <Right />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "50%" }}>
+                  <Left />
+                </td>
+                <td style={{ width: "50%" }}>
+                  <Right />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -378,48 +327,23 @@ export const getPuckConfig = ({
           left: Left,
           center: Center,
           right: Right,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
+          layout,
+          appearance,
         }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <Left />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <Center />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <Right />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <Left />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <Center />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <Right />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -458,51 +382,26 @@ export const getPuckConfig = ({
           col2: Col2,
           col3: Col3,
           col4: Col4,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
+          layout,
+          appearance,
         }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "25%" }}>
-                    <Col1 />
-                  </td>
-                  <td style={{ width: "25%" }}>
-                    <Col2 />
-                  </td>
-                  <td style={{ width: "25%" }}>
-                    <Col3 />
-                  </td>
-                  <td style={{ width: "25%" }}>
-                    <Col4 />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "25%" }}>
+                  <Col1 />
+                </td>
+                <td style={{ width: "25%" }}>
+                  <Col2 />
+                </td>
+                <td style={{ width: "25%" }}>
+                  <Col3 />
+                </td>
+                <td style={{ width: "25%" }}>
+                  <Col4 />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -535,59 +434,34 @@ export const getPuckConfig = ({
           bottomLeft: BottomLeft,
           bottomCenter: BottomCenter,
           bottomRight: BottomRight,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
+          layout,
+          appearance,
         }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <TopLeft />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <TopCenter />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <TopRight />
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomLeft />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomCenter />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomRight />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <TopLeft />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <TopCenter />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <TopRight />
+                </td>
+              </tr>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <BottomLeft />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <BottomCenter />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <BottomRight />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -629,70 +503,45 @@ export const getPuckConfig = ({
           bottomLeft: BottomLeft,
           bottomCenter: BottomCenter,
           bottomRight: BottomRight,
-          layout: { margin, padding },
-          appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
-          },
+          layout,
+          appearance,
         }) {
           return (
-            <table
-              width={"100%"}
-              style={{
-                ...tableStyle,
-                margin: `${margin}px auto`,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-                padding,
-              }}
-              {...tableProps}
-            >
-              <tbody>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <TopLeft />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <TopCenter />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <TopRight />
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <MiddleLeft />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <MiddleCenter />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <MiddleRight />
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomLeft />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomCenter />
-                  </td>
-                  <td style={{ width: "33.33%" }}>
-                    <BottomRight />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <ContainerWrapper layout={layout} appearance={appearance}>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <TopLeft />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <TopCenter />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <TopRight />
+                </td>
+              </tr>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <MiddleLeft />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <MiddleCenter />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <MiddleRight />
+                </td>
+              </tr>
+              <tr>
+                <td style={{ width: "33.33%" }}>
+                  <BottomLeft />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <BottomCenter />
+                </td>
+                <td style={{ width: "33.33%" }}>
+                  <BottomRight />
+                </td>
+              </tr>
+            </ContainerWrapper>
           );
         },
       },
@@ -708,16 +557,7 @@ export const getPuckConfig = ({
         },
         defaultProps: {
           height: "16",
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...appearanceDefaults,
         },
         render({ height, appearance: { color, backgroundColor } }) {
           return (
@@ -841,16 +681,7 @@ export const getPuckConfig = ({
           title: "Kliknij tutaj",
           href: "",
           target: "_blank",
-          appearance: {
-            color: "#000000",
-            backgroundColor: "#FFFFFF",
-            image: {
-              backgroundImage: "",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          },
+          ...appearanceDefaults,
         },
         render({
           title,
@@ -868,27 +699,12 @@ export const getPuckConfig = ({
           },
         }) {
           return (
-            <table
-              width="100%"
-              style={{
-                ...tableStyle,
-                backgroundColor,
-                backgroundImage: `url('${backgroundImage}')`,
-                backgroundPosition,
-                backgroundSize,
-                backgroundRepeat,
-                color,
-              }}
-              {...tableProps}
-            >
+            <table width="100%" style={tableStyle}>
               <tbody>
                 <tr>
                   <td
                     align="center"
                     style={{
-                      padding: "20px 0",
-                      color,
-                      backgroundColor,
                       width: "fit-content",
                     }}
                   >
@@ -896,7 +712,15 @@ export const getPuckConfig = ({
                       href={href}
                       target={target}
                       rel="noreferrer"
-                      style={{ display: "block" }}
+                      style={{
+                        display: "block",
+                        color,
+                        backgroundColor,
+                        backgroundImage: `url('${backgroundImage}')`,
+                        backgroundPosition,
+                        backgroundSize,
+                        backgroundRepeat,
+                      }}
                     >
                       {title}
                     </a>
