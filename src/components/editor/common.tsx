@@ -402,7 +402,6 @@ export interface ContainerFields {
 export const getContainerStyles = (container: ContainerFields["container"]) => {
   return {
     verticalAlign: container.verticalAlign,
-    borderSpacingHorizontal: container.borderSpacingHorizontal.toString(),
-    borderSpacingVertical: container.borderSpacingVertical.toString(),
+    borderSpacing: `${container.borderSpacingHorizontal.toString()}px ${container.borderSpacingVertical.toString()}px`,
   };
 };
