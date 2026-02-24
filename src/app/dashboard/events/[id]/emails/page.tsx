@@ -1,5 +1,8 @@
-import { Mail } from "lucide-react";
+import { Mail, Stars } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 
 import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
@@ -27,11 +30,19 @@ export default async function DashboardEventEmailTemplatesPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <h1 className="text-3xl font-bold">Szablony maili</h1>
-        <CreateEmailTemplateForm
-          eventId={id}
-          eventAttributes={attributes}
-          eventForms={forms}
-        />
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link href={`/dashboard/events/${id}/emails/editor`}>
+              <Stars />
+              Demo: Nowy edytor
+            </Link>
+          </Button>
+          <CreateEmailTemplateForm
+            eventId={id}
+            eventAttributes={attributes}
+            eventForms={forms}
+          />
+        </div>
       </div>
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {templates === null ? (
