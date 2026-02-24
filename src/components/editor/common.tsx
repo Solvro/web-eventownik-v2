@@ -35,7 +35,7 @@ import type { LooseAutocomplete } from "@/types/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { HybridInput } from "./hybrid-input";
+import { NumberButtonInput } from "./number-button-input";
 
 export const PUCK_ICON_CLASSNAME = "mr-1 size-5";
 
@@ -182,16 +182,20 @@ export const withLayout = {
         labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
         type: "custom",
         render: ({ name, onChange, value, field }) => (
-          <>
+          <div className="space-y-2">
             <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-            <HybridInput
-              autoValue="auto"
-              label="Automatycznie"
-              type="number"
-              value={value}
-              onChange={onChange}
-            />
-          </>
+            <Button
+              onClick={() => {
+                onChange("auto");
+              }}
+              variant={value === "auto" ? "secondary" : "outline"}
+              size="sm"
+              className="w-full"
+            >
+              Automatycznie
+            </Button>
+            <NumberButtonInput value={value} onChange={onChange} />
+          </div>
         ),
       },
       height: {
@@ -199,17 +203,20 @@ export const withLayout = {
         labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
         type: "custom",
         render: ({ name, onChange, value, field }) => (
-          <>
+          <div className="space-y-2">
             <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-            <HybridInput
-              autoValue="auto"
-              label="Automatycznie"
-              type="number"
-              value={value}
-              onChange={onChange}
-              inputProps={{ min: "0", max: (10 ** 2).toString() }}
-            />
-          </>
+            <Button
+              onClick={() => {
+                onChange("auto");
+              }}
+              variant={value === "auto" ? "secondary" : "outline"}
+              size="sm"
+              className="w-full"
+            >
+              Automatycznie
+            </Button>
+            <NumberButtonInput value={value} onChange={onChange} />
+          </div>
         ),
       },
       margin: {

@@ -11,8 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import type { PuckConfig } from "@/types/editor";
+
+import { NumberButtonInput } from "./number-button-input";
 
 export const overrides: Partial<Overrides<PuckConfig>> = {
   fieldTypes: {
@@ -29,24 +30,15 @@ export const overrides: Partial<Overrides<PuckConfig>> = {
         />
       </>
     ),
-    number: ({ onChange, name, value, field }) => {
-      return (
-        <>
-          <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-          <div className="mt-4 mb-8">
-            <Slider
-              defaultValue={[value]}
-              min={field.min}
-              max={field.max}
-              step={field.step}
-              onValueChange={(changedValue) => {
-                onChange(changedValue[0]);
-              }}
-            />
-          </div>
-        </>
-      );
-    },
+    number: (props) => (
+      <>
+        <FieldLabel
+          label={props.field.label ?? props.name}
+          icon={props.field.labelIcon}
+        />
+        <NumberButtonInput {...props} />
+      </>
+    ),
     select: ({ onChange, name, value, field }) => {
       return (
         <>
