@@ -139,9 +139,6 @@ function Toolbar({
           </TooltipContent>
         </Tooltip>
       </div>
-      <div className="flex items-center justify-center">
-        <p className="text-lg">Nazwa szablonu</p>
-      </div>
       <div className="flex justify-center">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -353,7 +350,7 @@ function PreviewDialog({ config }: { config: PuckConfig }) {
  */
 function PuckComposition({ config }: { config: PuckConfig }) {
   // TODO(refactor): Suboptimal for performance
-  const { appState, dispatch, history } = usePuck();
+  const { appState, dispatch, history } = usePuck<PuckConfig>();
 
   return (
     <div className="flex h-208.75 flex-col">

@@ -104,7 +104,6 @@ export interface PuckComponents {
 
 export interface RootSettings {
   name: string;
-  title: string;
   trigger: LooseAutocomplete<(typeof EMAIL_TRIGGERS)[number]["value"]>;
   triggerValue?: string;
   triggerValue2?: string;

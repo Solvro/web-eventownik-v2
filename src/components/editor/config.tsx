@@ -859,13 +859,8 @@ export const getPuckConfig = ({
         > = {
           name: {
             type: "text",
-            label: "Nazwa szablonu",
-            labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
-          },
-          title: {
-            type: "text",
             label: "Tytuł wiadomości",
-            labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+            labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
           },
           trigger: {
             type: "custom",
@@ -927,8 +922,7 @@ export const getPuckConfig = ({
         return defaultFields;
       },
       defaultProps: {
-        name: "",
-        title: "",
+        name: "Tytuł wiadomości",
         trigger: "manual",
       },
       render: ({ children }) => {
