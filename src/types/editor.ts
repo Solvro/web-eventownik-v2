@@ -78,7 +78,7 @@ export interface DividerFields extends AppearanceFields {
   height: string;
 }
 
-export interface RichTextFields {
+export interface RichTextFields extends AppearanceFields {
   content: string;
 }
 

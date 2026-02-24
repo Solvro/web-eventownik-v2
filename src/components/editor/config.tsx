@@ -35,6 +35,7 @@ import {
   withContainer,
   withLayout,
 } from "./common";
+import type { AppearanceFields, ContainerFields, LayoutFields } from "./common";
 import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
 
 interface EmailCSSProperties extends CSSProperties {
@@ -65,8 +66,14 @@ const appearanceDefaults = {
       backgroundSize: "cover",
       backgroundRepeat: "no-repeat",
     },
+    border: {
+      borderWidth: "0",
+      borderStyle: "solid",
+      borderColor: "#000000",
+      borderRadius: "0",
+    },
   },
-};
+} satisfies AppearanceFields;
 
 const layoutDefaults = {
   layout: {
@@ -75,7 +82,7 @@ const layoutDefaults = {
     margin: "0",
     padding: "0",
   },
-};
+} satisfies LayoutFields;
 
 const containerDefaults = {
   container: {
@@ -83,7 +90,7 @@ const containerDefaults = {
     borderSpacingHorizontal: 0,
     borderSpacingVertical: 0,
   },
-};
+} satisfies ContainerFields;
 
 /**
  * A `<table>` element wrapper for each container block
@@ -99,6 +106,15 @@ function ContainerWrapper({
   container: (typeof containerDefaults)["container"];
   children: React.ReactNode;
 }) {
+  // Don't unnecessarily add border styles if border width is 0
+  const borderStyles =
+    Number.parseInt(appearance.border.borderWidth) > 0
+      ? {
+          border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
+          borderRadius: `${appearance.border.borderRadius}px`,
+        }
+      : {};
+
   return (
     <table
       width={"100%"}
@@ -114,6 +130,7 @@ function ContainerWrapper({
         color: appearance.color,
         padding: layout.padding,
         borderSpacing: `${container.borderSpacingHorizontal.toString()}px ${container.borderSpacingVertical.toString()}px`,
+        ...borderStyles,
       }}
       {...tableProps}
     >
@@ -150,12 +167,36 @@ export const getPuckConfig = ({
             ),
             renderMenu: ({ editor }) => <SidebarRichTextMenu editor={editor} />,
           },
+          ...withAppearance,
         },
         defaultProps: {
           content: "<p></p>",
+          ...appearanceDefaults,
         },
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        render: ({ content }) => <>{content}</>,
+        render: ({ content, appearance }) => {
+          const borderStyles =
+            Number.parseInt(appearance.border.borderWidth) > 0
+              ? {
+                  border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
+                  borderRadius: `${appearance.border.borderRadius}px`,
+                }
+              : {};
+          return (
+            <div
+              style={{
+                backgroundColor: appearance.backgroundColor,
+                backgroundImage: `url('${appearance.image.backgroundImage}')`,
+                backgroundPosition: appearance.image.backgroundPosition,
+                backgroundSize: appearance.image.backgroundSize,
+                backgroundRepeat: appearance.image.backgroundRepeat,
+                color: appearance.color,
+                ...borderStyles,
+              }}
+            >
+              {content}
+            </div>
+          );
+        },
       },
       TwoByOne: {
         label: "Siatka 2x1",

@@ -19,12 +19,17 @@ import {
   ImageUpscale,
   Layout,
   LinkIcon,
+  Minus,
   Move,
   PaintBucket,
   Palette,
+  PenLine,
   PenTool,
+  Pipette,
   Ratio,
   Repeat,
+  Square,
+  SquareRoundCorner,
   SquareSquare,
   Type,
 } from "lucide-react";
@@ -314,6 +319,46 @@ export const withAppearance = {
           },
         },
       },
+      border: {
+        type: "object",
+        label: "Obramowanie",
+        labelIcon: <Square className={PUCK_ICON_CLASSNAME} />,
+        objectFields: {
+          borderWidth: {
+            type: "number",
+            label: "Grubość",
+            labelIcon: <Minus className={PUCK_ICON_CLASSNAME} />,
+          },
+          borderStyle: {
+            type: "select",
+            label: "Styl",
+            labelIcon: <PenLine className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Brak", value: "none" },
+              { label: "Ciągły", value: "solid" },
+              { label: "Przerywany", value: "dashed" },
+              { label: "Kropkowany", value: "dotted" },
+              { label: "Podwójny", value: "double" },
+            ],
+          },
+          borderColor: {
+            type: "custom",
+            render: ({ name, onChange, value }) => (
+              <FieldLabel
+                label="Kolor"
+                icon={<Pipette className={PUCK_ICON_CLASSNAME} />}
+              >
+                <ColorPicker onChange={onChange} value={value} name={name} />
+              </FieldLabel>
+            ),
+          },
+          borderRadius: {
+            type: "number",
+            label: "Zaokrąglenie",
+            labelIcon: <SquareRoundCorner className={PUCK_ICON_CLASSNAME} />,
+          },
+        },
+      },
     },
   },
 } as const satisfies CommonFieldsSchema;
@@ -327,6 +372,12 @@ export interface AppearanceFields {
       backgroundPosition: string;
       backgroundSize: string;
       backgroundRepeat: string;
+    };
+    border: {
+      borderWidth: string;
+      borderStyle: string;
+      borderColor: string;
+      borderRadius: string;
     };
   };
 }
