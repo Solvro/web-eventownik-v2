@@ -100,7 +100,11 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                       isSelected && "bg-primary/30 hover:bg-primary/10",
                     )}
                     key={tag.value}
-                    onClick={() => {
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
                       selectItem(flatIndex);
                     }}
                     title={tag.description}

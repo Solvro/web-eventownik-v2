@@ -164,6 +164,8 @@ const updatePosition = async (
   });
 };
 
+let activePopupEditor: Editor | null = null;
+
 const getSuggestionOptions = (suggestionList: MessageTag[]) => {
   return {
     char: "/",
@@ -173,7 +175,6 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
       return suggestionList.filter((item) => {
         const searchTargets = [
           item.title,
-
           ...(item.category?.searchBy ?? []),
         ].map((s) => s.toLowerCase());
 
@@ -186,6 +187,13 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
 
       return {
         onStart: async (props: SuggestionProps) => {
+          // If another popup is already open, don't open a second one
+          if (activePopupEditor) {
+            return;
+          }
+
+          activePopupEditor = props.editor;
+
           component = new ReactRenderer(TagsList, {
             props,
             editor: props.editor,
@@ -194,18 +202,24 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
           popup = component.element;
 
           await updatePosition(props.editor, popup, props.clientRect);
-
           document.body.append(popup);
-
           await updatePosition(props.editor, popup, props.clientRect);
         },
 
         async onUpdate(props: SuggestionProps) {
+          if (activePopupEditor !== props.editor) {
+            return;
+          }
+
           component.updateProps(props);
           await updatePosition(props.editor, popup, props.clientRect);
         },
 
         onKeyDown(props: SuggestionKeyDownProps) {
+          if (activePopupEditor?.view !== props.view) {
+            return false;
+          }
+
           if (props.event.key === "Escape") {
             component.destroy();
             return true;
@@ -215,6 +229,12 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
         },
 
         onExit() {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (popup === undefined) {
+            return;
+          }
+
+          activePopupEditor = null;
           popup.remove();
           component.destroy();
         },
@@ -239,7 +259,7 @@ const setupSuggestions = (additionalTags: MessageTag[]) => {
       },
       HTMLAttributes: {
         class:
-          "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.45em]",
+          "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.45em] font-sans!",
       },
       renderHTML({ options, node }) {
         return [
