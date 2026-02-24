@@ -1,17 +1,17 @@
 "use client";
 
 import { Puck } from "@puckeditor/core";
-import type { Data } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
 
 import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
 import { overrides } from "@/components/editor/overrides";
 import type { MessageTag } from "@/lib/extensions/tags";
+import type { PuckData } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
 interface BlockEditorProps {
-  initialData?: Partial<Data>;
+  initialData: Partial<PuckData>;
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
 }
@@ -22,7 +22,7 @@ function Editor({ initialData, tags, forms }: BlockEditorProps) {
   return (
     <Puck
       config={config}
-      data={initialData ?? {}}
+      data={initialData}
       overrides={{
         ...overrides,
         iframe: ({ children, document }) => {

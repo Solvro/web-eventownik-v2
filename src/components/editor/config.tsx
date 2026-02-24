@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
+import {
+  appearanceDefaults,
+  containerDefaults,
+  layoutDefaults,
+} from "@/lib/editor";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
@@ -31,12 +36,9 @@ import {
 } from "../ui/select";
 import {
   PUCK_ICON_CLASSNAME,
-  appearanceDefaults,
-  containerDefaults,
   getAppearanceStyles,
   getContainerStyles,
   getLayoutStyles,
-  layoutDefaults,
   withAppearance,
   withContainer,
   withLayout,
@@ -894,7 +896,7 @@ export const getPuckConfig = ({
         return defaultFields;
       },
       defaultProps: {
-        name: "Tytuł wiadomości",
+        name: "Nowa wiadomość",
         trigger: "manual",
       },
       render: ({ children }) => {

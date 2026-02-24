@@ -1,13 +1,30 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
 import { Editor } from "@/components/editor/index";
+import { getPuckDataFromLegacyEmail } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
+import type { PuckData } from "@/types/editor";
 
-import { getEventAttributes, getEventForms } from "../data-access";
+import {
+  getEventAttributes,
+  getEventForms,
+  getSingleEventEmail,
+} from "../../data-access";
 
-export function generateMetadata() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; emailId: string }>;
+}): Promise<Metadata> {
+  const { id, emailId } = await params;
+
+  const emailToEdit = await getSingleEventEmail(id, emailId);
+
   return {
-    title: `Nowy szablon`,
+    title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
   };
 }
 
@@ -16,8 +33,9 @@ export default async function EventMailEditPage({
 }: {
   params: Promise<{ id: string; emailId: string }>;
 }) {
-  const { id } = await params;
+  const { id, emailId } = await params;
 
+  const emailToEdit = await getSingleEventEmail(id, emailId);
   const attributes = await getEventAttributes(id);
   const forms = await getEventForms(id);
 
@@ -42,11 +60,24 @@ export default async function EventMailEditPage({
     };
   }) satisfies MessageTag[];
 
-  return (
-    <Editor
-      tags={[...attributeTags, ...formTags]}
-      forms={forms}
-      initialData={{}}
-    />
-  );
+  if (emailToEdit == null) {
+    notFound();
+  } else {
+    const isLegacyEmail =
+      emailToEdit.schema === undefined && emailToEdit.content !== "";
+
+    const initialData: PuckData = (
+      isLegacyEmail
+        ? getPuckDataFromLegacyEmail(emailToEdit)
+        : emailToEdit.schema
+    ) as PuckData;
+
+    return (
+      <Editor
+        tags={[...attributeTags, ...formTags]}
+        forms={forms}
+        initialData={initialData}
+      />
+    );
+  }
 }

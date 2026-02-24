@@ -1,4 +1,4 @@
-import type { Config, Slot } from "@puckeditor/core";
+import type { Config, Data, Slot } from "@puckeditor/core";
 import type { CSSProperties } from "react";
 
 import type {
@@ -105,8 +105,10 @@ export interface PuckComponents {
 export interface RootSettings {
   name: string;
   trigger: LooseAutocomplete<(typeof EMAIL_TRIGGERS)[number]["value"]>;
-  triggerValue?: string;
-  triggerValue2?: string;
+  triggerValue?: string | null;
+  triggerValue2?: string | null;
 }
 
 export type PuckConfig = Config<PuckComponents, RootSettings>;
+
+export type PuckData = Data<PuckComponents, RootSettings>;

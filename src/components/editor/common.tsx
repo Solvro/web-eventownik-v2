@@ -1,3 +1,5 @@
+"use client";
+
 import { FieldLabel } from "@puckeditor/core";
 import type {
   CustomField,
@@ -189,15 +191,6 @@ export interface LayoutFields {
   };
 }
 
-export const layoutDefaults = {
-  layout: {
-    width: "auto",
-    height: "auto",
-    margin: "0",
-    padding: "0",
-  },
-} satisfies LayoutFields;
-
 export const getLayoutStyles = (layout: LayoutFields["layout"]) => {
   return {
     width: `${layout.width}px`,
@@ -342,25 +335,6 @@ export interface AppearanceFields {
   };
 }
 
-export const appearanceDefaults = {
-  appearance: {
-    color: "#000000",
-    backgroundColor: "#FFFFFF",
-    image: {
-      backgroundImage: "",
-      backgroundPosition: "center",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-    },
-    border: {
-      borderWidth: "0",
-      borderStyle: "solid",
-      borderColor: "#000000",
-      borderRadius: "0",
-    },
-  },
-} satisfies AppearanceFields;
-
 export const getAppearanceStyles = (
   appearance: AppearanceFields["appearance"],
 ) => {
@@ -432,11 +406,3 @@ export const getContainerStyles = (container: ContainerFields["container"]) => {
     borderSpacingVertical: container.borderSpacingVertical.toString(),
   };
 };
-
-export const containerDefaults = {
-  container: {
-    verticalAlign: "middle",
-    borderSpacingHorizontal: 0,
-    borderSpacingVertical: 0,
-  },
-} satisfies ContainerFields;
