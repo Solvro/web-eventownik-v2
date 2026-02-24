@@ -38,8 +38,7 @@ import type { CSSProperties } from "react";
 import type { LooseAutocomplete } from "@/types/utils";
 
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { ColorPicker } from "./color-picker";
 import { NumberButtonInput } from "./number-button-input";
 
 export const PUCK_ICON_CLASSNAME = "mr-1 size-5";
@@ -119,63 +118,6 @@ export interface TypographyFields {
   };
 }
 
-function ColorPicker({
-  onChange,
-  value,
-  name,
-}: {
-  onChange: (value: string) => void;
-  value: string;
-  name: string;
-}) {
-  const defaultValue = "inherit";
-  return (
-    <div className="space-y-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className="w-full"
-            variant={value === defaultValue ? "secondary" : "outline"}
-            onClick={() => {
-              onChange(defaultValue);
-            }}
-            size="sm"
-          >
-            Ustawiony odgórnie
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          Element przybierze kolor ustawiony w elemencie nadrzędnym
-        </TooltipContent>
-      </Tooltip>
-      <label
-        htmlFor={name}
-        className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
-      >
-        {value === defaultValue ? null : (
-          <div
-            className="aspect-square size-4 rounded-full border border-gray-300"
-            style={{
-              backgroundColor: value,
-            }}
-          />
-        )}
-        <p className="text-sm">
-          {value === defaultValue ? "Kliknij aby wybrać" : value}
-        </p>
-      </label>
-      <Input
-        id={name}
-        type="color"
-        className="hidden"
-        onChange={(event) => {
-          onChange(event.currentTarget.value);
-        }}
-      />
-    </div>
-  );
-}
-
 export const withLayout = {
   layout: {
     type: "object",
@@ -246,6 +188,24 @@ export interface LayoutFields {
     padding: string;
   };
 }
+
+export const layoutDefaults = {
+  layout: {
+    width: "auto",
+    height: "auto",
+    margin: "0",
+    padding: "0",
+  },
+} satisfies LayoutFields;
+
+export const getLayoutStyles = (layout: LayoutFields["layout"]) => {
+  return {
+    width: `${layout.width}px`,
+    height: `${layout.height}px`,
+    margin: `${layout.margin}px auto`,
+    padding: `${layout.padding}px`,
+  };
+};
 
 export const withAppearance = {
   appearance: {
@@ -382,6 +342,47 @@ export interface AppearanceFields {
   };
 }
 
+export const appearanceDefaults = {
+  appearance: {
+    color: "#000000",
+    backgroundColor: "#FFFFFF",
+    image: {
+      backgroundImage: "",
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+    },
+    border: {
+      borderWidth: "0",
+      borderStyle: "solid",
+      borderColor: "#000000",
+      borderRadius: "0",
+    },
+  },
+} satisfies AppearanceFields;
+
+export const getAppearanceStyles = (
+  appearance: AppearanceFields["appearance"],
+) => {
+  const borderStyles =
+    Number.parseInt(appearance.border.borderWidth) > 0
+      ? {
+          border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
+          borderRadius: `${appearance.border.borderRadius}px`,
+        }
+      : {};
+
+  return {
+    backgroundColor: appearance.backgroundColor,
+    backgroundImage: `url('${appearance.image.backgroundImage}')`,
+    backgroundPosition: appearance.image.backgroundPosition,
+    backgroundSize: appearance.image.backgroundSize,
+    backgroundRepeat: appearance.image.backgroundRepeat,
+    color: appearance.color,
+    ...borderStyles,
+  };
+};
+
 export const withContainer = {
   container: {
     type: "object",
@@ -423,3 +424,19 @@ export interface ContainerFields {
     borderSpacingVertical: number;
   };
 }
+
+export const getContainerStyles = (container: ContainerFields["container"]) => {
+  return {
+    verticalAlign: container.verticalAlign,
+    borderSpacingHorizontal: container.borderSpacingHorizontal.toString(),
+    borderSpacingVertical: container.borderSpacingVertical.toString(),
+  };
+};
+
+export const containerDefaults = {
+  container: {
+    verticalAlign: "middle",
+    borderSpacingHorizontal: 0,
+    borderSpacingVertical: 0,
+  },
+} satisfies ContainerFields;

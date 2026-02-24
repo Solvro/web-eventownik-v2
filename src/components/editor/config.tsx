@@ -31,11 +31,16 @@ import {
 } from "../ui/select";
 import {
   PUCK_ICON_CLASSNAME,
+  appearanceDefaults,
+  containerDefaults,
+  getAppearanceStyles,
+  getContainerStyles,
+  getLayoutStyles,
+  layoutDefaults,
   withAppearance,
   withContainer,
   withLayout,
 } from "./common";
-import type { AppearanceFields, ContainerFields, LayoutFields } from "./common";
 import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
 
 interface EmailCSSProperties extends CSSProperties {
@@ -43,7 +48,7 @@ interface EmailCSSProperties extends CSSProperties {
   msoTableRspace?: string;
 }
 
-const tableStyle: EmailCSSProperties = {
+const tableStyles: EmailCSSProperties = {
   borderCollapse: "separate",
   msoTableLspace: "0pt",
   msoTableRspace: "0pt",
@@ -55,42 +60,6 @@ const tableProps = {
   border: 0,
   tablelayout: "fixed",
 };
-
-const appearanceDefaults = {
-  appearance: {
-    color: "#000000",
-    backgroundColor: "#FFFFFF",
-    image: {
-      backgroundImage: "",
-      backgroundPosition: "center",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-    },
-    border: {
-      borderWidth: "0",
-      borderStyle: "solid",
-      borderColor: "#000000",
-      borderRadius: "0",
-    },
-  },
-} satisfies AppearanceFields;
-
-const layoutDefaults = {
-  layout: {
-    width: "auto",
-    height: "auto",
-    margin: "0",
-    padding: "0",
-  },
-} satisfies LayoutFields;
-
-const containerDefaults = {
-  container: {
-    verticalAlign: "middle",
-    borderSpacingHorizontal: 0,
-    borderSpacingVertical: 0,
-  },
-} satisfies ContainerFields;
 
 /**
  * A `<table>` element wrapper for each container block
@@ -106,31 +75,14 @@ function ContainerWrapper({
   container: (typeof containerDefaults)["container"];
   children: React.ReactNode;
 }) {
-  // Don't unnecessarily add border styles if border width is 0
-  const borderStyles =
-    Number.parseInt(appearance.border.borderWidth) > 0
-      ? {
-          border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
-          borderRadius: `${appearance.border.borderRadius}px`,
-        }
-      : {};
-
   return (
     <table
       width={"100%"}
       style={{
-        ...tableStyle,
-        height: `${layout.height}%`,
-        margin: `${layout.margin}px auto`,
-        backgroundColor: appearance.backgroundColor,
-        backgroundImage: `url('${appearance.image.backgroundImage}')`,
-        backgroundPosition: appearance.image.backgroundPosition,
-        backgroundSize: appearance.image.backgroundSize,
-        backgroundRepeat: appearance.image.backgroundRepeat,
-        color: appearance.color,
-        padding: layout.padding,
-        borderSpacing: `${container.borderSpacingHorizontal.toString()}px ${container.borderSpacingVertical.toString()}px`,
-        ...borderStyles,
+        ...tableStyles,
+        ...getLayoutStyles(layout),
+        ...getAppearanceStyles(appearance),
+        ...getContainerStyles(container),
       }}
       {...tableProps}
     >
@@ -174,28 +126,7 @@ export const getPuckConfig = ({
           ...appearanceDefaults,
         },
         render: ({ content, appearance }) => {
-          const borderStyles =
-            Number.parseInt(appearance.border.borderWidth) > 0
-              ? {
-                  border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
-                  borderRadius: `${appearance.border.borderRadius}px`,
-                }
-              : {};
-          return (
-            <div
-              style={{
-                backgroundColor: appearance.backgroundColor,
-                backgroundImage: `url('${appearance.image.backgroundImage}')`,
-                backgroundPosition: appearance.image.backgroundPosition,
-                backgroundSize: appearance.image.backgroundSize,
-                backgroundRepeat: appearance.image.backgroundRepeat,
-                color: appearance.color,
-                ...borderStyles,
-              }}
-            >
-              {content}
-            </div>
-          );
+          return <div style={getAppearanceStyles(appearance)}>{content}</div>;
         },
       },
       TwoByOne: {
@@ -697,7 +628,7 @@ export const getPuckConfig = ({
         },
         render({ height, appearance: { color, backgroundColor } }) {
           return (
-            <table width="100%" {...tableProps} style={tableStyle}>
+            <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td
@@ -761,7 +692,7 @@ export const getPuckConfig = ({
           layout: { width, height, margin, padding },
         }) {
           return (
-            <table width="100%" {...tableProps} style={tableStyle}>
+            <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td
@@ -835,7 +766,7 @@ export const getPuckConfig = ({
           },
         }) {
           return (
-            <table width="100%" style={tableStyle}>
+            <table width="100%" style={tableStyles}>
               <tbody>
                 <tr>
                   <td
@@ -972,7 +903,7 @@ export const getPuckConfig = ({
             id="email-root"
             style={{ width: "100%", backgroundColor: "#f3f4f6" }}
           >
-            <table width="100%" {...tableProps} style={tableStyle}>
+            <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td align="center" style={{ padding: "20px 0" }}>
@@ -981,7 +912,7 @@ export const getPuckConfig = ({
                       width="600"
                       {...tableProps}
                       style={{
-                        ...tableStyle,
+                        ...tableStyles,
                         backgroundColor: "#ffffff",
                         maxWidth: "100%",
                       }}
