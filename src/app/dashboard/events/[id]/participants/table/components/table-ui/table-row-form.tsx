@@ -162,7 +162,7 @@ export function TableRowForm({
         />
         <TableRow
           className={cn(
-            "[&>td:last-of-type]:sticky [&>td:last-of-type]:right-[-1px] [&>td:last-of-type>button]:backdrop-blur-lg",
+            "[&>td:last-of-type]:sticky [&>td:last-of-type]:-right-px [&>td:last-of-type>button]:backdrop-blur-lg",
             isEditMode && "bg-accent/30",
             row.getIsExpanded() && "border-l-primary border-l-2",
           )}

@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 
 import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
-import { useToast } from "@/hooks/use-toast";
 
 import {
   getAttributes,
@@ -19,7 +18,6 @@ import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const t = useTranslations("Table");
-  const { toast } = useToast();
 
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventId],
@@ -50,8 +48,8 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const {
     data,
     setData,
-    deleteParticipant: deleteParticipantMutation,
-    deleteManyParticipants: deleteManyParticipantsMutation,
+    deleteParticipant,
+    deleteManyParticipants,
     isLoading: isQuerying,
   } = useParticipantsData(eventId, participants ?? []);
 
@@ -81,68 +79,14 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     return <div className="text-center">{t("participantsError")}</div>;
   }
 
-  async function deleteParticipant(participantId: number) {
-    try {
-      const { success, error } = await deleteParticipantMutation(participantId);
-
-      if (!success) {
-        toast({
-          variant: "destructive",
-          title: t("deleteParticipantError"),
-          description: error,
-        });
-        return;
-      }
-      table.resetExpanded();
-      setData((previousData) => {
-        return previousData.filter(
-          (participant) => participant.id !== participantId,
-        );
-      });
-      toast({
-        variant: "default",
-        title: t("deleteParticipantSuccess"),
-        description: error,
-      });
-    } catch {
-      toast({
-        title: t("deleteParticipantError"),
-        variant: "destructive",
-        description: t("deleteParticipantErrorDescription"),
-      });
-    }
+  async function handleDeleteParticipant(participantId: number) {
+    await deleteParticipant(participantId);
+    table.resetExpanded();
   }
 
-  async function deleteManyParticipants(_participants: string[]) {
-    try {
-      const response = await deleteManyParticipantsMutation(_participants);
-
-      if (response.success) {
-        setData((previousData) => {
-          return previousData.filter(
-            (participant) => !_participants.includes(participant.id.toString()),
-          );
-        });
-        table.resetRowSelection();
-        toast({
-          title: t("deleteParticipantsSuccess"),
-          description: t("deleteParticipantsSuccessDescription", {
-            count: _participants.length,
-          }),
-        });
-      } else {
-        toast({
-          title: t("deleteParticipantsError"),
-          description: response.error,
-        });
-      }
-    } catch {
-      toast({
-        title: t("deleteParticipantsError"),
-        variant: "destructive",
-        description: t("deleteParticipantsErrorDescription"),
-      });
-    }
+  async function handleDeleteManyParticipants(participantsIds: string[]) {
+    await deleteManyParticipants(participantsIds);
+    table.resetRowSelection();
   }
 
   return (
@@ -158,14 +102,14 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
           globalFilter={globalFilter}
           isQuerying={isQuerying}
           emails={emails ?? []}
-          deleteManyParticipants={deleteManyParticipants}
+          deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
       <ParticipantTable
         table={table}
         eventId={eventId}
         setData={setData}
-        deleteParticipant={deleteParticipant}
+        deleteParticipant={handleDeleteParticipant}
         isQuerying={isQuerying}
         blocks={blocks ?? []}
       />
