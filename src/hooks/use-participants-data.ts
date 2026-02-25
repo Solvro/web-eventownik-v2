@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import {
@@ -7,6 +8,7 @@ import {
   getParticipants,
 } from "@/app/dashboard/events/[id]/participants/actions";
 import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/core/data";
+import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
@@ -14,6 +16,8 @@ export function useParticipantsData(
   initialParticipants: Participant[] = [],
 ) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const t = useTranslations("Table");
 
   const { data: participants, isFetching } = useQuery({
     queryKey: ["participants", eventId],
@@ -37,14 +41,35 @@ export function useParticipantsData(
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventId],
       });
+      toast({ variant: "default", title: t("deleteParticipantSuccess") });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: t("deleteParticipantError"),
+        description: error.message || t("deleteParticipantErrorDescription"),
+      });
     },
   });
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
-    onSuccess: async () => {
+    onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventId],
+      });
+      toast({
+        title: t("deleteParticipantsSuccess"),
+        description: t("deleteParticipantsSuccessDescription", {
+          count: variables.length,
+        }),
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: t("deleteParticipantsError"),
+        description: error.message || t("deleteParticipantsErrorDescription"),
       });
     },
   });
