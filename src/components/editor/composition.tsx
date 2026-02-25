@@ -1,7 +1,6 @@
 "use client";
 
-import { Drawer, Puck, Render, useGetPuck, usePuck } from "@puckeditor/core";
-import type { AppState, Config, PuckAction } from "@puckeditor/core";
+import { Drawer, Puck, Render, createUsePuck } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
 import {
   Columns2,
@@ -47,8 +46,6 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { PUCK_ICON_CLASSNAME } from "./common";
 
-type PuckDispatch = (action: PuckAction) => void;
-
 const COMPONENT_ICONS = {
   RichText: <Type className={PUCK_ICON_CLASSNAME} />,
   Divider: <FoldVertical className={PUCK_ICON_CLASSNAME} />,
@@ -63,17 +60,20 @@ const COMPONENT_ICONS = {
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<keyof PuckConfig["components"], React.ReactElement>;
 
+const usePuck = createUsePuck();
+
 /**
  * NOTE: Temporary addition during the development of the editor.
  * Used to display current document schema.
  */
-function SaveButton(appState: AppState) {
+function SaveButton() {
+  const data = usePuck((s) => s.appState.data);
   return (
     <Button
       variant="outline"
       onClick={() => {
         // eslint-disable-next-line no-console
-        console.log(appState.data);
+        console.log(data);
       }}
     >
       <Save />
@@ -82,17 +82,13 @@ function SaveButton(appState: AppState) {
   );
 }
 
-function Toolbar({
-  appState,
-  dispatch,
-  history,
-}: {
-  appState: AppState;
-  dispatch: PuckDispatch;
-  history: ReturnType<typeof usePuck>["history"];
-}) {
-  const leftVisible = appState.ui.leftSideBarVisible;
-  const rightVisible = appState.ui.rightSideBarVisible;
+function Toolbar() {
+  const history = usePuck((s) => s.history);
+  const uiState = usePuck((s) => s.appState.ui);
+  const dispatch = usePuck((s) => s.dispatch);
+
+  const leftVisible = uiState.leftSideBarVisible;
+  const rightVisible = uiState.rightSideBarVisible;
   const { back, forward, hasFuture, hasPast } = history;
 
   return (
@@ -165,19 +161,13 @@ function Toolbar({
   );
 }
 
-function BlocksAndSchemaSidebar({
-  config,
-  appState,
-}: {
-  appState: AppState;
-  config: Config;
-}) {
+function BlocksAndSchemaSidebar() {
+  const isVisible = usePuck((s) => s.appState.ui.leftSideBarVisible);
+  const { components, categories } = usePuck((s) => s.config);
+
   return (
     <ScrollArea
-      className={cn(
-        "max-h-181 w-58.5",
-        appState.ui.leftSideBarVisible ? "block" : "hidden",
-      )}
+      className={cn("max-h-181 w-58.5", isVisible ? "block" : "hidden")}
     >
       <div className="space-y-4 border-r border-(--event-primary-color)/50">
         <h2 className="border-b border-(--event-primary-color)/50 p-4 text-lg font-semibold">
@@ -185,59 +175,51 @@ function BlocksAndSchemaSidebar({
         </h2>
         <Drawer>
           <Accordion type="multiple" className="px-4">
-            {config.categories === undefined
+            {categories === undefined
               ? null
-              : Object.keys(config.categories).map(
-                  (category, categoryIndex) => {
-                    const categoryLabel =
-                      config.categories === undefined
-                        ? null
-                        : Object.values(config.categories)[categoryIndex].title;
-                    const components =
-                      config.categories === undefined
-                        ? []
-                        : (Object.values(config.categories)[categoryIndex]
-                            .components ?? []);
-                    return (
-                      <AccordionItem
-                        value={category}
-                        key={category}
-                        className="border-none"
-                      >
-                        <AccordionTrigger className="text-muted-foreground">
-                          {categoryLabel}
-                        </AccordionTrigger>
-                        <AccordionContent className="space-y-2">
-                          {components.map((component) => {
-                            const componentLabel =
-                              config.components[component].label;
-                            return (
-                              <Drawer.Item name={component} key={component}>
-                                {() => (
-                                  <Button
-                                    asChild
-                                    size="sm"
-                                    variant="eventDefault"
-                                    className="flex w-full items-center justify-between gap-2 py-2"
-                                  >
-                                    <div>
-                                      {
-                                        COMPONENT_ICONS[
-                                          component as keyof typeof COMPONENT_ICONS
-                                        ]
-                                      }
-                                      {componentLabel}
-                                    </div>
-                                  </Button>
-                                )}
-                              </Drawer.Item>
-                            );
-                          })}
-                        </AccordionContent>
-                      </AccordionItem>
-                    );
-                  },
-                )}
+              : Object.keys(categories).map((category, categoryIndex) => {
+                  const categoryLabel =
+                    Object.values(categories)[categoryIndex].title;
+                  const componentEntries =
+                    Object.values(categories)[categoryIndex].components ?? [];
+                  return (
+                    <AccordionItem
+                      value={category}
+                      key={category}
+                      className="border-none"
+                    >
+                      <AccordionTrigger className="text-muted-foreground">
+                        {categoryLabel}
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-2">
+                        {componentEntries.map((component) => {
+                          const componentLabel = components[component].label;
+                          return (
+                            <Drawer.Item name={component} key={component}>
+                              {() => (
+                                <Button
+                                  asChild
+                                  size="sm"
+                                  variant="eventDefault"
+                                  className="flex w-full items-center justify-between gap-2 py-2"
+                                >
+                                  <div>
+                                    {
+                                      COMPONENT_ICONS[
+                                        component as keyof typeof COMPONENT_ICONS
+                                      ]
+                                    }
+                                    {componentLabel}
+                                  </div>
+                                </Button>
+                              )}
+                            </Drawer.Item>
+                          );
+                        })}
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
           </Accordion>
         </Drawer>
         <h2 className="border-y border-(--event-primary-color)/50 p-4 text-lg font-semibold">
@@ -269,13 +251,12 @@ function BlocksAndSchemaSidebar({
   );
 }
 
-function FieldsPanel({ appState }: { appState: AppState }) {
+function FieldsPanel() {
+  const isVisible = usePuck((s) => s.appState.ui.rightSideBarVisible);
+
   return (
     <ScrollArea
-      className={cn(
-        "max-h-181 w-58.5",
-        appState.ui.rightSideBarVisible ? "block" : "hidden",
-      )}
+      className={cn("max-h-181 w-58.5", isVisible ? "block" : "hidden")}
     >
       <div
         className={cn(
@@ -304,9 +285,9 @@ function FieldsPanel({ appState }: { appState: AppState }) {
   );
 }
 
-function PreviewDialog({ config }: { config: PuckConfig }) {
-  const getPuck = useGetPuck();
-  const puck = getPuck();
+function PreviewDialog() {
+  const config = usePuck((s) => s.config);
+  const renderData = usePuck((s) => s.appState.data);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -329,7 +310,7 @@ function PreviewDialog({ config }: { config: PuckConfig }) {
             metadata={{
               isPreview: true,
             }}
-            data={puck.appState.data}
+            data={renderData}
             config={config}
           />
         </div>
@@ -345,26 +326,22 @@ function PreviewDialog({ config }: { config: PuckConfig }) {
 
 /**
  * Client component containing all of custom Puck editor UI.
- * It's a wrapper that easily allows access to Puck's API for custom components by using `usePuck` hook.
  * This component must be rendered within `<Puck/>` component.
  */
-function PuckComposition({ config }: { config: PuckConfig }) {
-  // TODO(refactor): Suboptimal for performance
-  const { appState, dispatch, history } = usePuck<PuckConfig>();
-
+function PuckComposition() {
   return (
     <div className="flex h-208.75 flex-col">
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <div className="flex gap-2">
-          <PreviewDialog config={config} />
-          <SaveButton {...appState} />
+          <PreviewDialog />
+          <SaveButton />
         </div>
       </div>
       <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/10">
-        <Toolbar appState={appState} dispatch={dispatch} history={history} />
+        <Toolbar />
         <div className="flex max-h-181 grow">
-          <BlocksAndSchemaSidebar config={config} appState={appState} />
+          <BlocksAndSchemaSidebar />
           <div className="flex grow bg-white px-8 py-2 font-[system-ui]">
             <div className="mx-auto flex max-w-2xl grow flex-col gap-2">
               <div className="pointer-events-none flex items-center gap-2 py-2 text-xl text-black">
@@ -391,7 +368,7 @@ function PuckComposition({ config }: { config: PuckConfig }) {
               </div>
             </div>
           </div>
-          <FieldsPanel appState={appState} />
+          <FieldsPanel />
         </div>
       </div>
     </div>
