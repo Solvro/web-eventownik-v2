@@ -1,8 +1,9 @@
 "use client";
 
-import type { RowData } from "@tanstack/react-table";
+import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import type { Dispatch, SetStateAction } from "react";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -12,17 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useParticipantsData } from "@/hooks/use-participants-data";
-import { useParticipantsTable } from "@/hooks/use-participants-table";
-import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { EventEmail } from "@/types/emails";
-import type { Participant } from "@/types/participant";
+import type { FlattenedParticipant } from "@/types/participant";
 
-import { TableMenu } from "../components/buttons/table-menu";
-import { HelpDialog } from "../components/dialogs/help-dialog";
 import { TableRowForm } from "../components/table-ui/table-row-form";
 import { getAriaSort } from "./utils";
 
@@ -42,128 +37,27 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function ParticipantTable({
-  participants,
-  attributes,
-  emails,
-  blocks,
-  eventId,
-}: {
-  participants: Participant[];
-  attributes: Attribute[];
-  emails: EventEmail[] | null;
-  blocks: (Block | null)[] | null;
+interface ParticipantTableProps {
+  table: TanstackTable<FlattenedParticipant>;
   eventId: string;
-}) {
+  setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
+  deleteParticipant: (participantId: number) => Promise<void>;
+  isQuerying: boolean;
+  blocks: (Block | null)[];
+}
+
+export function ParticipantTable({
+  table,
+  eventId,
+  setData,
+  deleteParticipant,
+  isQuerying,
+  blocks,
+}: ParticipantTableProps) {
   const t = useTranslations("Table");
-
-  const { toast } = useToast();
-
-  const {
-    data,
-    setData,
-    deleteParticipant: deleteParticipantMutation,
-    deleteManyParticipants: deleteManyParticipantsMutation,
-    isLoading: isQuerying,
-  } = useParticipantsData(eventId, participants);
-
-  const { table, globalFilter } = useParticipantsTable({
-    data,
-    attributes,
-    blocks,
-    eventId,
-    onUpdateData: (rowIndex, value) => {
-      setData((previousData) => {
-        return previousData.map((row, index) => {
-          if (index === rowIndex) {
-            return value;
-          }
-          return row;
-        });
-      });
-    },
-  });
-
-  async function deleteParticipant(participantId: number) {
-    try {
-      const { success, error } = await deleteParticipantMutation(participantId);
-
-      if (!success) {
-        toast({
-          variant: "destructive",
-          title: t("deleteParticipantError"),
-          description: error,
-        });
-        return;
-      }
-      table.resetExpanded();
-      setData((previousData) => {
-        return previousData.filter(
-          (participant) => participant.id !== participantId,
-        );
-      });
-      toast({
-        variant: "default",
-        title: t("deleteParticipantSuccess"),
-        description: error,
-      });
-    } catch {
-      toast({
-        title: t("deleteParticipantError"),
-        variant: "destructive",
-        description: t("deleteParticipantErrorDescription"),
-      });
-    }
-  }
-
-  async function deleteManyParticipants(_participants: string[]) {
-    try {
-      const response = await deleteManyParticipantsMutation(_participants);
-
-      if (response.success) {
-        setData((previousData) => {
-          return previousData.filter(
-            (participant) => !_participants.includes(participant.id.toString()),
-          );
-        });
-        table.resetRowSelection();
-        toast({
-          title: t("deleteParticipantsSuccess"),
-          description: t("deleteParticipantsSuccessDescription", {
-            count: _participants.length,
-          }),
-        });
-      } else {
-        toast({
-          title: t("deleteParticipantsError"),
-          description: response.error,
-        });
-      }
-    } catch {
-      toast({
-        title: t("deleteParticipantsError"),
-        variant: "destructive",
-        description: t("deleteParticipantsErrorDescription"),
-      });
-    }
-  }
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex grow justify-between">
-          <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
-          <HelpDialog />
-        </div>
-        <TableMenu
-          table={table}
-          eventId={eventId}
-          globalFilter={globalFilter}
-          isQuerying={isQuerying}
-          emails={emails}
-          deleteManyParticipants={deleteManyParticipants}
-        />
-      </div>
       <ScrollArea className="mt-4 w-full">
         <div className="relative">
           <Table>
@@ -207,7 +101,7 @@ export function ParticipantTable({
                     setData={setData}
                     deleteParticipant={deleteParticipant}
                     isQuerying={isQuerying}
-                    blocks={blocks ?? []}
+                    blocks={blocks}
                   ></TableRowForm>
                 );
               })}
