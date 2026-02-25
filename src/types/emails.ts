@@ -39,7 +39,7 @@ export interface EventEmailParticipantData extends Omit<
  */
 export interface SingleEventEmail extends Omit<EventEmail, "meta"> {
   content: string;
-  schema?: string;
+  schema: string | null;
   participants: EventEmailParticipantData[];
 }
 

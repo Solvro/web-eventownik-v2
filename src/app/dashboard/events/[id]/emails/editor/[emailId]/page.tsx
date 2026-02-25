@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
-import { getPuckDataFromLegacyEmail } from "@/lib/editor";
+import { getPuckSchemaFromLegacyEmail } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
@@ -63,13 +63,12 @@ export default async function EventMailEditPage({
   if (emailToEdit == null) {
     notFound();
   } else {
-    const isLegacyEmail =
-      emailToEdit.schema === undefined && emailToEdit.content !== "";
+    const isLegacyEmail = emailToEdit.schema === null;
 
-    const initialData: PuckData = (
+    const initialData = (
       isLegacyEmail
-        ? getPuckDataFromLegacyEmail(emailToEdit)
-        : emailToEdit.schema
+        ? getPuckSchemaFromLegacyEmail(emailToEdit)
+        : JSON.parse(emailToEdit.schema ?? "")
     ) as PuckData;
 
     return (

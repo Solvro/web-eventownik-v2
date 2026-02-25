@@ -99,7 +99,9 @@ function extractAndCleanImages(html: string): {
   return { cleanedHtml, images };
 }
 
-export function getPuckDataFromLegacyEmail(email: SingleEventEmail): PuckData {
+export function getPuckSchemaFromLegacyEmail(
+  email: SingleEventEmail,
+): PuckData {
   const { cleanedHtml, images } = extractAndCleanImages(email.content);
 
   const imageComponents: ComponentDataMap<PuckComponents>[] = images.map(
@@ -122,7 +124,7 @@ export function getPuckDataFromLegacyEmail(email: SingleEventEmail): PuckData {
         props: {
           id: "RichText-1",
           content: cleanedHtml,
-          appearance: { ...appearanceDefaults.appearance },
+          ...appearanceDefaults,
         },
       },
       ...imageComponents,
