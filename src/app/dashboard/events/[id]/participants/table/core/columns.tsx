@@ -1,8 +1,7 @@
-import type { Column, Row, Table } from "@tanstack/react-table";
+import type { Row, Table } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -11,19 +10,102 @@ import type {
 } from "@/types/participant";
 
 import { getParticipant } from "../../actions";
-import { ExpandRowCell } from "../components/expand-row-cell";
-import { FilterButton } from "../components/filter-button";
-import { SortButton, SortIcon } from "../components/sort-button";
+import { FilterButton } from "../components/buttons/filter-button";
+import { ExpandRowCell } from "../components/table-ui/expand-row-cell";
+import { SortHeader } from "../components/table-ui/sort-header";
 import { flattenParticipant } from "./data";
 import { formatAttributeValue } from "./utils";
+
+const columnHelper = createColumnHelper<FlattenedParticipant>();
+
+const BASE_COLUMNS = [
+  columnHelper.display({
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(Boolean(value));
+        }}
+        aria-label="Wybierz wszystkie na stronie"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => {
+          row.toggleSelected(Boolean(value));
+        }}
+        aria-label="Wybierz wiersz"
+      ></Checkbox>
+    ),
+  }),
+  columnHelper.display({
+    id: "no",
+    header: "No.",
+    cell: ({ row }) => {
+      return row.index + 1;
+    },
+  }),
+  columnHelper.accessor("email", {
+    header: (info) => <SortHeader info={info} name="Email" />,
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("createdAt", {
+    header: (info) => <SortHeader info={info} name="Data rejestracji" />,
+    cell: (info) => info.getValue(),
+  }),
+];
+
+export function createColumns(
+  attributes: Attribute[],
+  blocks: (Block | null)[],
+) {
+  const attributeColumns = attributes
+    .filter((attribute) => attribute.showInList)
+    .map((attribute) =>
+      columnHelper.accessor(attribute.id.toString(), {
+        meta: {
+          attribute,
+          showInTable: attribute.showInList,
+          headerClassName: attribute.showInList ? "" : "hidden",
+          cellClassName: attribute.showInList ? "" : "hidden",
+        },
+        header: (info) => (
+          <div className="flex items-center gap-1">
+            <FilterButton
+              attributeType={attribute.type}
+              options_={attribute.options}
+              column={info.column}
+            />
+            <SortHeader info={info} name={attribute.name} truncate />
+          </div>
+        ),
+        cell: (info) =>
+          formatAttributeValue(
+            info.getValue(),
+            attribute.type,
+            attribute.id,
+            blocks,
+          ),
+      }),
+    );
+
+  const editColumn = columnHelper.display({
+    id: "edit",
+  });
+
+  return [...BASE_COLUMNS, ...attributeColumns, editColumn];
+}
 
 export function generateColumns(
   attributes: Attribute[],
   blocks: (Block | null)[],
   eventId: string,
 ) {
-  const columnHelper = createColumnHelper<FlattenedParticipant>();
-
   const baseColumns = [
     columnHelper.display({
       id: "select",
@@ -79,16 +161,14 @@ export function generateColumns(
       },
     }),
     columnHelper.accessor("email", {
-      header: ({ column }) => <HeaderWithSort column={column} title="Email" />,
+      // header: ({ column }) => <HeaderWithSort column={column} title="Email" />,
       meta: {
         showInTable: true,
       },
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("createdAt", {
-      header: ({ column }) => (
-        <HeaderWithSort column={column} title="Data rejestracji" />
-      ),
+      // header: ({ column }) => <HeaderWithSort column={column} title="Data rejestracji" />,
       cell: (info) => info.getValue(),
       meta: {
         headerClassName: "w-fit",
@@ -120,11 +200,11 @@ export function generateColumns(
               options_={attribute.options}
               column={column}
             />
-            <HeaderWithSort
+            {/* <HeaderWithSort
               column={column}
               title={getAttributeLabel(attribute.name, "pl")}
               truncate
-            />
+            /> */}
           </div>
         ),
         cell: (info) =>
@@ -179,27 +259,6 @@ export function generateColumns(
   });
 
   return [...baseColumns, ...attributeColumns, expandColumn];
-}
-
-interface HeaderWithSortProps {
-  column: Column<FlattenedParticipant, string | ParticipantAttributeValueType>;
-  title: string;
-  truncate?: boolean;
-}
-
-function HeaderWithSort({ column, title, truncate }: HeaderWithSortProps) {
-  const sortingDirection = column.getIsSorted();
-
-  return (
-    <div className="flex items-center gap-1">
-      <SortButton column={column}>
-        <span className={(truncate ?? false) ? "max-w-37.5 truncate" : ""}>
-          {title}
-        </span>
-      </SortButton>
-      <SortIcon sortingDirection={sortingDirection} />
-    </div>
-  );
 }
 
 export async function fetchAdditionalParticipantData(
