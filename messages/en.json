@@ -31,7 +31,13 @@
     "captchaInProgress": "CAPTCHA verification...",
     "captchaFailed": "CAPTCHA error. Try again",
     "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
-    "attributeIsRequiredTooltip": "This field is required."
+    "attributeIsRequiredTooltip": "This field is required.",
+    "searchBlocksLabel": "Search blocks",
+    "searchBlocksPlaceholder": "Search blocks...",
+    "hideFullBlocks": "Hide full",
+    "noBlocksFound": "No blocks found.",
+    "noBlockOption": "None",
+    "noBlockOptionDescription": "(opt out or unregister)"
   },
   "Auth": {
     "registerTitle": "Organizer registration",
