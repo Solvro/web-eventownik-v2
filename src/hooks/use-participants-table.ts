@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
-import { generateColumns } from "@/app/dashboard/events/[id]/participants/table";
+import { generateColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";

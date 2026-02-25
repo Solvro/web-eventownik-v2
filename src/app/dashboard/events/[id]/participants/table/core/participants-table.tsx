@@ -42,12 +42,6 @@ declare module "@tanstack/react-table" {
   }
 }
 
-/**
- * To seamlessly navigate during working on this component
- * get familiar with [Tanstack Table V8 docs](https://tanstack.com/table/latest/docs/introduction)
- *
- * In current implementation sorting is based on alphanumeric (punctuation and symbols < numbers < uppercase letters < lowercase letters) order because every value used for table is a string [SortingFns Docs](https://tanstack.com/table/v8/docs/guide/sorting#sorting-fns)
- */
 export function ParticipantTable({
   participants,
   attributes,
