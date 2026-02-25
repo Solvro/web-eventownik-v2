@@ -35,6 +35,8 @@ const BASE_COLUMNS = [
         aria-label="Wybierz wiersz"
       ></Checkbox>
     ),
+    enableSorting: false,
+    enableHiding: false,
   }),
   columnHelper.display({
     id: "no",
@@ -42,12 +44,16 @@ const BASE_COLUMNS = [
     cell: ({ row }) => {
       return row.index + 1;
     },
+    enableSorting: false,
+    enableHiding: false,
   }),
   columnHelper.accessor("email", {
+    meta: { name: "Email" },
     header: (info) => <SortHeader info={info} name="Email" />,
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor("createdAt", {
+    meta: { name: "Data rejestracji" },
     header: (info) => <SortHeader info={info} name="Data rejestracji" />,
     cell: (info) => info.getValue(),
   }),
@@ -63,6 +69,7 @@ export function createColumns(
       columnHelper.accessor(attribute.id.toString(), {
         meta: {
           attribute,
+          name: attribute.name,
           showInTable: attribute.showInList,
           headerClassName: attribute.showInList ? "" : "hidden",
           cellClassName: attribute.showInList ? "" : "hidden",
@@ -89,6 +96,8 @@ export function createColumns(
 
   const editColumn = columnHelper.display({
     id: "edit",
+    enableSorting: false,
+    enableHiding: false,
   });
 
   return [...BASE_COLUMNS, ...attributeColumns, editColumn];
