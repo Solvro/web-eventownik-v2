@@ -4,9 +4,9 @@ import { useState } from "react";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { TablePagination } from "./table-pagination";
-import { TableSelectionInfo } from "./table-selection-info";
-import { TableToolbar } from "./table-toolbar";
+import { TablePagination } from "../table-ui/table-pagination";
+import { TableSelectionInfo } from "../table-ui/table-selection-info";
+import { TableToolbar } from "../table-ui/table-toolbar";
 
 export function TableMenu({
   table,
