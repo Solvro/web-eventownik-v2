@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
 
 import {
   getAttributes,
@@ -10,9 +9,7 @@ import {
   getEmails,
   getParticipants,
 } from "./actions";
-import { DataTable } from "./table/components/data-table";
-import { createColumns } from "./table/core/columns";
-import { flattenParticipants } from "./table/core/data";
+import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const t = useTranslations("Table");
@@ -32,7 +29,7 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
       ),
   });
 
-  const { data: _emails } = useQuery({
+  const { data: emails } = useQuery({
     queryKey: ["emails", eventId],
     queryFn: async () => getEmails(eventId),
   });
@@ -42,11 +39,6 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     queryFn: async () => getBlocks(eventId, attributes ?? []),
     enabled: Boolean(attributes),
   });
-
-  const tableColumns = useMemo(
-    () => createColumns(attributes ?? [], blocks ?? []),
-    [attributes, blocks],
-  );
 
   if (
     isAttributesError ||
@@ -58,16 +50,12 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
   }
 
   return (
-    // <ParticipantTable
-    //   participants={participants}
-    //   attributes={attributes}
-    //   emails={emails ?? []}
-    //   blocks={blocks ?? []}
-    //   eventId={eventId}
-    // />
-    <DataTable
-      columns={tableColumns}
-      data={flattenParticipants(participants)}
+    <ParticipantTable
+      participants={participants}
+      attributes={attributes}
+      emails={emails ?? []}
+      blocks={blocks ?? []}
+      eventId={eventId}
     />
   );
 }
