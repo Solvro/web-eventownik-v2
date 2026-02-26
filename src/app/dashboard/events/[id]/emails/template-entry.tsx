@@ -20,7 +20,7 @@ function EmailTriggerLabel({ trigger }: { trigger: string }) {
   return <p className="text-muted-foreground">{target.name}</p>;
 }
 
-const useEmailHistoryMocks = true;
+const useEmailHistoryMocks = false;
 
 async function EmailTemplateEntry({
   eventId,
