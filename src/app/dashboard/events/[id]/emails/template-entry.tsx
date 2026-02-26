@@ -3,11 +3,12 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import type { EventEmail } from "@/types/emails";
+import type { EventEmail, SingleEventEmail } from "@/types/emails";
 
 import { getSingleEventEmail } from "./data-access";
 import { DeleteEmailPopup } from "./delete-email-popup";
 import { MailHistoryPopup } from "./mail-history-popup";
+import { createMockEmailHistory } from "./mocks/email-history";
 
 function EmailTriggerLabel({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
@@ -18,6 +19,8 @@ function EmailTriggerLabel({ trigger }: { trigger: string }) {
 
   return <p className="text-muted-foreground">{target.name}</p>;
 }
+
+const useEmailHistoryMocks = true;
 
 async function EmailTemplateEntry({
   eventId,
@@ -31,6 +34,11 @@ async function EmailTemplateEntry({
     emailTemplate.id.toString(),
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const emailForHistory: SingleEventEmail | null = useEmailHistoryMocks
+    ? createMockEmailHistory(emailTemplate)
+    : targetMail;
+
   return (
     <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
@@ -40,7 +48,9 @@ async function EmailTemplateEntry({
             <span className="sr-only">Edytuj szablon</span>
           </Link>
         </Button>
-        {targetMail !== null && <MailHistoryPopup email={targetMail} />}
+        {emailForHistory !== null && (
+          <MailHistoryPopup email={emailForHistory} />
+        )}
         <DeleteEmailPopup
           eventId={eventId}
           mailId={emailTemplate.id.toString()}
