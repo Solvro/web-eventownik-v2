@@ -1,15 +1,10 @@
-import { Mail, Stars } from "lucide-react";
+import { Mail, SquarePlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
-import { CreateEmailTemplateForm } from "./create-email-template-form";
-import {
-  getEventAttributes,
-  getEventEmails,
-  getEventForms,
-} from "./data-access";
+import { getEventEmails } from "./data-access";
 import { EmailTemplateEntry } from "./template-entry";
 
 export const metadata: Metadata = {
@@ -23,25 +18,17 @@ export default async function DashboardEventEmailTemplatesPage({
 }) {
   const { id } = await params;
   const templates = await getEventEmails(id);
-  const attributes = await getEventAttributes(id);
-  const forms = await getEventForms(id);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <h1 className="text-3xl font-bold">Szablony maili</h1>
         <div className="flex gap-2">
-          <Button asChild>
+          <Button asChild variant="outline">
             <Link href={`/dashboard/events/${id}/emails/editor`}>
-              <Stars />
-              Demo: Nowy edytor
+              <SquarePlus className="h-6 w-6" /> Stwórz szablon
             </Link>
           </Button>
-          <CreateEmailTemplateForm
-            eventId={id}
-            eventAttributes={attributes}
-            eventForms={forms}
-          />
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">

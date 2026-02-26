@@ -3,7 +3,7 @@ import type { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { Participant } from "./participant";
 
 /**
- * Data about a single email when fetching the entire list
+ * Data about a single email when fetching the entire list. Does not have `content` and `schema` fields.
  */
 export interface EventEmail {
   id: number;
@@ -35,7 +35,7 @@ export interface EventEmailParticipantData extends Omit<
 }
 
 /**
- * Data about a single email when fetching a single email
+ * Data about a single email when fetching a single email. Does not have the `meta` field but has `content` and `schema`
  */
 export interface SingleEventEmail extends Omit<EventEmail, "meta"> {
   content: string;
@@ -45,6 +45,8 @@ export interface SingleEventEmail extends Omit<EventEmail, "meta"> {
 
 export interface UpdateEventEmailPayload {
   name: string;
+  content: string;
+  schema: string;
   trigger: string;
   triggerValue: string | null;
   triggerValue2?: string | null;

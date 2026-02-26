@@ -40,7 +40,7 @@ function Editor({ initialData, tags, forms }: BlockEditorProps) {
         console.log(test);
       }}
     >
-      <PuckComposition config={config} />
+      <PuckComposition />
     </Puck>
   );
 }
