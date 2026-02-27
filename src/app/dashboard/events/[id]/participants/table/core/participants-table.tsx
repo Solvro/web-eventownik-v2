@@ -1,33 +1,28 @@
 "use client";
 
-import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect } from "react";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
-  TableHead,
+  TableCell,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
-import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { TableRowForm } from "../components/table-ui/table-row-form";
-import { getAriaSort } from "./utils";
+import { TableColumnHeader } from "../components/table-ui/table-column-header";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     attribute?: Attribute;
     name?: string;
-    headerClassName?: string;
-    cellClassName?: string;
     showInTable?: boolean;
   }
 
@@ -40,75 +35,52 @@ declare module "@tanstack/react-table" {
 
 interface ParticipantTableProps {
   table: TanstackTable<FlattenedParticipant>;
-  eventId: string;
-  setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
-  deleteParticipant: (participantId: number) => Promise<void>;
-  isQuerying: boolean;
-  blocks: (Block | null)[];
 }
 
-export function ParticipantTable({
-  table,
-  eventId,
-  setData,
-  deleteParticipant,
-  isQuerying,
-  blocks,
-}: ParticipantTableProps) {
+export function ParticipantTable({ table }: ParticipantTableProps) {
   const t = useTranslations("Table");
+  const isResizingColumn = Boolean(
+    table.getState().columnSizingInfo.isResizingColumn,
+  );
+
+  useEffect(() => {
+    document.body.style.cursor = isResizingColumn ? "col-resize" : "";
+    document.body.style.userSelect = isResizingColumn ? "none" : "";
+  }, [isResizingColumn]);
 
   return (
     <>
       <ScrollArea className="mt-4 w-full">
-        <div className="relative">
-          <Table>
-            <TableHeader className="border-border border-b-2">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  className="[&>th:last-of-type]:sticky [&>th:last-of-type]:-right-px [&>th:last-of-type>button]:backdrop-blur-lg"
-                  key={headerGroup.id}
-                >
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className={cn(
-                          "border-border bg-background border-r-2",
-                          header.id === "expand" ? "w-16 text-right" : "",
-                          header.column.columnDef.meta?.headerClassName,
-                        )}
-                        aria-sort={getAriaSort(header.column.getIsSorted())}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.map((row) => {
-                return (
-                  <TableRowForm
-                    key={row.id}
-                    cells={row.getAllCells()}
-                    eventId={eventId}
-                    row={row}
-                    setData={setData}
-                    deleteParticipant={deleteParticipant}
-                    isQuerying={isQuerying}
-                    blocks={blocks}
-                  ></TableRowForm>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+        <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
+          <TableHeader className="border-border border-b-2">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableColumnHeader key={header.id} header={header} />
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    style={{
+                      width: cell.column.getSize(),
+                      minWidth: cell.column.getSize(),
+                      maxWidth: cell.column.getSize(),
+                    }}
+                    className="overflow-hidden text-ellipsis whitespace-nowrap"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 

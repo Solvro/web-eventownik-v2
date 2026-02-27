@@ -38,6 +38,11 @@ export function useParticipantsTable({
   const table = useReactTable<FlattenedParticipant>({
     data,
     columns,
+    defaultColumn: {
+      size: 150,
+      minSize: 80,
+      maxSize: 300,
+    },
     state: {
       globalFilter,
     },
@@ -49,6 +54,9 @@ export function useParticipantsTable({
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: () => true,
     globalFilterFn: "includesString",
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
 
     meta: {
       updateData: onUpdateData,
