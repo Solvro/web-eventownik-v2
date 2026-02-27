@@ -14,6 +14,9 @@ const columnHelper = createColumnHelper<FlattenedParticipant>();
 const BASE_COLUMNS = [
   columnHelper.display({
     id: "select",
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -37,22 +40,33 @@ const BASE_COLUMNS = [
     ),
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
   }),
   columnHelper.display({
     id: "no",
+    size: 52,
+    minSize: 52,
+    maxSize: 52,
     header: "No.",
     cell: ({ row }) => {
       return row.index + 1;
     },
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
   }),
   columnHelper.accessor("email", {
+    size: 200,
+    minSize: 120,
+    maxSize: 300,
     meta: { name: "Email" },
     header: (info) => <SortHeader info={info} name="Email" />,
     cell: (info) => info.getValue(),
   }),
   columnHelper.accessor("createdAt", {
+    size: 160,
+    minSize: 100,
+    maxSize: 240,
     meta: { name: "Data rejestracji" },
     header: (info) => <SortHeader info={info} name="Data rejestracji" />,
     cell: (info) => info.getValue(),
@@ -71,8 +85,6 @@ export function createColumns(
           attribute,
           name: attribute.name,
           showInTable: attribute.showInList,
-          headerClassName: attribute.showInList ? "" : "hidden",
-          cellClassName: attribute.showInList ? "" : "hidden",
         },
         header: (info) => (
           <div className="flex items-center gap-1">
@@ -96,8 +108,12 @@ export function createColumns(
 
   const editColumn = columnHelper.display({
     id: "edit",
+    size: 52,
+    minSize: 52,
+    maxSize: 52,
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
   });
 
   return [...BASE_COLUMNS, ...attributeColumns, editColumn];

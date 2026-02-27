@@ -48,7 +48,6 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const {
     data,
     setData,
-    deleteParticipant,
     deleteManyParticipants,
     isLoading: isQuerying,
   } = useParticipantsData(eventId, participants ?? []);
@@ -79,11 +78,6 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     return <div className="text-center">{t("participantsError")}</div>;
   }
 
-  async function handleDeleteParticipant(participantId: number) {
-    await deleteParticipant(participantId);
-    table.resetExpanded();
-  }
-
   async function handleDeleteManyParticipants(participantsIds: string[]) {
     await deleteManyParticipants(participantsIds);
     table.resetRowSelection();
@@ -105,14 +99,7 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
           deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
-      <ParticipantTable
-        table={table}
-        eventId={eventId}
-        setData={setData}
-        deleteParticipant={handleDeleteParticipant}
-        isQuerying={isQuerying}
-        blocks={blocks ?? []}
-      />
+      <ParticipantTable table={table} />
     </>
   );
 }
