@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -58,12 +59,18 @@ export default async function DashboardEventSettingsPage({
   const attributes = (await attributesResponse.json()) as EventAttribute[];
   attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
+  // Compute display times on the server so they match the event page (same timezone as format() in page.tsx)
+  const displayStartTime = format(new Date(event.startDate), "HH:mm");
+  const displayEndTime = format(new Date(event.endDate), "HH:mm");
+
   return (
     <>
       <h1 className="mb-6 text-3xl font-bold">Edytuj wydarzenie</h1>
       <div className="flex flex-1 flex-col">
         <EventSettingsTabs
           unmodifiedEvent={event}
+          displayStartTime={displayStartTime}
+          displayEndTime={displayEndTime}
           unmodifiedCoOrganizers={coOrganizers}
           unmodifiedAttributes={attributes}
         />
