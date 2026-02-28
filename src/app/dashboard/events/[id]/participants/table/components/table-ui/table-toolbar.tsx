@@ -16,7 +16,7 @@ import type { FlattenedParticipant } from "@/types/participant";
 import { ExportButton } from "../buttons/export-button";
 import { DeleteManyParticipantsDialog } from "../dialogs/delete-many-dialog";
 import { SendMailForm } from "../dialogs/send-mail-form";
-import { ColumnVisibilityDropdown } from "./column-visibility-dropdown";
+import { ColumnSettingsDropdown } from "./column-settings-dropdown";
 
 interface TableToolbarProps {
   table: Table<FlattenedParticipant>;
@@ -109,7 +109,7 @@ export function TableToolbar({
             .rows.map((row) => row.original.id.toString())}
           deleteManyParticipants={deleteManyParticipants}
         />
-        <ColumnVisibilityDropdown table={table} />
+        <ColumnSettingsDropdown table={table} />
       </div>
     </div>
   );
