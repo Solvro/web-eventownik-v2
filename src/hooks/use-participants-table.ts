@@ -29,6 +29,7 @@ export function useParticipantsTable({
 }: UseParticipantTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
 
   const columns = useMemo(
     () => createColumns(attributes, blocks ?? []),
@@ -45,6 +46,7 @@ export function useParticipantsTable({
     },
     state: {
       globalFilter,
+      columnOrder,
     },
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -57,6 +59,7 @@ export function useParticipantsTable({
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
+    onColumnOrderChange: setColumnOrder,
 
     meta: {
       updateData: onUpdateData,
