@@ -112,3 +112,9 @@ export interface RootSettings {
 export type PuckConfig = Config<PuckComponents, RootSettings>;
 
 export type PuckData = Data<PuckComponents, RootSettings>;
+
+export interface PuckMutationData {
+  mode: "create" | "update";
+  eventId: string;
+  emailId: string | null;
+}

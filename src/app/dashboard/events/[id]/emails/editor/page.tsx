@@ -47,6 +47,11 @@ export default async function EventMailEditPage({
       tags={[...attributeTags, ...formTags]}
       forms={forms}
       initialData={{}}
+      mutationData={{
+        emailId: null,
+        eventId: id,
+        mode: "create",
+      }}
     />
   );
 }

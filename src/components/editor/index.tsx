@@ -7,17 +7,18 @@ import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
 import { overrides } from "@/components/editor/overrides";
 import type { MessageTag } from "@/lib/extensions/tags";
-import type { PuckData } from "@/types/editor";
+import type { PuckData, PuckMutationData } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
 interface BlockEditorProps {
   initialData: Partial<PuckData>;
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
+  mutationData: PuckMutationData;
 }
 
 // Render Puck editor
-function Editor({ initialData, tags, forms }: BlockEditorProps) {
+function Editor({ initialData, tags, forms, mutationData }: BlockEditorProps) {
   const config = getPuckConfig({ tags, forms });
   return (
     <Puck
@@ -35,12 +36,8 @@ function Editor({ initialData, tags, forms }: BlockEditorProps) {
           return <>{children}</>;
         },
       }}
-      onPublish={(test) => {
-        // eslint-disable-next-line no-console
-        console.log(test);
-      }}
     >
-      <PuckComposition />
+      <PuckComposition mutationData={mutationData} />
     </Puck>
   );
 }

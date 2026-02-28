@@ -2,6 +2,7 @@
 
 import { Drawer, Puck, Render, createUsePuck } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Columns2,
   Columns3,
@@ -14,6 +15,7 @@ import {
   Grid3x2,
   Image,
   LinkIcon,
+  Loader2,
   Redo2,
   Save,
   Sidebar,
@@ -22,9 +24,17 @@ import {
   User,
   X,
 } from "lucide-react";
+import React, { useRef } from "react";
+import type * as z from "zod";
 
+import {
+  createEventEmail,
+  updateEventEmail,
+} from "@/app/dashboard/events/[id]/emails/actions";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import type { PuckConfig } from "@/types/editor";
+import type { PuckConfig, PuckMutationData } from "@/types/editor";
+import { emailTemplateSchema } from "@/types/schemas";
 
 import {
   Accordion,
@@ -60,25 +70,97 @@ const COMPONENT_ICONS = {
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<keyof PuckConfig["components"], React.ReactElement>;
 
-const usePuck = createUsePuck();
+type EmailTemplateFormValues = z.infer<typeof emailTemplateSchema>;
 
-/**
- * NOTE: Temporary addition during the development of the editor.
- * Used to display current document schema.
- */
-function SaveButton() {
-  const data = usePuck((s) => s.appState.data);
+const usePuck = createUsePuck<PuckConfig>();
+
+function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
+  const renderData = usePuck((s) => s.appState.data);
+  const config = usePuck((s) => s.config);
+  const renderWrapperRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  const queryClient = useQueryClient();
+
+  const { mutate: publish, isPending } = useMutation({
+    mutationFn: async (values: EmailTemplateFormValues) => {
+      const payload = { eventId: mutationData.eventId, emailTemplate: values };
+
+      return mutationData.mode === "create"
+        ? createEventEmail(payload)
+        : updateEventEmail({ ...payload, mailId: mutationData.emailId });
+    },
+    onSuccess: (result) => {
+      if (!result.success) {
+        // Server returned a logical error (not a thrown exception)
+        toast({
+          title: "Błąd",
+          description: result.error ?? "Nieznany błąd",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      void queryClient.invalidateQueries({
+        queryKey: ["eventEmails", mutationData.eventId],
+      });
+
+      toast({
+        title:
+          mutationData.mode === "create"
+            ? "Dodano nowy szablon"
+            : "Zapisano zmiany w szablonie",
+      });
+    },
+    onError: (error) => {
+      // Network/unexpected errors
+      toast({
+        title: "Błąd",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const values: EmailTemplateFormValues = {
+      name: renderData.root.props?.name ?? "",
+      content: renderWrapperRef.current?.innerHTML ?? "",
+      schema: JSON.stringify(renderData),
+      trigger: renderData.root.props?.trigger as string,
+      triggerValue: renderData.root.props?.triggerValue ?? null,
+      triggerValue2: renderData.root.props?.triggerValue2,
+    };
+
+    const parsed = emailTemplateSchema.safeParse(values);
+    if (!parsed.success) {
+      const firstError = parsed.error.errors[0]?.message;
+      toast({
+        title: "Błąd walidacji",
+        description: firstError,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    publish(parsed.data);
+  };
+
   return (
-    <Button
-      variant="outline"
-      onClick={() => {
-        // eslint-disable-next-line no-console
-        console.log(data);
-      }}
-    >
-      <Save />
-      Zapisz
-    </Button>
+    <>
+      <form onSubmit={onSubmit}>
+        <Button variant="outline" type="submit" disabled={isPending}>
+          {isPending ? <Loader2 className="animate-spin" /> : <Save />}
+          Zapisz
+        </Button>
+      </form>
+
+      <div ref={renderWrapperRef} className="hidden">
+        <Render data={renderData} config={config} />
+      </div>
+    </>
   );
 }
 
@@ -328,14 +410,14 @@ function PreviewDialog() {
  * Client component containing all of custom Puck editor UI.
  * This component must be rendered within `<Puck/>` component.
  */
-function PuckComposition() {
+function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
   return (
     <div className="flex h-208.75 flex-col">
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <div className="flex gap-2">
           <PreviewDialog />
-          <SaveButton />
+          <SaveButton mutationData={mutationData} />
         </div>
       </div>
       <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/10">

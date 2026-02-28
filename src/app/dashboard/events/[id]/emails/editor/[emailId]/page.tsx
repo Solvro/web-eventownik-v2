@@ -76,6 +76,11 @@ export default async function EventMailEditPage({
         tags={[...attributeTags, ...formTags]}
         forms={forms}
         initialData={initialData}
+        mutationData={{
+          emailId: emailToEdit.id.toString(),
+          eventId: id,
+          mode: "update",
+        }}
       />
     );
   }
