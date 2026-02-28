@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import {
   getCoreRowModel,
   getExpandedRowModel,
@@ -6,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 
 import { createColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
 import type { Attribute } from "@/types/attributes";
@@ -25,11 +26,25 @@ export function useParticipantsTable({
   data,
   attributes,
   blocks,
+  eventId,
   onUpdateData,
 }: UseParticipantTableProps) {
+  const storageKey = `column-order-${eventId}`;
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+
+  useLayoutEffect(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored != null) {
+        setColumnOrder(JSON.parse(stored) as string[]);
+      }
+    } catch {
+      // ignore
+    }
+  }, [storageKey]);
 
   const columns = useMemo(
     () => createColumns(attributes, blocks ?? []),
@@ -59,7 +74,13 @@ export function useParticipantsTable({
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
-    onColumnOrderChange: setColumnOrder,
+    onColumnOrderChange: (updater) => {
+      setColumnOrder((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        localStorage.setItem(storageKey, JSON.stringify(next));
+        return next;
+      });
+    },
 
     meta: {
       updateData: onUpdateData,
