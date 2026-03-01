@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
@@ -29,6 +30,7 @@ export function AttributeInputBlock({
   userData: PublicParticipant;
   displayedAttributes: string[];
 }) {
+  const t = useTranslations("Form");
   const isFull =
     block.capacity !== null && block.meta.participants.length >= block.capacity;
   const isRegistered = userData.attributes.some(
@@ -70,7 +72,7 @@ export function AttributeInputBlock({
       </div>
       {isRegistered ? (
         <p className="text-muted-foreground mb-0 text-sm leading-none whitespace-nowrap">
-          Jesteś już na tej liście
+          {t("userRegisteredOnBlock")}
         </p>
       ) : null}
       <div className="mt-auto">
@@ -79,7 +81,7 @@ export function AttributeInputBlock({
             className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
             disabled={block.meta.participants.length === 0}
           >
-            Uczestnicy
+            {t("participants")}
             <ChevronRight className="size-4 transition-transform" />
           </PopoverTrigger>
           <PopoverContent
@@ -87,7 +89,9 @@ export function AttributeInputBlock({
             align="center"
           >
             {block.meta.participants.length === 0 ? (
-              <p className="text-muted-foreground text-sm">Brak uczestników</p>
+              <p className="text-muted-foreground text-sm">
+                {t("noParticipants")}
+              </p>
             ) : (
               <ScrollArea className="[&_[data-slot=scroll-area-viewport]]:max-h-64">
                 <ul className="divide-border/60 -mx-1 space-y-0.5 px-1">
@@ -104,7 +108,7 @@ export function AttributeInputBlock({
                           }`
                         : displayedAttributes.includes("email")
                           ? occupant.email
-                          : "Anonimowy uczestnik"}
+                          : t("anonymousParticipant")}
                     </li>
                   ))}
                 </ul>

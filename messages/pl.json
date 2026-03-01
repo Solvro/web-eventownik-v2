@@ -35,9 +35,13 @@
     "searchBlocksLabel": "Wyszukaj bloki",
     "searchBlocksPlaceholder": "Wyszukaj bloki...",
     "hideFullBlocks": "Ukryj pełne",
-    "noBlocksFound": "Nie znaleziono bloków.",
+    "noBlocksFound": "Nie znaleziono pasujących bloków.",
     "noBlockOption": "Żaden",
-    "noBlockOptionDescription": "(zrezygnuj lub wypisz się)"
+    "noBlockOptionDescription": "(zrezygnuj lub wypisz się)",
+    "userRegisteredOnBlock": "Jesteś już na tej liście.",
+    "participants": "Uczestnicy",
+    "noParticipants": "Brak uczestników.",
+    "anonymousParticipant": "Anonimowy uczestnik."
   },
   "Auth": {
     "registerTitle": "Rejestracja organizatora",
