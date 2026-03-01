@@ -25,9 +25,11 @@ export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
       }
       aria-sort={getAriaSort(header.column.getIsSorted())}
     >
-      {header.isPlaceholder
-        ? null
-        : flexRender(header.column.columnDef.header, header.getContext())}
+      <div className="overflow-hidden">
+        {header.isPlaceholder
+          ? null
+          : flexRender(header.column.columnDef.header, header.getContext())}
+      </div>
       {header.column.getCanResize() && (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
