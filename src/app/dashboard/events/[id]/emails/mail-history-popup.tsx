@@ -22,9 +22,14 @@ function MailHistoryPopup({ email }: { email: SingleEventEmail }) {
           <span className="sr-only">Historia wiadomości</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] max-w-[80vw]">
-        <DialogTitle>Historia wiadomości</DialogTitle>
+      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
+        <DialogTitle className="text-2xl font-bold">
+          Historia wiadomości
+        </DialogTitle>
         <EmailHistoryTable email={email} />
+        <div className="text-md text-muted-foreground">
+          Ilość odbiorców: {email.participants.length}
+        </div>
       </DialogContent>
     </Dialog>
   );

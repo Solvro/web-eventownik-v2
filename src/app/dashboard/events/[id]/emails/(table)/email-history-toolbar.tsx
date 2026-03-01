@@ -41,7 +41,7 @@ function EmailHistoryToolbar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <Input
-        className="h-10 w-full sm:w-64"
+        className="h-10 w-full text-sm sm:w-64"
         placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
