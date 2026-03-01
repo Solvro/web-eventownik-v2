@@ -94,7 +94,9 @@ export function AttributeBlocksWrapper({
             </Field>
           </div>
           <Activity mode={filteredBlocks.length === 0 ? "visible" : "hidden"}>
-            <FieldError>{t("noBlocksFound")}</FieldError>
+            <p className="text-muted-foreground text-sm font-normal">
+              {t("noBlocksFound")}
+            </p>
           </Activity>
         </FieldGroup>
       )}
