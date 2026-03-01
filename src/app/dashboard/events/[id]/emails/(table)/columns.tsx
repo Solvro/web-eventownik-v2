@@ -45,12 +45,24 @@ export const columns: ColumnDef<EventEmailParticipantData>[] = [
   },
   {
     id: "date",
-    accessorFn: (row) => format(row.meta.pivot_send_at, "dd.MM.yyyy"),
+    accessorFn: (row) => {
+      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+      if (value === "01.01.1970") {
+        return "-";
+      }
+      return value;
+    },
     header: ({ column }) => <SortableHeader column={column} title="Data" />,
   },
   {
     id: "time",
-    accessorFn: (row) => format(row.meta.pivot_send_at, "HH:mm"),
+    accessorFn: (row) => {
+      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+      if (value === "01.01.1970") {
+        return "-";
+      }
+      return format(row.meta.pivot_send_at, "HH:mm");
+    },
     header: ({ column }) => <SortableHeader column={column} title="Godzina" />,
   },
   {
