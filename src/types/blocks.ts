@@ -5,6 +5,7 @@ export interface Block {
   capacity: number | null;
   parentId: number | null;
   attributeId: number;
+  order: number;
   createdAt: string;
   updatedAt: string;
   isRootBlock: boolean;
