@@ -19,15 +19,12 @@ import { columns } from "./columns";
 interface UseEmailHistoryTableResult {
   table: Table<EventEmailParticipantData>;
   globalFilter: string;
-  statusFilter: string;
-  setStatusFilter: (value: string) => void;
 }
 
 function useEmailHistoryTable(
   email: SingleEventEmail,
 ): UseEmailHistoryTableResult {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
 
   const table = useReactTable({
     data: email.participants,
@@ -45,8 +42,6 @@ function useEmailHistoryTable(
   return {
     table,
     globalFilter,
-    statusFilter,
-    setStatusFilter,
   };
 }
 

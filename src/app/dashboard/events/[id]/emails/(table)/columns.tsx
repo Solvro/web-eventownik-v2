@@ -3,8 +3,25 @@
 import type { Column, ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { EventEmailParticipantData } from "@/types/emails";
+
+import { StatusFilterButton } from "./status-filter-button";
+
+function StatusColumnHeader({
+  column,
+}: {
+  column: Column<EventEmailParticipantData>;
+}) {
+  const t = useTranslations("EmailHistoryTable");
+  return (
+    <div className="flex items-center gap-1">
+      <StatusFilterButton column={column} />
+      <SortableHeader column={column} title={t("statusLabel")} />
+    </div>
+  );
+}
 
 function SortableHeader<TData, TValue>({
   column,
@@ -85,14 +102,13 @@ export const columns: ColumnDef<EventEmailParticipantData>[] = [
 
       return status;
     },
-    header: ({ column }) => <SortableHeader column={column} title="Status" />,
-    filterFn: (row, columnId, filterValue) => {
-      const value = filterValue as string | undefined;
-      if (value === undefined || value === "" || value === "all") {
+    header: ({ column }) => <StatusColumnHeader column={column} />,
+    filterFn: (row, _columnId, filterValue) => {
+      const values = filterValue as string[] | undefined;
+      if (values === undefined || values.length === 0) {
         return true;
       }
-
-      return row.original.meta.pivot_status === value;
+      return values.includes(row.original.meta.pivot_status);
     },
   },
 ];

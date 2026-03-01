@@ -27,9 +27,6 @@ function MailHistoryPopup({ email }: { email: SingleEventEmail }) {
           Historia wiadomości
         </DialogTitle>
         <EmailHistoryTable email={email} />
-        <div className="text-md text-muted-foreground">
-          Ilość odbiorców: {email.participants.length}
-        </div>
       </DialogContent>
     </Dialog>
   );

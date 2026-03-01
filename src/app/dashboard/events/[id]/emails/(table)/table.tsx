@@ -1,6 +1,7 @@
 "use client";
 
 import { flexRender } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -30,10 +31,9 @@ function getAriaSort(
 }
 
 function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
-  const { table, globalFilter, statusFilter, setStatusFilter } =
-    useEmailHistoryTable(email);
-
-  const statusColumn = table.getColumn("status");
+  const t = useTranslations("EmailHistoryTable");
+  const { table, globalFilter } = useEmailHistoryTable(email);
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,14 +42,8 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         onGlobalFilterChange={(value) => {
           table.setGlobalFilter(value);
         }}
-        statusFilter={statusFilter}
-        onStatusFilterChange={(value) => {
-          setStatusFilter(value);
-          statusColumn?.setFilterValue(value === "all" ? undefined : value);
-        }}
         onResetFilters={() => {
           table.resetColumnFilters();
-          setStatusFilter("all");
         }}
         onResetSorting={() => {
           table.resetSorting();
@@ -59,7 +53,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
       <ScrollArea className="max-h-[60vh]">
         <div className="relative">
           <Table>
-            <TableHeader>
+            <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -67,6 +61,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
                     return (
                       <TableHead
                         key={header.id}
+                        className="border-border bg-background border-r-2"
                         aria-sort={getAriaSort(sortDirection)}
                       >
                         {header.isPlaceholder
@@ -110,6 +105,9 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
+      <p className="text-muted-foreground mt-2 text-sm" aria-live="polite">
+        {t("recipientsCount", { count: filteredCount })}
+      </p>
     </div>
   );
 }

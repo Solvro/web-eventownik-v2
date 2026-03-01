@@ -118,6 +118,7 @@
   },
   "EmailHistoryTable": {
     "searchPlaceholder": "Szukaj w historii",
+    "openFilterMenu": "Otwórz menu filtrów",
     "statusPlaceholder": "Status",
     "statusLabel": "Status",
     "all": "Wszystkie",
@@ -125,6 +126,7 @@
     "pending": "Oczekujące",
     "failed": "Nieudane",
     "clearFilters": "Wyczyść filtry",
-    "clearSorting": "Wyczyść sortowanie"
+    "clearSorting": "Wyczyść sortowanie",
+    "recipientsCount": "Ilość odbiorców: {count}"
   }
 }
