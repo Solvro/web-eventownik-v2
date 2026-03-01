@@ -35,6 +35,7 @@ export function useParticipantsData(
     }
   }, [participants]);
 
+  // TODO delete this
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => deleteParticipant(eventId, id.toString()),
     onSuccess: async () => {

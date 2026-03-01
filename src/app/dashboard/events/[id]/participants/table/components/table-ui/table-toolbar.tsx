@@ -1,7 +1,6 @@
 import type { Table } from "@tanstack/react-table";
 import { ArrowUpDown, FilterX } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,8 +24,6 @@ interface TableToolbarProps {
   emails: EventEmail[] | null;
   isQuerying: boolean;
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
-  pageBeforeSearch: number;
-  setIsUserSearching: Dispatch<SetStateAction<boolean>>;
 }
 
 export function TableToolbar({
@@ -36,8 +33,6 @@ export function TableToolbar({
   emails,
   isQuerying,
   deleteManyParticipants,
-  pageBeforeSearch,
-  setIsUserSearching,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
 
@@ -48,19 +43,7 @@ export function TableToolbar({
         placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
-          setIsUserSearching(true);
-          const searchValue = event.target.value;
-          table.setGlobalFilter(searchValue);
-
-          if (
-            pageBeforeSearch > 0 &&
-            table.getState().pagination.pageIndex > 0
-          ) {
-            table.firstPage();
-          } else if (searchValue === "") {
-            table.setPageIndex(pageBeforeSearch);
-            setIsUserSearching(false);
-          }
+          table.setGlobalFilter(event.target.value);
         }}
       />
       <div className="flex gap-4 max-md:w-full">
