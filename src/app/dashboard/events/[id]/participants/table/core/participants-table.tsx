@@ -91,7 +91,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
       <ScrollArea className="h-[calc(100dvh-275px)] w-full">
         <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
-          <TableHeader className="border-border border-b-2">
+          <TableHeader className="border-border bg-background sticky top-0 z-10 border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
