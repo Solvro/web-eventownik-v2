@@ -56,7 +56,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         }}
       />
 
-      <ScrollArea className="max-h-[60vh] min-w-0 flex-1">
+      <ScrollArea className="max-h-[60vh]">
         <div className="relative">
           <Table>
             <TableHeader>
