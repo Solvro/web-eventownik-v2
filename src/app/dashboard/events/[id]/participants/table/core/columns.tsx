@@ -1,9 +1,13 @@
+import type { Row } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 import { FilterButton } from "../components/buttons/filter-button";
 import { SortHeader } from "../components/table-ui/sort-header";
@@ -85,6 +89,33 @@ export function createColumns(
           attribute,
           name: attribute.name,
           showInTable: attribute.showInList,
+        },
+        filterFn: (
+          row: Row<FlattenedParticipant>,
+          columnId: string,
+          filterValue: ParticipantAttributeValueType[],
+        ) => {
+          if (filterValue.length === 0) {
+            return true;
+          }
+          const rowValue = row.original[columnId] ?? null;
+
+          // Multiselect case has to be handled separately
+          // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+          if (rowValue !== null && attribute.type === "multiselect") {
+            const values = new Set(
+              (row.original[columnId] as string).split(","),
+            );
+            return filterValue.some((value) => values.has(value as string));
+          }
+
+          // Special case when attribute of single select type is set empty
+          // Check implementation of AttributeInput for explanation
+          if (rowValue === " " && filterValue.includes(null)) {
+            return true;
+          }
+
+          return filterValue.includes(rowValue);
         },
         header: (info) => (
           <div className="flex items-center gap-1">
