@@ -115,5 +115,16 @@
     "unknownError": "Wystąpił nieznany błąd",
     "tryAgain": "Spróbuj ponownie",
     "exportToExcel": "Eksportuj do Excela"
+  },
+  "EmailHistoryTable": {
+    "searchPlaceholder": "Szukaj w historii",
+    "statusPlaceholder": "Status",
+    "statusLabel": "Status",
+    "all": "Wszystkie",
+    "sent": "Wysłane",
+    "pending": "Oczekujące",
+    "failed": "Nieudane",
+    "clearFilters": "Wyczyść filtry",
+    "clearSorting": "Wyczyść sortowanie"
   }
 }

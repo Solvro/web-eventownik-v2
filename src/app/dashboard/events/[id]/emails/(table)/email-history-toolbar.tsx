@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpDown, FilterX } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,11 +37,12 @@ function EmailHistoryToolbar({
   onResetFilters,
   onResetSorting,
 }: EmailHistoryToolbarProps) {
+  const t = useTranslations("EmailHistoryTable");
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <Input
         className="h-10 w-full sm:w-64"
-        placeholder="Szukaj w historii"
+        placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
           onGlobalFilterChange(event.target.value);
@@ -54,15 +56,15 @@ function EmailHistoryToolbar({
           }}
         >
           <SelectTrigger className="h-10 w-40">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("statusPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Status</SelectLabel>
-              <SelectItem value="all">Wszystkie</SelectItem>
-              <SelectItem value="sent">Wysłane</SelectItem>
-              <SelectItem value="pending">Oczekujące</SelectItem>
-              <SelectItem value="failed">Nieudane</SelectItem>
+              <SelectLabel>{t("statusLabel")}</SelectLabel>
+              <SelectItem value="all">{t("all")}</SelectItem>
+              <SelectItem value="sent">{t("sent")}</SelectItem>
+              <SelectItem value="pending">{t("pending")}</SelectItem>
+              <SelectItem value="failed">{t("failed")}</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -72,12 +74,12 @@ function EmailHistoryToolbar({
               onClick={onResetFilters}
               size="icon"
               variant="outline"
-              aria-label="Wyczyść filtry"
+              aria-label={t("clearFilters")}
             >
               <FilterX />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Wyczyść filtry</TooltipContent>
+          <TooltipContent>{t("clearFilters")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -85,12 +87,12 @@ function EmailHistoryToolbar({
               onClick={onResetSorting}
               size="icon"
               variant="outline"
-              aria-label="Wyczyść sortowanie"
+              aria-label={t("clearSorting")}
             >
               <ArrowUpDown />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Wyczyść sortowanie</TooltipContent>
+          <TooltipContent>{t("clearSorting")}</TooltipContent>
         </Tooltip>
       </div>
     </div>
