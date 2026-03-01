@@ -23,7 +23,6 @@ interface SidebarSection {
 
 interface SidebarLink {
   title: string;
-  navTitle?: string;
   icon: React.ReactNode;
   route: string;
 }
@@ -74,7 +73,6 @@ export function DashboardSidebar({
       links: [
         {
           title: "Lista uczestników",
-          navTitle: "Uczestnicy",
           icon: <Users />,
           route: "participants",
         },
@@ -85,7 +83,6 @@ export function DashboardSidebar({
       links: [
         {
           title: "Szablony maili",
-          navTitle: "Maile",
           icon: <Mail />,
           route: "emails",
         },
@@ -154,17 +151,14 @@ export function DashboardSidebar({
                   variant={
                     isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                   }
-                  size="sm"
-                  className="h-10 w-10 flex-col min-[490px]:h-15 min-[490px]:w-auto min-[490px]:p-2"
+                  size="icon"
+                  className="h-10 w-10"
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                   >
                     {link.icon}
                   </Link>
-                  <p className="hidden text-sm min-[490px]:flex">
-                    {link.navTitle ?? link.title}
-                  </p>
                 </Button>
               </li>
             ))}
