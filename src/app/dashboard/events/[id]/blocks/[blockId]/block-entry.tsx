@@ -25,7 +25,7 @@ function BlockEntry({
   return (
     <div
       key={block.id}
-      className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4"
+      className="flex h-64 w-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
       <div className="flex justify-end gap-2">
         <EditBlockEntry
