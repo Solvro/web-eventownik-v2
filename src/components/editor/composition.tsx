@@ -309,21 +309,20 @@ function BlocksAndSchemaSidebar() {
         </h2>
         <div
           className={cn(
-            "mb-2 max-h-66 overflow-y-auto",
+            "mb-2 max-h-72",
+            // All icons
+            "[&_svg]:mb-1! [&_svg]:stroke-(--event-primary-color)!",
             // Outline list (ul - "_LayerTree")
             "[&>div>ul]:space-y-2 [&>div>ul]:px-4!",
             // Outline list item (outer element - "_Layer")
             "[&>div>ul>li]:border-(--event-primary-color)/20!",
             // Outline list item content (root element for each item - "_Layer-inner")
             "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-(--event-primary-color)/10! [&>div>ul>li>div:hover]:border-(--event-primary-color)/60!",
-            // Outline list item button (wrapper for items below - "_Layer-clickable")
-            // Icon - "_Layer-icon")
-            "[&>div>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div>button>div>div>svg]:stroke-(--event-primary-color)!",
-            // Children of slot type component dropdown (as in layout blocks)
-            "[&>div>ul>li>div:nth-child(2)>ul>li>div]:text-foreground! [&>div>ul>li>div:nth-child(2)>ul>li>div]:bg-(--event-primary-color)/10! [&>div>ul>li>div:nth-child(2)>ul>li>div:hover]:border-(--event-primary-color)/60!",
-            "[&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:mb-1! [&>div>ul>li>div:nth-child(2)>ul>li>div>button>div>div>svg]:stroke-(--event-primary-color)!",
-            // Background of slot type component dropdown ("BLOKI W KONTENERZE")
-            "[&>div>ul>li>div:nth-child(2)]:bg-transparent!",
+            // Children of slot type component dropdown
+            "[&>div>ul>li>div:nth-child(n+2)>ul>li]:text-foreground! [&>div>ul>li>div:nth-child(n+2)>ul>li]:bg-(--event-primary-color)/10! [&>div>ul>li>div:nth-child(n+2)>ul>li:hover]:border-(--event-primary-color)/60!",
+            "[&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:text-foreground! [&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:border-(--event-primary-color)/60! [&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:bg-(--event-primary-color)/20!",
+            // Background of each slot
+            "[&>div>ul>li>div:nth-of-type(n+2)]:bg-transparent!",
           )}
         >
           <Puck.Outline />
@@ -355,10 +354,8 @@ function FieldsPanel() {
           "[&>form>div_div>div]:text-muted-foreground!",
           // Fields of type "radio"
           "[&>form_label:has(input[type=radio])]:border-(--event-primary-color)/20! [&>form_label:has(input[type=radio])_div]:bg-(--event-primary-color)/2!",
-          // Fields of type "array"
-          "[&>form>div_div>div>div>div>div_button>svg]:stroke-foreground! [&>form_fieldset]:border-none! [&>form>div_div]:border-(--event-primary-color)/20! [&>form>div_div>div>div>div>div]:bg-(--event-primary-color)/10! [&>form>div_div>div>div>div>div_button]:bg-transparent! [&>form>div_div>div>div>div>div_button]:hover:bg-(--event-primary-color)! [&>form>div_div>div>div>div>div>div>div]:bg-transparent!",
-          // 'Add item to array field' button
-          "[&>form>div>div>div>div>button]:border-(--event-primary-color)/20! [&>form>div>div>div>div>button]:bg-(--event-primary-color)/20! [&>form>div>div>div>div>button_svg]:stroke-(--event-primary-color)!",
+          // Richtext menu buttons
+          "[&>form>div>div>div>div>div]:border-none! [&>form>div>div>div>div>div>div_div]:bg-(--event-primary-color)/20!",
         )}
       >
         <Puck.Fields />

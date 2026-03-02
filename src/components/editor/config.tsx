@@ -43,7 +43,7 @@ import {
   withContainer,
   withLayout,
 } from "./common";
-import { InlineRichTextMenu, SidebarRichTextMenu } from "./richtext-menus";
+import { SidebarRichTextMenu } from "./richtext-menu";
 
 interface EmailCSSProperties extends CSSProperties {
   msoTableLspace?: string;
@@ -116,9 +116,8 @@ export const getPuckConfig = ({
                 ...setupSuggestions([...tags]),
               ],
             },
-            renderInlineMenu: ({ editor }) => (
-              <InlineRichTextMenu editor={editor} />
-            ),
+            // NOTE: Hides inline menu and the action bar separator
+            renderInlineMenu: () => <div className="[&~div]:hidden" />,
             renderMenu: ({ editor }) => <SidebarRichTextMenu editor={editor} />,
           },
           ...withAppearance,
@@ -128,7 +127,16 @@ export const getPuckConfig = ({
           ...appearanceDefaults,
         },
         render: ({ content, appearance }) => {
-          return <div style={getAppearanceStyles(appearance)}>{content}</div>;
+          return (
+            <div
+              style={{
+                ...getAppearanceStyles(appearance),
+                padding: "0 4px",
+              }}
+            >
+              {content}
+            </div>
+          );
         },
       },
       TwoByOne: {
@@ -703,7 +711,7 @@ export const getPuckConfig = ({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={src === "" ? `/editor-image-placeholder.png` : src}
+                      src={src === "" ? `/editor-image-placeholder.svg` : src}
                       alt={alt}
                       width={width}
                       height={height}

@@ -50,7 +50,7 @@ export function ColorPicker({
       <Input
         id={name}
         type="color"
-        className="hidden"
+        className="pointer-events-none absolute size-0 pb-14 opacity-0"
         onChange={(event) => {
           onChange(event.currentTarget.value);
         }}

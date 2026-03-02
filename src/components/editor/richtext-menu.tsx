@@ -1,4 +1,3 @@
-import { RichTextMenu } from "@puckeditor/core";
 import type { Editor } from "@tiptap/react";
 import {
   AlignCenter,
@@ -182,7 +181,7 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </TooltipTrigger>
-      <TooltipContent>Wyrównanie tekstu</TooltipContent>
+      <TooltipContent side="bottom">Wyrównanie tekstu</TooltipContent>
     </Tooltip>
   );
 }
@@ -202,7 +201,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             <SlashSquare className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Wstaw znacznik</TooltipContent>
+        <TooltipContent side="bottom">Wstaw znacznik</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -218,7 +217,9 @@ function TagButtons({ editor }: ButtonSetProps) {
             <FileSpreadsheet className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Wstaw znacznik linku do formularza</TooltipContent>
+        <TooltipContent side="bottom">
+          Wstaw znacznik linku do formularza
+        </TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -234,38 +235,11 @@ function TagButtons({ editor }: ButtonSetProps) {
             <Tag className="size-3.75!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent side="bottom">
           Wstaw znacznik wartości atrybutu uczestnika
         </TooltipContent>
       </Tooltip>
     </>
-  );
-}
-
-function InlineRichTextMenu({
-  children,
-  editor,
-}: {
-  children?: ReactNode;
-  editor: Editor | null;
-}) {
-  const activeState = useEditorActiveState(editor);
-
-  return (
-    <RichTextMenu>
-      {children}
-      <RichTextMenu.Group>
-        <TypographyButtons editor={editor} activeState={activeState} />
-      </RichTextMenu.Group>
-
-      <RichTextMenu.Group>
-        <AlignmentDropdown editor={editor} activeState={activeState} />
-      </RichTextMenu.Group>
-
-      <RichTextMenu.Group>
-        <TagButtons editor={editor} activeState={activeState} />
-      </RichTextMenu.Group>
-    </RichTextMenu>
   );
 }
 
@@ -279,7 +253,7 @@ function SidebarRichTextMenu({
   const activeState = useEditorActiveState(editor);
 
   return (
-    <>
+    <div className="bg-background!">
       {children}
       <div className="flex items-center py-2 [&>button]:grow">
         <TypographyButtons editor={editor} activeState={activeState} />
@@ -292,8 +266,8 @@ function SidebarRichTextMenu({
       <div className="flex items-center py-2 [&>button]:grow">
         <TagButtons editor={editor} activeState={activeState} />
       </div>
-    </>
+    </div>
   );
 }
 
-export { InlineRichTextMenu, SidebarRichTextMenu };
+export { SidebarRichTextMenu };

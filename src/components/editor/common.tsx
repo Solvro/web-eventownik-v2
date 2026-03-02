@@ -30,7 +30,7 @@ import {
   Pipette,
   Ratio,
   Repeat,
-  Square,
+  SquareDashedTopSolid,
   SquareRoundCorner,
   SquareSquare,
   Type,
@@ -275,7 +275,7 @@ export const withAppearance = {
       border: {
         type: "object",
         label: "Obramowanie",
-        labelIcon: <Square className={PUCK_ICON_CLASSNAME} />,
+        labelIcon: <SquareDashedTopSolid className={PUCK_ICON_CLASSNAME} />,
         objectFields: {
           borderWidth: {
             type: "number",
