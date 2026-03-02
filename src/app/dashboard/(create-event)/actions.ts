@@ -1,6 +1,6 @@
 "use server";
 
-import { formatISO } from "date-fns";
+import { formatISO9075 } from "date-fns";
 
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
@@ -35,9 +35,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("organizer", event.organizer ?? "");
   formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
-  formData.append("termsLink", event.termsLink ?? "");
-  formData.append("startDate", formatISO(event.startDate));
-  formData.append("endDate", formatISO(event.endDate));
+  formData.append("startDate", formatISO9075(event.startDate));
+  formData.append("endDate", formatISO9075(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
