@@ -152,7 +152,7 @@ export function DashboardSidebar({
                     isActiveLink(link.route) ? "eventDefault" : "eventGhost"
                   }
                   size="icon"
-                  className="h-10 w-10"
+                  className="size-10"
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
