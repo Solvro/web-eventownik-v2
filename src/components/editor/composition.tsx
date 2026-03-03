@@ -21,8 +21,6 @@ import {
   Sidebar,
   Type,
   Undo2,
-  User,
-  X,
 } from "lucide-react";
 import React, { useRef } from "react";
 import type * as z from "zod";
@@ -127,7 +125,8 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
 
     const values: EmailTemplateFormValues = {
       name: renderData.root.props?.name ?? "",
-      content: renderWrapperRef.current?.innerHTML ?? "",
+      content:
+        renderWrapperRef.current?.querySelector("#email-root")?.innerHTML ?? "",
       schema: JSON.stringify(renderData),
       trigger: renderData.root.props?.trigger as string,
       triggerValue: renderData.root.props?.triggerValue ?? null,
@@ -421,31 +420,8 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
         <Toolbar />
         <div className="flex max-h-181 grow">
           <BlocksAndSchemaSidebar />
-          <div className="flex grow bg-white px-8 py-2 font-[system-ui]">
-            <div className="mx-auto flex max-w-2xl grow flex-col gap-2">
-              <div className="pointer-events-none flex items-center gap-2 py-2 text-xl text-black">
-                <p className="text-2xl">Tytuł wiadomości</p>
-                <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
-                  Odebrane <X className="size-3 stroke-3 align-middle" />
-                </div>
-              </div>
-              <div className="pointer-events-none flex items-center gap-2">
-                <div className="rounded-full bg-slate-200 p-2">
-                  <User />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-black">
-                    Nazwa wydarzenia
-                    <span className="text-muted-foreground ml-2 font-normal">
-                      {"<eventownik@solvro.pl>"}
-                    </span>
-                  </p>
-                </div>
-              </div>
-              <div className="w-full grow">
-                <Puck.Preview />
-              </div>
-            </div>
+          <div className="grow">
+            <Puck.Preview />
           </div>
           <FieldsPanel />
         </div>

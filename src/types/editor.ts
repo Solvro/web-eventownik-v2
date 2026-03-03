@@ -118,3 +118,8 @@ export interface PuckMutationData {
   eventId: string;
   emailId: string | null;
 }
+
+export interface PuckEventData {
+  name: string;
+  photoUrl: string;
+}

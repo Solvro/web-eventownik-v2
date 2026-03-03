@@ -9,6 +9,7 @@ import { getAttributeLabel } from "@/lib/utils";
 import type { PuckData } from "@/types/editor";
 
 import {
+  getEmailEventInfo,
   getEventAttributes,
   getEventForms,
   getSingleEventEmail,
@@ -38,6 +39,7 @@ export default async function EventMailEditPage({
   const emailToEdit = await getSingleEventEmail(id, emailId);
   const attributes = await getEventAttributes(id);
   const forms = await getEventForms(id);
+  const event = await getEmailEventInfo(id);
 
   const attributeTags = attributes.map((attribute): MessageTag => {
     return {
@@ -80,6 +82,10 @@ export default async function EventMailEditPage({
           emailId: emailToEdit.id.toString(),
           eventId: id,
           mode: "update",
+        }}
+        eventData={{
+          name: event?.name ?? "Wydarzenie",
+          photoUrl: event?.photoUrl ?? "",
         }}
       />
     );

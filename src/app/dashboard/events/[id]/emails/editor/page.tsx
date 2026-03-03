@@ -3,7 +3,11 @@ import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
 
-import { getEventAttributes, getEventForms } from "../data-access";
+import {
+  getEmailEventInfo,
+  getEventAttributes,
+  getEventForms,
+} from "../data-access";
 
 export function generateMetadata() {
   return {
@@ -20,6 +24,7 @@ export default async function EventMailEditPage({
 
   const attributes = await getEventAttributes(id);
   const forms = await getEventForms(id);
+  const event = await getEmailEventInfo(id);
 
   const attributeTags = attributes.map((attribute): MessageTag => {
     return {
@@ -51,6 +56,10 @@ export default async function EventMailEditPage({
         emailId: null,
         eventId: id,
         mode: "create",
+      }}
+      eventData={{
+        name: event?.name ?? "Wydarzenie",
+        photoUrl: event?.photoUrl ?? "",
       }}
     />
   );

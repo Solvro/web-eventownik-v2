@@ -12,10 +12,13 @@ import {
   LinkIcon,
   Mail,
   Type,
+  X,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
+import { PHOTO_URL } from "@/lib/api";
 import {
   appearanceDefaults,
   containerDefaults,
@@ -24,7 +27,7 @@ import {
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
-import type { PuckConfig, RootSettings } from "@/types/editor";
+import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
 import {
@@ -96,9 +99,11 @@ function ContainerWrapper({
 export const getPuckConfig = ({
   tags,
   forms,
+  eventData,
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
+  eventData: PuckEventData;
 }): PuckConfig => {
   return {
     components: {
@@ -907,36 +912,103 @@ export const getPuckConfig = ({
         name: "Nowa wiadomość",
         trigger: "manual",
       },
-      render: ({ children }) => {
+      // render: ({ children }) => {
+      //   return (
+      //     <div
+      //       id="email-root"
+      //       style={{ width: "100%", backgroundColor: "#f3f4f6" }}
+      //     >
+      //       <table width="100%" {...tableProps} style={tableStyles}>
+      //         <tbody>
+      //           <tr>
+      //             <td align="center" style={{ padding: "20px 0" }}>
+      //               {/* Main Content Container - usually limited to 600px/640px for email */}
+      //               <table
+      //                 width="600"
+      //                 {...tableProps}
+      //                 style={{
+      //                   ...tableStyles,
+      //                   backgroundColor: "#ffffff",
+      //                   maxWidth: "100%",
+      //                 }}
+      //               >
+      //                 <tbody>
+      //                   <tr>
+      //                     <td className="border border-red-500">{children}</td>
+      //                   </tr>
+      //                 </tbody>
+      //               </table>
+      //             </td>
+      //           </tr>
+      //         </tbody>
+      //       </table>
+      //     </div>
+      //   );
+      // },
+      render: ({ children, name }) => {
         return (
           <div
-            id="email-root"
-            style={{ width: "100%", backgroundColor: "#f3f4f6" }}
+            id="editor-root"
+            // `#email-root` is sent with the email, that's why we apply editor only styling here
+            className="size-full font-[system-ui] [&>div]:mx-auto [&>div]:max-w-2xl [&>div:nth-of-type(2)]:h-full"
           >
-            <table width="100%" {...tableProps} style={tableStyles}>
-              <tbody>
-                <tr>
-                  <td align="center" style={{ padding: "20px 0" }}>
-                    {/* Main Content Container - usually limited to 600px/640px for email */}
-                    <table
-                      width="600"
-                      {...tableProps}
-                      style={{
-                        ...tableStyles,
-                        backgroundColor: "#ffffff",
-                        maxWidth: "100%",
-                      }}
-                    >
-                      <tbody>
-                        <tr>
-                          <td>{children}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="mb-4 flex flex-col gap-2">
+              <div className="pointer-events-none flex min-h-12 items-center gap-2 py-2 text-xl text-black">
+                <p className="max-w-lg truncate text-2xl">{name}</p>
+                <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
+                  Odebrane <X className="size-3 stroke-3 align-middle" />
+                </div>
+              </div>
+              <div className="pointer-events-none flex items-center gap-2">
+                <Image
+                  src={`${PHOTO_URL}/${eventData.photoUrl}`}
+                  alt="Zdjęcie wydarzenia"
+                  className="aspect-square rounded-full bg-slate-200"
+                  width={32}
+                  height={32}
+                />
+                <div>
+                  <p className="text-sm font-semibold text-black">
+                    {eventData.name}
+                    <span className="text-muted-foreground ml-2 font-normal">
+                      {"<eventownik@solvro.pl>"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div id="email-root" style={{ width: "100%" }}>
+              <table
+                width="100%"
+                {...tableProps}
+                style={{ backgroundColor: "#f3f4f6", ...tableStyles }}
+              >
+                <tbody>
+                  <tr>
+                    <td align="center" style={{ padding: "20px 0" }}>
+                      {/* Main Content Container - usually limited to 600px/640px for email */}
+                      <table
+                        width="600"
+                        {...tableProps}
+                        style={{
+                          ...tableStyles,
+
+                          maxWidth: "100%",
+                        }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td style={{ backgroundColor: "#ffffff" }}>
+                              {children}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         );
       },
