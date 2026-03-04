@@ -1,5 +1,6 @@
 "use client";
 
+import { formatISO9075 } from "date-fns";
 import { atom } from "jotai";
 
 import type { EventAttribute } from "@/types/attributes";
@@ -27,9 +28,9 @@ export const AttributeTypes = [
 export interface Event {
   name: string;
   description: string | undefined;
-  startDate: Date;
+  startDate: string;
   startTime: string;
-  endDate: Date;
+  endDate: string;
   endTime: string;
   location: string | undefined;
   organizer: string | undefined;
@@ -48,8 +49,12 @@ export const eventAtom = atom<Event>({
   name: "",
   description: "<p></p>",
   // Tomorrow, midnight
-  startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-  endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  startDate: formatISO9075(new Date(new Date().setHours(24, 0, 0, 0)), {
+    representation: "complete",
+  }),
+  endDate: formatISO9075(new Date(new Date().setHours(24, 0, 0, 0)), {
+    representation: "complete",
+  }),
   startTime: "12:00",
   endTime: "12:00",
   location: "",
