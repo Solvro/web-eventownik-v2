@@ -9,9 +9,10 @@ import type {
   ParticipantAttributeValueType,
 } from "@/types/participant";
 
+import { EditParticipantButton } from "../components/buttons/edit-button";
 import { FilterButton } from "../components/buttons/filter-button";
+import { EditableCell } from "../components/table-ui/editable-cell";
 import { SortHeader } from "../components/table-ui/sort-header";
-import { formatAttributeValue } from "./utils";
 
 const columnHelper = createColumnHelper<FlattenedParticipant>();
 
@@ -127,18 +128,15 @@ export function createColumns(
             <SortHeader info={info} name={attribute.name} truncate />
           </div>
         ),
-        cell: (info) =>
-          formatAttributeValue(
-            info.getValue(),
-            attribute.type,
-            attribute.id,
-            blocks,
-          ),
+        cell: (info) => (
+          <EditableCell info={info} attribute={attribute} blocks={blocks} />
+        ),
       }),
     );
 
   const editColumn = columnHelper.display({
     id: "edit",
+    cell: ({ row, table }) => <EditParticipantButton row={row} table={table} />,
     size: 52,
     minSize: 52,
     maxSize: 52,
