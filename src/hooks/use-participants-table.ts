@@ -83,6 +83,7 @@ export function useParticipantsTable({
     },
 
     meta: {
+      eventId,
       updateData: onUpdateData,
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {

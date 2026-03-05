@@ -27,6 +27,7 @@ declare module "@tanstack/react-table" {
   }
 
   interface TableMeta<TData extends RowData> {
+    eventId: string;
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
     setRowLoading: (rowIndex: number, isLoading: boolean) => void;

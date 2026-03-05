@@ -137,9 +137,9 @@ export function createColumns(
   const editColumn = columnHelper.display({
     id: "edit",
     cell: ({ row, table }) => <EditParticipantButton row={row} table={table} />,
-    size: 52,
-    minSize: 52,
-    maxSize: 52,
+    size: 64,
+    minSize: 64,
+    maxSize: 64,
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,
