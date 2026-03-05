@@ -108,7 +108,18 @@
     "deleteManyConfirmDescription": "Zamierzasz jednocześnie usunąć {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}. Tej operacji nie będzie można cofnąć",
     "deleteSingleConfirmDescription": "Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie można cofnąć",
     "rowNumberTitle": "Lp.",
-    "columnSelectionDropdownTitle": "Kolumny"
+    "columnSelectionDropdownTitle": "Kolumny",
+    "bulkEditTooltip": "Najpierw zaznacz uczestników do edycji",
+    "bulkEditSelectedTooltip": "Edytuj grupowo {count, plural, =1 {1 zaznaczonego uczestnika} =2 {2 zaznaczonych uczestników} =3 {3 zaznaczonych uczestników} =4 {4 zaznaczonych uczestników} other {# zaznaczonych uczestników}}",
+    "bulkEditTitle": "Grupowa edycja uczestników",
+    "bulkEditDescription": "Ustaw nową wartość atrybutu dla {count, plural, =1 {1 zaznaczonego uczestnika} =2 {2 zaznaczonych uczestników} =3 {3 zaznaczonych uczestników} =4 {4 zaznaczonych uczestników} other {# zaznaczonych uczestników}}",
+    "bulkEditAttributeLabel": "Atrybut",
+    "bulkEditAttributePlaceholder": "Wybierz atrybut",
+    "bulkEditValueLabel": "Nowa wartość",
+    "bulkEditCancel": "Anuluj",
+    "bulkEditSave": "Zapisz",
+    "bulkEditSuccess": "Grupowa edycja zakończona pomyślnie",
+    "bulkEditError": "Nie udało się zaktualizować niektórych uczestników"
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",

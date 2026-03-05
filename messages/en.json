@@ -108,7 +108,18 @@
     "deleteManyConfirmDescription": "You are about to delete {count, plural, =1 {1 participant} other {# participants}} at once. This operation cannot be undone",
     "deleteSingleConfirmDescription": "Are you sure you want to delete this participant? This operation cannot be undone",
     "rowNumberTitle": "No.",
-    "columnSelectionDropdownTitle": "Columns"
+    "columnSelectionDropdownTitle": "Columns",
+    "bulkEditTooltip": "Select participants to bulk edit first",
+    "bulkEditSelectedTooltip": "Bulk edit {count, plural, =1 {1 selected participant} other {# selected participants}}",
+    "bulkEditTitle": "Bulk edit participants",
+    "bulkEditDescription": "Set a new value for an attribute across {count, plural, =1 {1 selected participant} other {# selected participants}}",
+    "bulkEditAttributeLabel": "Attribute",
+    "bulkEditAttributePlaceholder": "Select an attribute",
+    "bulkEditValueLabel": "New value",
+    "bulkEditCancel": "Cancel",
+    "bulkEditSave": "Save",
+    "bulkEditSuccess": "Bulk edit applied successfully",
+    "bulkEditError": "Some participants could not be updated"
   },
   "SendMail": {
     "selectTemplate": "Select a template",

@@ -1,5 +1,7 @@
 import type { Table } from "@tanstack/react-table";
 
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
@@ -12,6 +14,8 @@ export function TableMenu({
   eventId,
   emails,
   isQuerying,
+  attributes,
+  blocks,
   deleteManyParticipants,
 }: {
   table: Table<FlattenedParticipant>;
@@ -19,6 +23,8 @@ export function TableMenu({
   eventId: string;
   emails: EventEmail[] | null;
   isQuerying: boolean;
+  attributes: Attribute[];
+  blocks: (Block | null)[];
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
   return (
@@ -30,6 +36,8 @@ export function TableMenu({
           eventId={eventId}
           emails={emails}
           isQuerying={isQuerying}
+          attributes={attributes}
+          blocks={blocks}
           deleteManyParticipants={deleteManyParticipants}
         />
         <TableSelectionInfo table={table} />

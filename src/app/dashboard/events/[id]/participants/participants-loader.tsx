@@ -96,6 +96,8 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
           globalFilter={globalFilter}
           isQuerying={isQuerying}
           emails={emails ?? []}
+          attributes={attributes}
+          blocks={blocks ?? []}
           deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
