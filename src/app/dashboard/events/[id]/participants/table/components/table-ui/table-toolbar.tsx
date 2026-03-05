@@ -9,10 +9,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { ExportButton } from "../buttons/export-button";
+import { BulkEditDialog } from "../dialogs/bulk-edit-dialog";
 import { DeleteManyParticipantsDialog } from "../dialogs/delete-many-dialog";
 import { SendMailForm } from "../dialogs/send-mail-form";
 import { ColumnSettingsDropdown } from "./column-settings-dropdown";
@@ -23,6 +26,8 @@ interface TableToolbarProps {
   eventId: string;
   emails: EventEmail[] | null;
   isQuerying: boolean;
+  attributes: Attribute[];
+  blocks: (Block | null)[];
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }
 
@@ -32,6 +37,8 @@ export function TableToolbar({
   eventId,
   emails,
   isQuerying,
+  attributes,
+  blocks,
   deleteManyParticipants,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
@@ -85,6 +92,12 @@ export function TableToolbar({
           emails={emails}
         />
         <ExportButton eventId={eventId} />
+        <BulkEditDialog
+          table={table}
+          attributes={attributes}
+          blocks={blocks}
+          eventId={eventId}
+        />
         <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
           participants={table
