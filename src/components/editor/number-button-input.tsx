@@ -92,7 +92,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
   return (
     <div className="relative">
       <Button
-        className="absolute top-1/2 bottom-1/2 left-3 grid size-6 -translate-y-1/2 place-items-center rounded-full bg-(--event-primary-color)/10 select-none hover:bg-(--event-primary-color)/50"
+        className="absolute top-1/2 bottom-1/2 left-3 grid size-6 -translate-y-1/2 place-items-center rounded-full bg-(--event-primary-color)/50 select-none hover:bg-(--event-primary-color)"
         size="icon"
         onPointerDown={handlePointerDown(-1)}
         onPointerUp={handlePointerUp}
@@ -114,7 +114,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         className="[appearance:textfield] text-center"
       />
       <Button
-        className="absolute top-1/2 right-3 bottom-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full bg-(--event-primary-color)/10 select-none hover:bg-(--event-primary-color)/50"
+        className="absolute top-1/2 right-3 bottom-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full bg-(--event-primary-color)/50 select-none hover:bg-(--event-primary-color)"
         size="icon"
         onPointerDown={handlePointerDown(1)}
         onPointerUp={handlePointerUp}

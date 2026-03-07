@@ -7,7 +7,6 @@ import {
   Columns2,
   Columns3,
   Columns4,
-  Eye,
   FoldVertical,
   Grid2X2,
   Grid3X3,
@@ -40,15 +39,6 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { PUCK_ICON_CLASSNAME } from "./common";
@@ -253,7 +243,10 @@ function BlocksAndSchemaSidebar() {
           Bloki
         </h2>
         <Drawer>
-          <Accordion type="multiple" className="px-4">
+          <Accordion
+            type="multiple"
+            className="px-4 [&>div_button>svg]:stroke-(--event-primary-color)"
+          >
             {categories === undefined
               ? null
               : Object.keys(categories).map((category, categoryIndex) => {
@@ -361,45 +354,6 @@ function FieldsPanel() {
   );
 }
 
-function PreviewDialog() {
-  const config = usePuck((s) => s.config);
-  const renderData = usePuck((s) => s.appState.data);
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Eye />
-          Podgląd
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="space-y-4">
-        <div className="space-y-2">
-          <DialogTitle>Podgląd</DialogTitle>
-          <DialogDescription>
-            Rzeczywisty email może różnić się odrobinę od szablonu, który
-            widzisz bezpośrednio w edytorze. Poniższy podgląd pozwala na
-            dokładniejszy wgląd w ostateczny wygląd wiadomości.
-          </DialogDescription>
-        </div>
-        <div className="bg-white font-[system-ui] text-black">
-          <Render
-            metadata={{
-              isPreview: true,
-            }}
-            data={renderData}
-            config={config}
-          />
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Zamknij</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 /**
  * Client component containing all of custom Puck editor UI.
  * This component must be rendered within `<Puck/>` component.
@@ -409,12 +363,9 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
     <div className="flex h-208.75 flex-col">
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
-        <div className="flex gap-2">
-          <PreviewDialog />
-          <SaveButton mutationData={mutationData} />
-        </div>
+        <SaveButton mutationData={mutationData} />
       </div>
-      <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/10">
+      <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/5">
         <Toolbar />
         <div className="flex max-h-181 grow">
           <BlocksAndSchemaSidebar />
