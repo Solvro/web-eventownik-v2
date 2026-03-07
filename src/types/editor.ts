@@ -12,7 +12,6 @@ import type { LooseAutocomplete } from "./utils";
 
 export interface ImageFields extends LayoutFields {
   src: string;
-  alt: string;
   objectFit: CSSProperties["objectFit"];
 }
 export interface TwoByTwoFields

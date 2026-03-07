@@ -7,6 +7,7 @@ import {
   ChevronsUpDown,
   ExternalLink,
   FileSpreadsheet,
+  ImageIcon,
   ImageUpscale,
   Lightbulb,
   LinkIcon,
@@ -16,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
+import { useRef } from "react";
 import type { CSSProperties } from "react";
 
 import { PHOTO_URL } from "@/lib/api";
@@ -27,6 +29,7 @@ import {
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
+import { getBase64FromUrl } from "@/lib/utils";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
@@ -597,14 +600,49 @@ export const getPuckConfig = ({
         label: "Obraz",
         fields: {
           src: {
-            type: "text",
-            label: "Adres URL",
-            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
-          },
-          alt: {
-            type: "text",
-            label: "Tekst alternatywny",
-            labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            label: "Obraz",
+            render: ({ value, onChange }) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const fileInputRef = useRef<HTMLInputElement>(null);
+
+              return (
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    ref={fileInputRef}
+                    onChangeCapture={async (event) => {
+                      const input = event.target as HTMLInputElement;
+                      if (input.files?.[0] != null) {
+                        const newBlobUrl = URL.createObjectURL(input.files[0]);
+                        const base64 = await getBase64FromUrl(newBlobUrl);
+                        onChange(base64);
+                        URL.revokeObjectURL(newBlobUrl);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
+                  >
+                    <ImageIcon className={PUCK_ICON_CLASSNAME} />
+                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+                  </button>
+
+                  {value ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={value}
+                      alt=""
+                      className="h-20 w-full rounded object-contain"
+                    />
+                  ) : null}
+                </div>
+              );
+            },
           },
           objectFit: {
             type: "select",
@@ -621,7 +659,6 @@ export const getPuckConfig = ({
         },
         defaultProps: {
           src: "",
-          alt: "",
           objectFit: "contain",
           layout: {
             width: "128",
@@ -630,12 +667,7 @@ export const getPuckConfig = ({
             padding: "0",
           },
         },
-        render({
-          src,
-          alt,
-          objectFit,
-          layout: { width, height, margin, padding },
-        }) {
+        render({ src, objectFit, layout: { width, height, margin, padding } }) {
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
@@ -647,7 +679,7 @@ export const getPuckConfig = ({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
-                      alt={alt}
+                      alt=""
                       width={width}
                       height={height}
                       style={{
