@@ -15,13 +15,6 @@ export interface ImageFields extends LayoutFields {
   alt: string;
   objectFit: CSSProperties["objectFit"];
 }
-
-export interface CustomContainerFields
-  extends LayoutFields, AppearanceFields, ContainerFields {
-  columns: Record<"content", Slot>[];
-  numZones: number;
-}
-
 export interface TwoByTwoFields
   extends LayoutFields, AppearanceFields, ContainerFields {
   topLeft: Slot;
@@ -90,7 +83,6 @@ export interface LinkFields extends AppearanceFields {
 
 export interface PuckComponents {
   RichText: RichTextFields;
-  CustomContainer: CustomContainerFields;
   TwoByTwo: TwoByTwoFields;
   TwoByOne: TwoByOneFields;
   ThreeByOne: ThreeByOneFields;

@@ -557,76 +557,6 @@ export const getPuckConfig = ({
           );
         },
       },
-      CustomContainer: {
-        label: "Własny kontener",
-        fields: {
-          columns: {
-            label: "Bloki w kontenerze",
-            type: "array",
-            arrayFields: {
-              content: { label: "Blok", type: "slot" },
-            },
-            visible: false,
-          },
-          numZones: {
-            label: "Liczba kolumn",
-            type: "number",
-            min: 2,
-            max: 6,
-          },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
-        },
-        defaultProps: {
-          columns: [],
-          numZones: 2,
-          ...layoutDefaults,
-          ...appearanceDefaults,
-          ...containerDefaults,
-        },
-        resolveData: (data, parameters) => {
-          if (
-            !(parameters.changed.numZones ?? false) ||
-            data.props.numZones < 0
-          ) {
-            return data;
-          }
-
-          const newData = { ...data, props: { ...data.props } };
-          newData.props.columns = [];
-
-          // Rebuild slots based on numZones
-          for (
-            let iterator = 0;
-            iterator < newData.props.numZones;
-            iterator++
-          ) {
-            newData.props.columns.push(
-              data.props.columns[iterator] ?? { content: [] },
-            );
-          }
-
-          return newData;
-        },
-        render({ columns, layout, appearance, container }) {
-          return (
-            <ContainerWrapper
-              layout={layout}
-              appearance={appearance}
-              container={container}
-            >
-              <tr>
-                {columns.map(({ content: Content }, index) => (
-                  <td key={index} className="min-w-16">
-                    <Content />
-                  </td>
-                ))}
-              </tr>
-            </ContainerWrapper>
-          );
-        },
-      },
       Divider: {
         label: "Odstęp",
         fields: {
@@ -828,7 +758,6 @@ export const getPuckConfig = ({
           "TwoByTwo",
           "ThreeByTwo",
           "ThreeByThree",
-          "CustomContainer",
           "Divider",
         ],
       },
