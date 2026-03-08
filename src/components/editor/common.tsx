@@ -41,9 +41,7 @@ import type { CSSProperties } from "react";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { LooseAutocomplete } from "@/types/utils";
 
-import { Button } from "../ui/button";
 import { ColorPicker } from "./color-picker";
-import { NumberButtonInput } from "./number-button-input";
 
 export const PUCK_ICON_CLASSNAME = "mr-1 size-5";
 
@@ -128,48 +126,6 @@ export const withLayout = {
     label: "Układ",
     labelIcon: <Layout className={PUCK_ICON_CLASSNAME} />,
     objectFields: {
-      width: {
-        label: "Szerokość",
-        labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
-        type: "custom",
-        render: ({ name, onChange, value, field }) => (
-          <div className="space-y-2">
-            <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-            <Button
-              onClick={() => {
-                onChange("auto");
-              }}
-              variant={value === "auto" ? "secondary" : "outline"}
-              size="sm"
-              className="w-full"
-            >
-              Automatycznie
-            </Button>
-            <NumberButtonInput value={value} onChange={onChange} />
-          </div>
-        ),
-      },
-      height: {
-        label: "Wysokość",
-        labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
-        type: "custom",
-        render: ({ name, onChange, value, field }) => (
-          <div className="space-y-2">
-            <FieldLabel label={field.label ?? name} icon={field.labelIcon} />
-            <Button
-              onClick={() => {
-                onChange("auto");
-              }}
-              variant={value === "auto" ? "secondary" : "outline"}
-              size="sm"
-              className="w-full"
-            >
-              Automatycznie
-            </Button>
-            <NumberButtonInput value={value} onChange={onChange} />
-          </div>
-        ),
-      },
       margin: {
         label: "Margines zewnętrzny",
         labelIcon: <Ratio className={PUCK_ICON_CLASSNAME} />,
@@ -186,8 +142,6 @@ export const withLayout = {
 
 export interface LayoutFields {
   layout: {
-    width: string;
-    height: string;
     margin: string;
     padding: string;
   };
@@ -195,8 +149,6 @@ export interface LayoutFields {
 
 export const getLayoutStyles = (layout: LayoutFields["layout"]) => {
   return {
-    width: `${layout.width}px`,
-    height: `${layout.height}px`,
     margin: `${layout.margin}px auto`,
     padding: `${layout.padding}px`,
   };

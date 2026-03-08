@@ -11,8 +11,6 @@ import type { SingleEventEmail } from "@/types/emails";
 
 export const layoutDefaults = {
   layout: {
-    width: "auto",
-    height: "auto",
     margin: "0",
     padding: "0",
   },
@@ -109,6 +107,8 @@ export function getPuckSchemaFromLegacyEmail(
       type: "Image",
       props: {
         id: `Image-${(index + 1).toString()}`,
+        width: "128",
+        height: "128",
         src: image.src,
         alt: image.alt,
         objectFit: "contain",

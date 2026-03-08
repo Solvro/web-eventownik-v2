@@ -4,6 +4,7 @@ import { FieldLabel } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import {
+  ChevronsLeftRight,
   ChevronsUpDown,
   ExternalLink,
   FileSpreadsheet,
@@ -33,6 +34,7 @@ import { getBase64FromUrl } from "@/lib/utils";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
+import { Button } from "../ui/button";
 import {
   Select,
   SelectContent,
@@ -49,6 +51,7 @@ import {
   withContainer,
   withLayout,
 } from "./common";
+import { NumberButtonInput } from "./number-button-input";
 import { SidebarRichTextMenu } from "./richtext-menu";
 
 interface EmailCSSProperties extends CSSProperties {
@@ -644,6 +647,54 @@ export const getPuckConfig = ({
               );
             },
           },
+          width: {
+            label: "Szerokość",
+            labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            render: ({ name, onChange, value, field }) => (
+              <div className="space-y-2">
+                <FieldLabel
+                  label={field.label ?? name}
+                  icon={field.labelIcon}
+                />
+                <Button
+                  onClick={() => {
+                    onChange("auto");
+                  }}
+                  variant={value === "auto" ? "secondary" : "outline"}
+                  size="sm"
+                  className="w-full"
+                >
+                  Automatycznie
+                </Button>
+                <NumberButtonInput value={value} onChange={onChange} />
+              </div>
+            ),
+          },
+          height: {
+            label: "Wysokość",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            render: ({ name, onChange, value, field }) => (
+              <div className="space-y-2">
+                <FieldLabel
+                  label={field.label ?? name}
+                  icon={field.labelIcon}
+                />
+                <Button
+                  onClick={() => {
+                    onChange("auto");
+                  }}
+                  variant={value === "auto" ? "secondary" : "outline"}
+                  size="sm"
+                  className="w-full"
+                >
+                  Automatycznie
+                </Button>
+                <NumberButtonInput value={value} onChange={onChange} />
+              </div>
+            ),
+          },
           objectFit: {
             type: "select",
             label: "Dopasowanie",
@@ -659,15 +710,15 @@ export const getPuckConfig = ({
         },
         defaultProps: {
           src: "",
+          width: "128",
+          height: "128",
           objectFit: "contain",
           layout: {
-            width: "128",
-            height: "128",
             margin: "0",
             padding: "0",
           },
         },
-        render({ src, objectFit, layout: { width, height, margin, padding } }) {
+        render({ width, height, src, objectFit, layout: { margin, padding } }) {
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
@@ -685,8 +736,6 @@ export const getPuckConfig = ({
                       style={{
                         display: "block",
                         objectFit,
-                        width: `${width}px`,
-                        height: `${height}px`,
                         maxWidth: "100%",
                       }}
                     />
@@ -873,7 +922,6 @@ export const getPuckConfig = ({
         name: "Nowa wiadomość",
         trigger: "manual",
       },
-      // render: ({ children }) => {
       //   return (
       //     <div
       //       id="email-root"
