@@ -28,8 +28,9 @@ import {
   updateEventEmail,
 } from "@/app/dashboard/events/[id]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
+import { useUnsavedEditor } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
-import type { PuckConfig, PuckMutationData } from "@/types/editor";
+import type { PuckConfig, PuckData, PuckMutationData } from "@/types/editor";
 import { emailTemplateSchema } from "@/types/schemas";
 
 import {
@@ -41,6 +42,7 @@ import {
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { UnsavedChangesAlert } from "../unsaved-changes-alert";
 import { PUCK_ICON_CLASSNAME } from "./common";
 
 const COMPONENT_ICONS = {
@@ -358,9 +360,26 @@ function FieldsPanel() {
  * Client component containing all of custom Puck editor UI.
  * This component must be rendered within `<Puck/>` component.
  */
-function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
+function PuckComposition({
+  mutationData,
+  initialData,
+}: {
+  mutationData: PuckMutationData;
+  initialData: Partial<PuckData>;
+}) {
+  const currentData = usePuck((s) => s.appState.data);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedEditor(
+    initialData,
+    currentData,
+  );
+
   return (
     <div className="flex h-208.75 flex-col">
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
       <div className="mb-2 flex justify-between">
         <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
         <SaveButton mutationData={mutationData} />

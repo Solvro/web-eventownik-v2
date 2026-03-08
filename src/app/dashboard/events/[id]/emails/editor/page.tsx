@@ -51,7 +51,17 @@ export default async function EventMailEditPage({
     <Editor
       tags={[...attributeTags, ...formTags]}
       forms={forms}
-      initialData={{}}
+      initialData={{
+        root: {
+          props: {
+            // NOTE: Update if the defaults change
+            name: "Nowa wiadomość",
+            trigger: "manual",
+          },
+        },
+        content: [],
+        zones: {},
+      }}
       mutationData={{
         emailId: null,
         eventId: id,

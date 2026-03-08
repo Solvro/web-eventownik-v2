@@ -27,6 +27,7 @@ function Editor({
   eventData,
 }: BlockEditorProps) {
   const config = getPuckConfig({ tags, forms, eventData });
+
   return (
     <Puck
       config={config}
@@ -44,7 +45,7 @@ function Editor({
         },
       }}
     >
-      <PuckComposition mutationData={mutationData} />
+      <PuckComposition mutationData={mutationData} initialData={initialData} />
     </Puck>
   );
 }

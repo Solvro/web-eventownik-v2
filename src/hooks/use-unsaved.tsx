@@ -5,6 +5,8 @@ import type { PrimitiveAtom } from "jotai";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useCallback, useRef, useState } from "react";
 
+import type { PuckData } from "@/types/editor";
+
 // NOTE: Jotai's source code says that this is an internal type and shouldn't be referenced
 // as it is subject to change without notice. However, defining it here allows to not use
 // any eslint-disable or ts-ignore directives
@@ -74,4 +76,33 @@ function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
   };
 }
 
-export { useUnsavedAtom, useUnsavedForm };
+/**
+ * This hook is used to prevent the user from navigating away from the page if there are unsaved changes
+ * detected within the email editor schema. Use the hook in a child component of `<Puck/>`
+ */
+function useUnsavedEditor(
+  initialData: Partial<PuckData>,
+  currentValue: PuckData,
+) {
+  const checkIfDirty = useCallback(() => {
+    return JSON.stringify(currentValue) !== JSON.stringify(initialData);
+  }, [currentValue, initialData]);
+
+  const isDirty = checkIfDirty();
+
+  const navGuard = useNavigationGuard({
+    enabled: isDirty,
+  });
+
+  const onConfirm = useCallback(() => {
+    navGuard.accept();
+  }, [navGuard]);
+
+  return {
+    isGuardActive: navGuard.active,
+    onConfirm,
+    onCancel: navGuard.reject,
+  };
+}
+
+export { useUnsavedAtom, useUnsavedEditor, useUnsavedForm };
