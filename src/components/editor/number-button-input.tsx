@@ -44,6 +44,12 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
     fastIntervalRef.current = null;
   }, []);
 
+  useEffect(() => {
+    return () => {
+      clearTimers();
+    };
+  }, [clearTimers]);
+
   const startHold = useCallback(
     (direction: 1 | -1) => {
       holdStartRef.current = Date.now();
@@ -101,6 +107,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         onClick={(event) => {
           event.preventDefault();
         }}
+        aria-label="Zmniejsz"
       >
         <Minus className="size-2" />
       </Button>
@@ -123,6 +130,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         onClick={(event) => {
           event.preventDefault();
         }}
+        aria-label="Zwiększ"
       >
         <Plus className="size-2" />
       </Button>

@@ -69,7 +69,6 @@ const tableProps = {
   cellPadding: "0",
   cellSpacing: "0",
   border: 0,
-  tablelayout: "fixed",
 };
 
 /**
