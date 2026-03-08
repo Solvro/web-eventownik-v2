@@ -18,9 +18,9 @@ import {
   ChevronsUpDown,
   Container,
   Image,
+  ImageIcon,
   ImageUpscale,
   Layout,
-  LinkIcon,
   Minus,
   Move,
   PaintBucket,
@@ -35,8 +35,10 @@ import {
   SquareSquare,
   Type,
 } from "lucide-react";
+import { useRef } from "react";
 import type { CSSProperties } from "react";
 
+import { getBase64FromUrl } from "@/lib/utils";
 import type { LooseAutocomplete } from "@/types/utils";
 
 import { Button } from "../ui/button";
@@ -234,9 +236,53 @@ export const withAppearance = {
         labelIcon: <Image className={PUCK_ICON_CLASSNAME} />,
         objectFields: {
           backgroundImage: {
-            type: "text",
-            label: "Adres URL",
-            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            label: "Obraz",
+            render: ({ value, onChange }) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const fileInputRef = useRef<HTMLInputElement>(null);
+
+              return (
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    ref={fileInputRef}
+                    onChangeCapture={async (event) => {
+                      const input = event.target as HTMLInputElement;
+                      const file = input.files?.[0];
+                      if (file != null) {
+                        const newBlobUrl = URL.createObjectURL(file);
+                        const base64 = await getBase64FromUrl(newBlobUrl);
+                        onChange(base64);
+                        URL.revokeObjectURL(newBlobUrl);
+                      }
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
+                  >
+                    <ImageIcon className={PUCK_ICON_CLASSNAME} />
+                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+                  </button>
+
+                  {value ? (
+                    <div className="overflow-hidden rounded-md border border-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={value}
+                        alt=""
+                        className="h-32 w-full bg-gray-50 object-contain"
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            },
           },
           backgroundPosition: {
             type: "select",
