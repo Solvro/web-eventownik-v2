@@ -243,13 +243,28 @@ export const getPuckConfig = ({
               container={container}
             >
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Left />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Center />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Right />
                 </td>
               </tr>
@@ -305,16 +320,36 @@ export const getPuckConfig = ({
               container={container}
             >
               <tr>
-                <td style={{ width: "25%" }}>
+                <td
+                  style={{
+                    width: "25%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Col1 />
                 </td>
-                <td style={{ width: "25%" }}>
+                <td
+                  style={{
+                    width: "25%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Col2 />
                 </td>
-                <td style={{ width: "25%" }}>
+                <td
+                  style={{
+                    width: "25%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Col3 />
                 </td>
-                <td style={{ width: "25%" }}>
+                <td
+                  style={{
+                    width: "25%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <Col4 />
                 </td>
               </tr>
@@ -451,24 +486,54 @@ export const getPuckConfig = ({
               container={container}
             >
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopLeft />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopCenter />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopRight />
                 </td>
               </tr>
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomLeft />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomCenter />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomRight />
                 </td>
               </tr>
@@ -527,35 +592,80 @@ export const getPuckConfig = ({
               container={container}
             >
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopLeft />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopCenter />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <TopRight />
                 </td>
               </tr>
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <MiddleLeft />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <MiddleCenter />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <MiddleRight />
                 </td>
               </tr>
               <tr>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomLeft />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomCenter />
                 </td>
-                <td style={{ width: "33.33%" }}>
+                <td
+                  style={{
+                    width: "33.33%",
+                    verticalAlign: container.verticalAlign,
+                  }}
+                >
                   <BottomRight />
                 </td>
               </tr>
@@ -574,7 +684,7 @@ export const getPuckConfig = ({
           ...withAppearance,
         },
         defaultProps: {
-          height: "16",
+          height: "32",
           ...appearanceDefaults,
         },
         render({ height, appearance: { color, backgroundColor } }) {

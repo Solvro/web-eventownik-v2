@@ -362,7 +362,7 @@ export const withContainer = {
     labelIcon: <Container className={PUCK_ICON_CLASSNAME} />,
     objectFields: {
       verticalAlign: {
-        label: "Komórki",
+        label: "Wyrównanie",
         labelIcon: <AlignCenterHorizontal className={PUCK_ICON_CLASSNAME} />,
         type: "select",
         options: [
