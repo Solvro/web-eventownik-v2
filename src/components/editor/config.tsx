@@ -774,45 +774,27 @@ export const getPuckConfig = ({
           title: "Kliknij tutaj",
           href: "",
           target: "_blank",
-          ...appearanceDefaults,
-        },
-        render({
-          title,
-          href,
-          target,
           appearance: {
-            color,
-            backgroundColor,
-            image: {
-              backgroundImage,
-              backgroundPosition,
-              backgroundSize,
-              backgroundRepeat,
-            },
+            ...appearanceDefaults.appearance,
+            backgroundColor: "#3571fd",
+            color: "#fbfbfb",
           },
-        }) {
+        },
+        render({ title, href, target, appearance }) {
           return (
             <table width="100%" style={tableStyles}>
               <tbody>
                 <tr>
-                  <td
-                    align="center"
-                    style={{
-                      width: "fit-content",
-                    }}
-                  >
+                  <td align="center">
                     <a
                       href={href}
                       target={target}
                       rel="noreferrer"
                       style={{
+                        width: "fit-content",
                         display: "block",
-                        color,
-                        backgroundColor,
-                        backgroundImage: `url('${backgroundImage}')`,
-                        backgroundPosition,
-                        backgroundSize,
-                        backgroundRepeat,
+                        padding: "0.5rem 1rem",
+                        ...getAppearanceStyles(appearance),
                       }}
                     >
                       {title}

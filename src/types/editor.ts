@@ -16,6 +16,7 @@ export interface ImageFields extends LayoutFields {
   src: string;
   objectFit: CSSProperties["objectFit"];
 }
+
 export interface TwoByTwoFields
   extends LayoutFields, AppearanceFields, ContainerFields {
   topLeft: Slot;
