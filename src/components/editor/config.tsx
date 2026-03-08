@@ -725,6 +725,7 @@ export const getPuckConfig = ({
                     type="file"
                     accept="image/*"
                     className="sr-only"
+                    aria-label="Wybierz obraz"
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
                       const input = event.target as HTMLInputElement;
