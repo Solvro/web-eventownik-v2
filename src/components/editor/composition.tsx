@@ -30,7 +30,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
-import type { PuckConfig, PuckData, PuckMutationData } from "@/types/editor";
+import type { PuckConfig, PuckMutationData } from "@/types/editor";
 import { emailTemplateSchema } from "@/types/schemas";
 
 import {
@@ -65,6 +65,7 @@ const usePuck = createUsePuck<PuckConfig>();
 function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
   const renderData = usePuck((s) => s.appState.data);
   const config = usePuck((s) => s.config);
+  const setHistories = usePuck((s) => s.history.setHistories);
   const renderWrapperRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -92,6 +93,8 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       void queryClient.invalidateQueries({
         queryKey: ["eventEmails", mutationData.eventId],
       });
+
+      setHistories([]);
 
       toast({
         title:
@@ -360,18 +363,9 @@ function FieldsPanel() {
  * Client component containing all of custom Puck editor UI.
  * This component must be rendered within `<Puck/>` component.
  */
-function PuckComposition({
-  mutationData,
-  initialData,
-}: {
-  mutationData: PuckMutationData;
-  initialData: Partial<PuckData>;
-}) {
-  const currentData = usePuck((s) => s.appState.data);
-  const { isGuardActive, onCancel, onConfirm } = useUnsavedEditor(
-    initialData,
-    currentData,
-  );
+function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
+  const hasChanged = usePuck((s) => s.history.hasPast);
+  const { isGuardActive, onCancel, onConfirm } = useUnsavedEditor(hasChanged);
 
   return (
     <div className="flex h-208.75 flex-col">

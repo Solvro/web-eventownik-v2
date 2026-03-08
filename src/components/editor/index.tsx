@@ -45,7 +45,7 @@ function Editor({
         },
       }}
     >
-      <PuckComposition mutationData={mutationData} initialData={initialData} />
+      <PuckComposition mutationData={mutationData} />
     </Puck>
   );
 }
