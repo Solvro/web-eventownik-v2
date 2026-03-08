@@ -829,6 +829,8 @@ export const getPuckConfig = ({
           },
         },
         render({ width, height, src, objectFit, layout: { margin, padding } }) {
+          const widthValue = width === "auto" ? "auto" : `${width}px`;
+          const heightValue = height === "auto" ? "auto" : `${height}px`;
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
@@ -841,11 +843,13 @@ export const getPuckConfig = ({
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
                       alt=""
-                      width={width}
-                      height={height}
+                      width={width === "auto" ? undefined : width}
+                      height={height === "auto" ? undefined : height}
                       style={{
                         display: "block",
                         objectFit,
+                        width: widthValue,
+                        height: heightValue,
                         maxWidth: "100%",
                       }}
                     />
