@@ -13,6 +13,32 @@ const PHONE_REGEX = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
 
 export const SLUG_REGEX = /^[a-z0-9-]+$/;
 
+const POLISH_TO_ASCII: Record<string, string> = {
+  ą: "a",
+  ę: "e",
+  ó: "o",
+  ś: "s",
+  ć: "c",
+  ź: "z",
+  ż: "z",
+  ł: "l",
+  ń: "n",
+};
+
+/** Converts a name to a slug compatible with SLUG_REGEX (a-z, 0-9, hyphens). */
+export function nameToSlug(name: string): string {
+  const withAscii = name.replace(
+    /[ąćęłńóśźż]/gi,
+    (char) => POLISH_TO_ASCII[char.toLowerCase()] ?? char,
+  );
+  return withAscii
+    .toLowerCase()
+    .replaceAll(/\s+/g, "-")
+    .replaceAll(/[^a-z0-9-]/g, "")
+    .replaceAll(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 // Helper function for string validation
 const requiredString = (attribute: FormAttribute) =>
   z

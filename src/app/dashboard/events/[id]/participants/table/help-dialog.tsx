@@ -1,4 +1,5 @@
 import { HelpCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/tooltip";
 
 export function HelpDialog() {
+  const t = useTranslations("Table");
+
   return (
     <Dialog>
       <Tooltip>
@@ -25,30 +28,28 @@ export function HelpDialog() {
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Wskazówki</TooltipContent>
+        <TooltipContent>{t("helpTooltip")}</TooltipContent>
       </Tooltip>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            Jak korzystać z tabeli?
-          </DialogTitle>
+          <DialogTitle className="text-2xl">{t("helpTitle")}</DialogTitle>
           <div className="[&>p]:my-2">
-            <h2 className="text-lg font-bold">Wielokrotne sortowanie</h2>
+            <h2 className="text-lg font-bold">{t("helpMultiSortTitle")}</h2>
             <p>
-              Chcąc posortować po wielu kolumnach naraz, przytrzymaj przycisk{" "}
-              <strong className="font-mono">Shift</strong> i kliknij nagłówki
-              kolumn, po których chcesz posortować dane.
+              {t.rich("helpMultiSortDescription1", {
+                strong: (chunks) => (
+                  <strong className="font-mono">{chunks}</strong>
+                ),
+              })}
             </p>
             <p>
-              Priorytet sortowania będzie odpowiadał kolejności klikania w
-              kolejne kolumny, np.:
-              <br />
-              Klikając najpierw kolumnę <i>Imię</i>, a potem (z wciśniętym{" "}
-              <strong className="font-mono">Shift</strong>
-              -em !) kolumnę <i>Wiek</i>,
-              <br />
-              dane zostaną posortowane najpierw według imion, a potem według
-              wieku.
+              {t.rich("helpMultiSortDescription2", {
+                br: () => <br />,
+                i: (chunks) => <i>{chunks}</i>,
+                strong: (chunks) => (
+                  <strong className="font-mono">{chunks}</strong>
+                ),
+              })}
             </p>
           </div>
         </DialogHeader>

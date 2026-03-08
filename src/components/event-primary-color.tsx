@@ -18,6 +18,8 @@ function getContrastColor(hex?: string | null) {
 }
 
 export function setEventPrimaryColors(primaryColor?: string | null) {
+  if (typeof document === "undefined") return;
+
   document.documentElement.style.setProperty(
     "--event-primary-color",
     primaryColor ?? "var(--color-primary)",
@@ -29,6 +31,8 @@ export function setEventPrimaryColors(primaryColor?: string | null) {
 }
 
 export function resetEventPrimaryColors() {
+  if (typeof document === "undefined") return;
+
   document.documentElement.style.setProperty(
     "--event-primary-color",
     "var(--color-primary)",

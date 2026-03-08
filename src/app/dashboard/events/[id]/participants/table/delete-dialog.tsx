@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2, XCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import {
   AlertDialog,
@@ -24,6 +25,8 @@ export function DeleteParticipantDialog({
   participantId: number;
   deleteParticipant: (_participantId: number) => Promise<void>;
 }) {
+  const t = useTranslations("Table");
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -34,18 +37,17 @@ export function DeleteParticipantDialog({
           size="icon"
         >
           <Trash2 />
-          Usuń
+          {t("deleteButton")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col items-center">
         <AlertDialogHeader className="flex flex-col items-center">
           <AlertDialogTitle className="flex flex-col items-center self-center">
             <XCircle strokeWidth={1} stroke={"red"} size={64} />
-            Jesteś pewny?
+            {t("deleteConfirmTitle")}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-foreground text-center text-pretty">
-            Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie
-            można cofnąć.
+            {t("deleteSingleConfirmDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex gap-x-4">
@@ -57,14 +59,14 @@ export function DeleteParticipantDialog({
               variant: "destructive",
             })}
           >
-            Usuń
+            {t("deleteButton")}
           </AlertDialogAction>
           <AlertDialogCancel
             className={buttonVariants({
               variant: "outline",
             })}
           >
-            Anuluj
+            {t("cancelButton")}
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

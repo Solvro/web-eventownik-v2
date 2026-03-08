@@ -1,5 +1,6 @@
 type role =
   | "Project Manager"
+  | "Product Owner"
   | "Opiekun Projektu"
   | "Backend Techlead"
   | "Backend Developer"

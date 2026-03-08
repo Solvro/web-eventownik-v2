@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { exportData } from "@/app/dashboard/events/[id]/participants/actions";
@@ -14,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { downloadFile } from "@/lib/utils";
 
 export function ExportButton({ eventId }: { eventId: string }) {
+  const t = useTranslations("Export");
   const { toast } = useToast();
   const [isQuerying, setIsQuerying] = useState(false);
 
@@ -26,8 +28,8 @@ export function ExportButton({ eventId }: { eventId: string }) {
       if (!result.success) {
         toast({
           variant: "destructive",
-          title: "Eksport nie powiódł się!",
-          description: result.error ?? "Wystąpił nieznany błąd.",
+          title: t("failed"),
+          description: result.error ?? t("unknownError"),
         });
         return;
       }
@@ -40,8 +42,8 @@ export function ExportButton({ eventId }: { eventId: string }) {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Eksport nie powiódł się!",
-        description: "Spróbuj ponownie",
+        title: t("failed"),
+        description: t("tryAgain"),
       });
     }
   }
@@ -54,7 +56,7 @@ export function ExportButton({ eventId }: { eventId: string }) {
           size="icon"
           variant="outline"
           disabled={isQuerying}
-          aria-label="Eksportuj do Excela"
+          aria-label={t("exportToExcel")}
         >
           {isQuerying ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -63,7 +65,7 @@ export function ExportButton({ eventId }: { eventId: string }) {
           )}
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Eksportuj do Excela</TooltipContent>
+      <TooltipContent>{t("exportToExcel")}</TooltipContent>
     </Tooltip>
   );
 }

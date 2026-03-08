@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Mail, RefreshCcw, TextIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -40,10 +41,6 @@ import type { FlattenedParticipant } from "@/types/participant";
 
 import { sendMail } from "../actions";
 
-const SendMailFormSchema = z.object({
-  template: z.string().nonempty({ message: "Wybierz szablon" }),
-});
-
 function SendMailForm({
   eventId,
   emails,
@@ -53,7 +50,12 @@ function SendMailForm({
   emails: EventEmail[] | null;
   targetParticipants: FlattenedParticipant[];
 }) {
+  const t = useTranslations("SendMail");
   const { toast } = useToast();
+
+  const SendMailFormSchema = z.object({
+    template: z.string().nonempty({ message: t("selectTemplate") }),
+  });
 
   const form = useForm<z.infer<typeof SendMailFormSchema>>({
     resolver: zodResolver(SendMailFormSchema),
@@ -71,14 +73,14 @@ function SendMailForm({
 
     if (result.success) {
       toast({
-        title: "Wysłano wiadomości",
+        title: t("successTitle"),
       });
 
       // 'router.refresh()' doesn't work here for some reason - using native method instead
       location.reload();
     } else {
       toast({
-        title: "Nie udało się wysłać wiadomości!",
+        title: t("errorTitle"),
         description: result.error,
         variant: "destructive",
       });
@@ -90,33 +92,33 @@ function SendMailForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="icon" variant="outline" aria-label="Wyślij maila">
+            <Button size="icon" variant="outline" aria-label={t("sendMail")}>
               <Mail />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Wyślij maila</TooltipContent>
+        <TooltipContent>{t("sendMail")}</TooltipContent>
       </Tooltip>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader className="sr-only">
-          <DialogTitle>Wyślij maila</DialogTitle>
+          <DialogTitle>{t("sendMail")}</DialogTitle>
         </DialogHeader>
         <FormContainer
-          description="Wybierz szablon maila"
+          description={t("selectTemplateDescription")}
           icon={<TextIcon />}
           step="1/1"
-          title="Krok 1"
+          title={t("step1")}
         >
           {emails === null ? (
             <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-red-600">Nie udało się pobrać szablonów</p>
+              <p className="text-red-600">{t("fetchError")}</p>
               <Button
                 variant="outline"
                 onClick={() => {
                   location.reload();
                 }}
               >
-                <RefreshCcw /> Odśwież
+                <RefreshCcw /> {t("refresh")}
               </Button>
             </div>
           ) : (
@@ -136,7 +138,7 @@ function SendMailForm({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Wybierz szablon z listy" />
+                            <SelectValue placeholder={t("selectPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -155,8 +157,9 @@ function SendMailForm({
                   )}
                 />
                 <h2>
-                  Zamierzasz wysłać tą wiadomość do {targetParticipants.length}{" "}
-                  uczestników z następującymi adresami:
+                  {t("confirmRecipients", {
+                    count: targetParticipants.length,
+                  })}
                 </h2>
                 <ScrollArea className="h-32">
                   <pre className="bg-muted/70 rounded-md p-4 whitespace-pre-wrap">
@@ -177,7 +180,7 @@ function SendMailForm({
                     ) : (
                       <Mail />
                     )}{" "}
-                    Wyślij
+                    {t("send")}
                   </Button>
                 </div>
               </form>

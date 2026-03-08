@@ -48,7 +48,7 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
-import { cn, getBase64FromUrl } from "@/lib/utils";
+import { cn, getBase64FromUrl, nameToSlug } from "@/lib/utils";
 
 import { isSlugTaken, saveEvent } from "./actions";
 import { eventAtom } from "./state";
@@ -106,10 +106,7 @@ export function CreateEventForm() {
       primaryColor: event.primaryColor,
       participantsNumber: event.participantsNumber,
       socialMediaLinks: event.socialMediaLinks,
-      slug:
-        event.slug === ""
-          ? event.name.toLowerCase().replaceAll(/\s+/g, "-")
-          : event.slug,
+      slug: event.slug === "" ? nameToSlug(event.name) : event.slug,
       contactEmail: event.contactEmail,
       coorganizers: [],
       attributes: [],
@@ -133,9 +130,7 @@ export function CreateEventForm() {
         const currentSlug = form.getValues("slug");
         form.setValue(
           "slug",
-          currentSlug === ""
-            ? values.name.toLowerCase().replaceAll(/\s+/g, "-")
-            : currentSlug,
+          currentSlug === "" ? nameToSlug(values.name) : currentSlug,
         );
         setCurrentStep((value) => value + 1);
       },
