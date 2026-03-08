@@ -12,12 +12,12 @@ import type {
 import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
 
 import { TagsList } from "@/components/tags-list";
+import type { LooseAutocomplete } from "@/types/utils";
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 
-type LooseAutocomplete<T extends string> = T | (string & {});
 type MessageTagColor = LooseAutocomplete<
   | "red"
   | "orange"

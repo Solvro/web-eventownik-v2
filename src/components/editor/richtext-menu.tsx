@@ -42,6 +42,7 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className="size-7"
+            aria-label="Pogrubienie"
           >
             <Bold className="size-4!" />
           </Button>
@@ -56,6 +57,7 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             className="size-7"
+            aria-label="Kursywa"
           >
             <Italic className="size-4!" />
           </Button>
@@ -70,6 +72,7 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
             className="size-7"
+            aria-label="Podkreślenie"
           >
             <Underline className="size-4!" />
           </Button>
@@ -84,6 +87,7 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleCode().run()}
             className="size-7"
+            aria-label="Kod (czcionka mono)"
           >
             <Code2 className="size-4!" />
           </Button>
@@ -197,6 +201,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             onClick={() => editor?.chain().focus().insertContent("/").run()}
             variant="ghost"
             className="size-7"
+            aria-label="Wstaw znacznik"
           >
             <SlashSquare className="size-4!" />
           </Button>
@@ -213,6 +218,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             }
             variant="ghost"
             className="size-7"
+            aria-label="Wstaw znacznik linku do formularza"
           >
             <FileSpreadsheet className="size-4!" />
           </Button>
@@ -231,6 +237,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             }
             variant="ghost"
             className="size-7"
+            aria-label="Wstaw znacznik wartości atrybutu uczestnika"
           >
             <Tag className="size-3.75!" />
           </Button>

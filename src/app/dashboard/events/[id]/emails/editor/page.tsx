@@ -18,7 +18,7 @@ export function generateMetadata() {
 export default async function EventMailEditPage({
   params,
 }: {
-  params: Promise<{ id: string; emailId: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 
