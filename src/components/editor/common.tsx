@@ -341,7 +341,6 @@ export const getAppearanceStyles = (
     Number.parseInt(appearance.border.borderWidth) > 0
       ? {
           border: `${appearance.border.borderWidth}px ${appearance.border.borderStyle} ${appearance.border.borderColor}`,
-          borderRadius: `${appearance.border.borderRadius}px`,
         }
       : {};
 
@@ -352,6 +351,7 @@ export const getAppearanceStyles = (
     backgroundSize: appearance.image.backgroundSize,
     backgroundRepeat: appearance.image.backgroundRepeat,
     color: appearance.color,
+    borderRadius: `${appearance.border.borderRadius}px`,
     ...borderStyles,
   };
 };

@@ -912,6 +912,7 @@ export const getPuckConfig = ({
                         width: "fit-content",
                         display: "block",
                         padding: "0.5rem 1rem",
+                        textDecoration: "none",
                         ...getAppearanceStyles(appearance),
                       }}
                     >
@@ -1090,7 +1091,10 @@ export const getPuckConfig = ({
               <table
                 width="100%"
                 {...tableProps}
-                style={{ backgroundColor: "#f3f4f6", ...tableStyles }}
+                style={{
+                  backgroundColor: "#f3f4f6",
+                  ...tableStyles,
+                }}
               >
                 <tbody>
                   <tr>
@@ -1101,13 +1105,17 @@ export const getPuckConfig = ({
                         {...tableProps}
                         style={{
                           ...tableStyles,
-
                           maxWidth: "100%",
                         }}
                       >
                         <tbody>
                           <tr>
-                            <td style={{ backgroundColor: "#ffffff" }}>
+                            <td
+                              style={{
+                                padding: "8px",
+                                backgroundColor: "#ffffff",
+                              }}
+                            >
                               {children}
                             </td>
                           </tr>
