@@ -38,7 +38,7 @@ function Editor({
           if (document !== undefined) {
             document.body.style.backgroundColor = "white";
             document.body.style.color = "black";
-            document.body.style.fontFamily = "Arial, system-ui, sans-serif";
+            document.body.style.fontFamily = "Arial, Helvetica, sans-serif";
           }
           // eslint-disable-next-line react/jsx-no-useless-fragment
           return <>{children}</>;

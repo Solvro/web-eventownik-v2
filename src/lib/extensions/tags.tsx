@@ -259,7 +259,7 @@ const setupSuggestions = (additionalTags: MessageTag[]) => {
       },
       HTMLAttributes: {
         class:
-          "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.45em] font-sans!",
+          "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.3em] font-sans!",
       },
       renderHTML({ options, node }) {
         return [
