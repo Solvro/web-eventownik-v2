@@ -63,7 +63,7 @@ type EmailTemplateFormValues = z.infer<typeof emailTemplateSchema>;
 const usePuck = createUsePuck<PuckConfig>();
 
 function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
-  const renderData = usePuck((s) => s.appState.data);
+  const appState = usePuck((s) => s.appState);
   const config = usePuck((s) => s.config);
   const setHistories = usePuck((s) => s.history.setHistories);
   const renderWrapperRef = useRef<HTMLDivElement>(null);
@@ -94,7 +94,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
         queryKey: ["eventEmails", mutationData.eventId],
       });
 
-      setHistories([]);
+      setHistories([{ id: "saved", state: appState }]);
 
       toast({
         title:
@@ -117,13 +117,13 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
     event.preventDefault();
 
     const values: EmailTemplateFormValues = {
-      name: renderData.root.props?.name ?? "",
+      name: appState.data.root.props?.name ?? "",
       content:
         renderWrapperRef.current?.querySelector("#email-root")?.innerHTML ?? "",
-      schema: JSON.stringify(renderData),
-      trigger: renderData.root.props?.trigger as string,
-      triggerValue: renderData.root.props?.triggerValue ?? null,
-      triggerValue2: renderData.root.props?.triggerValue2,
+      schema: JSON.stringify(appState.data),
+      trigger: appState.data.root.props?.trigger as string,
+      triggerValue: appState.data.root.props?.triggerValue ?? null,
+      triggerValue2: appState.data.root.props?.triggerValue2,
     };
 
     const parsed = emailTemplateSchema.safeParse(values);
@@ -150,7 +150,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       </form>
 
       <div ref={renderWrapperRef} className="hidden">
-        <Render data={renderData} config={config} />
+        <Render data={appState.data} config={config} />
       </div>
     </>
   );
