@@ -1,12 +1,63 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 
+import { useParticipantsTable } from "@/hooks/use-participants-table";
 import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
-import type { Participant } from "@/types/participant";
+import type { FlattenedParticipant, Participant } from "@/types/participant";
 
+import { TableMenu } from "../components/buttons/table-menu";
+import { flattenParticipants } from "../core/data";
 import { ParticipantTable } from "../core/participants-table";
 import { Providers } from "./providers";
+
+async function noopDeleteMany(_ids: string[]) {
+  // no-op for tests
+}
+
+function TableWrapper({
+  participants,
+  attributes,
+  emails,
+}: {
+  participants: Participant[];
+  attributes: Attribute[];
+  emails: EventEmail[];
+}) {
+  const [data, setData] = useState<FlattenedParticipant[]>(() =>
+    flattenParticipants(participants),
+  );
+
+  const { table, globalFilter } = useParticipantsTable({
+    data,
+    attributes,
+    blocks: [],
+    eventId: "100",
+    onUpdateData: (rowIndex: number, value: FlattenedParticipant) => {
+      setData((prev) =>
+        prev.map((row, index) => (index === rowIndex ? value : row)),
+      );
+    },
+  });
+
+  return (
+    <>
+      <TableMenu
+        table={table}
+        eventId="100"
+        globalFilter={globalFilter}
+        isQuerying={false}
+        emails={emails}
+        attributes={attributes}
+        blocks={[]}
+        deleteManyParticipants={noopDeleteMany}
+      />
+      <ParticipantTable table={table} />
+    </>
+  );
+}
 
 export function renderTable(
   participants: Participant[],
@@ -16,12 +67,10 @@ export function renderTable(
   const user = userEvent.setup();
 
   render(
-    <ParticipantTable
-      eventId="100"
+    <TableWrapper
       participants={participants}
       attributes={attributes}
       emails={emails}
-      blocks={null}
     />,
     { wrapper: Providers },
   );
@@ -35,9 +84,6 @@ export function renderTable(
     getDataRows,
     getDataRow: (rowIndex: number) => {
       return getDataRows()[rowIndex];
-    },
-    getExpandedRow: (parentRowIndex: number) => {
-      return getDataRows()[parentRowIndex + 1]; // +1 from 'parent' row
     },
     getDisplayedValuesFromColumn: (columnIndex: number) => {
       const rows = getDataRows();
