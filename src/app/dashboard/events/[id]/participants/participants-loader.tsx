@@ -85,8 +85,8 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex grow justify-between">
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between">
           <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
           <HelpDialog />
         </div>

@@ -1,9 +1,13 @@
 import type { Table } from "@tanstack/react-table";
-import { ArrowUpDown, FilterX } from "lucide-react";
+import { ArrowUpDown, FilterX, SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Tooltip,
   TooltipContent,
@@ -18,7 +22,6 @@ import { ExportButton } from "../buttons/export-button";
 import { BulkEditDialog } from "../dialogs/bulk-edit-dialog";
 import { DeleteManyParticipantsDialog } from "../dialogs/delete-many-dialog";
 import { SendMailForm } from "../dialogs/send-mail-form";
-import { ColumnSettingsDropdown } from "./column-settings-dropdown";
 
 interface TableToolbarProps {
   table: Table<FlattenedParticipant>;
@@ -45,14 +48,18 @@ export function TableToolbar({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <Input
-        className="h-10 w-full md:w-32"
-        placeholder={t("searchPlaceholder")}
-        value={globalFilter}
-        onChange={(event) => {
-          table.setGlobalFilter(event.target.value);
-        }}
-      />
+      <InputGroup className="h-10 w-full md:w-64">
+        <InputGroupInput
+          placeholder={t("searchPlaceholder")}
+          value={globalFilter}
+          onChange={(event) => {
+            table.setGlobalFilter(event.target.value);
+          }}
+        />
+        <InputGroupAddon align={"inline-end"}>
+          <SearchIcon />
+        </InputGroupAddon>
+      </InputGroup>
       <div className="flex gap-4 max-md:w-full">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -105,7 +112,6 @@ export function TableToolbar({
             .rows.map((row) => row.original.id.toString())}
           deleteManyParticipants={deleteManyParticipants}
         />
-        <ColumnSettingsDropdown table={table} />
       </div>
     </div>
   );

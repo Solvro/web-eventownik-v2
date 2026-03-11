@@ -5,6 +5,7 @@ import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
+import { ColumnSettingsDropdown } from "../table-ui/column-settings-dropdown";
 import { TableSelectionInfo } from "../table-ui/table-selection-info";
 import { TableToolbar } from "../table-ui/table-toolbar";
 
@@ -42,6 +43,7 @@ export function TableMenu({
         />
         <TableSelectionInfo table={table} />
       </div>
+      <ColumnSettingsDropdown table={table} />
     </div>
   );
 }
