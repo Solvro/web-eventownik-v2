@@ -80,7 +80,12 @@ export function AttributeItem({
     const trimmedValue = optionsInput.trim();
     const oldOptions = getValues(`attributes.${index}.options`);
     if (trimmedValue) {
-      const exists = oldOptions?.includes(trimmedValue) ?? false;
+      const exists =
+        oldOptions?.some(
+          (option) =>
+            (typeof option === "string" ? option : option.value) ===
+            trimmedValue,
+        ) ?? false;
       if (!exists) {
         const newOptions = [...(oldOptions ?? []), trimmedValue];
         setValue(`attributes.${index}.options`, newOptions);
@@ -94,7 +99,9 @@ export function AttributeItem({
     setValue(
       `attributes.${index}.options`,
       getValues(`attributes.${index}.options`)?.filter(
-        (o) => o !== optionToRemove,
+        (option) =>
+          (typeof option === "string" ? option : option.value) !==
+          optionToRemove,
       ) ?? [],
     );
     onUpdateItem?.(index, getValues(`attributes.${index}`));
@@ -126,7 +133,7 @@ export function AttributeItem({
             onUpdateItem?.(index, getValues(`attributes.${index}`));
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -255,14 +262,18 @@ export function AttributeItem({
               modifiers={[RestrictToHorizontalAxis]}
             >
               {watch(`attributes.${index}.options`)?.map(
-                (option, optionIndex) => (
-                  <SortableOption
-                    key={option}
-                    option={option}
-                    index={optionIndex}
-                    onRemove={handleRemoveOption}
-                  />
-                ),
+                (option, optionIndex) => {
+                  const optionValue =
+                    typeof option === "string" ? option : option.value;
+                  return (
+                    <SortableOption
+                      key={optionValue}
+                      option={optionValue}
+                      index={optionIndex}
+                      onRemove={handleRemoveOption}
+                    />
+                  );
+                },
               )}
             </DragDropProvider>
           </div>
@@ -297,7 +308,9 @@ export function AttributeItem({
               setValue(`attributes.${index}.options`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
-            defaultValue={getValues(`attributes.${index}.options`) ?? []}
+            defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
+              (option) => (typeof option === "string" ? option : option.value),
+            )}
             placeholder="Wybierz atrybuty do wyświetlenia"
           />
           <p className="text-muted-foreground text-sm">
