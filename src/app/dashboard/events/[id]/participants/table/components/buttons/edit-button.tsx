@@ -88,6 +88,7 @@ export function EditParticipantButton({
           onClick={() => {
             void saveChanges();
           }}
+          aria-label={"save"}
         >
           {isSaving ? <Loader className="animate-spin" /> : <Save />}
         </Button>
@@ -97,6 +98,7 @@ export function EditParticipantButton({
           size="icon"
           disabled={isSaving}
           onClick={cancelEdit}
+          aria-label={"cancel-edit"}
         >
           <X />
         </Button>
@@ -105,7 +107,13 @@ export function EditParticipantButton({
   }
 
   return (
-    <Button variant="outline" type="button" size="icon" onClick={enterEditMode}>
+    <Button
+      variant="outline"
+      type="button"
+      size="icon"
+      aria-label={"edit"}
+      onClick={enterEditMode}
+    >
       <Pencil />
     </Button>
   );
