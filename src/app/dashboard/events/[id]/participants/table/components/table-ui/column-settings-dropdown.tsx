@@ -113,7 +113,7 @@ export function ColumnSettingsDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="h-10">
         <Button variant={"outline"}>{t("columnSelectionDropdownTitle")}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
