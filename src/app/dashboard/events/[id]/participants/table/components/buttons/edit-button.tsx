@@ -1,8 +1,9 @@
 "use client";
 
+/* eslint-disable unicorn/prevent-abbreviations */
 import type { Row, Table } from "@tanstack/react-table";
-import { Loader, Pencil, Save, X } from "lucide-react";
-import { useState } from "react";
+import { Loader, Pencil, Save } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,22 @@ export function EditParticipantButton({
   const isEditing = participant.mode === "edit";
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isEditing) {
+      return;
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        cancelEdit();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing]);
 
   function enterEditMode() {
     table.options.meta?.updateData(row.index, {
@@ -79,38 +96,24 @@ export function EditParticipantButton({
 
   if (isEditing) {
     return (
-      <div className="flex gap-1">
-        <Button
-          variant="outline"
-          type="button"
-          size="icon"
-          disabled={isSaving}
-          onClick={() => {
-            void saveChanges();
-          }}
-          aria-label={"save"}
-        >
-          {isSaving ? <Loader className="animate-spin" /> : <Save />}
-        </Button>
-        <Button
-          variant="outline"
-          type="button"
-          size="icon"
-          disabled={isSaving}
-          onClick={cancelEdit}
-          aria-label={"cancel-edit"}
-        >
-          <X />
-        </Button>
-      </div>
+      <Button
+        variant="eventGhost"
+        type="button"
+        disabled={isSaving}
+        onClick={() => {
+          void saveChanges();
+        }}
+        aria-label={"save"}
+      >
+        {isSaving ? <Loader className="animate-spin" /> : <Save />}
+      </Button>
     );
   }
 
   return (
     <Button
-      variant="outline"
+      variant="eventGhost"
       type="button"
-      size="icon"
       aria-label={"edit"}
       onClick={enterEditMode}
     >
