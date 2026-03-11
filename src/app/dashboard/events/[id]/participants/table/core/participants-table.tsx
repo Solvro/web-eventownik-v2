@@ -103,7 +103,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
           </TableHeader>
           <TableBody>
             {visibleRows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} className="h-18">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
