@@ -260,6 +260,7 @@ export async function updateEvent(
                     : undefined,
                 isSensitiveData: change.data.isSensitiveData,
                 reason: change.data.reason,
+                allowOther: change.data.allowOther,
               }),
             },
           );
@@ -315,6 +316,7 @@ export async function updateEvent(
                     : undefined,
                 isSensitiveData: change.data.isSensitiveData,
                 reason: change.data.reason,
+                allowOther: change.data.allowOther,
               }),
             },
           );

@@ -240,7 +240,22 @@ export function AttributeItem({
 
       {(watch(`attributes.${index}.type`) === "select" ||
         watch(`attributes.${index}.type`) === "multiselect") && (
-        <div className="space-y-2">
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={`allowOther-${index.toString()}`}
+              onCheckedChange={(checked) => {
+                setValue(`attributes.${index}.allowOther`, checked === true);
+                onUpdateItem?.(index, getValues(`attributes.${index}`));
+              }}
+              defaultChecked={attribute.allowOther}
+            />
+            <Label htmlFor={`allowOther-${index.toString()}`}>
+              Zezwól na odpowiedź &quot;Inne&quot; z możliwością wpisania
+              własnej wartości
+            </Label>
+          </div>
+
           <div className="flex gap-2">
             <Input
               value={optionsInput}
@@ -254,9 +269,10 @@ export function AttributeItem({
             />
             <Button variant="outline" onClick={addOption}>
               <PlusIcon className="h-4 w-4" />
-              Dodaj opcję
+              <span className="max-[500px]:hidden">Dodaj opcję</span>
             </Button>
           </div>
+
           <div className="flex flex-wrap gap-2">
             <DndContext
               sensors={sensors}

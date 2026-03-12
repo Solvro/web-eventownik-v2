@@ -11,6 +11,7 @@ export type AttributeChangeData = Pick<
   | "order"
   | "isSensitiveData"
   | "reason"
+  | "allowOther"
 > & { id?: number };
 
 export interface AttributeChange {

@@ -14,6 +14,7 @@ export interface EventAttribute {
   updatedAt: string;
   isSensitiveData: boolean;
   reason: string | null;
+  allowOther: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   order: number | null;
   createdAt: string;
   updatedAt: string;
+  allowOther: boolean;
 }
 
 export interface FormAttribute extends Attribute {

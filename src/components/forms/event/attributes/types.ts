@@ -10,6 +10,7 @@ export type NewEventAttribute = Pick<
   | "order"
   | "isSensitiveData"
   | "reason"
+  | "allowOther"
 > & { id?: number };
 
 export interface AttributeItemProps {

@@ -77,6 +77,7 @@ export function AttributesForm({
       order: fields.length,
       isSensitiveData: false,
       reason: null,
+      allowOther: false,
     };
 
     append(newAttribute);
