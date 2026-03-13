@@ -62,19 +62,31 @@ export function EditParticipantButton({
     }
 
     const attributeValues: Record<number, string> = {};
+    const baseUpdates: Record<string, unknown> = {};
+
     for (const column of table.getAllColumns()) {
       const attribute = column.columnDef.meta?.attribute;
       if (attribute != null) {
         const value = participant[attribute.id.toString()];
         attributeValues[attribute.id] = value == null ? "" : String(value);
+      } else if (
+        column.id !== "select" &&
+        column.id !== "no" &&
+        column.id !== "edit"
+      ) {
+        // Collect basic fields, assuming column.id corresponds to participant keys like 'email'
+        baseUpdates[column.id] = participant[column.id];
       }
     }
 
     setIsSaving(true);
     const { success } = await updateParticipant(
-      attributeValues,
       eventId,
       participant.id.toString(),
+      {
+        participantAttributes: attributeValues,
+        ...baseUpdates,
+      },
     );
     setIsSaving(false);
 

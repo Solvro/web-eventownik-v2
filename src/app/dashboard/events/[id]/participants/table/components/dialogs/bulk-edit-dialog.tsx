@@ -91,11 +91,9 @@ export function BulkEditDialog({
         const attributeValues: Record<number, string> = {
           [selectedAttribute.id]: value,
         };
-        return updateParticipant(
-          attributeValues,
-          eventId,
-          row.original.id.toString(),
-        );
+        return updateParticipant(eventId, row.original.id.toString(), {
+          participantAttributes: attributeValues,
+        });
       }),
     );
 
