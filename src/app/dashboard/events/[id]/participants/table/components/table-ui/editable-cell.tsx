@@ -1,8 +1,10 @@
 "use client";
 
+/* eslint-disable unicorn/prevent-abbreviations */
 import type { CellContext } from "@tanstack/react-table";
 import { useState } from "react";
 
+import { Input } from "@/components/ui/input";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -17,21 +19,29 @@ const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiselect", "block"]);
 
 interface EditableCellProps {
   info: CellContext<FlattenedParticipant, ParticipantAttributeValueType>;
-  attribute: Attribute;
-  blocks: (Block | null)[];
+  attribute?: Attribute;
+  blocks?: (Block | null)[];
 }
 
-export function EditableCell({ info, attribute, blocks }: EditableCellProps) {
+export function EditableCell({
+  info,
+  attribute,
+  blocks = [],
+}: EditableCellProps) {
   const isEditing = info.row.original.mode === "edit";
 
   if (!isEditing) {
-    const formatted = formatAttributeValue(
-      info.getValue(),
-      attribute.type,
-      attribute.id,
-      blocks,
-    );
-    return formatted instanceof Date ? formatted.toISOString() : formatted;
+    if (attribute != null) {
+      const formatted = formatAttributeValue(
+        info.getValue(),
+        attribute.type,
+        attribute.id,
+        blocks,
+      );
+      return formatted instanceof Date ? formatted.toISOString() : formatted;
+    }
+    const rawValue = info.getValue();
+    return rawValue == null ? "" : String(rawValue);
   }
 
   return (
@@ -39,10 +49,14 @@ export function EditableCell({ info, attribute, blocks }: EditableCellProps) {
   );
 }
 
-function EditableCellInput({ info, attribute, blocks }: EditableCellProps) {
+function EditableCellInput({
+  info,
+  attribute,
+  blocks = [],
+}: EditableCellProps) {
   const rawValue = info.getValue();
   const stringValue = rawValue == null ? "" : String(rawValue);
-  const key = attribute.id.toString();
+  const key = attribute == null ? info.column.id : attribute.id.toString();
 
   const [localValue, setLocalValue] = useState(stringValue);
 
@@ -53,7 +67,10 @@ function EditableCellInput({ info, attribute, blocks }: EditableCellProps) {
     });
   }
 
-  if (attribute.type === "file" || attribute.type === "drawing") {
+  if (
+    attribute != null &&
+    (attribute.type === "file" || attribute.type === "drawing")
+  ) {
     return (
       <span className="text-muted-foreground text-sm italic">
         {stringValue === "" ? "—" : "Uploaded"}
@@ -61,9 +78,12 @@ function EditableCellInput({ info, attribute, blocks }: EditableCellProps) {
     );
   }
 
+  const isImmediate =
+    attribute == null ? false : IMMEDIATE_TYPES.has(attribute.type);
+
   function handleChange(newValue: string) {
     setLocalValue(newValue);
-    if (IMMEDIATE_TYPES.has(attribute.type)) {
+    if (isImmediate) {
       updateRow(newValue);
     }
   }
@@ -71,18 +91,27 @@ function EditableCellInput({ info, attribute, blocks }: EditableCellProps) {
   return (
     <div
       onBlur={() => {
-        if (!IMMEDIATE_TYPES.has(attribute.type)) {
+        if (!isImmediate) {
           updateRow(localValue);
         }
       }}
     >
-      <AttributeValueInput
-        attribute={attribute}
-        blocks={blocks}
-        value={localValue}
-        onChange={handleChange}
-        idPrefix={key}
-      />
+      {attribute == null ? (
+        <Input
+          value={localValue}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
+        />
+      ) : (
+        <AttributeValueInput
+          attribute={attribute}
+          blocks={blocks}
+          value={localValue}
+          onChange={handleChange}
+          idPrefix={key}
+        />
+      )}
     </div>
   );
 }
