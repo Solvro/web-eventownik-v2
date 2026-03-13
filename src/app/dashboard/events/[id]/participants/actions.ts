@@ -179,14 +179,19 @@ export async function deleteParticipant(
 }
 
 export async function updateParticipant(
-  values: Record<number, string>,
   eventId: string,
   participantId: string,
+  payload: {
+    participantAttributes?: Record<number, string>;
+    [key: string]: unknown;
+  },
 ) {
   const session = await verifySession();
   if (session === null) {
     redirect("/auth/login");
   }
+
+  const { participantAttributes, ...baseFields } = payload;
 
   const response = await fetch(
     `${API_URL}/events/${eventId}/participants/${participantId}`,
@@ -197,13 +202,14 @@ export async function updateParticipant(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        participantAttributes: Object.entries(values)
-          //multiselect case - unchecking all options in multiselect doesn't work because of this filter
-          //However, I suppose there won't be many cases when it's needed (if any)
-          .filter(([, value]) => value !== "")
-          .map(([key, value]) => {
-            return { attributeId: key, value };
-          }),
+        ...baseFields,
+        ...(participantAttributes != null && {
+          participantAttributes: Object.entries(participantAttributes)
+            .filter(([, value]) => value !== "")
+            .map(([key, value]) => {
+              return { attributeId: key, value };
+            }),
+        }),
       }),
     },
   );
