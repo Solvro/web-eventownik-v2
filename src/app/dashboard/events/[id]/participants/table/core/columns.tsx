@@ -66,7 +66,7 @@ const BASE_COLUMNS = [
     maxSize: 300,
     meta: { name: "Email" },
     header: (info) => <SortHeader info={info} name="Email" />,
-    cell: (info) => info.getValue(),
+    cell: (info) => <EditableCell info={info} />,
   }),
   columnHelper.accessor("createdAt", {
     size: 160,
