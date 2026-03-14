@@ -1,21 +1,16 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
 
+import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
 import type { Attribute } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 import { TableMenu } from "../components/buttons/table-menu";
-import { flattenParticipants } from "../core/data";
 import { ParticipantTable } from "../core/participants-table";
 import { Providers } from "./providers";
-
-async function noopDeleteMany(_ids: string[]) {
-  // no-op for tests
-}
 
 function TableWrapper({
   participants,
@@ -26,9 +21,12 @@ function TableWrapper({
   attributes: Attribute[];
   emails: EventEmail[];
 }) {
-  const [data, setData] = useState<FlattenedParticipant[]>(() =>
-    flattenParticipants(participants),
-  );
+  const {
+    data,
+    setData,
+    deleteManyParticipants,
+    isLoading: isQuerying,
+  } = useParticipantsData("100", participants);
 
   const { table, globalFilter } = useParticipantsTable({
     data,
@@ -48,11 +46,14 @@ function TableWrapper({
         table={table}
         eventId="100"
         globalFilter={globalFilter}
-        isQuerying={false}
+        isQuerying={isQuerying}
         emails={emails}
         attributes={attributes}
         blocks={[]}
-        deleteManyParticipants={noopDeleteMany}
+        deleteManyParticipants={async (ids) => {
+          await deleteManyParticipants(ids);
+          table.resetRowSelection();
+        }}
       />
       <ParticipantTable table={table} />
     </>

@@ -15,58 +15,17 @@ import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-// TODO rewrite tests after updating functionality
-describe.skip("Removing participant", () => {
-  const rowIndexToRemove = 0;
+describe("Removing participant", () => {
   beforeEach(() => {
     server.use(mockParticipantGet(deleteParticipantCaseData.participants));
     server.use(mockParticipantsGet(deleteParticipantCaseData.participants));
     cleanup();
   });
 
-  it("should correctly remove participant", async () => {
-    const { participants, attributes } = deleteParticipantCaseData;
-    const { user, getDataRow, getDataRows } = renderTable(
-      participants,
-      attributes,
-    );
-
-    // Step 1: Expand row to remove
-    const row = getDataRow(rowIndexToRemove);
-    const expandButton = getByRole(row, "button", {
-      name: /rozwiń/i,
-    });
-    expect(expandButton).toBeVisible();
-    await user.click(expandButton);
-
-    // Step 2: Click remove button
-    const deleteButton = getByRole(row, "button", {
-      name: /usuń/i,
-    });
-    expect(deleteButton).toBeVisible();
-    await user.click(deleteButton);
-
-    // Step 3: Confirm deletion
-    const alertDialog = screen.getByRole("alertdialog");
-    expect(alertDialog).toBeVisible();
-    const confirmDeletionButton = getByRole(alertDialog, "button", {
-      name: /usuń/i,
-    });
-    expect(confirmDeletionButton).toBeVisible();
-    await user.click(confirmDeletionButton);
-
-    const toast = screen.getByText(/usunięto/i);
-    expect(toast).toBeVisible();
-
-    // Check if participant was removed
-    expect(getDataRows().length).toBeLessThan(participants.length);
-  });
-
   it("should correctly remove selected participants", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRows } = renderTable(participants, attributes);
 
-    // Step 1: Select all rows
     for (const row of getDataRows()) {
       const selectButton = getByRole(row, "checkbox", {
         name: /wybierz wiersz/i,
@@ -74,66 +33,24 @@ describe.skip("Removing participant", () => {
       await user.click(selectButton);
     }
 
-    // Step 2: Click delete many button
     const deleteManyButton = screen.getByRole("button", {
       name: /usuń zaznaczone/i,
     });
+
     await user.click(deleteManyButton);
 
-    // Step 3: Confirm deletion
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
 
     const confirmDeletion = getByRole(alertDialog, "button", {
       name: /usuń/i,
     });
+
+    server.use(mockParticipantsGet([]));
+
     await user.click(confirmDeletion);
 
-    // No rows should be displayed - we've deleted all
-    expect(screen.getByText(/nie znaleziono/i)).toBeVisible();
-    expect(getDataRows().length).toBe(0);
-  });
-
-  it("should correctly handle server error when removing one participant", async () => {
-    const { participants, attributes } = deleteParticipantCaseData;
-    const { user, getDataRow } = renderTable(participants, attributes);
-    server.use(
-      http.delete<{ eventId: string; participantId: string }>(
-        `${API_URL}/events/:eventId/participants/:participantId`,
-        () => {
-          return HttpResponse.json({}, { status: 500 });
-        },
-      ),
-    );
-
-    // Step 1: Expand row to remove
-    const row = getDataRow(rowIndexToRemove);
-    const expandButton = getByRole(row, "button", {
-      name: /rozwiń/i,
-    });
-    expect(expandButton).toBeVisible();
-    await user.click(expandButton);
-
-    // Step 2: Click remove button
-    const deleteButton = getByRole(row, "button", {
-      name: /usuń/i,
-    });
-    expect(deleteButton).toBeVisible();
-    await user.click(deleteButton);
-
-    // Step 3: Confirm deletion
-    const alertDialog = screen.getByRole("alertdialog");
-    expect(alertDialog).toBeVisible();
-    const confirmDeletionButton = getByRole(alertDialog, "button", {
-      name: /usuń/i,
-    });
-    expect(confirmDeletionButton).toBeVisible();
-    await user.click(confirmDeletionButton);
-
-    // Check for an error
-    const toast = screen.getByText(/nie udało/i);
-    expect(toast).toBeVisible();
-    expect(rowIndexToRemove).toBeVisible();
+    expect(getDataRows()).toHaveLength(0);
   });
 
   it("should correctly handle server error when removing many participants", async () => {
@@ -148,7 +65,6 @@ describe.skip("Removing participant", () => {
       ),
     );
 
-    // Step 1: Select all rows
     for (const row of getDataRows()) {
       const selectButton = getByRole(row, "checkbox", {
         name: /wybierz wiersz/i,
@@ -156,13 +72,11 @@ describe.skip("Removing participant", () => {
       await user.click(selectButton);
     }
 
-    // Step 2: Click delete many button
     const deleteManyButton = screen.getByRole("button", {
       name: /usuń zaznaczone/i,
     });
     await user.click(deleteManyButton);
 
-    // Step 3: Confirm deletion
     const alertDialog = screen.getByRole("alertdialog");
     expect(alertDialog).toBeVisible();
 
@@ -171,9 +85,6 @@ describe.skip("Removing participant", () => {
     });
     await user.click(confirmDeletion);
 
-    // Every row should be displayed
-    const toast = screen.getByText(/nie udało/i);
-    expect(toast).toBeVisible();
-    expect(getDataRows().length).toBe(participants.length);
+    expect(getDataRows()).toHaveLength(participants.length);
   });
 });
