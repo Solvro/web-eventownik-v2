@@ -12,9 +12,11 @@ interface SortHeaderProps<T> {
 
 export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
   const sorted = info.column.getIsSorted();
+  const ariaSort =
+    sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : "none";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" aria-sort={ariaSort}>
       <Button
         variant={"eventGhost"}
         className={(truncate ?? false) ? "max-w-37.5 truncate" : ""}
