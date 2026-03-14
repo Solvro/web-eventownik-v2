@@ -9,8 +9,8 @@ import { renderTable } from "./utils";
  * So testing sorting for each attribute type is redundant for now
  * But maybe it will be useful in the future, maybe...
  */
-// TODO rewrite tests after updating functionality
-describe.skip("Sorting", () => {
+
+describe("Sorting", () => {
   // In current implementation first 4 columns are fixed:
   // Select checkbox | No. | Registration date | Email
   const TESTED_COLUMN_INDEX = 4;
