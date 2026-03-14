@@ -25,8 +25,7 @@ function getFilterButtonPopup(header: HTMLElement) {
   });
 }
 
-// TODO rewrite tests after updating functionality
-describe.skip("Filtering", () => {
+describe("Filtering", () => {
   beforeEach(() => {
     cleanup();
   });
@@ -58,16 +57,18 @@ describe.skip("Filtering", () => {
     async ({ participants, attributes }) => {
       const { user, getDataRows } = renderTable(participants, attributes);
 
-      // Step 1: All rows should be visisble at the beginning
+      // Step 1: All rows should be visible at the beginning
       expect(getDataRows().length).toBe(participants.length);
 
-      const headerFilter = screen.getByRole("columnheader", {
-        name: attributes[0].name,
-      });
-      const filterButtonPopup = getFilterButtonPopup(headerFilter);
+      const getHeaderFilter = () =>
+        screen.getByRole("columnheader", {
+          name: attributes[0].name,
+        });
+      const getFilterButtonPopup_ = () =>
+        getFilterButtonPopup(getHeaderFilter());
 
       // Step 2: Click filter popup button - popup menu should be visible
-      await user.click(filterButtonPopup);
+      await user.click(getFilterButtonPopup_());
       const filterMenu = screen.getByRole("menu");
       expect(filterMenu).toBeVisible();
 
@@ -80,7 +81,7 @@ describe.skip("Filtering", () => {
       expect(oneFilterAppliedRows.length).toBeLessThan(participants.length);
 
       // Step 4: Click second of filters - rows should be filtered
-      await user.click(filterButtonPopup);
+      await user.click(getFilterButtonPopup_());
       options = getMenuOptions(screen.getByRole("menu"));
       // Previously checked filter should be still applied
       expect(options[0].getAttribute("aria-checked")).toBe("true");
@@ -97,7 +98,7 @@ describe.skip("Filtering", () => {
       );
 
       // Step 5: Check all filters - all rows should be visible
-      await user.click(filterButtonPopup);
+      await user.click(getFilterButtonPopup_());
       options = getMenuOptions(screen.getByRole("menu"));
       for (const option of options) {
         if (option.getAttribute("aria-checked") === "false") {
@@ -124,18 +125,19 @@ describe.skip("Filtering", () => {
       // Step 1: All rows should be visisble at the beginning
       expect(getDataRows().length).toBe(participants.length);
 
-      const headerFilter = screen.getByRole("columnheader", {
-        name: attributes[0].name,
-      });
-      const filterButtonPopup = getFilterButtonPopup(headerFilter);
+      const getHeaderFilter = () =>
+        screen.getByRole("columnheader", {
+          name: attributes[0].name,
+        });
+      const getFilterButton = () => getFilterButtonPopup(getHeaderFilter());
 
       // Step 2: Click filter popup button - popup menu should be visible
-      await user.click(filterButtonPopup);
+      await user.click(getFilterButton());
       const filterMenu = screen.getByRole("menu");
       expect(filterMenu).toBeVisible();
 
       // Step 3: Click last filter option (Empty)- rows should be filtered
-      let options = getMenuOptions(filterMenu);
+      const options = getMenuOptions(filterMenu);
       const emptyOption = options.at(-1);
       if (emptyOption === undefined) {
         throw new Error("Empty option not found!");
@@ -147,10 +149,13 @@ describe.skip("Filtering", () => {
       expect(rowsAfterFiltering.length).toBe(numberOfRowsWithEmptyValues);
 
       // Step 5: Check all filters - all rows should be visible
-      await user.click(filterButtonPopup);
-      options = getMenuOptions(screen.getByRole("menu"));
-      for (const option of options) {
-        if (option.getAttribute("aria-checked") === "false") {
+      await user.click(getFilterButton());
+
+      const allFiltersMenu = screen.getByRole("menu");
+      const allOptions = getMenuOptions(allFiltersMenu);
+
+      for (const option of allOptions) {
+        if (option.getAttribute("aria-checked") === "true") {
           await user.click(option);
         }
       }
@@ -167,16 +172,15 @@ describe.skip("Filtering", () => {
       attributes,
     );
 
-    const filterButtonPopups = attributes.map((attribute) => {
-      const header = screen.getByRole("columnheader", {
-        name: attribute.name,
-      });
-      return getFilterButtonPopup(header);
-    });
-
     // Step 1: Apply filters for 2 columns
-    for (const filterButton of filterButtonPopups) {
-      await user.click(filterButton);
+    for (const attribute of attributes) {
+      const getFilterButton = () => {
+        const header = screen.getByRole("columnheader", {
+          name: attribute.name,
+        });
+        return getFilterButtonPopup(header);
+      };
+      await user.click(getFilterButton());
       const filterMenu = screen.getByRole("menu");
       const options = getMenuOptions(filterMenu);
       await user.click(options[0]);
