@@ -20,7 +20,7 @@ function SortableTile({ id, index, children }: SortableTileProps) {
     <div
       ref={ref}
       className={cn(
-        "group relative cursor-grab touch-none transition-opacity active:cursor-grabbing",
+        "group relative cursor-grab transition-opacity active:cursor-grabbing",
         isDragSource && "z-50 opacity-50",
       )}
     >
