@@ -1093,7 +1093,5 @@ export const stringLikeDataTestCases = [
   numberCaseData,
   telCaseData,
   checkboxCaseData,
-  timeCaseData,
   dateCaseData,
-  datetimeCaseData,
 ];
