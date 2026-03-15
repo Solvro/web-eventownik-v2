@@ -12,7 +12,7 @@ import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Checkbox } from "./ui/checkbox";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { Field, FieldGroup, FieldLabel } from "./ui/field";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -54,7 +54,9 @@ export function AttributeBlocksWrapper({
   });
   const [hideFullBlocks, setHideFullBlocks] = useState(false);
 
-  const filteredBlocks = eventBlocks.filter((block) =>
+  const sortedBlocks = eventBlocks.toSorted((a, b) => a.order - b.order);
+
+  const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),
   );
   return (

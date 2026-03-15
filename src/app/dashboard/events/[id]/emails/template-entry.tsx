@@ -3,9 +3,8 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import type { EventEmail } from "@/types/emails";
+import type { EventEmail, SingleEventEmail } from "@/types/emails";
 
-import { getSingleEventEmail } from "./data-access";
 import { DeleteEmailPopup } from "./delete-email-popup";
 import { MailHistoryPopup } from "./mail-history-popup";
 
@@ -19,20 +18,17 @@ function EmailTriggerLabel({ trigger }: { trigger: string }) {
   return <p className="text-muted-foreground">{target.name}</p>;
 }
 
-async function EmailTemplateEntry({
+function EmailTemplateEntry({
   eventId,
   emailTemplate,
+  singleEmail,
 }: {
   emailTemplate: EventEmail;
   eventId: string;
+  singleEmail: SingleEventEmail | null;
 }) {
-  const targetMail = await getSingleEventEmail(
-    eventId,
-    emailTemplate.id.toString(),
-  );
-
   return (
-    <div className="flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
+    <div className="bg-background flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" title="Edytuj szablon" asChild>
           <Link href={`emails/${emailTemplate.id.toString()}`}>
@@ -40,7 +36,7 @@ async function EmailTemplateEntry({
             <span className="sr-only">Edytuj szablon</span>
           </Link>
         </Button>
-        {targetMail !== null && <MailHistoryPopup email={targetMail} />}
+        {singleEmail !== null && <MailHistoryPopup email={singleEmail} />}
         <DeleteEmailPopup
           eventId={eventId}
           mailId={emailTemplate.id.toString()}
