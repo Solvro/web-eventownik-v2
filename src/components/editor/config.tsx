@@ -13,6 +13,7 @@ import {
   Lightbulb,
   LinkIcon,
   Mail,
+  Tag,
   Type,
   X,
   Zap,
@@ -31,6 +32,7 @@ import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getBase64FromUrl } from "@/lib/utils";
+import type { EventAttribute } from "@/types/attributes";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
@@ -104,10 +106,12 @@ function ContainerWrapper({
 export const getPuckConfig = ({
   tags,
   forms,
+  attributes,
   eventData,
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
+  attributes: Pick<EventAttribute, "id" | "name">[];
   eventData: PuckEventData;
 }): PuckConfig => {
   return {
@@ -1017,44 +1021,31 @@ export const getPuckConfig = ({
           };
         }
 
+        if (data.props?.trigger === "attribute_changed") {
+          return {
+            ...defaultFields,
+            triggerValue: {
+              type: "select",
+              label: "Atrybut",
+              options: attributes.map((attribute) => {
+                return { label: attribute.name, value: attribute.id };
+              }),
+              labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
+            },
+            triggerValue2: {
+              type: "text",
+              label: "Wartość",
+              labelIcon: <Zap className={PUCK_ICON_CLASSNAME} />,
+            },
+          };
+        }
+
         return defaultFields;
       },
       defaultProps: {
         name: "Nowa wiadomość",
         trigger: "manual",
       },
-      //   return (
-      //     <div
-      //       id="email-root"
-      //       style={{ width: "100%", backgroundColor: "#f3f4f6" }}
-      //     >
-      //       <table width="100%" {...tableProps} style={tableStyles}>
-      //         <tbody>
-      //           <tr>
-      //             <td align="center" style={{ padding: "20px 0" }}>
-      //               {/* Main Content Container - usually limited to 600px/640px for email */}
-      //               <table
-      //                 width="600"
-      //                 {...tableProps}
-      //                 style={{
-      //                   ...tableStyles,
-      //                   backgroundColor: "#ffffff",
-      //                   maxWidth: "100%",
-      //                 }}
-      //               >
-      //                 <tbody>
-      //                   <tr>
-      //                     <td className="border border-red-500">{children}</td>
-      //                   </tr>
-      //                 </tbody>
-      //               </table>
-      //             </td>
-      //           </tr>
-      //         </tbody>
-      //       </table>
-      //     </div>
-      //   );
-      // },
       render: ({ children, name }) => {
         return (
           <div

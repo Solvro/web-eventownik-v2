@@ -19,14 +19,12 @@ export const EMAIL_TRIGGERS = [
       "Ten szablon zostanie automatycznie wysłany do uczestnika po wypełnieniu określonego formularza.",
     value: "form_filled",
   },
-  // NOTE: Commented out because this trigger is not yet implemented on the backend.
-  // Uncomment when the backend supports this feature.
-  // {
-  //   name: "Zmiana atrybutu",
-  //   description:
-  //     "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie na daną wartość.",
-  //   value: "attribute_changed",
-  // },
+  {
+    name: "Zmiana atrybutu",
+    description:
+      "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie na podaną wartość.",
+    value: "attribute_changed",
+  },
   {
     name: "Manualny",
     description:

@@ -77,6 +77,7 @@ export default async function EventMailEditPage({
       <Editor
         tags={[...attributeTags, ...formTags]}
         forms={forms}
+        attributes={attributes}
         initialData={initialData}
         mutationData={{
           emailId: emailToEdit.id.toString(),

@@ -51,6 +51,7 @@ export default async function EventMailEditPage({
     <Editor
       tags={[...attributeTags, ...formTags]}
       forms={forms}
+      attributes={attributes}
       initialData={{
         root: {
           props: {

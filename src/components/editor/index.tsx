@@ -7,6 +7,7 @@ import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
 import { overrides } from "@/components/editor/overrides";
 import type { MessageTag } from "@/lib/extensions/tags";
+import type { EventAttribute } from "@/types/attributes";
 import type { PuckData, PuckEventData, PuckMutationData } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
@@ -14,6 +15,7 @@ interface BlockEditorProps {
   initialData: Partial<PuckData>;
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
+  attributes: Pick<EventAttribute, "id" | "name">[];
   mutationData: PuckMutationData;
   eventData: PuckEventData;
 }
@@ -23,10 +25,11 @@ function Editor({
   initialData,
   tags,
   forms,
+  attributes,
   mutationData,
   eventData,
 }: BlockEditorProps) {
-  const config = getPuckConfig({ tags, forms, eventData });
+  const config = getPuckConfig({ tags, forms, attributes, eventData });
 
   return (
     <Puck
