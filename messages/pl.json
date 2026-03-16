@@ -31,7 +31,17 @@
     "captchaInProgress": "Weryfikacja CAPTCHA...",
     "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie",
     "emailIsRequiredTooltip": "Musisz podać adres e-mail, aby zarejestrować się na to wydarzenie.",
-    "attributeIsRequiredTooltip": "To pole jest wymagane."
+    "attributeIsRequiredTooltip": "To pole jest wymagane.",
+    "searchBlocksLabel": "Wyszukaj bloki",
+    "searchBlocksPlaceholder": "Wyszukaj bloki...",
+    "hideFullBlocks": "Ukryj pełne",
+    "noBlocksFound": "Nie znaleziono pasujących bloków.",
+    "noBlockOption": "Żaden",
+    "noBlockOptionDescription": "(zrezygnuj lub wypisz się)",
+    "userRegisteredOnBlock": "Jesteś już na tej liście.",
+    "participants": "Uczestnicy",
+    "noParticipants": "Brak uczestników.",
+    "anonymousParticipant": "Anonimowy uczestnik."
   },
   "Auth": {
     "registerTitle": "Rejestracja organizatora",

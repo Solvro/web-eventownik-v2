@@ -25,5 +25,6 @@ export interface SortableAttributeItemProps extends AttributeItemProps {
 
 export interface SortableOptionProps {
   option: string;
+  index: number;
   onRemove: (option: string) => void;
 }

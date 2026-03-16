@@ -31,7 +31,17 @@
     "captchaInProgress": "CAPTCHA verification...",
     "captchaFailed": "CAPTCHA error. Try again",
     "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
-    "attributeIsRequiredTooltip": "This field is required."
+    "attributeIsRequiredTooltip": "This field is required.",
+    "searchBlocksLabel": "Search blocks",
+    "searchBlocksPlaceholder": "Search blocks...",
+    "hideFullBlocks": "Hide full",
+    "noBlocksFound": "No matching blocks found.",
+    "noBlockOption": "None",
+    "noBlockOptionDescription": "(opt out or unregister)",
+    "userRegisteredOnBlock": "You are already on this list.",
+    "participants": "Participants",
+    "noParticipants": "No participants",
+    "anonymousParticipant": "Anonymous participant."
   },
   "Auth": {
     "registerTitle": "Organizer registration",
