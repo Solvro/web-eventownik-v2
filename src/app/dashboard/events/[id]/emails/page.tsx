@@ -1,14 +1,11 @@
 import { Mail } from "lucide-react";
 import type { Metadata } from "next";
 
-import type { SingleEventEmail } from "@/types/emails";
-
 import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
   getEventAttributes,
   getEventEmails,
   getEventForms,
-  getSingleEventEmail,
 } from "./data-access";
 import { SortableEmailGrid } from "./sortable-email-grid";
 
@@ -26,19 +23,6 @@ export default async function DashboardEventEmailTemplatesPage({
   const attributes = await getEventAttributes(id);
   const forms = await getEventForms(id);
 
-  const singleEmails: Record<number, SingleEventEmail | null> = {};
-  if (templates !== null) {
-    const results = await Promise.all(
-      templates.map(async (template) => ({
-        id: template.id,
-        data: await getSingleEventEmail(id, template.id.toString()),
-      })),
-    );
-    for (const result of results) {
-      singleEmails[result.id] = result.data;
-    }
-  }
-
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -54,11 +38,7 @@ export default async function DashboardEventEmailTemplatesPage({
           <p className="text-red-600">Nie udało się pobrać szablonów</p>
         </div>
       ) : templates.length > 0 ? (
-        <SortableEmailGrid
-          templates={templates}
-          eventId={id}
-          singleEmails={singleEmails}
-        />
+        <SortableEmailGrid templates={templates} eventId={id} />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">

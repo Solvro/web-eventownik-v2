@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import type { EventEmail, SingleEventEmail } from "@/types/emails";
+import type { EventEmail } from "@/types/emails";
 
 import { DeleteEmailPopup } from "./delete-email-popup";
 import { MailHistoryPopup } from "./mail-history-popup";
@@ -21,11 +21,9 @@ function EmailTriggerLabel({ trigger }: { trigger: string }) {
 function EmailTemplateEntry({
   eventId,
   emailTemplate,
-  singleEmail,
 }: {
   emailTemplate: EventEmail;
   eventId: string;
-  singleEmail: SingleEventEmail | null;
 }) {
   return (
     <div className="bg-background flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
@@ -36,7 +34,10 @@ function EmailTemplateEntry({
             <span className="sr-only">Edytuj szablon</span>
           </Link>
         </Button>
-        {singleEmail !== null && <MailHistoryPopup email={singleEmail} />}
+        <MailHistoryPopup
+          eventId={eventId}
+          emailId={emailTemplate.id.toString()}
+        />
         <DeleteEmailPopup
           eventId={eventId}
           mailId={emailTemplate.id.toString()}
