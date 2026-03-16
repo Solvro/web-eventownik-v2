@@ -9,7 +9,7 @@ import type { AttributeBase } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { Participant } from "@/types/participant";
 
-import { BlockEntry } from "./block-entry";
+import { SortableBlockGrid } from "./sortable-block-grid";
 
 async function getRootBlock(
   eventId: string,
@@ -156,6 +156,15 @@ export default async function EventBlockEditPage({
   if (rootBlock == null) {
     notFound();
   } else {
+    const participantsByBlock: Record<number, Participant[]> = {};
+    for (const childBlock of rootBlock.children) {
+      participantsByBlock[childBlock.id] = getParticipantsInChildBlock(
+        participantsInRootBlock,
+        rootBlockId,
+        childBlock.id.toString(),
+      );
+    }
+
     return (
       <div className="flex grow flex-col gap-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -174,30 +183,23 @@ export default async function EventBlockEditPage({
             parentId={rootBlock.id.toString()}
           />
         </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-          {rootBlock.children.length > 0 ? (
-            rootBlock.children.map((childBlock) => (
-              <BlockEntry
-                key={childBlock.id}
-                block={childBlock}
-                attributeId={rootBlockId}
-                eventId={eventId}
-                participantsInBlock={getParticipantsInChildBlock(
-                  participantsInRootBlock,
-                  rootBlockId,
-                  childBlock.id.toString(),
-                )}
-              />
-            ))
-          ) : (
+        {rootBlock.children.length > 0 ? (
+          <SortableBlockGrid
+            blocks={rootBlock.children}
+            eventId={eventId}
+            attributeId={rootBlockId}
+            participantsByBlock={participantsByBlock}
+          />
+        ) : (
+          <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
             <div className="flex w-full flex-col items-center justify-center py-12 text-center">
               <Cuboid className="text-muted-foreground mb-4 size-12" />
               <h3 className="text-muted-foreground text-lg">
                 Nie masz jeszcze żadnego bloku w bloku
               </h3>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }

@@ -1,19 +1,7 @@
-import type { DragEndEvent } from "@dnd-kit/core";
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
-import {
-  SortableContext,
-  arrayMove,
-  horizontalListSortingStrategy,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
+import { RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers";
+import type { DragEndEvent } from "@dnd-kit/dom";
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable } from "@dnd-kit/react/sortable";
 import { HelpCircle, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -61,25 +49,29 @@ export function AttributeItem({
   const { register, formState, setValue, getValues, watch } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
   const [optionsInput, setOptionsInput] = useState("");
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
 
   const allAttributes = watch("attributes");
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over != null && active.id !== over.id) {
-      const oldOptions = getValues(`attributes.${index}.options`);
-      const oldIndex = oldOptions?.indexOf(active.id.toString()) ?? -1;
-      const newIndex = oldOptions?.indexOf(over.id.toString()) ?? -1;
-      if (oldIndex !== -1 && newIndex !== -1 && oldOptions != null) {
-        const newOptions = arrayMove(oldOptions, oldIndex, newIndex);
-        setValue(`attributes.${index}.options`, newOptions);
-        onUpdateItem?.(index, getValues(`attributes.${index}`));
+  const handleDragEnd: DragEndEvent = (event) => {
+    if (event.canceled) {
+      return;
+    }
+
+    const { source } = event.operation;
+
+    if (source != null && isSortable(source)) {
+      const initialIndex = source.sortable.initialIndex;
+      const newIndex = source.index;
+
+      if (initialIndex !== newIndex) {
+        const oldOptions = getValues(`attributes.${index}.options`);
+        if (oldOptions != null) {
+          const newOptions = [...oldOptions];
+          const [removed] = newOptions.splice(initialIndex, 1);
+          newOptions.splice(newIndex, 0, removed);
+          setValue(`attributes.${index}.options`, newOptions);
+          onUpdateItem?.(index, getValues(`attributes.${index}`));
+        }
       }
     }
   };
@@ -258,25 +250,21 @@ export function AttributeItem({
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
+            <DragDropProvider
               onDragEnd={handleDragEnd}
-              modifiers={[restrictToHorizontalAxis]}
+              modifiers={[RestrictToHorizontalAxis]}
             >
-              <SortableContext
-                items={watch(`attributes.${index}.options`) ?? []}
-                strategy={horizontalListSortingStrategy}
-              >
-                {watch(`attributes.${index}.options`)?.map((option) => (
+              {watch(`attributes.${index}.options`)?.map(
+                (option, optionIndex) => (
                   <SortableOption
                     key={option}
                     option={option}
+                    index={optionIndex}
                     onRemove={handleRemoveOption}
                   />
-                ))}
-              </SortableContext>
-            </DndContext>
+                ),
+              )}
+            </DragDropProvider>
           </div>
         </div>
       )}
