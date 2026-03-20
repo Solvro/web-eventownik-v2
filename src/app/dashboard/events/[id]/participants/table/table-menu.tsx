@@ -30,8 +30,8 @@ export function TableMenu({
   const [isUserSearching, setIsUserSearching] = useState(false);
 
   return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-x-2">
-      <div className="flex items-center gap-x-2">
+    <div className="flex w-full flex-wrap items-center justify-between gap-2">
+      <div className="flex items-center gap-x-2 max-md:w-full">
         <TableToolbar
           table={table}
           globalFilter={globalFilter}
