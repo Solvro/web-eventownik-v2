@@ -167,8 +167,8 @@ export default async function EventBlockEditPage({
 
     return (
       <div className="flex grow flex-col gap-8">
-        <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
-          <div className="space-y-2">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div className="md:space-y-2">
             <h1 className="text-3xl font-bold">{rootBlockName}</h1>
             <span className="text-muted-foreground text-lg">
               Łączna liczba uczestników:{" "}

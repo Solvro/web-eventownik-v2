@@ -28,7 +28,7 @@ function EmailTemplateEntry({
   singleEmail: SingleEventEmail | null;
 }) {
   return (
-    <div className="bg-background flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
+    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" title="Edytuj szablon" asChild>
           <Link href={`emails/${emailTemplate.id.toString()}`}>

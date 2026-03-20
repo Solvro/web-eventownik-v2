@@ -41,7 +41,7 @@ export default async function DashboardEventEmailTemplatesPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <h1 className="text-3xl font-bold">Szablony maili</h1>
         <CreateEmailTemplateForm
           eventId={id}
