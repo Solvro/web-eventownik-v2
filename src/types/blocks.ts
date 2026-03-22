@@ -11,6 +11,7 @@ export interface Block {
   isRootBlock: boolean;
   children: Block[];
   meta: {
+    participants: BlockParticipant[];
     participantsInBlockCount: number | undefined;
   };
 }
