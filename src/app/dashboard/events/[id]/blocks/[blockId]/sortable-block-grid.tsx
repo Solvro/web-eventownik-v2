@@ -2,7 +2,6 @@
 
 import { SortableTileGrid } from "@/components/sortable-tile-grid";
 import type { Block } from "@/types/blocks";
-import type { Participant } from "@/types/participant";
 
 import { reorderBlocks } from "../actions";
 import { BlockEntry } from "./block-entry";
