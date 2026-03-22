@@ -9,14 +9,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { Participant } from "@/types/participant";
+import type { BlockParticipant } from "@/types/blocks";
 
 import { BlockParticipantsTable } from "./(table)/table";
 
 function BlockParticipantsPopup({
   participants,
 }: {
-  participants: Participant[];
+  participants: BlockParticipant[];
 }) {
   return (
     <Dialog>

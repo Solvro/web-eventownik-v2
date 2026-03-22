@@ -7,7 +7,6 @@ import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { Participant } from "@/types/participant";
 
 import { BlockEntry } from "./block-entry";
 
@@ -38,32 +37,6 @@ async function getRootBlock(
   }
 }
 
-async function getParticipantsInRootBlock(
-  eventId: string,
-  blockId: string,
-  bearerToken: string,
-) {
-  const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${bearerToken}` },
-  });
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
-    console.error(
-      `[getParticipantsInRootBlock] Failed to fetch participants in block ${blockId} for event ${eventId}:`,
-      error,
-    );
-    return [];
-  }
-  const participants = (await response.json()) as Participant[];
-  return participants.filter((participant) => {
-    const targetBlockAttribute = participant.attributes.find((attribute) => {
-      return attribute.id.toString() === blockId;
-    });
-    return targetBlockAttribute !== undefined;
-  });
-}
-
 async function getRootBlockAttributeName(
   eventId: string,
   rootBlockAttributeId: string,
@@ -88,22 +61,6 @@ async function getRootBlockAttributeName(
       error,
     );
   }
-}
-
-function getParticipantsInChildBlock(
-  participantsInRootBlock: Participant[],
-  rootBlockId: string,
-  childBlockId: string,
-) {
-  return participantsInRootBlock.filter((participant) => {
-    // We disable this rule because we're sure that the participants we process ARE in this *root* block
-    // therefore, the attribute will be always present, but we still need to find it in order to reference it
-    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-    const targetBlockAttribute = participant.attributes.find(
-      (attribute) => attribute.id.toString() === rootBlockId,
-    ) as AttributeBase;
-    return targetBlockAttribute.value === childBlockId;
-  });
 }
 
 export async function generateMetadata({
@@ -142,11 +99,6 @@ export default async function EventBlockEditPage({
   const { bearerToken } = session;
 
   const rootBlock = await getRootBlock(eventId, rootBlockId, bearerToken);
-  const participantsInRootBlock = await getParticipantsInRootBlock(
-    eventId,
-    rootBlockId,
-    bearerToken,
-  );
   const rootBlockName = await getRootBlockAttributeName(
     eventId,
     rootBlockId,
@@ -182,11 +134,6 @@ export default async function EventBlockEditPage({
                 block={childBlock}
                 attributeId={rootBlockId}
                 eventId={eventId}
-                participantsInBlock={getParticipantsInChildBlock(
-                  participantsInRootBlock,
-                  rootBlockId,
-                  childBlock.id.toString(),
-                )}
               />
             ))
           ) : (

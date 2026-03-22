@@ -15,12 +15,10 @@ function BlockEntry({
   block,
   eventId,
   attributeId,
-  participantsInBlock,
 }: {
   block: Block;
   eventId: string;
   attributeId: string;
-  participantsInBlock: Participant[];
 }) {
   return (
     <div
@@ -34,7 +32,7 @@ function BlockEntry({
           attributeId={attributeId}
           parentId={block.id.toString()}
         />
-        <BlockParticipantsPopup participants={participantsInBlock} />
+        <BlockParticipantsPopup participants={block.meta.participants} />
         <DeleteBlockPopup
           eventId={eventId}
           blockId={block.id.toString()}
