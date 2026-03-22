@@ -15,14 +15,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Participant } from "@/types/participant";
+import type { BlockParticipant } from "@/types/blocks";
 
 import { columns } from "./columns";
 
 function BlockParticipantsTable({
   participants,
 }: {
-  participants: Participant[];
+  participants: BlockParticipant[];
 }) {
   const table = useReactTable({
     data: participants,
