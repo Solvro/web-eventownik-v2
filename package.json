@@ -88,6 +88,7 @@
     "cmdk": "^1.1.1",
     "country-flag-icons": "^1.5.20",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "ics": "^3.8.1",
     "jose": "^6.0.10",
     "jotai": "^2.12.2",
