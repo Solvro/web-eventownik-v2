@@ -92,7 +92,7 @@ export function AttributeInputBlock({
                 {t("noParticipants")}
               </p>
             ) : (
-              <ScrollArea className="[&>div:first-of-type]:max-h-64">
+              <ScrollArea className="[&>[data-slot='scroll-area-viewport']]:max-h-64">
                 <ul className="divide-border/60 space-y-0.5 px-1">
                   {block.meta.participants.map((occupant) => {
                     const isAnonymous =

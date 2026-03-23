@@ -25,6 +25,7 @@ function BlockParticipantsPopup({
         <PopoverTrigger
           className="flex items-center gap-2 text-sm"
           disabled={participants.length === 0}
+          aria-label={t("participants")}
         >
           <Users className="size-4" />
         </PopoverTrigger>
@@ -34,7 +35,7 @@ function BlockParticipantsPopup({
         {participants.length === 0 ? (
           <p className="text-muted-foreground text-sm">{t("noParticipants")}</p>
         ) : (
-          <ScrollArea className="[&>div:first-of-type]:max-h-64">
+          <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
             <ul className="divide-border/60 space-y-0.5 px-1">
               {participants.map((occupant) => {
                 const isAnonymous =
