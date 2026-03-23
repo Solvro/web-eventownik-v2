@@ -16,7 +16,11 @@ export interface Block {
   };
 }
 
-export type BlockParticipant = Record<string, string | number>;
+export interface BlockParticipant {
+  id: string;
+  email: string;
+  name?: string;
+}
 
 export interface PublicBlock extends Block {
   children: PublicBlock[];
