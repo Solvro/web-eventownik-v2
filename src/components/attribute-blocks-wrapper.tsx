@@ -6,7 +6,6 @@ import { Activity, useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
@@ -41,12 +40,10 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
-  attribute,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   userData: PublicParticipant;
   eventBlocks: PublicBlock[];
-  attribute: Attribute;
 }) {
   const t = useTranslations("Form");
   const [searchText, setSearchText] = useDebouncedState("", {
@@ -132,7 +129,6 @@ export function AttributeBlocksWrapper({
             userData={userData}
             block={childBlock}
             key={childBlock.id}
-            displayedAttributes={attribute.options ?? []}
           />
         ))}
       </RadioGroup>

@@ -202,7 +202,6 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
-              attribute={attribute}
             />
           ))}
         </>

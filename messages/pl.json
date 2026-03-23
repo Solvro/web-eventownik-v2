@@ -41,7 +41,7 @@
     "userRegisteredOnBlock": "Jesteś już na tej liście.",
     "participants": "Uczestnicy",
     "noParticipants": "Brak uczestników.",
-    "anonymousParticipant": "Anonimowy uczestnik."
+    "anonymousParticipant": "Anonimowy uczestnik"
   },
   "Auth": {
     "registerTitle": "Rejestracja organizatora",
