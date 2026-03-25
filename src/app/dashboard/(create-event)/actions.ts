@@ -38,6 +38,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("startDate", formatISO9075(event.startDate));
   formData.append("endDate", formatISO9075(event.endDate));
   formData.append("location", event.location ?? "");
+  formData.append("termsLink", event.termsLink ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
 
