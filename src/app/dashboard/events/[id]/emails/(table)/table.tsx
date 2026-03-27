@@ -52,7 +52,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
 
       <ScrollArea className="max-h-[60vh]">
         <div className="relative">
-          <Table>
+          <Table className="min-w-[640px] sm:min-w-0">
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -61,7 +61,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
                     return (
                       <TableHead
                         key={header.id}
-                        className="border-border bg-background border-r-2"
+                        className="border-border bg-background border-r-2 px-2 py-2 text-xs sm:px-3 sm:py-2 sm:text-sm"
                         aria-sort={getAriaSort(sortDirection)}
                       >
                         {header.isPlaceholder
@@ -81,7 +81,10 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className="px-2 py-2 text-xs sm:px-3 sm:py-2 sm:text-sm"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -94,7 +97,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="text-muted-foreground h-24 text-center"
+                    className="text-muted-foreground h-24 px-2 text-center text-xs sm:px-3 sm:text-sm"
                   >
                     Brak wyników
                   </TableCell>

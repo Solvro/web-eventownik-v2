@@ -38,24 +38,26 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
           <span className="sr-only">Historia wiadomości</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
-        <DialogTitle className="text-2xl font-bold">
+      <DialogContent className="flex max-h-[90dvh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col overflow-hidden p-4 sm:max-h-[90vh] sm:max-w-4xl sm:p-6">
+        <DialogTitle className="text-xl font-bold sm:text-2xl">
           Historia wiadomości
         </DialogTitle>
 
-        {isLoading ? (
-          <div className="py-24 text-center">
-            <p className="text-muted-foreground animate-pulse text-sm">
-              Ładowanie historii…
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="py-24 text-center">
+              <p className="text-muted-foreground animate-pulse text-sm">
+                Ładowanie historii…
+              </p>
+            </div>
+          ) : data !== null && data !== undefined ? (
+            <EmailHistoryTable email={data} />
+          ) : (
+            <p className="py-24 text-center text-sm text-red-500">
+              Nie udało się załadować danych.
             </p>
-          </div>
-        ) : data !== null && data !== undefined ? (
-          <EmailHistoryTable email={data} />
-        ) : (
-          <p className="py-24 text-center text-sm text-red-500">
-            Nie udało się załadować danych.
-          </p>
-        )}
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
