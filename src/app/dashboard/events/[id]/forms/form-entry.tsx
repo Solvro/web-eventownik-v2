@@ -8,7 +8,7 @@ import { DeleteFormPopup } from "./delete-form-popup";
 
 function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
   return (
-    <div className="bg-background flex h-64 w-64 flex-col justify-between rounded-md border border-slate-500 p-4">
+    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" asChild>
           <Link href={`forms/${form.id.toString()}`}>

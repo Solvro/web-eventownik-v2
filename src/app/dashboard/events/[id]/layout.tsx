@@ -67,7 +67,7 @@ export default async function DashboardEventLayout({
   const { event, attributes } = await fetchEventAndAttributes(id);
 
   return (
-    <div className="flex grow flex-col gap-4 sm:flex-row sm:gap-14">
+    <div className="mb-12 flex grow flex-col gap-4 sm:mb-0 sm:flex-row sm:gap-14">
       <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
       <DashboardSidebar event={event} attributes={attributes} />
       <div className="flex max-w-full grow flex-col overflow-x-auto px-0.5">
