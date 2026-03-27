@@ -129,7 +129,6 @@
   "EmailHistoryTable": {
     "searchPlaceholder": "Search in history",
     "openFilterMenu": "Open filter menu",
-    "statusPlaceholder": "Status",
     "statusLabel": "Status",
     "all": "All",
     "sent": "Sent",
