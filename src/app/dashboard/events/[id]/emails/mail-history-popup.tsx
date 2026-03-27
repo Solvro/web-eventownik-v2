@@ -44,7 +44,7 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
         </DialogTitle>
 
         {isLoading ? (
-          <div className="py-10 text-center">
+          <div className="py-24 text-center">
             <p className="text-muted-foreground animate-pulse text-sm">
               Ładowanie historii…
             </p>
@@ -52,7 +52,7 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
         ) : data !== null && data !== undefined ? (
           <EmailHistoryTable email={data} />
         ) : (
-          <p className="py-10 text-center text-sm text-red-500">
+          <p className="py-24 text-center text-sm text-red-500">
             Nie udało się załadować danych.
           </p>
         )}
