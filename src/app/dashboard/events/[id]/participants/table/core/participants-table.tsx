@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
 
@@ -112,7 +113,11 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                       minWidth: cell.column.getSize(),
                       maxWidth: cell.column.getSize(),
                     }}
-                    className="overflow-hidden text-ellipsis whitespace-nowrap"
+                    className={cn(
+                      "overflow-hidden text-ellipsis whitespace-nowrap",
+                      cell.column.id === "edit" &&
+                        "sticky right-3 z-20 overflow-visible",
+                    )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
