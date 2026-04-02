@@ -16,7 +16,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import type { Column, Table } from "@tanstack/react-table";
-import { GripVertical } from "lucide-react";
+import { Columns3Cog, GripVertical } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -114,7 +114,10 @@ export function ColumnSettingsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="h-10">
-        <Button variant={"outline"}>{t("columnSelectionDropdownTitle")}</Button>
+        <Button variant={"outline"}>
+          <Columns3Cog />
+          {t("columnSelectionDropdownTitle")}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DndContext
