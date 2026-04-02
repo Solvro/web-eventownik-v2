@@ -91,7 +91,7 @@ export function EditParticipantButton({
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="grid gap-1">
         <Button
           variant="eventGhost"
           type="button"
@@ -109,7 +109,7 @@ export function EditParticipantButton({
           )}
         </Button>
         <Button
-          variant="eventGhost"
+          variant="destructive"
           type="button"
           onClick={cancelEdit}
           aria-label="cancel"
@@ -124,6 +124,7 @@ export function EditParticipantButton({
   return (
     <Button
       variant="eventGhost"
+      className="p-3"
       type="button"
       aria-label={"edit"}
       onClick={enterEditMode}

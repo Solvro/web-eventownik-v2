@@ -12,6 +12,7 @@ interface TableHeaderProps<TData> {
 
 export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
   const isResizing = header.column.getIsResizing();
+  const isEditColumn = header.column.id === "edit";
 
   return (
     <TableHead
@@ -20,9 +21,11 @@ export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
         maxWidth: header.getSize(),
         minWidth: header.getSize(),
       }}
-      className={
-        "border-border bg-background relative border-r-2 last:border-0"
-      }
+      className={cn(
+        "border-border bg-background relative border-r-2 last:border-0",
+        isEditColumn &&
+          "sticky right-0 z-30 border-r-0 border-l-2 bg-transparent",
+      )}
       aria-sort={getAriaSort(header.column.getIsSorted())}
     >
       <div className="overflow-hidden">
