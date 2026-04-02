@@ -119,7 +119,7 @@
     "bulkEditCancel": "Cancel",
     "bulkEditSave": "Save",
     "bulkEditSuccess": "Bulk edit applied successfully",
-    "bulkEditError": "Some participants could not be updated"
+    "bulkEditError": "Could not update {count, plural, =1 {1 participant} other {# participants}}"
   },
   "SendMail": {
     "selectTemplate": "Select a template",
