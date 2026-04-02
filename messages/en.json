@@ -120,7 +120,9 @@
     "bulkEditSave": "Save",
     "bulkEditSuccess": "Bulk edit applied successfully",
     "bulkEditError": "Could not update {count, plural, =1 {1 participant} other {# participants}}",
-    "columnOrderLoadError": "An error occurred while loading the column order"
+    "columnOrderLoadError": "An error occurred while loading the column order",
+    "editParticipantSuccess": "Participant changes saved",
+    "editParticipantError": "Failed to save participant changes"
   },
   "SendMail": {
     "selectTemplate": "Select a template",

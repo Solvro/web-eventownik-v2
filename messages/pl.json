@@ -120,7 +120,9 @@
     "bulkEditSave": "Zapisz",
     "bulkEditSuccess": "Grupowa edycja zakończona pomyślnie",
     "bulkEditError": "Nie udało się zaktualizować {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
-    "columnOrderLoadError": "Wystąpił błąd podczas wczytywania kolejności kolumn"
+    "columnOrderLoadError": "Wystąpił błąd podczas wczytywania kolejności kolumn",
+    "editParticipantSuccess": "Zapisano zmiany w uczestniku",
+    "editParticipantError": "Nie udało się zapisać zmian w uczestniku!"
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",

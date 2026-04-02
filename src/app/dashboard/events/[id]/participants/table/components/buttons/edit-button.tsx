@@ -2,6 +2,7 @@
 
 import type { Row, Table } from "@tanstack/react-table";
 import { Loader, Pencil, Save, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ export function EditParticipantButton({
   row,
   table,
 }: EditParticipantButtonProps) {
+  const t = useTranslations("Table");
   const participant = row.original;
   const isEditing = participant.mode === "edit";
   const [isSaving, setIsSaving] = useState(false);
@@ -75,7 +77,7 @@ export function EditParticipantButton({
 
     if (success) {
       toast({
-        title: "Zapisano zmiany w uczestniku",
+        title: t("editParticipantSuccess"),
       });
       table.options.meta?.updateData(row.index, {
         ...participant,
@@ -84,7 +86,7 @@ export function EditParticipantButton({
     } else {
       toast({
         variant: "destructive",
-        title: "Nie udało się zapisać zmian w uczestniku!",
+        title: t("editParticipantError"),
       });
     }
   }
