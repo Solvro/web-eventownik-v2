@@ -7,9 +7,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import { createColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
+import { useToast } from "@/hooks/use-toast";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -30,6 +32,8 @@ export function useParticipantsTable({
   onUpdateData,
 }: UseParticipantTableProps) {
   const storageKey = `column-order-${eventId}`;
+  const t = useTranslations("Table");
+  const { toast } = useToast();
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
@@ -42,9 +46,12 @@ export function useParticipantsTable({
         setColumnOrder(JSON.parse(stored) as string[]);
       }
     } catch {
-      // ignore
+      toast({
+        variant: "destructive",
+        title: t("columnOrderLoadError"),
+      });
     }
-  }, [storageKey]);
+  }, [storageKey, t, toast]);
 
   const columns = useMemo(
     () => createColumns(attributes, blocks ?? []),

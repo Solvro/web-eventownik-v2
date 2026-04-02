@@ -119,7 +119,8 @@
     "bulkEditCancel": "Anuluj",
     "bulkEditSave": "Zapisz",
     "bulkEditSuccess": "Grupowa edycja zakończona pomyślnie",
-    "bulkEditError": "Nie udało się zaktualizować {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}"
+    "bulkEditError": "Nie udało się zaktualizować {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
+    "columnOrderLoadError": "Wystąpił błąd podczas wczytywania kolejności kolumn"
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",
