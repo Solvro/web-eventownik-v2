@@ -48,7 +48,7 @@ export function TableToolbar({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <InputGroup className="h-10 w-full md:w-64">
+      <InputGroup className="bg-background! h-10 w-full md:w-64">
         <InputGroupInput
           placeholder={t("searchPlaceholder")}
           value={globalFilter}
