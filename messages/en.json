@@ -85,7 +85,7 @@
     "searchPlaceholder": "Search...",
     "resetFilters": "Reset filters",
     "resetSorting": "Reset sorting",
-    "selectedCount": "Selected {count}",
+    "selectedCount": "{count, plural, =1 {# participant selected} other {# participants selected}} out of {total}",
     "selectAll": "Select all ({count})",
     "allSelected": "(all {count})",
     "rowsPerPage": "Rows per batch",

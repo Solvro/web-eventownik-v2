@@ -25,7 +25,12 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
 
   return (
     <div className="text-muted-foreground flex items-center gap-x-2 text-sm">
-      <span>{t("selectedCount", { count: selectedCount })}</span>
+      <span>
+        {t("selectedCount", {
+          count: selectedCount,
+          total: totalFilteredCount,
+        })}
+      </span>
       {allSelectedOnPage && hasMoreThanOnePage && !isAllRowsSelected ? (
         <Button
           variant="link"

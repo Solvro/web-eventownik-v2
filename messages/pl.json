@@ -85,7 +85,7 @@
     "searchPlaceholder": "Wyszukaj...",
     "resetFilters": "Resetuj wszystkie filtry",
     "resetSorting": "Resetuj sortowanie",
-    "selectedCount": "Wybrano {count}",
+    "selectedCount": "Wybrano {count} z {total}",
     "selectAll": "Zaznacz wszystkich ({count})",
     "allSelected": "(wszyscy z {count})",
     "rowsPerPage": "Wierszy na porcję",
