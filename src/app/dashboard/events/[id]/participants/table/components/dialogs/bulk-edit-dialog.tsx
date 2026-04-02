@@ -117,7 +117,7 @@ export function BulkEditDialog({
     } else {
       toast({
         variant: "destructive",
-        title: t("bulkEditError"),
+        title: t("bulkEditError", { count: failedCount }),
       });
     }
   }
