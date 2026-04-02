@@ -2,10 +2,10 @@
 
 import { flexRender } from "@tanstack/react-table";
 import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -41,9 +41,9 @@ interface ParticipantTableProps {
 
 export function ParticipantTable({ table }: ParticipantTableProps) {
   const t = useTranslations("Table");
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
-  const { pageIndex, pageSize } = table.getState().pagination;
+  const rows = table.getRowModel().rows;
   const globalFilter = table.getState().globalFilter as string;
   const sortingString = JSON.stringify(table.getState().sorting);
 
@@ -51,38 +51,27 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     table.getState().columnSizingInfo.isResizingColumn,
   );
 
-  useEffect(() => {
-    table.setPageIndex(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter, sortingString]);
-
-  const allRows = table.getPrePaginationRowModel().rows;
-  const visibleRows = allRows.slice(0, (pageIndex + 1) * pageSize);
-  const hasMore = visibleRows.length < allRows.length;
-
-  const handleIntersection = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && table.getCanNextPage()) {
-        table.nextPage();
-      }
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 72,
+    overscan: 8,
+    initialRect: {
+      height: 800,
+      width: 1200,
     },
-    [table],
-  );
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalHeight = rowVirtualizer.getTotalSize();
+  const topPaddingHeight = virtualRows[0]?.start ?? 0;
+  const lastVirtualRow = virtualRows.at(-1);
+  const bottomPaddingHeight =
+    virtualRows.length > 0 ? totalHeight - (lastVirtualRow?.end ?? 0) : 0;
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (sentinel === null) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(handleIntersection, {
-      threshold: 0.1,
-    });
-    observer.observe(sentinel);
-    return () => {
-      observer.disconnect();
-    };
-  }, [handleIntersection]);
+    rowVirtualizer.scrollToIndex(0);
+  }, [globalFilter, sortingString, rowVirtualizer]);
 
   useEffect(() => {
     document.body.style.cursor = isResizingColumn ? "col-resize" : "";
@@ -91,7 +80,10 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
 
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
-      <ScrollArea className="h-[calc(100dvh-275px)] w-full">
+      <div
+        ref={tableContainerRef}
+        className="h-[calc(100dvh-275px)] w-full overflow-auto"
+      >
         <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
           <TableHeader className="border-border bg-background sticky top-0 z-10 border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -103,46 +95,90 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
             ))}
           </TableHeader>
           <TableBody>
-            {visibleRows.map((row) => (
-              <TableRow key={row.id} className="h-18">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    style={{
-                      width: cell.column.getSize(),
-                      minWidth: cell.column.getSize(),
-                      maxWidth: cell.column.getSize(),
-                    }}
-                    className={cn(
-                      "overflow-hidden text-ellipsis whitespace-nowrap",
-                      cell.column.id === "edit" &&
-                        "sticky right-3 z-20 overflow-visible",
-                    )}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+            {virtualRows.length > 0 && topPaddingHeight > 0 ? (
+              <TableRow aria-hidden="true">
+                <TableCell
+                  colSpan={table.getVisibleLeafColumns().length}
+                  style={{
+                    height: topPaddingHeight,
+                    padding: 0,
+                    border: 0,
+                  }}
+                />
               </TableRow>
-            ))}
+            ) : null}
+
+            {virtualRows.length > 0
+              ? virtualRows.map((virtualRow) => {
+                  const row = rows[virtualRow.index];
+
+                  return (
+                    <TableRow key={row.id} className="h-18">
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          style={{
+                            width: cell.column.getSize(),
+                            minWidth: cell.column.getSize(),
+                            maxWidth: cell.column.getSize(),
+                          }}
+                          className={cn(
+                            "overflow-hidden text-ellipsis whitespace-nowrap",
+                            cell.column.id === "edit" &&
+                              "sticky right-3 z-20 overflow-visible",
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })
+              : rows.map((row) => (
+                  <TableRow key={row.id} className="h-18">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          width: cell.column.getSize(),
+                          minWidth: cell.column.getSize(),
+                          maxWidth: cell.column.getSize(),
+                        }}
+                        className={cn(
+                          "overflow-hidden text-ellipsis whitespace-nowrap",
+                          cell.column.id === "edit" &&
+                            "sticky right-3 z-20 overflow-visible",
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+
+            {virtualRows.length > 0 && bottomPaddingHeight > 0 ? (
+              <TableRow aria-hidden="true">
+                <TableCell
+                  colSpan={table.getVisibleLeafColumns().length}
+                  style={{
+                    height: bottomPaddingHeight,
+                    padding: 0,
+                    border: 0,
+                  }}
+                />
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
+      </div>
 
-        {hasMore ? (
-          <div
-            ref={sentinelRef}
-            className="text-muted-foreground flex h-10 items-center justify-center text-sm"
-          >
-            {t("loadingMore")}
-          </div>
-        ) : (
-          <div ref={sentinelRef} />
-        )}
-
-        <ScrollBar orientation="horizontal" />
-        <ScrollBar orientation="vertical" />
-      </ScrollArea>
-
-      {allRows.length === 0 ? (
+      {rows.length === 0 ? (
         <div className="text-center">{t("participantsNotFound")}</div>
       ) : null}
     </div>

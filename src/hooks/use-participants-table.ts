@@ -3,7 +3,6 @@ import {
   getCoreRowModel,
   getExpandedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -73,7 +72,6 @@ export function useParticipantsTable({
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: () => true,
@@ -99,10 +97,8 @@ export function useParticipantsTable({
     },
 
     initialState: {
-      pagination: { pageSize: 25, pageIndex: 0 },
       columnVisibility: { id: false },
     },
-    autoResetPageIndex: false,
     enableMultiSort: true,
   });
 
