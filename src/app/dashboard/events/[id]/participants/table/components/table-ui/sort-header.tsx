@@ -19,7 +19,7 @@ export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
     <div className="flex items-center gap-2" aria-sort={ariaSort}>
       <Button
         variant={"eventGhost"}
-        className={(truncate ?? false) ? "max-w-37.5 truncate" : ""}
+        className={`w-full justify-between ${(truncate ?? false) ? "text-ellipsis" : ""}`}
         onClick={(event) => {
           event.preventDefault();
           const toggleSorting = info.column.getToggleSortingHandler();
@@ -28,10 +28,10 @@ export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
           }
         }}
       >
-        {name}
+        <span className="min-w-0 flex-1 truncate text-left">{name}</span>
+        {sorted === "asc" && <ArrowUp className="shrink-0" />}
+        {sorted === "desc" && <ArrowDown className="shrink-0" />}
       </Button>
-      {sorted === "asc" && <ArrowUp />}
-      {sorted === "desc" && <ArrowDown />}
     </div>
   );
 }
