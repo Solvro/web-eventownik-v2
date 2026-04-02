@@ -23,8 +23,7 @@ export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
       }}
       className={cn(
         "border-border bg-background relative border-r-2 last:border-0",
-        isEditColumn &&
-          "sticky right-0 z-30 border-r-0 border-l-2 bg-transparent",
+        isEditColumn && "sticky right-0 z-30 border-r-0 border-l-2",
       )}
       aria-sort={getAriaSort(header.column.getIsSorted())}
     >
