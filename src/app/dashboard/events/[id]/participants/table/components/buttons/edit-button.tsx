@@ -1,9 +1,8 @@
 "use client";
 
-/* eslint-disable unicorn/prevent-abbreviations */
 import type { Row, Table } from "@tanstack/react-table";
-import { Loader, Pencil, Save } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader, Pencil, Save, X } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -24,22 +23,6 @@ export function EditParticipantButton({
   const isEditing = participant.mode === "edit";
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!isEditing) {
-      return;
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        cancelEdit();
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditing]);
 
   function enterEditMode() {
     table.options.meta?.updateData(row.index, {
@@ -108,17 +91,33 @@ export function EditParticipantButton({
 
   if (isEditing) {
     return (
-      <Button
-        variant="eventGhost"
-        type="button"
-        disabled={isSaving}
-        onClick={() => {
-          void saveChanges();
-        }}
-        aria-label={"save"}
-      >
-        {isSaving ? <Loader className="animate-spin" /> : <Save />}
-      </Button>
+      <div className="flex flex-col gap-1">
+        <Button
+          variant="eventGhost"
+          type="button"
+          disabled={isSaving}
+          onClick={() => {
+            void saveChanges();
+          }}
+          aria-label="save"
+          size="sm"
+        >
+          {isSaving ? (
+            <Loader className="animate-spin" size={16} />
+          ) : (
+            <Save size={16} />
+          )}
+        </Button>
+        <Button
+          variant="eventGhost"
+          type="button"
+          onClick={cancelEdit}
+          aria-label="cancel"
+          size="sm"
+        >
+          <X size={16} />
+        </Button>
+      </div>
     );
   }
 
