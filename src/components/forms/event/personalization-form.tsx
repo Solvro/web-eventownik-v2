@@ -197,7 +197,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           />
           <Button asChild variant="eventGhost" size="sm" className="px-2">
             <Link
-              href="/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
+              href="/documents/regulamin-wydarzenia-dla-uczestnika-wzor.docx"
               download
               target="_blank"
               className="whitespace-pre-wrap"
