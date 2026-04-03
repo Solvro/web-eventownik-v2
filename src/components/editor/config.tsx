@@ -1047,6 +1047,10 @@ export const getPuckConfig = ({
         trigger: "manual",
       },
       render: ({ children, name }) => {
+        const eventImageUrl =
+          eventData.photoUrl === ""
+            ? "/event-photo-placeholder.png"
+            : `${PHOTO_URL}/${eventData.photoUrl}`;
         return (
           <div
             id="editor-root"
@@ -1062,7 +1066,7 @@ export const getPuckConfig = ({
               </div>
               <div className="pointer-events-none flex items-center gap-2">
                 <Image
-                  src={`${PHOTO_URL}/${eventData.photoUrl}`}
+                  src={eventImageUrl}
                   alt="Zdjęcie wydarzenia"
                   className="aspect-square rounded-full bg-slate-200"
                   width={32}
