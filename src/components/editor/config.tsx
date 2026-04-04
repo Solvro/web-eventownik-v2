@@ -130,12 +130,8 @@ export const getPuckConfig = ({
                 ...setupSuggestions([...tags]),
               ],
             },
-            // NOTE: Replaces the inline menu to show a hint
-            renderInlineMenu: () => (
-              <div className="text-muted-foreground px-2 text-xs">
-                Użyj Shift+Enter aby dodać nową linię w tym samym akapicie
-              </div>
-            ),
+            // NOTE: Hides the inline menu and the action bar separator
+            renderInlineMenu: () => <div className="[&+div]:hidden" />,
             renderMenu: ({ editor }) => <SidebarRichTextMenu editor={editor} />,
           },
           ...withAppearance,

@@ -57,7 +57,9 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
       const step = () => {
         const current = valueRef.current;
         const next =
-          current === "auto" ? "0" : String(Number(current) + direction);
+          current === "auto" || (current === "0" && direction === -1)
+            ? "0"
+            : String(Number(current) + direction);
         onChange(next);
       };
 
@@ -115,6 +117,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         type="number"
         value={value}
         name={name}
+        min={0}
         onChange={(event) => {
           onChange(event.currentTarget.value);
         }}
