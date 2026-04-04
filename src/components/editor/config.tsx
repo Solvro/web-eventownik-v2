@@ -992,7 +992,7 @@ export const getPuckConfig = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="mt-4 flex grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
+                  <div className="text-muted-foreground! mt-4 flex grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
                     <div className="flex items-center gap-2 text-xs">
                       <Lightbulb className="size-4" /> Wyjaśnienie
                     </div>

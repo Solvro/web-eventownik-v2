@@ -199,7 +199,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             size="icon"
             type="button"
             onClick={() => editor?.chain().focus().insertContent("/").run()}
-            variant="ghost"
+            variant="eventGhost"
             className="size-7"
             aria-label="Wstaw znacznik"
           >
@@ -216,7 +216,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             onClick={() =>
               editor?.chain().focus().insertContent("/formularz").run()
             }
-            variant="ghost"
+            variant="eventGhost"
             className="size-7"
             aria-label="Wstaw znacznik linku do formularza"
           >
@@ -235,7 +235,7 @@ function TagButtons({ editor }: ButtonSetProps) {
             onClick={() =>
               editor?.chain().focus().insertContent("/atrybut").run()
             }
-            variant="ghost"
+            variant="eventGhost"
             className="size-7"
             aria-label="Wstaw znacznik wartości atrybutu uczestnika"
           >
@@ -262,15 +262,15 @@ function SidebarRichTextMenu({
   return (
     <div className="bg-background!">
       {children}
-      <div className="flex items-center py-2 [&>button]:grow">
+      <div className="flex items-center border-b border-(--event-primary-color)/50! py-2 [&>button]:grow">
         <TypographyButtons editor={editor} activeState={activeState} />
       </div>
 
-      <div className="flex items-center py-2 [&>button]:grow">
+      <div className="flex items-center border-b border-(--event-primary-color)/50! py-2 [&>button]:grow">
         <AlignmentDropdown editor={editor} activeState={activeState} />
       </div>
 
-      <div className="flex items-center py-2 [&>button]:grow">
+      <div className="flex items-center border-b border-(--event-primary-color)/50! py-2 [&>button]:grow">
         <TagButtons editor={editor} activeState={activeState} />
       </div>
     </div>

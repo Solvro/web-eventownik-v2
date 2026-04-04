@@ -44,6 +44,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { UnsavedChangesAlert } from "../unsaved-changes-alert";
 import { PUCK_ICON_CLASSNAME } from "./common";
+import "./puck-custom-theme.css";
 
 const COMPONENT_ICONS = {
   RichText: <Type className={PUCK_ICON_CLASSNAME} />,
@@ -241,9 +242,12 @@ function BlocksAndSchemaSidebar() {
 
   return (
     <ScrollArea
-      className={cn("max-h-181 w-58.5", isVisible ? "block" : "hidden")}
+      className={cn(
+        "max-h-181 w-58.5 border-r border-(--event-primary-color)/50",
+        isVisible ? "block" : "hidden",
+      )}
     >
-      <div className="space-y-4 border-r border-(--event-primary-color)/50">
+      <div className="space-y-4">
         <h2 className="border-b border-(--event-primary-color)/50 p-4 text-lg font-semibold">
           Bloki
         </h2>
@@ -265,7 +269,7 @@ function BlocksAndSchemaSidebar() {
                       key={category}
                       className="border-none"
                     >
-                      <AccordionTrigger className="text-muted-foreground">
+                      <AccordionTrigger className="text-muted-foreground hover:no-underline">
                         {categoryLabel}
                       </AccordionTrigger>
                       <AccordionContent className="space-y-2">
@@ -302,24 +306,7 @@ function BlocksAndSchemaSidebar() {
         <h2 className="border-y border-(--event-primary-color)/50 p-4 text-lg font-semibold">
           Schemat
         </h2>
-        <div
-          className={cn(
-            "mb-2 max-h-72",
-            // All icons
-            "[&_svg]:mb-1! [&_svg]:stroke-(--event-primary-color)!",
-            // Outline list (ul - "_LayerTree")
-            "[&>div>ul]:space-y-2 [&>div>ul]:px-4!",
-            // Outline list item (outer element - "_Layer")
-            "[&>div>ul>li]:border-(--event-primary-color)/20!",
-            // Outline list item content (root element for each item - "_Layer-inner")
-            "[&>div>ul>li>div]:text-foreground! [&>div>ul>li>div]:bg-(--event-primary-color)/10! [&>div>ul>li>div:hover]:border-(--event-primary-color)/60!",
-            // Children of slot type component dropdown
-            "[&>div>ul>li>div:nth-child(n+2)>ul>li]:text-foreground! [&>div>ul>li>div:nth-child(n+2)>ul>li]:bg-(--event-primary-color)/10! [&>div>ul>li>div:nth-child(n+2)>ul>li:hover]:border-(--event-primary-color)/60!",
-            "[&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:text-foreground! [&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:border-(--event-primary-color)/60! [&>div>ul>li>div:nth-child(n+2)>ul>li_div:hover]:bg-(--event-primary-color)/20!",
-            // Background of each slot
-            "[&>div>ul>li>div:nth-of-type(n+2)]:bg-transparent!",
-          )}
-        >
+        <div id="outline" className="mb-2 max-h-72 [&>div>ul]:space-y-2">
           <Puck.Outline />
         </div>
       </div>
@@ -332,27 +319,12 @@ function FieldsPanel() {
 
   return (
     <ScrollArea
-      className={cn("max-h-181 w-58.5", isVisible ? "block" : "hidden")}
+      className={cn(
+        "max-h-181 w-58.5 border-l border-(--event-primary-color)/50",
+        isVisible ? "block" : "hidden",
+      )}
     >
-      <div
-        className={cn(
-          "overflow-y-auto border-l border-(--event-primary-color)/50 [&>form]:w-58.5",
-          // Rich text editor
-          "[&_.tiptap]:bg-transparent!",
-          // Each field entry - outside of field groups, exclusive to block (e.g. no. of columns in grid)
-          "[&>form_label>div]:text-muted-foreground! [&>form>div]:border-(--event-primary-color)/50!",
-          // All field groups containers (as in commons - e.g. the div holding font size field in case of typography)
-          "[&>form_div>div>div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)]:bg-(--event-primary-color)/2!",
-          // Nested field groups containers (in case of an object field within another object field - e.g. background image in appearance)
-          "[&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:border-none! [&>form_div>div>div>div:nth-of-type(2)_div>div:nth-of-type(2)]:bg-(--event-primary-color)/2!",
-          // Labels of field groups
-          "[&>form>div_div>div]:text-muted-foreground!",
-          // Fields of type "radio"
-          "[&>form_label:has(input[type=radio])]:border-(--event-primary-color)/20! [&>form_label:has(input[type=radio])_div]:bg-(--event-primary-color)/2!",
-          // Richtext menu buttons
-          "[&>form>div>div>div>div>div]:border-none! [&>form>div>div>div>div>div>div_div]:bg-(--event-primary-color)/20!",
-        )}
-      >
+      <div className="overflow-y-auto [&_.tiptap]:bg-transparent! [&>form]:w-58.5">
         <Puck.Fields />
       </div>
     </ScrollArea>
