@@ -256,24 +256,19 @@
 /* Email editor exclusive heading spacing */
 #email-root h1 {
   line-height: 1.3;
-  margin-block: 18px;
 }
 #email-root h2 {
   line-height: 1.3;
-  margin-block: 16px;
 }
 #email-root h3 {
   line-height: 1.3;
-  margin-block: 15px;
 }
 #email-root h4 {
   line-height: 1.4;
-  margin: 10px 0 5px 0;
 }
 #email-root h5,
 #email-root h6 {
   line-height: 1.4;
-  margin: 8px 0 4px 0;
 }
 
 /* Paragraph & list item styling */
@@ -292,16 +287,8 @@
   font-size: 14px;
 }
 
-#email-root p {
-  margin-block: 13px;
-}
-
 .event-description p {
   min-height: 1rem;
-}
-
-.ProseMirror p:last-child {
-  margin-bottom: 0;
 }
 
 /* Lists block margins */
@@ -330,13 +317,6 @@
 .ProseMirror li,
 .event-description li {
   margin-block: 4px;
-}
-
-/* Reset margins for paragraphs inside lists to prevent double spacing */
-.ProseMirror li p,
-.event-description li p,
-#email-root li p {
-  margin-block: 0;
 }
 
 @layer base {

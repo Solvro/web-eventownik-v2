@@ -60,10 +60,16 @@ const EMAIL_ALLOWED_TAGS = [
   "ol",
   "li",
   "span",
+  "div",
+  "table",
+  "tbody",
+  "tr",
+  "td",
 ];
 
 const EMAIL_ALLOWED_ATTRIBUTES = {
   "*": ["class", "style"],
+  img: ["src", "alt"],
   // Tags
   span: [
     "data-type",
@@ -83,6 +89,7 @@ function extractAndCleanImages(html: string): {
   const cleanedHtml = sanitizeHtml(html, {
     allowedTags: EMAIL_ALLOWED_TAGS,
     allowedAttributes: EMAIL_ALLOWED_ATTRIBUTES,
+    allowedSchemes: ["data", "https"],
     transformTags: {
       img: (_, attribs) => {
         images.push({
@@ -139,4 +146,8 @@ export function getPuckSchemaFromLegacyEmail(
     },
     zones: {},
   };
+}
+
+export function replaceEmptyParagraphs(content: string) {
+  return content.replaceAll(/<p(\s[^>]*)?>(\s*)<\/p>/g, "<p$1><br/></p>");
 }

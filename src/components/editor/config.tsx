@@ -3,6 +3,7 @@
 import { FieldLabel } from "@puckeditor/core";
 import type { Field } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
+import { StarterKit } from "@tiptap/starter-kit";
 import {
   ChevronsLeftRight,
   ChevronsUpDown,
@@ -126,6 +127,18 @@ export const getPuckConfig = ({
             contentEditable: true,
             tiptap: {
               extensions: [
+                StarterKit.configure({
+                  heading: {
+                    HTMLAttributes: {
+                      style: "margin: 0",
+                    },
+                  },
+                  paragraph: {
+                    HTMLAttributes: {
+                      style: "margin: 0; min-height: 1em;",
+                    },
+                  },
+                }),
                 Placeholder.configure({ placeholder: "Zacznij pisać..." }),
                 ...setupSuggestions([...tags]),
               ],

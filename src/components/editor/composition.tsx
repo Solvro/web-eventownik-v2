@@ -29,6 +29,7 @@ import {
 } from "@/app/dashboard/events/[id]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
+import { replaceEmptyParagraphs } from "@/lib/editor";
 import { cn } from "@/lib/utils";
 import type { PuckConfig, PuckMutationData } from "@/types/editor";
 import { emailTemplateSchema } from "@/types/schemas";
@@ -119,8 +120,9 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
 
     const values: EmailTemplateFormValues = {
       name: appState.data.root.props?.name ?? "",
-      content:
+      content: replaceEmptyParagraphs(
         renderWrapperRef.current?.querySelector("#email-root")?.innerHTML ?? "",
+      ),
       schema: JSON.stringify(appState.data),
       trigger: appState.data.root.props?.trigger as string,
       triggerValue: appState.data.root.props?.triggerValue ?? null,
