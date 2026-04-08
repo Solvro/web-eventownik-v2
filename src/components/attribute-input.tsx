@@ -36,10 +36,14 @@ export function AttributeInput({
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
   const [otherInputValue, setOtherInputValue] = useState<string>(() => {
+    const values = Array.isArray(field.value)
+      ? (field.value as string[])
+      : field.value !== undefined && field.value !== null && field.value !== ""
+        ? [String(field.value)]
+        : [];
+
     return (
-      ((field.value ?? []) as string[]).find(
-        (v) => !(attribute.options ?? []).includes(v),
-      ) ?? ""
+      values.find((v: string) => !(attribute.options ?? []).includes(v)) ?? ""
     );
   });
   //TODO add lacking implementation for block type
