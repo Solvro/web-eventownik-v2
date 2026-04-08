@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { useLocale } from "next-intl";
+import { useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,6 +33,15 @@ export function AttributeInput({
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   const locale = useLocale();
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
+
+  const [otherInputValue, setOtherInputValue] = useState<string>(() => {
+    return (
+      ((field.value ?? []) as string[]).find(
+        (v) => !(attribute.options ?? []).includes(v),
+      ) ?? ""
+    );
+  });
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
@@ -51,35 +61,70 @@ export function AttributeInput({
     }
     case "select": {
       return (
-        <Select
-          onValueChange={field.onChange}
-          defaultValue={field.value as string}
-          {...field}
-        >
-          <SelectTrigger id={attribute.id.toString()}>
-            <SelectValue
-              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {attribute.options?.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-            {/* 
+        <>
+          <Select
+            onValueChange={(value) => {
+              if (value === "other" && !isOtherSelected) {
+                setIsOtherSelected(true);
+                field.onChange("");
+              } else {
+                setIsOtherSelected(false);
+                field.onChange(value);
+              }
+            }}
+            {...field}
+            value={isOtherSelected ? "other" : (field.value as string)}
+          >
+            <SelectTrigger id={attribute.id.toString()}>
+              <SelectValue
+                placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {attribute.options?.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+              {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
             Feel free to propose better solution
             */}
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>Brak</SelectItem>
-            )}
-          </SelectContent>
-        </Select>
+              {attribute.allowOther ? (
+                <SelectItem value="other">
+                  {locale === "en" ? "Other" : "Inne"}
+                </SelectItem>
+              ) : null}
+
+              {!("isRequired" in attribute ? attribute.isRequired : false) && (
+                <SelectItem value={" "}>
+                  {locale === "en" ? "None" : "Brak"}
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+
+          {attribute.allowOther && isOtherSelected ? (
+            <Input
+              type="text"
+              placeholder={
+                locale === "en" ? "Enter your answer" : "Wpisz własną odpowiedź"
+              }
+              value={field.value as string}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            />
+          ) : null}
+        </>
       );
     }
     case "multiselect": {
+      const selectedOptions = ((field.value ?? []) as string[]).filter(
+        (v) => (attribute.options ?? []).includes(v) && v !== otherInputValue,
+      );
+
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
           {attribute.options?.map((option) => (
@@ -87,18 +132,27 @@ export function AttributeInput({
               <Checkbox
                 id={`${attribute.id.toString()}-${option}`}
                 disabled={field.disabled}
-                checked={((field.value ?? []) as string[]).includes(option)}
+                checked={selectedOptions.includes(option)}
                 onCheckedChange={(checked) => {
                   if (checked === true) {
                     field.onChange([
-                      ...((field.value ?? []) as string[]),
-                      option,
+                      ...new Set([
+                        ...selectedOptions,
+                        option,
+                        ...(otherInputValue ? [otherInputValue] : []),
+                      ]),
                     ]);
                   } else {
+                    const newValues = selectedOptions.filter(
+                      (value) => value !== option,
+                    );
                     field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
+                      newValues.length > 0 || otherInputValue
+                        ? [
+                            ...newValues,
+                            ...(otherInputValue ? [otherInputValue] : []),
+                          ]
+                        : undefined,
                     );
                   }
                 }}
@@ -108,6 +162,57 @@ export function AttributeInput({
               </Label>
             </div>
           ))}
+
+          {attribute.allowOther ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`${attribute.id.toString()}-other`}
+                  checked={isOtherSelected}
+                  onCheckedChange={(checked) => {
+                    setIsOtherSelected(checked === true);
+
+                    if (checked === true) {
+                      field.onChange([
+                        ...new Set([...selectedOptions, otherInputValue]),
+                      ]);
+                    } else {
+                      field.onChange(
+                        selectedOptions.length > 0
+                          ? selectedOptions
+                          : undefined,
+                      );
+
+                      setOtherInputValue("");
+                    }
+                  }}
+                />
+                <Label htmlFor={`${attribute.id.toString()}-other`}>
+                  {locale === "en" ? "Other" : "Inne"}
+                </Label>
+              </div>
+
+              {isOtherSelected ? (
+                <Input
+                  type="text"
+                  placeholder={
+                    locale === "en"
+                      ? "Enter your answer"
+                      : "Wpisz własną odpowiedź"
+                  }
+                  value={otherInputValue}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const newValue = event.target.value;
+                    setOtherInputValue(newValue);
+
+                    field.onChange([
+                      ...new Set([...selectedOptions, newValue]),
+                    ]);
+                  }}
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       );
     }

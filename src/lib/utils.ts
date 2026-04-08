@@ -63,7 +63,19 @@ const validationRules: Record<
       })
       .nonempty({
         message: `Wybierz przynajmniej jedną opcję dla pola ${getAttributeLabel(attribute.name, "pl")}.`,
-      }),
+      })
+      .refine(
+        (values) => {
+          const other = values.find(
+            (v) => !(attribute.options ?? []).includes(v),
+          );
+          return other?.trim() !== "";
+        },
+        {
+          message: "Uzupełnij pole Inne lub je odznacz.",
+        },
+      ),
+
   email: (attribute) =>
     requiredString(attribute).email({
       message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być adresem email`,
