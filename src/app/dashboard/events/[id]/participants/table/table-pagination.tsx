@@ -30,7 +30,7 @@ export function TablePagination({
   const { pageIndex, pageSize } = table.getState().pagination;
 
   return (
-    <div className="ml-auto flex items-center gap-x-2">
+    <div className="flex items-center gap-x-2 md:ml-auto">
       <Select
         onValueChange={(value) => {
           table.setPageSize(

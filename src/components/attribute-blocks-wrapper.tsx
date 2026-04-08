@@ -6,13 +6,12 @@ import { Activity, useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Checkbox } from "./ui/checkbox";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { Field, FieldGroup, FieldLabel } from "./ui/field";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -41,12 +40,10 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
-  attribute,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   userData: PublicParticipant;
   eventBlocks: PublicBlock[];
-  attribute: Attribute;
 }) {
   const t = useTranslations("Form");
   const [searchText, setSearchText] = useDebouncedState("", {
@@ -54,7 +51,9 @@ export function AttributeBlocksWrapper({
   });
   const [hideFullBlocks, setHideFullBlocks] = useState(false);
 
-  const filteredBlocks = eventBlocks.filter((block) =>
+  const sortedBlocks = eventBlocks.toSorted((a, b) => a.order - b.order);
+
+  const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),
   );
   return (
@@ -130,7 +129,6 @@ export function AttributeBlocksWrapper({
             userData={userData}
             block={childBlock}
             key={childBlock.id}
-            displayedAttributes={attribute.options ?? []}
           />
         ))}
       </RadioGroup>

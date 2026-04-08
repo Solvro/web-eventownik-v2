@@ -7,9 +7,7 @@ import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
-// import { Button } from "./ui/button";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
-// import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { RadioGroupItem } from "./ui/radio-group";
 import { ScrollArea } from "./ui/scroll-area";
@@ -24,11 +22,9 @@ const valueOrZero = (value: number | null | undefined) => {
 export function AttributeInputBlock({
   block,
   userData,
-  displayedAttributes,
 }: {
   block: PublicBlock;
   userData: PublicParticipant;
-  displayedAttributes: string[];
 }) {
   const t = useTranslations("Form");
   const isFull =
@@ -50,7 +46,10 @@ export function AttributeInputBlock({
         </FormControl>
         <FormLabel className="flex grow">
           <div className="grid w-full grow grid-cols-[1fr_auto] items-start gap-4 font-semibold">
-            <p lang="pl" className="min-w-0 text-lg leading-snug break-words">
+            <p
+              lang="pl"
+              className="min-w-0 text-lg leading-snug wrap-break-word"
+            >
               {block.name}
             </p>
             <div className="flex flex-col items-end gap-1 text-right">
@@ -85,7 +84,7 @@ export function AttributeInputBlock({
             <ChevronRight className="size-4 transition-transform" />
           </PopoverTrigger>
           <PopoverContent
-            className="w-[var(--radix-popover-trigger-width)] p-2"
+            className="w-(--radix-popover-trigger-width) p-2"
             align="center"
           >
             {block.meta.participants.length === 0 ? (
@@ -93,24 +92,25 @@ export function AttributeInputBlock({
                 {t("noParticipants")}
               </p>
             ) : (
-              <ScrollArea className="[&_[data-slot=scroll-area-viewport]]:max-h-64">
-                <ul className="divide-border/60 -mx-1 space-y-0.5 px-1">
-                  {block.meta.participants.map((occupant) => (
-                    <li
-                      key={occupant.id}
-                      className="rounded-sm px-2 py-1.5 text-sm"
-                    >
-                      {occupant.name.toString().trim()
-                        ? `${occupant.name.toString()}${
-                            displayedAttributes.includes("email")
-                              ? ` (${occupant.email.toString()})`
-                              : ""
-                          }`
-                        : displayedAttributes.includes("email")
-                          ? occupant.email
-                          : t("anonymousParticipant")}
-                    </li>
-                  ))}
+              <ScrollArea className="[&>[data-slot='scroll-area-viewport']]:max-h-64">
+                <ul className="divide-border/60 space-y-0.5 px-1">
+                  {block.meta.participants.map((occupant) => {
+                    const isAnonymous =
+                      occupant.name === "" || occupant.name === undefined;
+                    return (
+                      <li
+                        key={occupant.id}
+                        className={cn(
+                          "rounded-sm px-2 py-1.5 text-sm",
+                          isAnonymous && "text-muted-foreground italic",
+                        )}
+                      >
+                        {isAnonymous
+                          ? t("anonymousParticipant")
+                          : occupant.name}
+                      </li>
+                    );
+                  })}
                 </ul>
               </ScrollArea>
             )}
@@ -120,41 +120,3 @@ export function AttributeInputBlock({
     </FormItem>
   );
 }
-
-//   WERSJA KAFELKOWA
-//   return (
-//     <div className="flex flex-col items-center gap-6 rounded-md border border-slate-500 p-4">
-//       <div
-//         className={cn(
-//           "flex items-center gap-2 text-sm font-semibold",
-//           isFull ? "text-red-600" : "",
-//         )}
-//       >
-//         <Users className="size-4" /> {block.occupants.length} / {block.capacity}
-//       </div>
-//       <p className="text-3xl font-bold">{block.name}</p>
-//       <Button
-//         disabled={!isRegistered && isFull}
-//         variant={isRegistered ? "outline" : "default"}
-//         type="button"
-//       >
-//         {isRegistered ? "Opuść" : "Dołącz"}
-//       </Button>
-//       <AccordionItem value={block.name} className="w-full">
-//         <AccordionTrigger className="text-primary [&>svg]:text-primary flex items-center gap-2">
-//           Uczestnicy
-//         </AccordionTrigger>
-//         <AccordionContent className="flex flex-col gap-2">
-//           {block.occupants.map((occupant) => (
-//             <div
-//               className="border-muted rounded-md border p-4"
-//               key={occupant.participantSlug}
-//             >
-//               <p>{occupant.identity}</p>
-//             </div>
-//           ))}
-//         </AccordionContent>
-//       </AccordionItem>
-//     </div>
-//   );
-// }
