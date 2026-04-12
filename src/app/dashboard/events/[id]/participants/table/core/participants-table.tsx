@@ -113,7 +113,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                   const row = rows[virtualRow.index];
 
                   return (
-                    <TableRow key={row.id} className="h-18">
+                    <TableRow key={row.id}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
@@ -123,7 +123,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                             maxWidth: cell.column.getSize(),
                           }}
                           className={cn(
-                            "overflow-hidden text-ellipsis whitespace-nowrap",
+                            "wrap-break-word whitespace-normal",
                             cell.column.id === "edit" &&
                               "sticky right-3 z-20 overflow-visible",
                           )}
@@ -138,7 +138,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                   );
                 })
               : rows.map((row) => (
-                  <TableRow key={row.id} className="h-18">
+                  <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
@@ -148,7 +148,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                           maxWidth: cell.column.getSize(),
                         }}
                         className={cn(
-                          "overflow-hidden text-ellipsis whitespace-nowrap",
+                          "wrap-break-word whitespace-normal",
                           cell.column.id === "edit" &&
                             "sticky right-3 z-20 overflow-visible",
                         )}
