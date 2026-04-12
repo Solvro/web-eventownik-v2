@@ -93,7 +93,7 @@ export function EditParticipantButton({
 
   if (isEditing) {
     return (
-      <div className="grid gap-1">
+      <div className="flex flex-col items-end gap-1">
         <Button
           variant="eventGhost"
           type="button"
@@ -124,14 +124,16 @@ export function EditParticipantButton({
   }
 
   return (
-    <Button
-      variant="eventGhost"
-      className="p-3"
-      type="button"
-      aria-label={"edit"}
-      onClick={enterEditMode}
-    >
-      <Pencil />
-    </Button>
+    <div className="flex justify-end">
+      <Button
+        variant="default"
+        className="bg-background p-3"
+        type="button"
+        aria-label={"edit"}
+        onClick={enterEditMode}
+      >
+        <Pencil />
+      </Button>
+    </div>
   );
 }
