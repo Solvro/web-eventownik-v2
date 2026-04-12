@@ -3,8 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
 
 import {
   getAttributes,
@@ -69,6 +71,10 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     },
   });
 
+  const isAnyRowEditing = data.some((row) => row.mode === "edit");
+  const { isGuardActive, onConfirm, onCancel } =
+    useUnsavedForm(isAnyRowEditing);
+
   if (
     isAttributesError ||
     isParticipantsError ||
@@ -102,6 +108,11 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
         />
       </div>
       <ParticipantTable table={table} />
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
     </>
   );
 }
