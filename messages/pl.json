@@ -82,7 +82,7 @@
     "deleteParticipantsError": "Nie udało się grupowo usunąć uczestników!",
     "deleteParticipantsErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
     "participantsTableTitle": "Lista uczestników",
-    "searchPlaceholder": "Szukaj z {count} uczestników...",
+    "searchPlaceholder": "Wyszukaj {count} uczestników...",
     "resetFilters": "Resetuj wszystkie filtry",
     "resetSorting": "Resetuj sortowanie",
     "selectedCount": "Wybrano {count} z {total}",
