@@ -45,12 +45,15 @@ export function TableToolbar({
   deleteManyParticipants,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
+  const participantsCount = table.getPreFilteredRowModel().rows.length;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <InputGroup className="bg-background! h-10 w-full md:w-64">
         <InputGroupInput
-          placeholder={t("searchPlaceholder")}
+          placeholder={t("searchPlaceholder", {
+            count: participantsCount,
+          })}
           value={globalFilter}
           onChange={(event) => {
             table.setGlobalFilter(event.target.value);

@@ -82,7 +82,7 @@
     "deleteParticipantsError": "Failed to batch delete participants!",
     "deleteParticipantsErrorDescription": "An unexpected error occurred. Try again",
     "participantsTableTitle": "Participants",
-    "searchPlaceholder": "Search...",
+    "searchPlaceholder": "Search among {count} participants...",
     "resetFilters": "Reset filters",
     "resetSorting": "Reset sorting",
     "selectedCount": "{count, plural, =1 {# participant selected} other {# participants selected}} out of {total}",
