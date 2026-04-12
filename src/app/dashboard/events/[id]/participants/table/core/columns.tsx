@@ -119,7 +119,7 @@ export function createColumns(
           return filterValue.includes(rowValue);
         },
         header: (info) => (
-          <div className="flex items-center gap-1">
+          <div className="flex min-w-0 items-center gap-1">
             <FilterButton
               attributeType={attribute.type}
               options_={attribute.options}
@@ -127,7 +127,9 @@ export function createColumns(
               column={info.column}
               attributeId={attribute.id}
             />
-            <SortHeader info={info} name={attribute.name} truncate />
+            <div className="min-w-0 flex-1">
+              <SortHeader info={info} name={attribute.name} truncate />
+            </div>
           </div>
         ),
         cell: (info) => (
