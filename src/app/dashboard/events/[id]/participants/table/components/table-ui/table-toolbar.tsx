@@ -47,7 +47,7 @@ export function TableToolbar({
   const t = useTranslations("Table");
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <InputGroup className="bg-background! h-10 w-full md:w-64">
         <InputGroupInput
           placeholder={t("searchPlaceholder")}
