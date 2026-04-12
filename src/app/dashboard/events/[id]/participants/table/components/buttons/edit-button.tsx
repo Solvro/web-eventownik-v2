@@ -95,7 +95,7 @@ export function EditParticipantButton({
     return (
       <div className="flex flex-col items-end gap-1">
         <Button
-          variant="eventGhost"
+          variant="eventDefault"
           type="button"
           disabled={isSaving}
           onClick={() => {
