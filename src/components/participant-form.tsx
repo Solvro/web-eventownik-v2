@@ -97,8 +97,15 @@ export function ParticipantForm({
           (attribute) =>
             attribute.type !== "file" && attribute.type !== "drawing",
         )
-        .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+        .reduce<Record<string, string | string[]>>((accumulator, attribute) => {
+          if (attribute.type === "multiselect") {
+            const values = attribute.meta.pivot_value
+              .split(",")
+              .map((value) => value.trim());
+            accumulator[attribute.id.toString()] = values;
+          } else {
+            accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+          }
           return accumulator;
         }, {}),
     },
