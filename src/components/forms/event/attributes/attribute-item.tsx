@@ -80,7 +80,9 @@ export function AttributeItem({
   };
 
   const addOption = () => {
-    if (optionsInput.startsWith("other: ")) {
+    const trimmedValue = optionsInput.trim();
+
+    if (trimmedValue.startsWith("other: ")) {
       toast({
         variant: "destructive",
         title: "Niedozwolona wartość",
@@ -88,8 +90,6 @@ export function AttributeItem({
       });
       return;
     }
-
-    const trimmedValue = optionsInput.trim();
 
     if (trimmedValue.includes(",")) {
       toast({
