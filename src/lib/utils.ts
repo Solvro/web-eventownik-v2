@@ -79,7 +79,7 @@ const validationRules: Record<
           return other?.trim() !== "other:";
         },
         {
-          message: `Pole ${getAttributeLabel(attribute.name, "pl")} wymaga uzupełnienia dla opcji "Inne".`,
+          message: `Uzupełnij wartość dla opcji "Inne" lub odznacz tę opcję.`,
         },
       ),
 

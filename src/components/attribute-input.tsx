@@ -131,10 +131,12 @@ export function AttributeInput({
                       option,
                     ]);
                   } else {
+                    const newValues = ((field.value ?? []) as string[]).filter(
+                      (value: string) => value !== option,
+                    );
+
                     field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
+                      newValues.length > 0 ? newValues : undefined,
                     );
                   }
                 }}
@@ -158,10 +160,12 @@ export function AttributeInput({
                         "other: ",
                       ]);
                     } else {
+                      const newValues = (
+                        (field.value ?? []) as string[]
+                      ).filter((value: string) => !value.startsWith("other: "));
+
                       field.onChange(
-                        ((field.value ?? []) as string[]).filter(
-                          (value: string) => !value.startsWith("other: "),
-                        ),
+                        newValues.length > 0 ? newValues : undefined,
                       );
                     }
                   }}
