@@ -42,7 +42,7 @@ export function AttributeBlocksWrapper({
   eventBlocks,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  userData: PublicParticipant;
+  userData: PublicParticipant | undefined;
   eventBlocks: PublicBlock[];
 }) {
   const t = useTranslations("Form");
@@ -56,6 +56,7 @@ export function AttributeBlocksWrapper({
   const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),
   );
+
   return (
     <div
       className={cn(

@@ -14,3 +14,17 @@ export interface Form {
   updatedAt: string;
   attributes: FormAttribute[];
 }
+
+export interface FormErrorObject {
+  rule: string;
+  field: string;
+  message: string;
+}
+
+/**
+ * The type of the function that is passed to the ParticipantForm component.
+ */
+export type ParticipantFormSubmitHandler = (
+  values: Record<string, unknown>,
+  files: File[],
+) => Promise<{ success: boolean; errors?: FormErrorObject[]; error?: string }>;

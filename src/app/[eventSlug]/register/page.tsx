@@ -3,15 +3,16 @@ import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import React from "react";
 import sanitizeHtml from "sanitize-html";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
-import { RegisterParticipantForm } from "./register-participant-form";
+import { FormGenerator } from "../form-generator";
+import { getEventBlockAttributeBlocks } from "../utils";
 
 interface RegisterPageProps {
   params: Promise<{ eventSlug: string; locale: string }>;
@@ -52,12 +53,34 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
     method: "GET",
   });
+
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
     return <EventNotFound whatNotFound="event" />;
   }
+
   const event = (await response.json()) as Event;
+
+  const form = event.firstForm;
+
+  if (form === null) {
+    return <EventNotFound whatNotFound="form" />;
+  }
+
+  const blockAttributesInForm = form.attributes.filter(
+    (attribute) => attribute.type === "block",
+  );
+
+  const eventBlocks = await Promise.all(
+    blockAttributesInForm.map(async (attribute) =>
+      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+    ),
+  );
+
+  if (eventBlocks.includes(null)) {
+    return <EventNotFound whatNotFound="blocks" />;
+  }
 
   return (
     <EventPageLayout
@@ -69,7 +92,15 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         {t("registration")}
       </h2>
       <p className="mb-8">{t("fillForm")}</p>
-      <RegisterParticipantForm event={event} />
+
+      <FormGenerator
+        attributes={form.attributes}
+        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        formId={form.id.toString()}
+        eventSlug={eventSlug}
+        editMode={false}
+      />
+
       <p className="text-foreground/50 my-4 text-center text-sm">
         <Info className="inline-block size-4 align-[-0.195em]" /> Kontynuując
         zgadzasz się na warunki zawarte w<br />
