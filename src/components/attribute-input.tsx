@@ -51,7 +51,7 @@ export function AttributeInput({
     }
     case "select": {
       return (
-        <>
+        <div className="flex flex-col gap-2">
           <Select
             onValueChange={field.onChange}
             {...field}
@@ -98,7 +98,9 @@ export function AttributeInput({
             <Input
               type="text"
               placeholder={
-                locale === "en" ? "Enter your answer" : "Wpisz własną odpowiedź"
+                locale === "en"
+                  ? "Enter your own value"
+                  : "Podaj własną wartość"
               }
               value={field.value.replace(/^other: /, "")}
               onChange={(event) => {
@@ -106,7 +108,7 @@ export function AttributeInput({
               }}
             />
           ) : null}
-        </>
+        </div>
       );
     }
     case "multiselect": {
@@ -180,8 +182,8 @@ export function AttributeInput({
                   type="text"
                   placeholder={
                     locale === "en"
-                      ? "Enter your answer"
-                      : "Wpisz własną odpowiedź"
+                      ? "Enter your own value"
+                      : "Podaj własną wartość"
                   }
                   value={
                     ((field.value ?? []) as string[])
