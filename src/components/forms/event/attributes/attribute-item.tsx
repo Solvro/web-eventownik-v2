@@ -31,6 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
@@ -46,6 +47,8 @@ export function AttributeItem({
   index,
   onUpdateItem,
 }: AttributeItemProps) {
+  const { toast } = useToast();
+
   const { register, formState, setValue, getValues, watch } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
   const [optionsInput, setOptionsInput] = useState("");
@@ -78,6 +81,16 @@ export function AttributeItem({
 
   const addOption = () => {
     const trimmedValue = optionsInput.trim();
+
+    if (trimmedValue.startsWith("other:")) {
+      toast({
+        variant: "destructive",
+        title: "Niedozwolona wartość",
+        description: 'Opcja nie może zaczynać się od "other:".',
+      });
+      return;
+    }
+
     const oldOptions = getValues(`attributes.${index}.options`);
     if (trimmedValue) {
       const exists = oldOptions?.includes(trimmedValue) ?? false;
