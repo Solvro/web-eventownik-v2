@@ -261,7 +261,7 @@ export function AttributeItem({
             />
             <Button variant="outline" onClick={addOption}>
               <PlusIcon className="h-4 w-4" />
-              <span className="max-[500px]:hidden">Dodaj opcję</span>
+              <span className="hidden sm:inline">Dodaj opcję</span>
             </Button>
           </div>
 

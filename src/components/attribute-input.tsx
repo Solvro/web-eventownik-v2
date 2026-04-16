@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { useLocale } from "next-intl";
-import { useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,20 +32,7 @@ export function AttributeInput({
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   const locale = useLocale();
-  const [isOtherSelected, setIsOtherSelected] = useState(false);
 
-  const [otherInputValue, setOtherInputValue] = useState<string>(() => {
-    const values = Array.isArray(field.value)
-      ? (field.value as string[])
-      : field.value !== undefined && field.value !== null && field.value !== ""
-        ? [String(field.value)]
-        : [];
-
-    return (
-      values.find((v: string) => !(attribute.options ?? []).includes(v)) ?? ""
-    );
-  });
-  //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
       return <Input type="text" id={attribute.id.toString()} {...field} />;
@@ -67,17 +53,14 @@ export function AttributeInput({
       return (
         <>
           <Select
-            onValueChange={(value) => {
-              if (value === "other" && !isOtherSelected) {
-                setIsOtherSelected(true);
-                field.onChange("");
-              } else {
-                setIsOtherSelected(false);
-                field.onChange(value);
-              }
-            }}
+            onValueChange={field.onChange}
             {...field}
-            value={isOtherSelected ? "other" : (field.value as string)}
+            value={
+              typeof field.value === "string" &&
+              field.value.startsWith("other: ")
+                ? "other: "
+                : ((field.value as string | undefined) ?? "")
+            }
           >
             <SelectTrigger id={attribute.id.toString()}>
               <SelectValue
@@ -90,17 +73,17 @@ export function AttributeInput({
                   {option}
                 </SelectItem>
               ))}
+              {attribute.allowOther ? (
+                <SelectItem value="other: ">
+                  {locale === "en" ? "Other" : "Inne"}
+                </SelectItem>
+              ) : null}
+
               {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
             Feel free to propose better solution
             */}
-              {attribute.allowOther ? (
-                <SelectItem value="other">
-                  {locale === "en" ? "Other" : "Inne"}
-                </SelectItem>
-              ) : null}
-
               {!("isRequired" in attribute ? attribute.isRequired : false) && (
                 <SelectItem value={" "}>
                   {locale === "en" ? "None" : "Brak"}
@@ -109,15 +92,17 @@ export function AttributeInput({
             </SelectContent>
           </Select>
 
-          {attribute.allowOther && isOtherSelected ? (
+          {attribute.allowOther &&
+          typeof field.value === "string" &&
+          field.value.startsWith("other: ") ? (
             <Input
               type="text"
               placeholder={
                 locale === "en" ? "Enter your answer" : "Wpisz własną odpowiedź"
               }
-              value={field.value as string}
+              value={field.value.replace(/^other: /, "")}
               onChange={(event) => {
-                field.onChange(event.target.value);
+                field.onChange(`other: ${event.target.value}`);
               }}
             />
           ) : null}
@@ -125,9 +110,11 @@ export function AttributeInput({
       );
     }
     case "multiselect": {
-      const selectedOptions = ((field.value ?? []) as string[]).filter(
-        (v) => (attribute.options ?? []).includes(v) && v !== otherInputValue,
-      );
+      const isOtherSelected = () => {
+        return ((field.value ?? []) as string[]).some((item) =>
+          item.startsWith("other: "),
+        );
+      };
 
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
@@ -136,27 +123,18 @@ export function AttributeInput({
               <Checkbox
                 id={`${attribute.id.toString()}-${option}`}
                 disabled={field.disabled}
-                checked={selectedOptions.includes(option)}
+                checked={((field.value ?? []) as string[]).includes(option)}
                 onCheckedChange={(checked) => {
                   if (checked === true) {
                     field.onChange([
-                      ...new Set([
-                        ...selectedOptions,
-                        option,
-                        ...(otherInputValue ? [otherInputValue] : []),
-                      ]),
+                      ...((field.value ?? []) as string[]),
+                      option,
                     ]);
                   } else {
-                    const newValues = selectedOptions.filter(
-                      (value) => value !== option,
-                    );
                     field.onChange(
-                      newValues.length > 0 || otherInputValue
-                        ? [
-                            ...newValues,
-                            ...(otherInputValue ? [otherInputValue] : []),
-                          ]
-                        : undefined,
+                      ((field.value ?? []) as string[]).filter(
+                        (value: string) => value !== option,
+                      ),
                     );
                   }
                 }}
@@ -172,22 +150,19 @@ export function AttributeInput({
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={`${attribute.id.toString()}-other`}
-                  checked={isOtherSelected}
+                  checked={isOtherSelected()}
                   onCheckedChange={(checked) => {
-                    setIsOtherSelected(checked === true);
-
                     if (checked === true) {
                       field.onChange([
-                        ...new Set([...selectedOptions, otherInputValue]),
+                        ...((field.value ?? []) as string[]),
+                        "other: ",
                       ]);
                     } else {
                       field.onChange(
-                        selectedOptions.length > 0
-                          ? selectedOptions
-                          : undefined,
+                        ((field.value ?? []) as string[]).filter(
+                          (value: string) => !value.startsWith("other: "),
+                        ),
                       );
-
-                      setOtherInputValue("");
                     }
                   }}
                 />
@@ -196,7 +171,7 @@ export function AttributeInput({
                 </Label>
               </div>
 
-              {isOtherSelected ? (
+              {isOtherSelected() ? (
                 <Input
                   type="text"
                   placeholder={
@@ -204,13 +179,17 @@ export function AttributeInput({
                       ? "Enter your answer"
                       : "Wpisz własną odpowiedź"
                   }
-                  value={otherInputValue}
+                  value={
+                    ((field.value ?? []) as string[])
+                      .find((item) => item.startsWith("other: "))
+                      ?.replace(/^other: /, "") ?? ""
+                  }
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const newValue = event.target.value;
-                    setOtherInputValue(newValue);
-
                     field.onChange([
-                      ...new Set([...selectedOptions, newValue]),
+                      ...((field.value ?? []) as string[]).filter(
+                        (value: string) => !value.startsWith("other: "),
+                      ),
+                      `other: ${event.target.value}`,
                     ]);
                   }}
                 />
