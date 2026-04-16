@@ -80,13 +80,22 @@ export function AttributeItem({
   };
 
   const addOption = () => {
-    const trimmedValue = optionsInput.trim();
-
-    if (trimmedValue.startsWith("other:")) {
+    if (optionsInput.startsWith("other: ")) {
       toast({
         variant: "destructive",
         title: "Niedozwolona wartość",
-        description: 'Opcja nie może zaczynać się od "other:".',
+        description: 'Opcja nie może zaczynać się od "other: ".',
+      });
+      return;
+    }
+
+    const trimmedValue = optionsInput.trim();
+
+    if (trimmedValue.includes(",")) {
+      toast({
+        variant: "destructive",
+        title: "Niedozwolona wartość",
+        description: "Opcja nie może zawierać przecinków.",
       });
       return;
     }
@@ -94,7 +103,13 @@ export function AttributeItem({
     const oldOptions = getValues(`attributes.${index}.options`);
     if (trimmedValue) {
       const exists = oldOptions?.includes(trimmedValue) ?? false;
-      if (!exists) {
+      if (exists) {
+        toast({
+          variant: "default",
+          title: "Duplikat",
+          description: "Ta opcja znajduje się już na liście.",
+        });
+      } else {
         const newOptions = [...(oldOptions ?? []), trimmedValue];
         setValue(`attributes.${index}.options`, newOptions);
         setOptionsInput("");
