@@ -20,11 +20,3 @@ export interface FormErrorObject {
   field: string;
   message: string;
 }
-
-/**
- * The type of the function that is passed to the ParticipantForm component.
- */
-export type ParticipantFormSubmitHandler = (
-  values: Record<string, unknown>,
-  files: File[],
-) => Promise<{ success: boolean; errors?: FormErrorObject[]; error?: string }>;

@@ -4,7 +4,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 

@@ -82,6 +82,35 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     return <EventNotFound whatNotFound="blocks" />;
   }
 
+  if (!form.isOpen) {
+    return (
+      <EventPageLayout
+        event={event}
+        description={event.description ?? ""}
+        variant="form"
+      >
+        <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
+          <Info
+            className="text-muted-foreground h-10 w-10"
+            aria-hidden="true"
+          />
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold">Registration disabled</h1>
+            <p className="text-muted-foreground">
+              Registration for this event is currently closed.
+            </p>
+          </div>
+          <Link
+            href={`/${locale}/${event.slug}`}
+            className="text-primary text-sm font-medium underline underline-offset-4"
+          >
+            Back to event page
+          </Link>
+        </div>
+      </EventPageLayout>
+    );
+  }
+
   return (
     <EventPageLayout
       event={event}

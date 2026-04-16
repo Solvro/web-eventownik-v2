@@ -25,13 +25,13 @@ export function AttributeInput({
   userData,
   eventBlocks,
   field,
-  shouldCheckUserData,
+  shouldCheckUserData = false,
 }: {
   attribute: Attribute | FormAttribute;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
-  shouldCheckUserData: boolean;
+  shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
   //TODO add lacking implementation for block type
