@@ -85,7 +85,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
         className="h-[calc(100dvh-275px)] w-full overflow-auto"
       >
         <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
-          <TableHeader className="border-border bg-background sticky top-0 z-10 border-b-2">
+          <TableHeader className="border-border bg-background sticky top-0 z-50 border-b-2">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -125,7 +125,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                           className={cn(
                             "wrap-break-word whitespace-normal",
                             cell.column.id === "edit" &&
-                              "sticky right-3 z-20 overflow-visible",
+                              "sticky right-3 z-10 overflow-visible",
                           )}
                         >
                           {flexRender(
@@ -150,7 +150,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                         className={cn(
                           "wrap-break-word whitespace-normal",
                           cell.column.id === "edit" &&
-                            "sticky right-3 z-20 overflow-visible",
+                            "sticky right-3 z-10 overflow-visible",
                         )}
                       >
                         {flexRender(
