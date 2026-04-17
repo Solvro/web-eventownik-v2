@@ -4,7 +4,7 @@ import { flexRender } from "@tanstack/react-table";
 import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -41,11 +41,11 @@ interface ParticipantTableProps {
 
 export function ParticipantTable({ table }: ParticipantTableProps) {
   const t = useTranslations("Table");
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
+    null,
+  );
 
   const rows = table.getRowModel().rows;
-  const globalFilter = table.getState().globalFilter as string;
-  const sortingString = JSON.stringify(table.getState().sorting);
 
   const isResizingColumn = Boolean(
     table.getState().columnSizingInfo.isResizingColumn,
@@ -53,7 +53,8 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => tableContainerRef.current,
+    enabled: scrollElement !== null,
+    getScrollElement: () => scrollElement,
     estimateSize: () => 72,
     overscan: 8,
     initialRect: {
@@ -70,10 +71,6 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     virtualRows.length > 0 ? totalHeight - (lastVirtualRow?.end ?? 0) : 0;
 
   useEffect(() => {
-    rowVirtualizer.scrollToIndex(0);
-  }, [globalFilter, sortingString, rowVirtualizer]);
-
-  useEffect(() => {
     document.body.style.cursor = isResizingColumn ? "col-resize" : "";
     document.body.style.userSelect = isResizingColumn ? "none" : "";
   }, [isResizingColumn]);
@@ -81,7 +78,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
       <div
-        ref={tableContainerRef}
+        ref={setScrollElement}
         className="h-[calc(100dvh-275px)] w-full overflow-auto"
       >
         <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
