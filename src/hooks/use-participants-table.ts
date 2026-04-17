@@ -76,6 +76,7 @@ export function useParticipantsTable({
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: () => true,
     globalFilterFn: "includesString",
+    autoResetAll: false,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
