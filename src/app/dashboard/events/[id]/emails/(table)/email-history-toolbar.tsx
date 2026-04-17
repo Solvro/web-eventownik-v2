@@ -26,16 +26,16 @@ function EmailHistoryToolbar({
 }: EmailHistoryToolbarProps) {
   const t = useTranslations("EmailHistoryTable");
   return (
-    <div className="flex flex-wrap items-center gap-2 sm:justify-between">
+    <div className="flex w-full flex-row flex-nowrap items-center justify-between gap-2 max-sm:mt-4">
       <Input
-        className="h-9 w-full text-sm sm:w-64"
+        className="h-9 min-w-0 flex-1 text-sm sm:w-64 sm:flex-none"
         placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
           onGlobalFilterChange(event.target.value);
         }}
       />
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex shrink-0 flex-nowrap items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

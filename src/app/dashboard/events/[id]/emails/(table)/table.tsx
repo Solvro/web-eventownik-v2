@@ -1,9 +1,10 @@
 "use client";
 
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { flexRender } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -36,7 +37,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
   const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       <EmailHistoryToolbar
         globalFilter={globalFilter}
         onGlobalFilterChange={(value) => {
@@ -50,8 +51,14 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         }}
       />
 
-      <ScrollArea className="max-h-[60vh]">
-        <div className="relative">
+      <ScrollAreaPrimitive.Root
+        data-slot="scroll-area"
+        className="border-border bg-background relative min-h-0 flex-1 rounded-md border"
+      >
+        <ScrollAreaPrimitive.Viewport
+          data-slot="scroll-area-viewport"
+          className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+        >
           <Table className="min-w-[640px] sm:min-w-0">
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -105,10 +112,15 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollAreaPrimitive.Viewport>
+        <ScrollBar />
         <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-      <p className="text-muted-foreground mt-2 text-sm" aria-live="polite">
+      </ScrollAreaPrimitive.Root>
+
+      <p
+        className="text-muted-foreground shrink-0 border-t pt-2 text-sm"
+        aria-live="polite"
+      >
         {t("recipientsCount", { count: filteredCount })}
       </p>
     </div>

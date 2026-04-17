@@ -11,9 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EMAIL_HISTORY_STATUS_FILTER_VALUES } from "@/lib/emails";
 import type { EventEmailParticipantData } from "@/types/emails";
-
-const STATUS_VALUES = ["sent", "pending", "failed"] as const;
 
 function StatusFilterButton({
   column,
@@ -35,7 +34,7 @@ function StatusFilterButton({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {STATUS_VALUES.map((value) => (
+        {EMAIL_HISTORY_STATUS_FILTER_VALUES.map((value) => (
           <DropdownMenuCheckboxItem
             key={value}
             onSelect={(event) => {

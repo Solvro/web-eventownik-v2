@@ -38,14 +38,22 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
           <span className="sr-only">Historia wiadomości</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex max-h-[90dvh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col overflow-hidden p-4 sm:max-h-[90vh] sm:max-w-4xl sm:p-6">
-        <DialogTitle className="text-xl font-bold sm:text-2xl">
-          Historia wiadomości
-        </DialogTitle>
+      <DialogContent
+        aria-describedby={undefined}
+        className={
+          "flex max-h-[90dvh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:max-h-[90vh] sm:max-w-4xl sm:gap-4 sm:p-6 " +
+          "max-sm:inset-0 max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-full max-sm:max-w-full max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none"
+        }
+      >
+        <div className="flex shrink-0 flex-col gap-1 border-b px-4 pt-4 pb-3 sm:border-0 sm:p-0">
+          <DialogTitle className="text-left text-xl font-bold sm:text-2xl">
+            Historia wiadomości
+          </DialogTitle>
+        </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-4 sm:px-0 sm:pb-0">
           {isLoading ? (
-            <div className="py-24 text-center">
+            <div className="flex flex-1 items-start justify-center pt-12">
               <p className="text-muted-foreground animate-pulse text-sm">
                 Ładowanie historii…
               </p>
@@ -53,9 +61,11 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
           ) : data !== null && data !== undefined ? (
             <EmailHistoryTable email={data} />
           ) : (
-            <p className="py-24 text-center text-sm text-red-500">
-              Nie udało się załadować danych.
-            </p>
+            <div className="flex flex-1 items-start justify-center pt-12">
+              <p className="text-center text-sm text-red-500">
+                Nie udało się załadować danych.
+              </p>
+            </div>
           )}
         </div>
       </DialogContent>
