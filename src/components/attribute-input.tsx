@@ -62,11 +62,17 @@ export function AttributeInput({
             />
           </SelectTrigger>
           <SelectContent>
-            {attribute.options?.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
+            {attribute.options?.map((option) => {
+              const optionValue =
+                typeof option === "string" ? option : option.value;
+              const optionLabel =
+                typeof option === "string" ? option : option.label;
+              return (
+                <SelectItem key={optionValue} value={optionValue}>
+                  {optionLabel}
+                </SelectItem>
+              );
+            })}
             {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
@@ -82,32 +88,43 @@ export function AttributeInput({
     case "multiselect": {
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
-          {attribute.options?.map((option) => (
-            <div key={option} className="mb-2 flex items-center space-x-2">
-              <Checkbox
-                id={`${attribute.id.toString()}-${option}`}
-                disabled={field.disabled}
-                checked={((field.value ?? []) as string[]).includes(option)}
-                onCheckedChange={(checked) => {
-                  if (checked === true) {
-                    field.onChange([
-                      ...((field.value ?? []) as string[]),
-                      option,
-                    ]);
-                  } else {
-                    field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
-                    );
-                  }
-                }}
-              />
-              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
-                {option}
-              </Label>
-            </div>
-          ))}
+          {attribute.options?.map((option) => {
+            const optionValue =
+              typeof option === "string" ? option : option.value;
+            const optionLabel =
+              typeof option === "string" ? option : option.label;
+            return (
+              <div
+                key={optionValue}
+                className="mb-2 flex items-center space-x-2"
+              >
+                <Checkbox
+                  id={`${attribute.id.toString()}-${optionValue}`}
+                  disabled={field.disabled}
+                  checked={((field.value ?? []) as string[]).includes(
+                    optionValue,
+                  )}
+                  onCheckedChange={(checked) => {
+                    if (checked === true) {
+                      field.onChange([
+                        ...((field.value ?? []) as string[]),
+                        optionValue,
+                      ]);
+                    } else {
+                      field.onChange(
+                        ((field.value ?? []) as string[]).filter(
+                          (v: string) => v !== optionValue,
+                        ),
+                      );
+                    }
+                  }}
+                />
+                <Label htmlFor={`${attribute.id.toString()}-${optionValue}`}>
+                  {optionLabel}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       );
     }

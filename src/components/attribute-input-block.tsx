@@ -4,6 +4,7 @@ import { ChevronRight, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
+import type { AttributeOption } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
@@ -25,6 +26,7 @@ export function AttributeInputBlock({
 }: {
   block: PublicBlock;
   userData: PublicParticipant;
+  displayedAttributes?: AttributeOption[];
 }) {
   const t = useTranslations("Form");
   const isFull =

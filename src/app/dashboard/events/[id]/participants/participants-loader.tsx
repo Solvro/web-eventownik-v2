@@ -3,13 +3,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
+import { useParticipantsData } from "@/hooks/use-participants-data";
+import { useParticipantsTable } from "@/hooks/use-participants-table";
+import { useUnsavedForm } from "@/hooks/use-unsaved";
+
 import {
   getAttributes,
   getBlocks,
   getEmails,
   getParticipants,
 } from "./actions";
-import { ParticipantTable } from "./table/participants-table";
+import { TableMenu } from "./table/components/buttons/table-menu";
+import { HelpDialog } from "./table/components/dialogs/help-dialog";
+import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const t = useTranslations("Table");
@@ -40,6 +47,34 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     enabled: Boolean(attributes),
   });
 
+  const {
+    data,
+    setData,
+    deleteManyParticipants,
+    isLoading: isQuerying,
+  } = useParticipantsData(eventId, participants ?? []);
+
+  const { table, globalFilter } = useParticipantsTable({
+    data,
+    attributes: attributes ?? [],
+    blocks: blocks ?? [],
+    eventId,
+    onUpdateData: (rowIndex, value) => {
+      setData((previousData) => {
+        return previousData.map((row, index) => {
+          if (index === rowIndex) {
+            return value;
+          }
+          return row;
+        });
+      });
+    },
+  });
+
+  const isAnyRowEditing = data.some((row) => row.mode === "edit");
+  const { isGuardActive, onConfirm, onCancel } =
+    useUnsavedForm(isAnyRowEditing);
+
   if (
     isAttributesError ||
     isParticipantsError ||
@@ -49,13 +84,35 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
     return <div className="text-center">{t("participantsError")}</div>;
   }
 
+  async function handleDeleteManyParticipants(participantsIds: string[]) {
+    await deleteManyParticipants(participantsIds);
+    table.resetRowSelection();
+  }
+
   return (
-    <ParticipantTable
-      participants={participants}
-      attributes={attributes}
-      emails={emails ?? []}
-      blocks={blocks ?? []}
-      eventId={eventId}
-    />
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between">
+          <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
+          <HelpDialog />
+        </div>
+        <TableMenu
+          table={table}
+          eventId={eventId}
+          globalFilter={globalFilter}
+          isQuerying={isQuerying}
+          emails={emails ?? []}
+          attributes={attributes}
+          blocks={blocks ?? []}
+          deleteManyParticipants={handleDeleteManyParticipants}
+        />
+      </div>
+      <ParticipantTable table={table} />
+      <UnsavedChangesAlert
+        active={isGuardActive}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
+    </>
   );
 }

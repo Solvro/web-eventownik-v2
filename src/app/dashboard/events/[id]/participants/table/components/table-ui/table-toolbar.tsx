@@ -1,21 +1,27 @@
 import type { Table } from "@tanstack/react-table";
-import { ArrowUpDown, FilterX } from "lucide-react";
+import { ArrowUpDown, FilterX, SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
-import { ExportButton } from "./export-button";
-import { SendMailForm } from "./send-mail-form";
+import { ExportButton } from "../buttons/export-button";
+import { BulkEditDialog } from "../dialogs/bulk-edit-dialog";
+import { DeleteManyParticipantsDialog } from "../dialogs/delete-many-dialog";
+import { SendMailForm } from "../dialogs/send-mail-form";
 
 interface TableToolbarProps {
   table: Table<FlattenedParticipant>;
@@ -23,9 +29,9 @@ interface TableToolbarProps {
   eventId: string;
   emails: EventEmail[] | null;
   isQuerying: boolean;
+  attributes: Attribute[];
+  blocks: (Block | null)[];
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
-  pageBeforeSearch: number;
-  setIsUserSearching: Dispatch<SetStateAction<boolean>>;
 }
 
 export function TableToolbar({
@@ -34,34 +40,29 @@ export function TableToolbar({
   eventId,
   emails,
   isQuerying,
+  attributes,
+  blocks,
   deleteManyParticipants,
-  pageBeforeSearch,
-  setIsUserSearching,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
+  const participantsCount = table.getPreFilteredRowModel().rows.length;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Input
-        className="h-10 w-full md:w-32"
-        placeholder={t("searchPlaceholder")}
-        value={globalFilter}
-        onChange={(event) => {
-          setIsUserSearching(true);
-          const searchValue = event.target.value;
-          table.setGlobalFilter(searchValue);
-
-          if (
-            pageBeforeSearch > 0 &&
-            table.getState().pagination.pageIndex > 0
-          ) {
-            table.firstPage();
-          } else if (searchValue === "") {
-            table.setPageIndex(pageBeforeSearch);
-            setIsUserSearching(false);
-          }
-        }}
-      />
+    <div className="flex flex-wrap items-center gap-2">
+      <InputGroup className="bg-background! h-10 w-full md:w-64">
+        <InputGroupInput
+          placeholder={t("searchPlaceholder", {
+            count: participantsCount,
+          })}
+          value={globalFilter}
+          onChange={(event) => {
+            table.setGlobalFilter(event.target.value);
+          }}
+        />
+        <InputGroupAddon align={"inline-end"}>
+          <SearchIcon />
+        </InputGroupAddon>
+      </InputGroup>
       <div className="flex gap-4 max-md:w-full">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -101,6 +102,12 @@ export function TableToolbar({
           emails={emails}
         />
         <ExportButton eventId={eventId} />
+        <BulkEditDialog
+          table={table}
+          attributes={attributes}
+          blocks={blocks}
+          eventId={eventId}
+        />
         <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
           participants={table

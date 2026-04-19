@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import {
   deleteManyParticipants,
-  deleteParticipant,
   getParticipants,
 } from "@/app/dashboard/events/[id]/participants/actions";
-import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/data";
+import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/core/data";
+import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
@@ -14,6 +15,8 @@ export function useParticipantsData(
   initialParticipants: Participant[] = [],
 ) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const t = useTranslations("Table");
 
   const { data: participants, isFetching } = useQuery({
     queryKey: ["participants", eventId],
@@ -31,20 +34,24 @@ export function useParticipantsData(
     }
   }, [participants]);
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => deleteParticipant(eventId, id.toString()),
-    onSuccess: async () => {
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
+    onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventId],
       });
+      toast({
+        title: t("deleteParticipantsSuccess"),
+        description: t("deleteParticipantsSuccessDescription", {
+          count: variables.length,
+        }),
+      });
     },
-  });
-
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["participants", eventId],
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: t("deleteParticipantsError"),
+        description: error.message || t("deleteParticipantsErrorDescription"),
       });
     },
   });
@@ -52,9 +59,7 @@ export function useParticipantsData(
   return {
     data: flattenedData,
     setData: setFlattenedData,
-    isLoading:
-      isFetching || deleteMutation.isPending || bulkDeleteMutation.isPending,
-    deleteParticipant: deleteMutation.mutateAsync,
+    isLoading: isFetching || bulkDeleteMutation.isPending,
     deleteManyParticipants: bulkDeleteMutation.mutateAsync,
   };
 }

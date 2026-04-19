@@ -1,12 +1,13 @@
 import type { Table } from "@tanstack/react-table";
-import { useState } from "react";
 
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { TablePagination } from "./table-pagination";
-import { TableSelectionInfo } from "./table-selection-info";
-import { TableToolbar } from "./table-toolbar";
+import { ColumnSettingsDropdown } from "../table-ui/column-settings-dropdown";
+import { TableSelectionInfo } from "../table-ui/table-selection-info";
+import { TableToolbar } from "../table-ui/table-toolbar";
 
 export function TableMenu({
   table,
@@ -14,6 +15,8 @@ export function TableMenu({
   eventId,
   emails,
   isQuerying,
+  attributes,
+  blocks,
   deleteManyParticipants,
 }: {
   table: Table<FlattenedParticipant>;
@@ -21,14 +24,10 @@ export function TableMenu({
   eventId: string;
   emails: EventEmail[] | null;
   isQuerying: boolean;
+  attributes: Attribute[];
+  blocks: (Block | null)[];
   deleteManyParticipants: (_participants: string[]) => Promise<void>;
 }) {
-  // allows for coming back to the page where user started typing in searchbox
-  const [pageBeforeSearch, setPageBeforeSearch] = useState(
-    table.getState().pagination.pageIndex,
-  );
-  const [isUserSearching, setIsUserSearching] = useState(false);
-
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-x-2 max-md:w-full">
@@ -38,18 +37,13 @@ export function TableMenu({
           eventId={eventId}
           emails={emails}
           isQuerying={isQuerying}
+          attributes={attributes}
+          blocks={blocks}
           deleteManyParticipants={deleteManyParticipants}
-          pageBeforeSearch={pageBeforeSearch}
-          setIsUserSearching={setIsUserSearching}
         />
         <TableSelectionInfo table={table} />
       </div>
-
-      <TablePagination
-        table={table}
-        isUserSearching={isUserSearching}
-        setPageBeforeSearch={setPageBeforeSearch}
-      />
+      <ColumnSettingsDropdown table={table} />
     </div>
   );
 }
