@@ -24,16 +24,19 @@ export function AttributeInputBlock({
   userData,
 }: {
   block: PublicBlock;
-  userData: PublicParticipant;
+  userData: PublicParticipant | undefined;
 }) {
   const t = useTranslations("Form");
   const isFull =
     block.capacity !== null && block.meta.participants.length >= block.capacity;
-  const isRegistered = userData.attributes.some(
-    (attribute) =>
-      attribute.type === "block" &&
-      attribute.meta.pivot_value === block.id.toString(),
-  );
+  const isRegistered =
+    userData === undefined
+      ? false
+      : userData.attributes.some(
+          (attribute) =>
+            attribute.type === "block" &&
+            attribute.meta.pivot_value === block.id.toString(),
+        );
 
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
