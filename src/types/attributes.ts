@@ -1,5 +1,7 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
+// TODO(docs): Explain use cases for each attribute type
+
 export interface EventAttribute {
   id: number;
   name: string;
@@ -14,6 +16,8 @@ export interface EventAttribute {
   updatedAt: string;
   isSensitiveData: boolean;
   reason: string | null;
+  isMultiple: string | null;
+  maxSelections: number | null;
 }
 
 /**
