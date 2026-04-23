@@ -99,14 +99,14 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden min-w-[240px] shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
+      <nav className="border-muted hidden w-60 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
             <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="flex flex-col gap-2 pl-2">
+            <ul className="space-y-2 pl-2">
               {section.links.map((link) => (
                 <li key={link.title}>
                   <Button
@@ -120,7 +120,7 @@ export function DashboardSidebar({
                       href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                     >
                       {link.icon}
-                      {link.title}
+                      <span className="truncate">{link.title}</span>
                     </Link>
                   </Button>
                 </li>

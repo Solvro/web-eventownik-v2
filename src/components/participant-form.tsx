@@ -4,7 +4,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -82,7 +82,7 @@ export function ParticipantForm({
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
-  // generate schema for form based on attributes
+  // Generate schema for the form based on event attributes
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForAttributes(attributes),
@@ -123,7 +123,7 @@ export function ParticipantForm({
 
   const { toast } = useToast();
 
-  // temporarily disabled to avoid issues with dirty state not reseting after clearing values
+  // Temporarily disabled to avoid issues with dirty state not resetting after clearing values
   // useUnsavedForm(form.formState.isDirty);
 
   /**
@@ -292,7 +292,7 @@ export function ParticipantForm({
                     <TooltipTrigger type="button">
                       <span className="text-red-500">*</span>
                     </TooltipTrigger>
-                    <TooltipContent className="max-w-[var(--radix-tooltip-content-available-width)] text-wrap">
+                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
                       {t("emailIsRequiredTooltip")}
                     </TooltipContent>
                   </Tooltip>
@@ -374,6 +374,7 @@ export function ParticipantForm({
                         (block) => block.attributeId === attribute.id,
                       )}
                       field={field}
+                      shouldCheckUserData={editMode}
                     />
                   )}
                 </FormControl>

@@ -12,11 +12,6 @@ export const registerFormSchema = loginFormSchema.extend({
   lastName: z.string().nonempty("Nazwisko nie może być puste."),
 });
 
-export const registerParticipantFormSchema = z.object({
-  email: z.string().email("Nieprawidłowy adres email."),
-  //TODO additional attributes fetched from api
-});
-
 export const sendPasswordResetTokenSchema = z.object({
   email: z.string().email("Nieprawidłowy adres email."),
 });
