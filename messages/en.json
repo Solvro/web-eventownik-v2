@@ -41,7 +41,23 @@
     "userRegisteredOnBlock": "You are already on this list.",
     "participants": "Participants",
     "noParticipants": "No participants",
-    "anonymousParticipant": "Anonymous participant"
+    "anonymousParticipant": "Anonymous participant",
+    "other": "Other",
+    "none": "None",
+    "selectAttribute": "Select {name}",
+    "enterOwnValue": "Enter your own value",
+    "blockDataFetchFailed": "Failed to fetch data about this block or your attributes 😪"
+  },
+  "Sidebar": {
+    "general": "General",
+    "event": "Event",
+    "forms": "Forms",
+    "settings": "Settings",
+    "participants": "Participants",
+    "listOfParticipants": "List of participants",
+    "emails": "Emails",
+    "emailTemplates": "Email templates",
+    "blocks": "Blocks"
   },
   "Auth": {
     "registerTitle": "Organizer registration",

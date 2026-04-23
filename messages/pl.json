@@ -41,7 +41,23 @@
     "userRegisteredOnBlock": "Jesteś już na tej liście.",
     "participants": "Uczestnicy",
     "noParticipants": "Brak uczestników.",
-    "anonymousParticipant": "Anonimowy uczestnik"
+    "anonymousParticipant": "Anonimowy uczestnik",
+    "other": "Inne",
+    "none": "Brak",
+    "selectAttribute": "Wybierz {name}",
+    "enterOwnValue": "Podaj własną wartość",
+    "blockDataFetchFailed": "Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪"
+  },
+  "Sidebar": {
+    "general": "Ogólne",
+    "event": "Wydarzenie",
+    "forms": "Formularze",
+    "settings": "Ustawienia",
+    "participants": "Uczestnicy",
+    "listOfParticipants": "Lista uczestników",
+    "emails": "Maile",
+    "emailTemplates": "Szablony maili",
+    "blocks": "Bloki"
   },
   "Auth": {
     "registerTitle": "Rejestracja organizatora",

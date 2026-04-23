@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,6 +32,7 @@ export function AttributeInput({
   field: ControllerRenderProps<FieldValues, string>;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Form");
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
@@ -58,7 +59,9 @@ export function AttributeInput({
         >
           <SelectTrigger id={attribute.id.toString()}>
             <SelectValue
-              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+              placeholder={t("selectAttribute", {
+                name: getAttributeLabel(attribute.name, locale).toLowerCase(),
+              })}
             />
           </SelectTrigger>
           <SelectContent>
@@ -73,7 +76,7 @@ export function AttributeInput({
             Feel free to propose better solution
             */}
             {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>Brak</SelectItem>
+              <SelectItem value={" "}>{t("none")}</SelectItem>
             )}
           </SelectContent>
         </Select>
@@ -188,11 +191,7 @@ export function AttributeInput({
     }
     case "block": {
       if (eventBlocks === undefined || userData === undefined) {
-        return (
-          <div>
-            Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪
-          </div>
-        );
+        return <div>{t("blockDataFetchFailed")} </div>;
       }
       return (
         <>
