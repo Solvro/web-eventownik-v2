@@ -1,10 +1,9 @@
 "use client";
 
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { flexRender } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
-import { ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -51,15 +50,12 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         }}
       />
 
-      <ScrollAreaPrimitive.Root
-        data-slot="scroll-area"
-        className="border-border bg-background relative min-h-0 flex-1 rounded-md border"
+      <ScrollArea
+        horizontalScroll
+        className="border-border bg-background h-full min-h-0 flex-1 rounded-md border sm:h-[55dvh] sm:flex-none"
       >
-        <ScrollAreaPrimitive.Viewport
-          data-slot="scroll-area-viewport"
-          className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
-        >
-          <Table className="min-w-[640px] sm:min-w-0">
+        <div className="relative min-w-[640px] sm:min-w-0">
+          <Table>
             <TableHeader className="border-border border-b-2">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -112,10 +108,8 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
               )}
             </TableBody>
           </Table>
-        </ScrollAreaPrimitive.Viewport>
-        <ScrollBar />
-        <ScrollBar orientation="horizontal" />
-      </ScrollAreaPrimitive.Root>
+        </div>
+      </ScrollArea>
 
       <p
         className="text-muted-foreground shrink-0 border-t pt-2 text-sm"
