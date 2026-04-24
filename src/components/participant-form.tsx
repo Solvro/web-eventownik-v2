@@ -4,6 +4,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -64,6 +65,7 @@ export function ParticipantForm({
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const locale = useLocale();
+  const router = useRouter();
 
   const [files, setFiles] = useState<File[]>([]);
   const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
@@ -105,6 +107,7 @@ export function ParticipantForm({
   });
 
   function resetStates() {
+    router.refresh();
     form.reset();
     setFiles([]);
     setSuccess(false);
