@@ -854,10 +854,7 @@ export const getPuckConfig = ({
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
-                  <td
-                    align="center"
-                    style={{ padding: `${padding}px`, margin: `${margin}px` }}
-                  >
+                  <td align="center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
@@ -870,6 +867,8 @@ export const getPuckConfig = ({
                         width: widthValue,
                         height: heightValue,
                         maxWidth: "100%",
+                        padding: `${padding}px`,
+                        margin: `${margin}px`,
                       }}
                     />
                   </td>
