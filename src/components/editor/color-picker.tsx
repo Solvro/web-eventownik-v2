@@ -6,31 +6,37 @@ export function ColorPicker({
   onChange,
   value,
   name,
+  allowDefault = true,
 }: {
   onChange: (value: string) => void;
   value: string;
   name: string;
+  allowDefault?: boolean;
 }) {
   const defaultValue = "inherit";
+
   return (
     <div className="space-y-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className="w-full"
-            variant={value === defaultValue ? "secondary" : "outline"}
-            onClick={() => {
-              onChange(defaultValue);
-            }}
-            size="sm"
-          >
-            Ustawiony odgórnie
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          Element przybierze kolor ustawiony w elemencie nadrzędnym
-        </TooltipContent>
-      </Tooltip>
+      {allowDefault ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="w-full"
+              variant={value === defaultValue ? "secondary" : "outline"}
+              onClick={() => {
+                onChange(defaultValue);
+              }}
+              size="sm"
+            >
+              Ustawiony odgórnie
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Element przybierze kolor ustawiony w elemencie nadrzędnym
+          </TooltipContent>
+        </Tooltip>
+      ) : null}
+
       <label
         htmlFor={name}
         className="border-input flex items-center justify-center gap-2 rounded-md border p-2"
@@ -47,6 +53,7 @@ export function ColorPicker({
           {value === defaultValue ? "Kliknij aby wybrać" : value}
         </p>
       </label>
+
       <Input
         id={name}
         type="color"

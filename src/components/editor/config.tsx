@@ -14,6 +14,7 @@ import {
   Lightbulb,
   LinkIcon,
   Mail,
+  Palette,
   Tag,
   Type,
   X,
@@ -45,6 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { ColorPicker } from "./color-picker";
 import {
   PUCK_ICON_CLASSNAME,
   getAppearanceStyles,
@@ -1001,6 +1003,22 @@ export const getPuckConfig = ({
             label: "Tytuł wiadomości",
             labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
           },
+          backgroundColor: {
+            type: "custom",
+            render: ({ name, onChange, value }) => (
+              <FieldLabel
+                label="Kolor tła"
+                icon={<Palette className={PUCK_ICON_CLASSNAME} />}
+              >
+                <ColorPicker
+                  onChange={onChange}
+                  value={value}
+                  name={name}
+                  allowDefault={false}
+                />
+              </FieldLabel>
+            ),
+          },
           trigger: {
             type: "custom",
             label: "Wyzwalacz",
@@ -1082,8 +1100,9 @@ export const getPuckConfig = ({
       defaultProps: {
         name: "Nowa wiadomość",
         trigger: "manual",
+        backgroundColor: "#f3f4f6",
       },
-      render: ({ children, name }) => {
+      render: ({ children, name, backgroundColor }) => {
         const eventImageUrl =
           eventData.photoUrl === ""
             ? "/event-photo-placeholder.png"
@@ -1124,7 +1143,7 @@ export const getPuckConfig = ({
                 width="100%"
                 {...tableProps}
                 style={{
-                  backgroundColor: "#f3f4f6",
+                  backgroundColor,
                   ...tableStyles,
                 }}
               >
