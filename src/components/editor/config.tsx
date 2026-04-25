@@ -67,6 +67,7 @@ const tableStyles: EmailCSSProperties = {
   msoTableLspace: "0pt",
   msoTableRspace: "0pt",
   maxWidth: "100%",
+  tableLayout: "fixed",
 };
 
 const tableProps = {
