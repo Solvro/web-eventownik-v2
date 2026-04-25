@@ -58,6 +58,7 @@ export default async function EventMailEditPage({
             // NOTE: Update if the defaults change
             name: "Nowa wiadomość",
             trigger: "manual",
+            backgroundColor: "#f3f4f6",
           },
         },
         content: [],
