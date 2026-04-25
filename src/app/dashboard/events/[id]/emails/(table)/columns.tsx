@@ -1,26 +1,114 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { Column, ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { EventEmailParticipantData } from "@/types/emails";
+
+import { StatusFilterButton } from "./status-filter-button";
+
+function StatusColumnHeader({
+  column,
+}: {
+  column: Column<EventEmailParticipantData>;
+}) {
+  const t = useTranslations("EmailHistoryTable");
+  return (
+    <div className="flex items-center gap-1">
+      <StatusFilterButton column={column} />
+      <SortableHeader column={column} title={t("statusLabel")} />
+    </div>
+  );
+}
+
+function SortableHeader<TData, TValue>({
+  column,
+  title,
+}: {
+  column: Column<TData, TValue>;
+  title: string;
+}) {
+  const sorting = column.getIsSorted();
+
+  return (
+    <button
+      type="button"
+      className="flex items-center gap-1"
+      onClick={() => {
+        column.toggleSorting(sorting === "asc");
+      }}
+    >
+      <span>{title}</span>
+      {sorting === "asc" ? (
+        <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+      ) : sorting === "desc" ? (
+        <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+      ) : (
+        <ArrowUpDown
+          className="text-muted-foreground h-3.5 w-3.5"
+          aria-hidden="true"
+        />
+      )}
+    </button>
+  );
+}
 
 export const columns: ColumnDef<EventEmailParticipantData>[] = [
   {
     accessorKey: "email",
-    header: "Odbiorca",
+    header: ({ column }) => <SortableHeader column={column} title="Odbiorca" />,
   },
   {
-    accessorFn: (row) => format(row.meta.pivot_send_at, "dd.MM.yyyy"),
-    header: "Data",
+    id: "date",
+    accessorFn: (row) => {
+      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+
+      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
+        return "-";
+      }
+      return value;
+    },
+    header: ({ column }) => <SortableHeader column={column} title="Data" />,
   },
   {
-    accessorFn: (row) => format(row.meta.pivot_send_at, "HH:mm"),
-    header: "Godzina",
+    id: "time",
+    accessorFn: (row) => {
+      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+
+      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
+        return "-";
+      }
+
+      return format(row.meta.pivot_send_at, "HH:mm");
+    },
+    header: ({ column }) => <SortableHeader column={column} title="Godzina" />,
   },
   {
-    accessorFn: (row) =>
-      row.meta.pivot_status === "sent" ? "Wysłano" : row.meta.pivot_status,
-    header: "Status",
+    id: "status",
+    accessorFn: (row) => {
+      const status = row.meta.pivot_status;
+
+      if (status === "sent") {
+        return "Wysłano";
+      }
+      if (status === "pending") {
+        return "Oczekujące";
+      }
+      if (status === "failed") {
+        return "Nieudane";
+      }
+
+      return status;
+    },
+    header: ({ column }) => <StatusColumnHeader column={column} />,
+    filterFn: (row, _columnId, filterValue) => {
+      const values = filterValue as string[] | undefined;
+      if (values === undefined || values.length === 0) {
+        return true;
+      }
+      return values.includes(row.original.meta.pivot_status);
+    },
   },
 ];
