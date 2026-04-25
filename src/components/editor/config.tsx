@@ -29,6 +29,7 @@ import {
   appearanceDefaults,
   containerDefaults,
   layoutDefaults,
+  rootDefaults,
 } from "@/lib/editor";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { setupSuggestions } from "@/lib/extensions/tags";
@@ -1097,11 +1098,7 @@ export const getPuckConfig = ({
 
         return defaultFields;
       },
-      defaultProps: {
-        name: "Nowa wiadomość",
-        trigger: "manual",
-        backgroundColor: "#f3f4f6",
-      },
+      defaultProps: rootDefaults,
       render: ({ children, name, backgroundColor }) => {
         const eventImageUrl =
           eventData.photoUrl === ""

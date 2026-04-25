@@ -6,8 +6,14 @@ import type {
   ContainerFields,
   LayoutFields,
 } from "@/components/editor/common";
-import type { PuckComponents, PuckData } from "@/types/editor";
+import type { PuckComponents, PuckData, RootSettings } from "@/types/editor";
 import type { SingleEventEmail } from "@/types/emails";
+
+export const rootDefaults = {
+  name: "Nowa wiadomość",
+  trigger: "manual",
+  backgroundColor: "#f3f4f6",
+} satisfies RootSettings;
 
 export const layoutDefaults = {
   layout: {
@@ -118,6 +124,7 @@ export function getPuckSchemaFromLegacyEmail(
         height: "128",
         src: image.src,
         alt: image.alt,
+        href: "",
         objectFit: "contain",
         ...layoutDefaults,
       },
@@ -140,6 +147,7 @@ export function getPuckSchemaFromLegacyEmail(
       props: {
         name: email.name,
         trigger: email.trigger,
+        backgroundColor: rootDefaults.backgroundColor,
         triggerValue: email.triggerValue ?? null,
         triggerValue2: email.triggerValue2 ?? null,
       },

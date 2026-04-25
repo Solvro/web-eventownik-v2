@@ -1,4 +1,5 @@
 import { Editor } from "@/components/editor/index";
+import { rootDefaults } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
@@ -54,12 +55,7 @@ export default async function EventMailEditPage({
       attributes={attributes}
       initialData={{
         root: {
-          props: {
-            // NOTE: Update if the defaults change
-            name: "Nowa wiadomość",
-            trigger: "manual",
-            backgroundColor: "#f3f4f6",
-          },
+          props: rootDefaults,
         },
         content: [],
         zones: {},
