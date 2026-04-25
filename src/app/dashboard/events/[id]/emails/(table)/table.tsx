@@ -52,11 +52,11 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
 
       <ScrollArea
         horizontalScroll
-        className="border-border bg-background h-full min-h-0 flex-1 rounded-md border sm:h-[55dvh] sm:flex-none"
+        className="bg-background h-full min-h-0 flex-1 rounded-md border sm:h-[55dvh] sm:flex-none"
       >
-        <div className="relative min-w-[640px] sm:min-w-0">
+        <div className="relative min-w-160 sm:min-w-0">
           <Table>
-            <TableHeader className="border-border border-b-2">
+            <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -64,7 +64,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
                     return (
                       <TableHead
                         key={header.id}
-                        className="border-border bg-background border-r-2 px-2 py-2 text-xs sm:px-3 sm:py-2 sm:text-sm"
+                        className="bg-background border-r px-2 py-2 text-xs sm:px-3 sm:py-2 sm:text-sm"
                         aria-sort={getAriaSort(sortDirection)}
                       >
                         {header.isPlaceholder
@@ -111,10 +111,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
         </div>
       </ScrollArea>
 
-      <p
-        className="text-muted-foreground shrink-0 border-t pt-2 text-sm"
-        aria-live="polite"
-      >
+      <p className="text-muted-foreground pt-2 text-sm" aria-live="polite">
         {t("recipientsCount", { count: filteredCount })}
       </p>
     </div>
