@@ -53,7 +53,7 @@ function MailHistoryPopup({ eventId, emailId }: MailHistoryPopupProps) {
 
         <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 sm:px-0 sm:pb-0">
           {isLoading ? (
-            <div className="flex flex-1 items-start justify-center pt-12">
+            <div className="flex min-h-[60dvh] items-center justify-center">
               <p className="text-muted-foreground animate-pulse text-sm">
                 Ładowanie historii…
               </p>
