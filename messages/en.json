@@ -126,5 +126,17 @@
     "unknownError": "An unknown error occurred",
     "tryAgain": "Try again",
     "exportToExcel": "Export to Excel"
+  },
+  "EmailHistoryTable": {
+    "searchPlaceholder": "Search in history",
+    "openFilterMenu": "Open filter menu",
+    "statusLabel": "Status",
+    "all": "All",
+    "sent": "Sent",
+    "pending": "Pending",
+    "failed": "Failed",
+    "clearFilters": "Clear filters",
+    "clearSorting": "Clear sorting",
+    "recipientsCount": "Recipients: {count}"
   }
 }

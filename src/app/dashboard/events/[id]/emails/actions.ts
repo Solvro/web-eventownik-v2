@@ -6,6 +6,15 @@ import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
+import { getSingleEventEmail } from "./data-access";
+
+export async function getSingleEventEmailAction(
+  eventId: string,
+  emailId: string,
+) {
+  return await getSingleEventEmail(eventId, emailId);
+}
+
 export async function createEventEmail(data: {
   eventId: string;
   emailTemplate: UpdateEventEmailPayload;
