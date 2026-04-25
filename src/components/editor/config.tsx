@@ -66,6 +66,7 @@ const tableStyles: EmailCSSProperties = {
   borderCollapse: "separate",
   msoTableLspace: "0pt",
   msoTableRspace: "0pt",
+  maxWidth: "100%",
 };
 
 const tableProps = {
@@ -198,7 +199,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -206,7 +207,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -261,7 +262,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -269,7 +270,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -277,7 +278,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -338,7 +339,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "25%",
+                    maxWidth: "25%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -346,7 +347,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "25%",
+                    maxWidth: "25%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -354,7 +355,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "25%",
+                    maxWidth: "25%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -362,7 +363,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "25%",
+                    maxWidth: "25%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -423,7 +424,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -431,7 +432,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -441,7 +442,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -449,7 +450,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "50%",
+                    maxWidth: "50%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -504,7 +505,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -512,7 +513,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -520,7 +521,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -530,7 +531,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -538,7 +539,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -546,7 +547,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -610,7 +611,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -618,7 +619,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -626,7 +627,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -636,7 +637,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -644,7 +645,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -652,7 +653,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -662,7 +663,7 @@ export const getPuckConfig = ({
               <tr>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -670,7 +671,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -678,7 +679,7 @@ export const getPuckConfig = ({
                 </td>
                 <td
                   style={{
-                    width: "33.33%",
+                    maxWidth: "33.33%",
                     verticalAlign: container.verticalAlign,
                   }}
                 >
@@ -705,7 +706,7 @@ export const getPuckConfig = ({
         },
         render({ height, appearance: { color, backgroundColor } }) {
           return (
-            <table width="100%" {...tableProps} style={tableStyles}>
+            <table {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td
@@ -1118,6 +1119,7 @@ export const getPuckConfig = ({
                               style={{
                                 padding: "8px",
                                 backgroundColor: "#ffffff",
+                                maxWidth: "600px",
                               }}
                             >
                               {children}
