@@ -18,6 +18,7 @@ import {
   ListOrdered,
   SlashSquare,
   Tag,
+  Underline,
 } from "lucide-react";
 import { useRef } from "react";
 
@@ -51,6 +52,7 @@ function EditorMenuBar({
               variant={activeState.bold ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
+              aria-label="Pogrubienie"
             >
               <Bold />
             </Button>
@@ -64,6 +66,7 @@ function EditorMenuBar({
               variant={activeState.italic ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
+              aria-label="Kursywa"
             >
               <Italic />
             </Button>
@@ -74,9 +77,24 @@ function EditorMenuBar({
           <TooltipTrigger asChild>
             <Button
               size="icon"
+              variant={activeState.underline ? "eventDefault" : "eventGhost"}
+              type="button"
+              onClick={() => editor.chain().focus().toggleUnderline().run()}
+              aria-label="Podkreślenie"
+            >
+              <Underline />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Podkreślenie</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
               variant={activeState.code ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleCode().run()}
+              aria-label="Kod (czcionka mono)"
             >
               <Code2 />
             </Button>
@@ -174,6 +192,7 @@ function EditorMenuBar({
               variant={activeState.bulletList ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
+              aria-label="Lista punktowa"
             >
               <List />
             </Button>
@@ -187,6 +206,7 @@ function EditorMenuBar({
               variant={activeState.orderedList ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              aria-label="Lista numerowana"
             >
               <ListOrdered />
             </Button>
@@ -205,6 +225,7 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
               }
+              aria-label="Nagłówek stopnia pierwszego"
             >
               <Heading1 />
             </Button>
@@ -220,6 +241,7 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               }
+              aria-label="Nagłówek stopnia drugiego"
             >
               <Heading2 />
             </Button>
@@ -235,6 +257,7 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 3 }).run()
               }
+              aria-label="Nagłówek stopnia trzeciego"
             >
               <Heading3 />
             </Button>
@@ -246,6 +269,7 @@ function EditorMenuBar({
       <input
         type="file"
         className="sr-only"
+        aria-label="Wybierz obraz"
         ref={fileInputRef}
         onChangeCapture={async (event) => {
           const input = event.target as HTMLInputElement;

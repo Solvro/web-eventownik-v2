@@ -29,7 +29,7 @@ function EmailTemplateEntry({
     <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" title="Edytuj szablon" asChild>
-          <Link href={`emails/${emailTemplate.id.toString()}`}>
+          <Link href={`emails/editor/${emailTemplate.id.toString()}`}>
             <SquarePen />
             <span className="sr-only">Edytuj szablon</span>
           </Link>

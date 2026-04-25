@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 
-import type { NewEventEmailTemplate } from "@/atoms/new-email-template-atom";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { UpdateEventEmailPayload } from "@/types/emails";
@@ -16,28 +15,28 @@ export async function getSingleEventEmailAction(
   return await getSingleEventEmail(eventId, emailId);
 }
 
-export async function createEventEmailTemplate(
-  eventId: string,
-  emailTemplate: NewEventEmailTemplate,
-) {
+export async function createEventEmail(data: {
+  eventId: string;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
 
-  const response = await fetch(`${API_URL}/events/${eventId}/emails`, {
+  const response = await fetch(`${API_URL}/events/${data.eventId}/emails`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${session.bearerToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(emailTemplate),
+    body: JSON.stringify(data.emailTemplate),
   });
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[createEventEmailTemplate action] Failed to create event email template for event ${eventId}:`,
+      `[createEventEmail action] Failed to create event email template for event ${data.eventId}:`,
       error,
     );
     return {
@@ -52,11 +51,15 @@ export async function createEventEmailTemplate(
   };
 }
 
-export async function updateEventEmail(
-  eventId: string,
-  mailId: string,
-  updatedEmail: UpdateEventEmailPayload,
-) {
+export async function updateEventEmail(data: {
+  eventId: string;
+  mailId: string | null;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
+  if (data.mailId == null) {
+    return { success: false, error: "Nieprawidłowy identyfikator maila" };
+  }
+
   const session = await verifySession();
 
   if (session == null) {
@@ -64,21 +67,21 @@ export async function updateEventEmail(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventId}/emails/${mailId}`,
+    `${API_URL}/events/${data.eventId}/emails/${data.mailId}`,
     {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedEmail),
+      body: JSON.stringify(data.emailTemplate),
     },
   );
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateEventEmail action] Failed to update event email ${mailId} for event ${eventId}:`,
+      `[updateEventEmail action] Failed to update event email ${data.mailId} for event ${data.eventId}:`,
       error,
     );
     return {
@@ -87,7 +90,7 @@ export async function updateEventEmail(
     };
   }
 
-  return { success: true };
+  return { error: null, success: true };
 }
 
 export async function reorderEmails(eventId: string, orderedIds: number[]) {
