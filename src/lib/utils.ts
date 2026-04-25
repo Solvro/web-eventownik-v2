@@ -53,7 +53,14 @@ const validationRules: Record<
   FormAttribute["type"],
   (attribute: FormAttribute) => z.ZodType
 > = {
-  select: requiredString,
+  select: (attribute) =>
+    requiredString(attribute).refine(
+      (value) =>
+        value.startsWith("other: ") ? value.trim() !== "other:" : true,
+      {
+        message: `Pole ${getAttributeLabel(attribute.name, "pl")} wymaga uzupełnienia dla opcji "Inne".`,
+      },
+    ),
   text: requiredString,
   time: requiredString,
   multiselect: (attribute) =>
@@ -63,7 +70,19 @@ const validationRules: Record<
       })
       .nonempty({
         message: `Wybierz przynajmniej jedną opcję dla pola ${getAttributeLabel(attribute.name, "pl")}.`,
-      }),
+      })
+      .refine(
+        (values) => {
+          const other = values.find(
+            (v) => !(attribute.options ?? []).includes(v),
+          );
+          return other?.trim() !== "other:";
+        },
+        {
+          message: `Uzupełnij wartość dla opcji "Inne" lub odznacz tę opcję.`,
+        },
+      ),
+
   email: (attribute) =>
     requiredString(attribute).email({
       message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być adresem email`,

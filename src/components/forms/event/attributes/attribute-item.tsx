@@ -31,6 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
@@ -46,6 +47,8 @@ export function AttributeItem({
   index,
   onUpdateItem,
 }: AttributeItemProps) {
+  const { toast } = useToast();
+
   const { register, formState, setValue, getValues, watch } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
   const [optionsInput, setOptionsInput] = useState("");
@@ -78,10 +81,35 @@ export function AttributeItem({
 
   const addOption = () => {
     const trimmedValue = optionsInput.trim();
+
+    if (trimmedValue.startsWith("other: ")) {
+      toast({
+        variant: "destructive",
+        title: "Niedozwolona wartość",
+        description: 'Opcja nie może zaczynać się od "other: ".',
+      });
+      return;
+    }
+
+    if (trimmedValue.includes(",")) {
+      toast({
+        variant: "destructive",
+        title: "Niedozwolona wartość",
+        description: "Opcja nie może zawierać przecinków.",
+      });
+      return;
+    }
+
     const oldOptions = getValues(`attributes.${index}.options`);
     if (trimmedValue) {
       const exists = oldOptions?.includes(trimmedValue) ?? false;
-      if (!exists) {
+      if (exists) {
+        toast({
+          variant: "default",
+          title: "Duplikat",
+          description: "Ta opcja znajduje się już na liście.",
+        });
+      } else {
         const newOptions = [...(oldOptions ?? []), trimmedValue];
         setValue(`attributes.${index}.options`, newOptions);
         setOptionsInput("");
@@ -232,7 +260,22 @@ export function AttributeItem({
 
       {(watch(`attributes.${index}.type`) === "select" ||
         watch(`attributes.${index}.type`) === "multiselect") && (
-        <div className="space-y-2">
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={`allowOther-${index.toString()}`}
+              onCheckedChange={(checked) => {
+                setValue(`attributes.${index}.allowOther`, checked === true);
+                onUpdateItem?.(index, getValues(`attributes.${index}`));
+              }}
+              defaultChecked={attribute.allowOther}
+            />
+            <Label htmlFor={`allowOther-${index.toString()}`}>
+              Zezwól na odpowiedź &quot;Inne&quot; z możliwością wpisania
+              własnej wartości
+            </Label>
+          </div>
+
           <div className="flex gap-2">
             <Input
               value={optionsInput}
@@ -246,9 +289,10 @@ export function AttributeItem({
             />
             <Button variant="outline" onClick={addOption}>
               <PlusIcon className="h-4 w-4" />
-              Dodaj opcję
+              <span className="hidden sm:inline">Dodaj opcję</span>
             </Button>
           </div>
+
           <div className="flex flex-wrap gap-2">
             <DragDropProvider
               onDragEnd={handleDragEnd}

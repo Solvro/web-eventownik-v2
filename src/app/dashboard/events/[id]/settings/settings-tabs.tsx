@@ -156,6 +156,7 @@ export function EventSettingsTabs({
         isSensitiveData: attribute.isSensitiveData,
         reason: attribute.reason ?? "",
         order: attribute.order ?? 0,
+        allowOther: attribute.allowOther,
       })),
     },
   });

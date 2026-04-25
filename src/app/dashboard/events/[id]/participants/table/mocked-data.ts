@@ -13,6 +13,7 @@ export const mockedAttributes: Attribute[] = [
     type: "text",
     createdAt: "2025-02-20T08:30:00Z",
     updatedAt: "2025-02-20T08:30:00Z",
+    allowOther: false,
   },
   {
     id: 2,
@@ -25,6 +26,7 @@ export const mockedAttributes: Attribute[] = [
     type: "text",
     createdAt: "2025-02-20T08:30:00Z",
     updatedAt: "2025-02-20T08:30:00Z",
+    allowOther: false,
   },
   {
     id: 3,
@@ -37,6 +39,7 @@ export const mockedAttributes: Attribute[] = [
     type: "number",
     createdAt: "2025-02-20T08:30:00Z",
     updatedAt: "2025-02-20T08:30:00Z",
+    allowOther: false,
   },
   {
     id: 4,
@@ -49,6 +52,7 @@ export const mockedAttributes: Attribute[] = [
     type: "select",
     createdAt: "2025-02-20T08:30:00Z",
     updatedAt: "2025-02-20T08:30:00Z",
+    allowOther: false,
   },
   {
     id: 5,
@@ -69,6 +73,7 @@ export const mockedAttributes: Attribute[] = [
     type: "select",
     createdAt: "2025-02-20T08:30:00Z",
     updatedAt: "2025-02-20T08:30:00Z",
+    allowOther: false,
   },
   {
     id: 6,
@@ -81,6 +86,7 @@ export const mockedAttributes: Attribute[] = [
     type: "checkbox",
     createdAt: "2025-02-20T08:31:00Z",
     updatedAt: "2025-02-20T08:31:00Z",
+    allowOther: false,
   },
   {
     id: 7,
@@ -93,6 +99,7 @@ export const mockedAttributes: Attribute[] = [
     type: "select",
     createdAt: "2025-02-20T08:32:00Z",
     updatedAt: "2025-02-20T08:32:00Z",
+    allowOther: false,
   },
   {
     id: 8,
@@ -105,6 +112,7 @@ export const mockedAttributes: Attribute[] = [
     type: "date",
     createdAt: "2025-02-20T08:33:00Z",
     updatedAt: "2025-02-20T08:33:00Z",
+    allowOther: false,
   },
   {
     id: 9,
@@ -117,6 +125,7 @@ export const mockedAttributes: Attribute[] = [
     type: "text",
     createdAt: "2025-02-20T08:34:00Z",
     updatedAt: "2025-02-20T08:34:00Z",
+    allowOther: false,
   },
   {
     id: 10,
@@ -129,6 +138,7 @@ export const mockedAttributes: Attribute[] = [
     type: "tel",
     createdAt: "2025-02-20T08:35:00Z",
     updatedAt: "2025-02-20T08:35:00Z",
+    allowOther: false,
   },
   {
     id: 11,
@@ -141,6 +151,7 @@ export const mockedAttributes: Attribute[] = [
     type: "text",
     createdAt: "2025-02-20T08:36:00Z",
     updatedAt: "2025-02-20T08:36:00Z",
+    allowOther: false,
   },
   {
     id: 12,
@@ -159,6 +170,7 @@ export const mockedAttributes: Attribute[] = [
     type: "select",
     createdAt: "2025-02-20T08:37:00Z",
     updatedAt: "2025-02-20T08:37:00Z",
+    allowOther: false,
   },
 ];
 

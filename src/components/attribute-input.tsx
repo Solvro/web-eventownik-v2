@@ -34,7 +34,7 @@ export function AttributeInput({
   shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
-  //TODO add lacking implementation for block type
+
   switch (attribute.type) {
     case "text": {
       return <Input type="text" id={attribute.id.toString()} {...field} />;
@@ -53,35 +53,73 @@ export function AttributeInput({
     }
     case "select": {
       return (
-        <Select
-          onValueChange={field.onChange}
-          defaultValue={field.value as string}
-          {...field}
-        >
-          <SelectTrigger id={attribute.id.toString()}>
-            <SelectValue
-              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {attribute.options?.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-            {/* 
+        <div className="flex flex-col gap-2">
+          <Select
+            onValueChange={field.onChange}
+            {...field}
+            value={
+              typeof field.value === "string" &&
+              field.value.startsWith("other: ")
+                ? "other: "
+                : ((field.value as string | undefined) ?? "")
+            }
+          >
+            <SelectTrigger id={attribute.id.toString()}>
+              <SelectValue
+                placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {attribute.options?.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+              {attribute.allowOther ? (
+                <SelectItem value="other: ">
+                  {locale === "en" ? "Other" : "Inne"}
+                </SelectItem>
+              ) : null}
+
+              {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
             Feel free to propose better solution
             */}
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>Brak</SelectItem>
-            )}
-          </SelectContent>
-        </Select>
+              {!("isRequired" in attribute ? attribute.isRequired : false) && (
+                <SelectItem value={" "}>
+                  {locale === "en" ? "None" : "Brak"}
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+
+          {attribute.allowOther &&
+          typeof field.value === "string" &&
+          field.value.startsWith("other: ") ? (
+            <Input
+              type="text"
+              placeholder={
+                locale === "en"
+                  ? "Enter your own value"
+                  : "Podaj własną wartość"
+              }
+              value={field.value.replace(/^other: /, "")}
+              onChange={(event) => {
+                field.onChange(`other: ${event.target.value}`);
+              }}
+            />
+          ) : null}
+        </div>
       );
     }
     case "multiselect": {
+      const isOtherSelected = () => {
+        return ((field.value ?? []) as string[]).some((item) =>
+          item.startsWith("other: "),
+        );
+      };
+
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
           {attribute.options?.map((option) => (
@@ -97,10 +135,12 @@ export function AttributeInput({
                       option,
                     ]);
                   } else {
+                    const newValues = ((field.value ?? []) as string[]).filter(
+                      (value: string) => value !== option,
+                    );
+
                     field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
+                      newValues.length > 0 ? newValues : undefined,
                     );
                   }
                 }}
@@ -110,6 +150,60 @@ export function AttributeInput({
               </Label>
             </div>
           ))}
+
+          {attribute.allowOther ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`${attribute.id.toString()}-other`}
+                  checked={isOtherSelected()}
+                  onCheckedChange={(checked) => {
+                    if (checked === true) {
+                      field.onChange([
+                        ...((field.value ?? []) as string[]),
+                        "other: ",
+                      ]);
+                    } else {
+                      const newValues = (
+                        (field.value ?? []) as string[]
+                      ).filter((value: string) => !value.startsWith("other: "));
+
+                      field.onChange(
+                        newValues.length > 0 ? newValues : undefined,
+                      );
+                    }
+                  }}
+                />
+                <Label htmlFor={`${attribute.id.toString()}-other`}>
+                  {locale === "en" ? "Other" : "Inne"}
+                </Label>
+              </div>
+
+              {isOtherSelected() ? (
+                <Input
+                  type="text"
+                  placeholder={
+                    locale === "en"
+                      ? "Enter your own value"
+                      : "Podaj własną wartość"
+                  }
+                  value={
+                    ((field.value ?? []) as string[])
+                      .find((item) => item.startsWith("other: "))
+                      ?.replace(/^other: /, "") ?? ""
+                  }
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    field.onChange([
+                      ...((field.value ?? []) as string[]).filter(
+                        (value: string) => !value.startsWith("other: "),
+                      ),
+                      `other: ${event.target.value}`,
+                    ]);
+                  }}
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       );
     }
