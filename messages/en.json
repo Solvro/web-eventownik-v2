@@ -5,7 +5,9 @@
     "fillForm": "Fill out the form to register",
     "addToCalendar": "Add to calendar",
     "registerForThisEvent": "Register for this event",
-    "registrationDisabled": "The organizer has disabled registration on Eventownik"
+    "registrationDisabled": "The organizer has disabled registration on Eventownik",
+    "noForm": "No registration form for this event.",
+    "backToEventPage": "Back to event page"
   },
   "Form": {
     "invalidEmail": "Invalid email address.",
@@ -17,7 +19,6 @@
     "registrationDisabled": "The organizer has disabled registration on Eventownik",
     "tryAgainLater": "Try again later",
     "serverError": "Server error",
-    "noForm": "No registration form for this event.",
     "fillAnotherForm": "Fill out again",
     "emailPlaceholder": "Enter your email address",
     "registering": "Registering...",
@@ -41,7 +42,7 @@
     "userRegisteredOnBlock": "You are already on this list.",
     "participants": "Participants",
     "noParticipants": "No participants",
-    "anonymousParticipant": "Anonymous participant."
+    "anonymousParticipant": "Anonymous participant"
   },
   "Auth": {
     "registerTitle": "Organizer registration",

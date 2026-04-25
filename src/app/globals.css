@@ -374,3 +374,10 @@
 [data-puck-component="RichText"] * {
   user-select: text !important;
 }
+
+@custom-variant ios {
+  /* This is a hack to target iOS devices using CSS. It relies on the fact that only Safari on iOS supports the `-webkit-touch-callout` property */
+  @supports (-webkit-touch-callout: none) {
+    @slot;
+  }
+}

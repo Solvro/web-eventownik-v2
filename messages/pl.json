@@ -5,7 +5,9 @@
     "fillForm": "Wypełnij formularz, aby się zarejestrować",
     "addToCalendar": "Dodaj do kalendarza",
     "registerForThisEvent": "Zapisz się na to wydarzenie",
-    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku"
+    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
+    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
+    "backToEventPage": "Wróć do strony wydarzenia"
   },
   "Form": {
     "invalidEmail": "Nieprawidłowy adres email.",
@@ -17,7 +19,6 @@
     "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
     "tryAgainLater": "Spróbuj ponownie później",
     "serverError": "Błąd serwera",
-    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
     "fillAnotherForm": "Uzupełnij ponownie",
     "emailPlaceholder": "Podaj swój adres e-mail",
     "registering": "Rejestrowanie...",
@@ -41,7 +42,7 @@
     "userRegisteredOnBlock": "Jesteś już na tej liście.",
     "participants": "Uczestnicy",
     "noParticipants": "Brak uczestników.",
-    "anonymousParticipant": "Anonimowy uczestnik."
+    "anonymousParticipant": "Anonimowy uczestnik"
   },
   "Auth": {
     "registerTitle": "Rejestracja organizatora",

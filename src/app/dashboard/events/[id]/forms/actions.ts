@@ -7,7 +7,10 @@ import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
-type Payload = Omit<EventForm, "eventId" | "id" | "slug" | "attributes"> & {
+type Payload = Omit<
+  EventForm,
+  "eventId" | "id" | "slug" | "attributes" | "order"
+> & {
   attributes: FormAttributeBase[];
 };
 
@@ -122,6 +125,41 @@ export async function updateEventForm(
       error:
         errorMessages ||
         `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
+
+export async function reorderForms(eventId: string, orderedIds: number[]) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false, error: "Brak autoryzacji" };
+  }
+
+  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
+  const results = await Promise.all(
+    orderedIds.map(async (id, index) =>
+      fetch(`${API_URL}/events/${eventId}/forms/${id.toString()}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.bearerToken}`,
+        },
+        body: JSON.stringify({ order: index }),
+      }),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderForms action] Failed to reorder forms for event ${eventId}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
     };
   }
 

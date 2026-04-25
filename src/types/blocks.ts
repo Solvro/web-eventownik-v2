@@ -5,16 +5,22 @@ export interface Block {
   capacity: number | null;
   parentId: number | null;
   attributeId: number;
+  order: number;
   createdAt: string;
   updatedAt: string;
   isRootBlock: boolean;
   children: Block[];
   meta: {
+    participants: BlockParticipant[];
     participantsInBlockCount: number | undefined;
   };
 }
 
-export type BlockParticipant = Record<string, string | number>;
+export interface BlockParticipant {
+  id: string;
+  email: string;
+  name?: string;
+}
 
 export interface PublicBlock extends Block {
   children: PublicBlock[];

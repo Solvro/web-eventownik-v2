@@ -25,11 +25,13 @@ export function AttributeInput({
   userData,
   eventBlocks,
   field,
+  shouldCheckUserData = false,
 }: {
   attribute: Attribute | FormAttribute;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
+  shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
   //TODO add lacking implementation for block type
@@ -187,7 +189,10 @@ export function AttributeInput({
       break;
     }
     case "block": {
-      if (eventBlocks === undefined || userData === undefined) {
+      if (
+        eventBlocks === undefined ||
+        (shouldCheckUserData && userData === undefined)
+      ) {
         return (
           <div>
             Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪
@@ -202,7 +207,6 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
-              attribute={attribute}
             />
           ))}
         </>

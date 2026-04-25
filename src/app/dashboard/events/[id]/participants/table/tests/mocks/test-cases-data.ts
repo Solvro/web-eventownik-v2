@@ -83,6 +83,7 @@ export const textCaseData: TestCaseData = {
       trigger: "participant_registered",
       triggerValue: null,
       triggerValue2: null,
+      order: 0,
       createdAt: "2024-12-15T09:30:00.000Z",
       updatedAt: "2025-01-20T14:22:15.000Z",
       meta: {
