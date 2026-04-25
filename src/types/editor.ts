@@ -14,6 +14,7 @@ export interface ImageFields extends LayoutFields {
   width: string;
   height: string;
   src: string;
+  href: string;
   objectFit: CSSProperties["objectFit"];
 }
 

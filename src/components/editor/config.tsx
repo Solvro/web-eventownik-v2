@@ -835,42 +835,69 @@ export const getPuckConfig = ({
               { label: "Pomniejsz", value: "scale-down" },
             ],
           },
+          href: {
+            type: "text",
+            label: "Odnośnik",
+            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+          },
           ...withLayout,
         },
         defaultProps: {
           src: "",
           width: "128",
           height: "128",
+          href: "",
           objectFit: "contain",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ width, height, src, objectFit, layout: { margin, padding } }) {
+        render({
+          width,
+          height,
+          src,
+          href,
+          objectFit,
+          layout: { margin, padding },
+        }) {
           const widthValue = width === "auto" ? "auto" : `${width}px`;
           const heightValue = height === "auto" ? "auto" : `${height}px`;
+
+          const image = (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={src === "" ? `/editor-image-placeholder.svg` : src}
+              alt=""
+              width={width === "auto" ? undefined : width}
+              height={height === "auto" ? undefined : height}
+              style={{
+                display: "block",
+                objectFit,
+                width: widthValue,
+                height: heightValue,
+                maxWidth: "100%",
+                padding: `${padding}px`,
+                margin: `${margin}px`,
+              }}
+            />
+          );
+
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td align="center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src === "" ? `/editor-image-placeholder.svg` : src}
-                      alt=""
-                      width={width === "auto" ? undefined : width}
-                      height={height === "auto" ? undefined : height}
-                      style={{
-                        display: "block",
-                        objectFit,
-                        width: widthValue,
-                        height: heightValue,
-                        maxWidth: "100%",
-                        padding: `${padding}px`,
-                        margin: `${margin}px`,
-                      }}
-                    />
+                    {href === "" ? (
+                      image
+                    ) : (
+                      <a
+                        href={href}
+                        style={{ display: "block", width: "fit-content" }}
+                      >
+                        {image}
+                      </a>
+                    )}
                   </td>
                 </tr>
               </tbody>
