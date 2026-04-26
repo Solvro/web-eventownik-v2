@@ -12,14 +12,12 @@ interface SortHeaderProps<T> {
 
 export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
   const sorted = info.column.getIsSorted();
-  const ariaSort =
-    sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : "none";
 
   return (
-    <div className="w-full min-w-0" aria-sort={ariaSort}>
+    <div className="w-full min-w-0">
       <Button
         variant={"eventGhost"}
-        className="w-full min-w-0 justify-between gap-2"
+        className="w-full justify-between gap-2"
         onClick={(event) => {
           event.preventDefault();
           const toggleSorting = info.column.getToggleSortingHandler();
@@ -28,11 +26,7 @@ export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
           }
         }}
       >
-        <span
-          className={`min-w-0 flex-1 text-left ${(truncate ?? false) ? "truncate" : ""}`}
-        >
-          {name}
-        </span>
+        <span className={(truncate ?? false) ? "truncate" : ""}>{name}</span>
         {sorted === "asc" && <ArrowUp className="shrink-0" />}
         {sorted === "desc" && <ArrowDown className="shrink-0" />}
       </Button>

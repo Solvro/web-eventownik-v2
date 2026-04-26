@@ -70,7 +70,7 @@ const BASE_COLUMNS = [
   }),
   columnHelper.accessor("createdAt", {
     size: 160,
-    minSize: 100,
+    minSize: 200,
     maxSize: 240,
     meta: { name: "Data rejestracji" },
     header: (info) => <SortHeader info={info} name="Data rejestracji" />,
@@ -119,7 +119,7 @@ export function createColumns(
           return filterValue.includes(rowValue);
         },
         header: (info) => (
-          <div className="flex min-w-0 items-center gap-1">
+          <div className="flex items-center gap-1">
             <FilterButton
               attributeType={attribute.type}
               options_={attribute.options}

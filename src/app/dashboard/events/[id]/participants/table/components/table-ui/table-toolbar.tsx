@@ -45,7 +45,7 @@ export function TableToolbar({
   deleteManyParticipants,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
-  const participantsCount = table.getPreFilteredRowModel().rows.length;
+  const participantsCount = table.getFilteredRowModel().rows.length;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
