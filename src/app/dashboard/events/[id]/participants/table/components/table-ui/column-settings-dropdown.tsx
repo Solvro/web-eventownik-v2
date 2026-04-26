@@ -58,6 +58,7 @@ function SortableColumnItem({ column }: SortableColumnItemProps) {
       className="flex items-center justify-between"
     >
       <DropdownMenuCheckboxItem
+        className="w-full"
         checked={column.getIsVisible()}
         onCheckedChange={(value) => {
           column.toggleVisibility(value);
