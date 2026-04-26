@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getAttributeLabel } from "@/lib/utils";
-import type { Attribute, FormAttribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
@@ -27,7 +27,7 @@ export function AttributeInput({
   field,
   shouldCheckUserData = false,
 }: {
-  attribute: Attribute | FormAttribute;
+  attribute: FormAttribute;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
@@ -207,6 +207,8 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
+              isMultiple={attribute.isMultiple}
+              maxSelections={attribute.maxSelections}
             />
           ))}
         </>

@@ -40,10 +40,14 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
+  isMultiple = false,
+  maxSelections = null,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   userData: PublicParticipant | undefined;
   eventBlocks: PublicBlock[];
+  isMultiple?: boolean;
+  maxSelections?: number | null;
 }) {
   const t = useTranslations("Form");
   const [searchText, setSearchText] = useDebouncedState("", {
@@ -56,6 +60,20 @@ export function AttributeBlocksWrapper({
   const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),
   );
+
+  const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
+
+  const handleMultiChange = (blockId: string, checked: boolean) => {
+    const current = (field.value ?? []) as string[];
+    if (checked) {
+      if (maxSelections !== null && current.length >= maxSelections) {
+        return;
+      }
+      field.onChange([...current, blockId]);
+    } else {
+      field.onChange(current.filter((v) => v !== blockId));
+    }
+  };
 
   return (
     <div
@@ -100,39 +118,97 @@ export function AttributeBlocksWrapper({
           </Activity>
         </FieldGroup>
       )}
-      <RadioGroup
-        onValueChange={field.onChange}
-        defaultValue={String(field.value)}
-        className={cn(
-          "mt-4",
-          eventBlocks.length >= 3 && "w-full xl:min-w-xl xl:grid-cols-2",
-        )}
-      >
-        <Activity
-          mode={
-            filteredBlocks.length === eventBlocks.length ? "visible" : "hidden"
-          }
+      {isMultiple ? (
+        <div
+          className={cn(
+            "mt-4 grid gap-4",
+            eventBlocks.length >= 3 && "w-full xl:min-w-xl xl:grid-cols-2",
+          )}
         >
-          <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
-            <div className="flex items-center gap-4">
-              <FormControl>
-                <RadioGroupItem value={"null"} />
-              </FormControl>
-              <FormLabel>
-                <p>{t("noBlockOption")}</p>
-              </FormLabel>
-            </div>
-            <span className="h-14">{t("noBlockOptionDescription")}</span>
-          </FormItem>
-        </Activity>
-        {filteredBlocks.map((childBlock) => (
-          <AttributeInputBlock
-            userData={userData}
-            block={childBlock}
-            key={childBlock.id}
-          />
-        ))}
-      </RadioGroup>
+          <Activity
+            mode={
+              filteredBlocks.length === eventBlocks.length
+                ? "visible"
+                : "hidden"
+            }
+          >
+            <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+              <div className="flex items-center gap-4">
+                <FormControl>
+                  <Checkbox
+                    checked={((field.value ?? []) as string[]).length === 0}
+                    onCheckedChange={(c) => {
+                      if (c === true) {
+                        field.onChange([]);
+                      }
+                    }}
+                  />
+                </FormControl>
+                <FormLabel>
+                  <p>{t("noBlockOption")}</p>
+                </FormLabel>
+              </div>
+              <span className="h-14">{t("noBlockOptionDescription")}</span>
+            </FormItem>
+          </Activity>
+          {filteredBlocks.map((childBlock) => (
+            <AttributeInputBlock
+              key={childBlock.id}
+              userData={userData}
+              block={childBlock}
+              isMultiple={true}
+              checked={selectedValues?.includes(childBlock.id.toString())}
+              onCheckedChange={(checked) => {
+                handleMultiChange(childBlock.id.toString(), checked);
+              }}
+              disabled={
+                !(
+                  selectedValues?.includes(childBlock.id.toString()) ?? false
+                ) &&
+                maxSelections !== null &&
+                (selectedValues?.length ?? 0) >= maxSelections
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <RadioGroup
+          onValueChange={field.onChange}
+          defaultValue={String(field.value)}
+          className={cn(
+            "mt-4",
+            eventBlocks.length >= 3 && "w-full xl:min-w-xl xl:grid-cols-2",
+          )}
+        >
+          <Activity
+            mode={
+              filteredBlocks.length === eventBlocks.length
+                ? "visible"
+                : "hidden"
+            }
+          >
+            <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
+              <div className="flex items-center gap-4">
+                <FormControl>
+                  <RadioGroupItem value={"null"} />
+                </FormControl>
+                <FormLabel>
+                  <p>{t("noBlockOption")}</p>
+                </FormLabel>
+              </div>
+              <span className="h-14">{t("noBlockOptionDescription")}</span>
+            </FormItem>
+          </Activity>
+          {filteredBlocks.map((childBlock) => (
+            <AttributeInputBlock
+              key={childBlock.id}
+              userData={userData}
+              block={childBlock}
+              isMultiple={false}
+            />
+          ))}
+        </RadioGroup>
+      )}
     </div>
   );
 }

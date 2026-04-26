@@ -1,3 +1,4 @@
+// TODO(refactor): Make this interface extend an attribute type from `./attributes.ts`
 export interface Block {
   id: number;
   name: string;
@@ -10,6 +11,8 @@ export interface Block {
   updatedAt: string;
   isRootBlock: boolean;
   children: Block[];
+  isMultiple: boolean;
+  maxSelections: number | null;
   meta: {
     participants: BlockParticipant[];
     participantsInBlockCount: number | undefined;

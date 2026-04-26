@@ -16,7 +16,7 @@ export interface EventAttribute {
   updatedAt: string;
   isSensitiveData: boolean;
   reason: string | null;
-  isMultiple: string | null;
+  isMultiple: boolean;
   maxSelections: number | null;
 }
 
@@ -26,7 +26,7 @@ export interface EventAttribute {
 export interface AttributeBase {
   id: number;
   name: string;
-  value: string;
+  value: string | string[];
   slug: string | null;
 }
 
@@ -45,6 +45,8 @@ export interface FormAttribute extends Attribute {
   order: number | null;
   isRequired: boolean;
   isEditable: boolean;
+  isMultiple: boolean;
+  maxSelections: number | null;
 }
 
 export interface FormAttributeBase {
