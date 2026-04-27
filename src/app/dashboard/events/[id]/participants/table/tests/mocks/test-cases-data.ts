@@ -1,10 +1,15 @@
-import type { Attribute, AttributeType } from "@/types/attributes";
+import type {
+  Attribute,
+  AttributeType,
+  FormAttribute,
+} from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 export interface TestCaseData {
   participants: Participant[];
-  attributes: Attribute[];
+  // TODO(refactor,multiselect-blocks): Adjust the type here after cleaning up `@/types/attributes.ts`
+  attributes: Omit<Attribute, keyof FormAttribute>[];
   emails?: EventEmail[];
   attributeType?: AttributeType;
 }

@@ -59,7 +59,7 @@ export function AttributesForm({
       order: fields.length,
       isSensitiveData: false,
       reason: null,
-      isMultiple: null,
+      isMultiple: false,
       maxSelections: null,
     };
 

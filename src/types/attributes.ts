@@ -1,6 +1,6 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
-// TODO(docs): Explain use cases for each attribute type
+// TODO(refactor): Refactor types across this entire file.
 
 export interface EventAttribute {
   id: number;
@@ -38,6 +38,11 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   order: number | null;
   createdAt: string;
   updatedAt: string;
+  // TODO(refactor): Cleanup type definitions. Added here for now to implement multiselect blocks.
+  isRequired: boolean;
+  isEditable: boolean;
+  isMultiple: boolean;
+  maxSelections: number | null;
 }
 
 export interface FormAttribute extends Attribute {
