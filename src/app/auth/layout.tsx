@@ -8,7 +8,7 @@ export default function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center px-2">
       <div className="flex max-w-lg flex-col items-center gap-8">
         {children}
       </div>
