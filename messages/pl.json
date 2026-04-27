@@ -5,7 +5,9 @@
     "fillForm": "Wypełnij formularz, aby się zarejestrować",
     "addToCalendar": "Dodaj do kalendarza",
     "registerForThisEvent": "Zapisz się na to wydarzenie",
-    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku"
+    "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
+    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
+    "backToEventPage": "Wróć do strony wydarzenia"
   },
   "Form": {
     "invalidEmail": "Nieprawidłowy adres e-mail.",
@@ -17,7 +19,6 @@
     "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
     "tryAgainLater": "Spróbuj ponownie później",
     "serverError": "Błąd serwera",
-    "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
     "fillAnotherForm": "Uzupełnij ponownie",
     "emailPlaceholder": "Podaj swój adres e-mail",
     "registering": "Rejestrowanie...",
@@ -173,5 +174,17 @@
     "unknownError": "Wystąpił nieznany błąd",
     "tryAgain": "Spróbuj ponownie",
     "exportToExcel": "Eksportuj do Excela"
+  },
+  "EmailHistoryTable": {
+    "searchPlaceholder": "Szukaj w historii",
+    "openFilterMenu": "Otwórz menu filtrów",
+    "statusLabel": "Status",
+    "all": "Wszystkie",
+    "sent": "Wysłano",
+    "pending": "Oczekujące",
+    "failed": "Nieudane",
+    "clearFilters": "Wyczyść filtry",
+    "clearSorting": "Wyczyść sortowanie",
+    "recipientsCount": "Ilość odbiorców: {count}"
   }
 }

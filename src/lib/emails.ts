@@ -33,6 +33,13 @@ export const EMAIL_TRIGGERS = [
   },
 ] as const;
 
+/** Values used for pivot_status in email send history filters (API + UI). */
+export const EMAIL_HISTORY_STATUS_FILTER_VALUES = [
+  "sent",
+  "pending",
+  "failed",
+] as const;
+
 export const EMAIL_TAGS = [
   { name: "Nazwa wydarzenia", value: "/event_name" },
   { name: "Data rozpoczęcia wydarzenia", value: "/event_start_date" },

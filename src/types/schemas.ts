@@ -18,11 +18,6 @@ export const registerFormSchema = loginFormSchema.extend({
   lastName: z.string().nonempty("surnameRequired"),
 });
 
-export const registerParticipantFormSchema = z.object({
-  email: z.string().email("invalidEmail"),
-  //TODO additional attributes fetched from api
-});
-
 export const sendPasswordResetTokenSchema = z.object({
   email: z.string().email("invalidEmail"),
 });

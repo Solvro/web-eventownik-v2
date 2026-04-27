@@ -14,3 +14,9 @@ export interface Form {
   updatedAt: string;
   attributes: FormAttribute[];
 }
+
+export interface FormErrorObject {
+  rule: string;
+  field: string;
+  message: string;
+}
