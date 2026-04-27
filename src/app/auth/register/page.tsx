@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { registerFormSchema } from "@/types/schemas";
+import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { register } from "../actions";
 
@@ -63,8 +64,8 @@ function RegisterForm() {
       if ("errors" in result) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj zarejestrować się ponownie.",
+          title: t("somethingWentWrong"),
+          description: t("tryRegisterAgain"),
         });
       } else {
         const redirectUrl = redirectTo ?? "/dashboard/events";
@@ -74,8 +75,8 @@ function RegisterForm() {
       console.error("Registration failed", error);
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: t("noServerConnection"),
+        description: t("checkInternetConnection"),
       });
     } finally {
       hCaptchaRef.current?.resetCaptcha();
@@ -120,17 +121,22 @@ function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">E-mail</FormLabel>
+              <FormLabel className="sr-only">{t("email")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="E-mail"
+                  placeholder={t("email")}
                   disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   type="email"
                   {...field}
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.email?.message}
+                {typeof form.formState.errors.email?.message === "string"
+                  ? t(
+                      form.formState.errors.email
+                        .message as AuthSchemaErrorKeys,
+                    )
+                  : null}
               </FormMessage>
             </FormItem>
           )}
@@ -150,7 +156,12 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.password?.message}
+                {typeof form.formState.errors.password?.message === "string"
+                  ? t(
+                      form.formState.errors.password
+                        .message as AuthSchemaErrorKeys,
+                    )
+                  : null}
               </FormMessage>
             </FormItem>
           )}
@@ -169,7 +180,12 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.firstName?.message}
+                {typeof form.formState.errors.firstName?.message === "string"
+                  ? t(
+                      form.formState.errors.firstName
+                        .message as AuthSchemaErrorKeys,
+                    )
+                  : null}
               </FormMessage>
             </FormItem>
           )}
@@ -188,7 +204,12 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.lastName?.message}
+                {typeof form.formState.errors.lastName?.message === "string"
+                  ? t(
+                      form.formState.errors.lastName
+                        .message as AuthSchemaErrorKeys,
+                    )
+                  : null}
               </FormMessage>
             </FormItem>
           )}
@@ -267,17 +288,20 @@ export default function RegisterPage() {
       <Suspense>
         <RegisterForm />
       </Suspense>
-      <div className="text-muted-foreground flex flex-col items-center justify-center gap-2 pb-4 text-center text-sm sm:pb-0">
+      <div className="text-muted-foreground flex max-w-sm flex-col items-center justify-center gap-2 pb-4 text-center text-sm sm:pb-0">
         <Info className="size-6" />
         <p>
-          Rejestrując konto, zgadzasz się na warunki zawarte w <br />
-          <Link
-            href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
-            className="text-primary/90"
-            target="_blank"
-          >
-            regulaminie platformy
-          </Link>
+          {t.rich("termsAgreement", {
+            Link: (chunks) => (
+              <Link
+                href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
+                className="text-primary/90"
+                target="_blank"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </div>
     </>

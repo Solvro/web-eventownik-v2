@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 
+import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
@@ -90,6 +91,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
             </div>
             <div className="flex w-full flex-col items-center gap-4">
               <div className="flex w-full items-center justify-end gap-4">
+                <LanguageSwitch />
                 <ThemeSwitch />
               </div>
               {authButton}
