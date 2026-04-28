@@ -41,13 +41,14 @@ export function AttributeInputBlock({
   const t = useTranslations("Form");
   const isFull =
     block.capacity !== null && block.meta.participants.length >= block.capacity;
+
   const isRegistered =
     userData === undefined
       ? false
-      : userData.attributes.some(
-          (attribute) =>
-            attribute.type === "block" &&
-            attribute.meta.pivot_value === block.id.toString(),
+      : userData.attributes.some((attribute) =>
+          attribute.type === "block" && attribute.isMultiple
+            ? attribute.meta.pivot_value.includes(block.id.toString())
+            : attribute.meta.pivot_value === block.id.toString(),
         );
 
   const isDisabled = disabledFromParent ?? (!isRegistered && isFull);

@@ -50,7 +50,7 @@ export async function submitParticipantForm({
     for (const [key, value] of Object.entries(values)) {
       if (Array.isArray(value)) {
         for (const item of value) {
-          formData.append(`${key}[]`, String(item));
+          formData.append(key, String(item));
         }
         continue;
       }
