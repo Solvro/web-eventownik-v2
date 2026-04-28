@@ -179,7 +179,7 @@ export async function deleteParticipant(
 }
 
 export async function updateParticipant(
-  values: Record<number, string>,
+  values: Record<number, unknown>,
   eventId: string,
   participantId: string,
 ) {
