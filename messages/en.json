@@ -39,6 +39,7 @@
     "noBlocksFound": "No matching blocks found.",
     "noBlockOption": "None",
     "noBlockOptionDescription": "(opt out or unregister)",
+    "maxBlockSelections": "You can select at most {count} block(s).",
     "userRegisteredOnBlock": "You are already on this list.",
     "participants": "Participants",
     "noParticipants": "No participants",

@@ -39,6 +39,7 @@
     "noBlocksFound": "Nie znaleziono pasujących bloków.",
     "noBlockOption": "Żaden",
     "noBlockOptionDescription": "(zrezygnuj lub wypisz się)",
+    "maxBlockSelections": "Maksymalna ilość wybranych bloków to {count}.",
     "userRegisteredOnBlock": "Jesteś już na tej liście.",
     "participants": "Uczestnicy",
     "noParticipants": "Brak uczestników.",

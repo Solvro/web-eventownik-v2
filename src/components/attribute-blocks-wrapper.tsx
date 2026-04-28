@@ -118,6 +118,11 @@ export function AttributeBlocksWrapper({
           </Activity>
         </FieldGroup>
       )}
+      {maxSelections !== null && (
+        <p className="self-start text-sm">
+          {t("maxBlockSelections", { count: maxSelections })}
+        </p>
+      )}
       {isMultiple ? (
         <div
           className={cn(
