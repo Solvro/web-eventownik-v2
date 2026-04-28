@@ -150,6 +150,7 @@ export function generateColumns(
           // Multiselect case has to be handled separately
           // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
 
+          // TODO(tests): Add tests for filtering and sorting multiselect blocks
           if (
             (rowValue !== null && attribute.type === "multiselect") ||
             (attribute.type === "block" && attribute.isMultiple)

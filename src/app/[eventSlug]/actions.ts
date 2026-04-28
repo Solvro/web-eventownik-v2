@@ -49,6 +49,12 @@ export async function submitParticipantForm({
 
     for (const [key, value] of Object.entries(values)) {
       if (Array.isArray(value)) {
+        // Handle opting out
+        if (value.length === 0) {
+          formData.append(key, "null");
+          continue;
+        }
+
         for (const item of value) {
           formData.append(key, String(item));
         }
