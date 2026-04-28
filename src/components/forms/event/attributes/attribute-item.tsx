@@ -304,8 +304,49 @@ export function AttributeItem({
             Jeśli nie wybrano żadnych atrybutów, zapisy będą anonimowe -
             uczestnicy będą widzieć tylko ilość zajętych miejsc.
           </p>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={`isMultiple-${index.toString()}`}
+              onCheckedChange={(checked) => {
+                setValue(`attributes.${index}.isMultiple`, checked === true);
+                onUpdateItem?.(index, getValues(`attributes.${index}`));
+              }}
+              defaultChecked={attribute.isMultiple}
+            />
+            <Label htmlFor={`isMultiple-${index.toString()}`}>
+              Zezwól na wielokrotny wybór
+            </Label>
+          </div>
         </div>
       )}
+
+      {watch(`attributes.${index}.isMultiple`) &&
+        watch(`attributes.${index}.type`) === "block" && (
+          <div className="space-y-2">
+            <Label htmlFor={`maxSelections-${index.toString()}`}>
+              Maksymalna liczba wybranych bloków
+            </Label>
+            <Input
+              id={`maxSelections-${index.toString()}`}
+              defaultValue={attribute.maxSelections ?? ""}
+              onChange={(event_) => {
+                setValue(
+                  `attributes.${index}.maxSelections`,
+                  Number.parseInt(event_.target.value),
+                );
+              }}
+              placeholder="np. '3'"
+              onBlur={() => {
+                onUpdateItem?.(index, getValues(`attributes.${index}`));
+              }}
+              type="number"
+              className="[appearance:textfield]"
+            />
+            <FormMessage>
+              {formState.errors.attributes?.[index]?.maxSelections?.message}
+            </FormMessage>
+          </div>
+        )}
     </div>
   );
 }
