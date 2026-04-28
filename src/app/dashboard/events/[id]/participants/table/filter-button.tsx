@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { AttributeType } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type {
   FlattenedParticipant,
   ParticipantAttributeValueType,
@@ -18,15 +19,20 @@ export function FilterButton({
   attributeType,
   options_,
   column,
+  blocks,
+  attributeId,
 }: {
   attributeType: AttributeType;
   options_: string[] | null;
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
+  blocks: (Block | null)[] | null;
+  attributeId: number;
 }) {
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiselect" && options_ !== null)
+    (attributeType === "multiselect" && options_ !== null) ||
+    attributeType === "block"
   ) {
     let options: {
       label: string;
@@ -39,17 +45,26 @@ export function FilterButton({
             value: option,
           }));
 
-    const filterValues =
-      (column.getFilterValue() as
-        | ParticipantAttributeValueType[]
-        | undefined) ?? [];
-
     if (attributeType === "checkbox" && options_ === null) {
       options = [
         { label: "True", value: "true" },
         { label: "False", value: "false" },
       ];
     }
+
+    if (attributeType === "block") {
+      const rootBlock = blocks?.find((b) => b?.attributeId === attributeId);
+      options =
+        rootBlock?.children.map((block) => ({
+          label: block.name,
+          value: block.id.toString(),
+        })) ?? [];
+    }
+
+    const filterValues =
+      (column.getFilterValue() as
+        | ParticipantAttributeValueType[]
+        | undefined) ?? [];
 
     options.push({ label: "Brak", value: null });
 

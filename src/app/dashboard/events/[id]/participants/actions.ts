@@ -179,7 +179,7 @@ export async function deleteParticipant(
 }
 
 export async function updateParticipant(
-  values: Record<number, string>,
+  values: Record<number, unknown>,
   eventId: string,
   participantId: string,
 ) {
@@ -200,9 +200,8 @@ export async function updateParticipant(
         participantAttributes: Object.entries(values)
           //multiselect case - unchecking all options in multiselect doesn't work because of this filter
           //However, I suppose there won't be many cases when it's needed (if any)
-          .filter(([, value]) => value !== "")
           .map(([key, value]) => {
-            return { attributeId: key, value };
+            return { attributeId: key, value: value === "" ? null : value };
           }),
       }),
     },

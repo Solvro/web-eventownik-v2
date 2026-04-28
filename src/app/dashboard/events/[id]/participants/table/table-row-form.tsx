@@ -9,6 +9,8 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 
 import { AttributeInput } from "@/components/attribute-input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -43,11 +45,59 @@ interface TableRowFormProps {
 function BlockSelect({
   rootBlock,
   field,
+  isMultiple,
 }: {
   rootBlock: Block | null;
   field: ControllerRenderProps<FieldValues, string>;
+  isMultiple: boolean;
 }) {
   const childBlocks = rootBlock?.children;
+
+  if (rootBlock === null) {
+    return (
+      <div className="border-input rounded-xl border px-4 py-3 text-red-500">
+        Wystąpił błąd podczas ładowania danych o atrybucie. Spróbuj odświeżyć
+        stronę.
+      </div>
+    );
+  }
+
+  if (isMultiple) {
+    const currentValues = (field.value as string).split(",").filter(Boolean);
+
+    return (
+      <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
+        {childBlocks?.map((block) => (
+          <div key={block.id} className="mb-2 flex items-center space-x-2">
+            <Checkbox
+              id={`${rootBlock.id.toString()}-${block.id.toString()}`}
+              disabled={field.disabled}
+              checked={currentValues.includes(block.id.toString())}
+              onCheckedChange={(checked) => {
+                if (checked === true) {
+                  field.onChange(
+                    [...currentValues, block.id.toString()].join(","),
+                  );
+                } else {
+                  field.onChange(
+                    currentValues
+                      .filter((value) => value !== block.id.toString())
+                      .join(","),
+                  );
+                }
+              }}
+            />
+            <Label
+              htmlFor={`${rootBlock.id.toString()}-${block.id.toString()}`}
+            >
+              {block.name}
+            </Label>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <Select
       onValueChange={field.onChange}
@@ -111,7 +161,7 @@ export function TableRowForm({
     }
 
     const { success, error } = await updateParticipant(
-      values as Record<number, string>,
+      values,
       eventId,
       participant.id.toString(),
     );
@@ -197,6 +247,7 @@ export function TableRowForm({
                                 ) ?? null
                               }
                               field={field}
+                              isMultiple={attribute.isMultiple}
                             />
                           );
                         }
@@ -272,6 +323,7 @@ export function TableRowForm({
                                       ) ?? null
                                     }
                                     field={field}
+                                    isMultiple={attribute.isMultiple}
                                   />
                                 );
                               }

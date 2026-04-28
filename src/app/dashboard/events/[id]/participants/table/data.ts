@@ -25,7 +25,9 @@ export function flattenParticipant(
     //so if you use id there than in columns also use id in accessor
     //(not slug for example)
     // TODO there we can add converting value from string to whatever we want
-    flattenedParticipant[attribute.id] = attribute.value;
+    flattenedParticipant[attribute.id] = Array.isArray(attribute.value)
+      ? attribute.value.join(",")
+      : attribute.value;
   }
   return flattenedParticipant;
 }
