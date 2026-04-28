@@ -39,8 +39,26 @@ export function formatAttributeValue(
       );
     case "block": {
       const rootBlock = blocks.find((b) => b?.attributeId === attributeId);
+
+      if (
+        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+        rootBlock !== null &&
+        rootBlock !== undefined &&
+        rootBlock.attribute.isMultiple
+      ) {
+        const ids = (value as string).split(",").filter(Boolean);
+        return ids
+          .map(
+            (id) => rootBlock.children.find((b) => b.id === Number(id))?.name,
+          )
+          .filter(Boolean)
+          .join(", ");
+      }
+
       return (
-        rootBlock?.children.find((b) => b.id === Number(value))?.name ?? value
+        rootBlock?.children.find((b) => {
+          return b.id === Number(value);
+        })?.name ?? value
       );
     }
     default:

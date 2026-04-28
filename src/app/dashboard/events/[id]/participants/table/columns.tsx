@@ -118,7 +118,9 @@ export function generateColumns(
             <FilterButton
               attributeType={attribute.type}
               options_={attribute.options}
+              blocks={blocks}
               column={column}
+              attributeId={attribute.id}
             />
             <HeaderWithSort
               column={column}
@@ -147,7 +149,11 @@ export function generateColumns(
 
           // Multiselect case has to be handled separately
           // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
-          if (rowValue !== null && attribute.type === "multiselect") {
+
+          if (
+            (rowValue !== null && attribute.type === "multiselect") ||
+            (attribute.type === "block" && attribute.isMultiple)
+          ) {
             const values = new Set(
               (row.original[columnId] as string).split(","),
             );
