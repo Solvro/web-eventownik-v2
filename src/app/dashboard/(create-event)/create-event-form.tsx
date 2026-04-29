@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatISO9075 } from "date-fns";
 import { useAtom } from "jotai";
 import {
   ArrowLeft,
@@ -95,9 +96,9 @@ export function CreateEventForm() {
     defaultValues: {
       name: event.name,
       description: event.description,
-      startDate: event.startDate,
+      startDate: new Date(event.startDate),
       startTime: "12:00",
-      endDate: event.endDate,
+      endDate: new Date(event.endDate),
       endTime: "12:00",
       location: event.location,
       organizer: event.organizer,
@@ -198,8 +199,8 @@ export function CreateEventForm() {
           : event.photoUrl;
         const newEventObject = {
           ...event,
-          startDate,
-          endDate,
+          startDate: formatISO9075(startDate, { representation: "complete" }),
+          endDate: formatISO9075(endDate, { representation: "complete" }),
           photoUrl: base64Image,
           coorganizers:
             event.coorganizers.length === 1 && !event.coorganizers[0].email
@@ -241,8 +242,14 @@ export function CreateEventForm() {
               name: "",
               description: "<p></p>",
               // Tomorrow, midnight
-              startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-              endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              startDate: formatISO9075(
+                new Date(new Date().setHours(24, 0, 0, 0)),
+                { representation: "complete" },
+              ),
+              endDate: formatISO9075(
+                new Date(new Date().setHours(24, 0, 0, 0)),
+                { representation: "complete" },
+              ),
               startTime: "12:00",
               endTime: "12:00",
               location: "",

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Tabs from "@radix-ui/react-tabs";
-import { formatISO9075, getHours, getMinutes } from "date-fns";
+import { formatISO9075 } from "date-fns";
 import { Loader, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
@@ -78,12 +78,17 @@ const TABS: { name: string; value: string; component: TabComponent }[] = [
 
 interface TabsProps {
   unmodifiedEvent: Event;
+  /** Start/end time strings (HH:mm) computed on the server so form matches event page timezone */
+  displayStartTime: string;
+  displayEndTime: string;
   unmodifiedCoOrganizers: CoOrganizer[];
   unmodifiedAttributes: EventAttribute[];
 }
 
 export function EventSettingsTabs({
   unmodifiedEvent,
+  displayStartTime,
+  displayEndTime,
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
@@ -126,9 +131,9 @@ export function EventSettingsTabs({
       name: unmodifiedEvent.name,
       description: unmodifiedEvent.description ?? "",
       startDate: new Date(unmodifiedEvent.startDate),
-      startTime: `${getHours(unmodifiedEvent.startDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.startDate).toString().padStart(2, "0")}`,
+      startTime: displayStartTime,
       endDate: new Date(unmodifiedEvent.endDate),
-      endTime: `${getHours(unmodifiedEvent.endDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.endDate).toString().padStart(2, "0")}`,
+      endTime: displayEndTime,
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizer ?? "",
       termsLink: unmodifiedEvent.termsLink ?? "",

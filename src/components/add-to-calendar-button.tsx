@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { CalendarClock, CalendarPlus, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -41,12 +42,23 @@ export function AddToCalendarButton({ event }: { event: Event }) {
               />
               <div>
                 <div className="font-medium">
-                  {format(event.startDate, "dd.MM.yyyy")} -{" "}
-                  {format(event.endDate, "dd.MM.yyyy")}
+                  {format(
+                    toZonedTime(new Date(event.startDate), "UTC"),
+                    "dd.MM.yyyy",
+                  )}{" "}
+                  -{" "}
+                  {format(
+                    toZonedTime(new Date(event.endDate), "UTC"),
+                    "dd.MM.yyyy",
+                  )}
                 </div>
                 <div className="text-muted-foreground text-sm">
-                  {format(event.startDate, "HH.mm")} -{" "}
-                  {format(event.endDate, "HH:mm")}
+                  {format(
+                    toZonedTime(new Date(event.startDate), "UTC"),
+                    "HH.mm",
+                  )}{" "}
+                  -{" "}
+                  {format(toZonedTime(new Date(event.endDate), "UTC"), "HH:mm")}
                 </div>
               </div>
             </div>
@@ -68,7 +80,11 @@ export function AddToCalendarButton({ event }: { event: Event }) {
             <Button
               onClick={(event_) => {
                 event_.preventDefault();
-                addToGoogleCalendar(event);
+                addToGoogleCalendar(
+                  event,
+                  toZonedTime(new Date(event.startDate), "UTC"),
+                  toZonedTime(new Date(event.endDate), "UTC"),
+                );
               }}
               variant={"outline"}
               className="grow justify-start"
@@ -85,7 +101,11 @@ export function AddToCalendarButton({ event }: { event: Event }) {
             <Button
               onClick={(event_) => {
                 event_.preventDefault();
-                downloadICSFile(event);
+                downloadICSFile(
+                  event,
+                  toZonedTime(new Date(event.startDate), "UTC"),
+                  toZonedTime(new Date(event.endDate), "UTC"),
+                );
               }}
               variant={"outline"}
               className="grow justify-start"

@@ -5,9 +5,7 @@ import type { Event } from "@/types/event";
 
 import { downloadFile } from "./utils";
 
-export function downloadICSFile(event: Event) {
-  const startDate = new Date(event.startDate);
-  const endDate = new Date(event.endDate);
+export function downloadICSFile(event: Event, startDate: Date, endDate: Date) {
   const { error, value } = createEvent({
     title: event.name,
     description:
@@ -44,10 +42,11 @@ export function downloadICSFile(event: Event) {
   );
 }
 
-export function addToGoogleCalendar(event: Event) {
-  const startDate = new Date(event.startDate);
-  const endDate = new Date(event.endDate);
-
+export function addToGoogleCalendar(
+  event: Event,
+  startDate: Date,
+  endDate: Date,
+) {
   const formatDate = (date: Date) => {
     return `${date.toISOString().replaceAll(/[-:]/g, "").split(".")[0]}Z`;
   };
