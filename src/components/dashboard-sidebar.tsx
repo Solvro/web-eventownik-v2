@@ -8,6 +8,7 @@ import {
   SlidersHorizontal,
   Users,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -35,6 +36,7 @@ export function DashboardSidebar({
   attributes: Attribute[];
 }) {
   const pathname = usePathname();
+  const t = useTranslations("Sidebar");
 
   const blocks = attributes
     .filter(({ type }) => type === "block")
@@ -49,40 +51,40 @@ export function DashboardSidebar({
 
   const sections: SidebarSection[] = [
     {
-      title: "Ogólne",
+      title: t("general"),
       links: [
         {
-          title: "Wydarzenie",
+          title: t("event"),
           icon: <Play />,
           route: event.id.toString(),
         },
         {
-          title: "Formularze",
+          title: t("forms"),
           icon: <ClipboardPenLine />,
           route: "forms",
         },
         {
-          title: "Ustawienia",
+          title: t("settings"),
           icon: <SlidersHorizontal />,
           route: "settings",
         },
       ],
     },
     {
-      title: "Uczestnicy",
+      title: t("participants"),
       links: [
         {
-          title: "Lista uczestników",
+          title: t("listOfParticipants"),
           icon: <Users />,
           route: "participants",
         },
       ],
     },
     {
-      title: "Maile",
+      title: t("emails"),
       links: [
         {
-          title: "Szablony maili",
+          title: t("emailTemplates"),
           icon: <Mail />,
           route: "emails",
         },
@@ -99,7 +101,7 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden w-60 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
+      <nav className="border-muted hidden w-64 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
@@ -136,9 +138,9 @@ export function DashboardSidebar({
             ...(blocks.length > 0
               ? [
                   {
-                    title: "Bloki",
+                    title: t("blocks"),
                     links: [
-                      { title: "Bloki", icon: <Cuboid />, route: "blocks" },
+                      { title: t("blocks"), icon: <Cuboid />, route: "blocks" },
                     ],
                   },
                 ]

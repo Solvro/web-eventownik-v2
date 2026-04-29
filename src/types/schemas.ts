@@ -1,30 +1,34 @@
 import { z } from "zod";
 
+export type AuthSchemaErrorKeys =
+  | "invalidEmail"
+  | "passwordMinLength"
+  | "nameRequired"
+  | "surnameRequired"
+  | "tokenRequired"
+  | "passwordsMustMatch";
+
 export const loginFormSchema = z.object({
-  email: z.string().email("Nieprawidłowy adres email."),
-  password: z
-    .string()
-    .min(8, { message: "Hasło musi mieć co najmniej 8 znaków." }),
+  email: z.string().email("invalidEmail"),
+  password: z.string().min(8, { message: "passwordMinLength" }),
 });
 
 export const registerFormSchema = loginFormSchema.extend({
-  firstName: z.string().nonempty("Imię nie może być puste."),
-  lastName: z.string().nonempty("Nazwisko nie może być puste."),
+  firstName: z.string().nonempty("nameRequired"),
+  lastName: z.string().nonempty("surnameRequired"),
 });
 
 export const sendPasswordResetTokenSchema = z.object({
-  email: z.string().email("Nieprawidłowy adres email."),
+  email: z.string().email("invalidEmail"),
 });
 
 export const resetPasswordSchema = z
   .object({
-    token: z.string().min(1, "Token jest wymagany."),
-    newPassword: z
-      .string()
-      .min(8, { message: "Hasło musi mieć co najmniej 8 znaków." }),
+    token: z.string().min(1, "tokenRequired"),
+    newPassword: z.string().min(8, { message: "passwordMinLength" }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Hasła muszą być takie same.",
+    message: "passwordsMustMatch",
     path: ["confirmPassword"],
   });

@@ -22,7 +22,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { LOGIN_ERRORS } from "@/types/auth";
+import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
+import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { login } from "../actions";
 
@@ -60,7 +63,7 @@ function LoginForm() {
       const result = await login({ ...values, token });
       if (result.success) {
         toast({
-          title: "Logowanie zakończone sukcesem!",
+          title: t("loginSuccessful"),
           duration: 2000,
         });
         const redirectUrl = redirectTo ?? "/dashboard/events";
@@ -68,16 +71,18 @@ function LoginForm() {
       } else {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: result.error,
+          title: t("somethingWentWrong"),
+          description: LOGIN_ERRORS.includes(result.error as LoginError)
+            ? t(result.error as LoginError)
+            : result.error,
         });
       }
     } catch (error) {
       console.error("Login failed", error);
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Wystąpił błąd serwera. Spróbuj ponownie później.",
+        title: t("somethingWentWrong"),
+        description: t("serverErrorTryLater"),
       });
     } finally {
       hCaptchaRef.current?.resetCaptcha();
@@ -131,17 +136,22 @@ function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">E-mail</FormLabel>
+                <FormLabel className="sr-only">{t("email")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-                    placeholder="E-mail"
+                    placeholder={t("email")}
                     {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.email?.message}
+                  {typeof form.formState.errors.email?.message === "string"
+                    ? t(
+                        form.formState.errors.email
+                          .message as AuthSchemaErrorKeys,
+                      )
+                    : null}
                 </FormMessage>
               </FormItem>
             )}
@@ -161,7 +171,12 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.password?.message}
+                  {typeof form.formState.errors.password?.message === "string"
+                    ? t(
+                        form.formState.errors.password
+                          .message as AuthSchemaErrorKeys,
+                      )
+                    : null}
                 </FormMessage>
                 <Link
                   href="/auth/forgot-password"

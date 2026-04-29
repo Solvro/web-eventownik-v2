@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 import { AppLogo } from "../app-logo";
@@ -24,6 +25,7 @@ export function Navbar() {
           <Link href="#team">Zespół</Link>
         </div>
         <div className="flex items-center gap-4">
+          <LanguageSwitch />
           <ThemeSwitch />
           <AuthButton variant="default" />
         </div>
