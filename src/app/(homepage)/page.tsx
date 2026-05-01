@@ -9,13 +9,17 @@ import { Navbar } from "@/app/(homepage)/sections/navbar";
 import { Partners } from "@/app/(homepage)/sections/partners";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
+import { Alerts } from "@/components/alerts";
 
 export default function Home() {
   return (
     <div className="text-foreground min-h-screen">
       <div className="relative flex h-full w-full items-center bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
         <div className="z-10 flex w-full flex-col items-center gap-20 pt-4 lg:pt-12">
-          <Navbar />
+          <div className="flex w-full flex-col gap-4">
+            <Navbar />
+            <Alerts className="container mx-auto max-sm:px-4 xl:max-w-6xl" />
+          </div>
           <Hero />
           <HighlightedEvents />
           <Events />

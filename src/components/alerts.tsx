@@ -20,6 +20,7 @@ interface Alert {
   content: string;
   alert_type: AlertType;
   link: string;
+  open_in_new_tab: boolean;
   is_global: boolean;
   is_dismissable: boolean;
   start_at: string | null;
@@ -30,21 +31,34 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: [
     "a",
     "b",
-    "em",
-    "i",
-    "strong",
-    "u",
-    "p",
+    "blockquote",
     "br",
-    "ul",
-    "ol",
-    "li",
+    "code",
+    "del",
+    "div",
+    "em",
+    "h1",
     "h2",
     "h3",
     "h4",
+    "h5",
+    "h6",
+    "hr",
+    "i",
+    "li",
+    "ol",
+    "p",
+    "pre",
+    "s",
+    "span",
+    "strong",
+    "sub",
+    "sup",
+    "u",
+    "ul",
   ],
   allowedAttributes: {
-    a: ["href", "title", "target", "rel"],
+    a: ["href", "title", "target"],
   },
   allowedSchemes: ["http", "https", "mailto"],
 };
@@ -125,10 +139,6 @@ async function fetchAlerts(appCode: string): Promise<Alert[]> {
   return data as Alert[];
 }
 
-function isExternalLink(link: string) {
-  return /^https?:\/\//i.test(link);
-}
-
 function AlertBanner({
   alert,
   onDismiss,
@@ -140,7 +150,6 @@ function AlertBanner({
   const Icon = variant.icon;
   const sanitized = sanitizeHtml(alert.content, SANITIZE_OPTIONS);
   const hasLink = alert.link !== "";
-  const external = hasLink && isExternalLink(alert.link);
 
   return (
     <div
@@ -153,8 +162,8 @@ function AlertBanner({
       {hasLink ? (
         <a
           href={alert.link}
-          target={external ? "_blank" : undefined}
-          rel={external ? "noopener noreferrer" : undefined}
+          target={alert.open_in_new_tab ? "_blank" : undefined}
+          rel={alert.open_in_new_tab ? "noopener noreferrer" : undefined}
           aria-label={alert.title === "" ? "Alert link" : alert.title}
           className="absolute inset-0 rounded-lg focus:ring-2 focus:ring-current focus:outline-none"
         />
@@ -168,7 +177,7 @@ function AlertBanner({
           <div className="font-semibold">{alert.title}</div>
         )}
         <div
-          className="[&_a]:underline [&_a]:underline-offset-2"
+          className="prose prose-sm dark:prose-invert max-w-none"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: sanitized }}
         />
@@ -189,19 +198,21 @@ function AlertBanner({
   );
 }
 
-export function Alerts({ appCode }: { appCode?: string } = {}) {
-  const code = appCode ?? DEFAULT_APP_CODE;
+export function Alerts({ className }: { className?: string } = {}) {
+  const appCode = DEFAULT_APP_CODE;
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-initialize-state
     setDismissed(readDismissed());
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-initialize-state
     setHydrated(true);
   }, []);
 
   const { data } = useQuery({
-    queryKey: ["alerts", code],
-    queryFn: async () => fetchAlerts(code),
+    queryKey: ["alerts", appCode],
+    queryFn: async () => fetchAlerts(appCode),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -227,7 +238,10 @@ export function Alerts({ appCode }: { appCode?: string } = {}) {
   };
 
   return (
-    <div className="flex w-full flex-col gap-2" data-slot="alerts">
+    <div
+      className={cn("flex w-full flex-col gap-2", className)}
+      data-slot="alerts"
+    >
       {visible.map((alert) => (
         <AlertBanner key={alert.id} alert={alert} onDismiss={handleDismiss} />
       ))}
