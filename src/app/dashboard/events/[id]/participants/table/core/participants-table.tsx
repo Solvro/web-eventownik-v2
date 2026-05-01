@@ -6,6 +6,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -77,9 +78,9 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
 
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
-      <div
-        ref={setScrollElement}
-        className="h-[calc(100dvh-275px)] w-full overflow-auto"
+      <ScrollArea
+        className="h-[calc(100dvh-275px)] w-full"
+        viewportRef={setScrollElement}
       >
         <Table style={{ width: "100%", minWidth: table.getTotalSize() }}>
           <TableHeader className="border-border bg-background sticky top-0 z-50 border-b-2">
@@ -91,6 +92,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {virtualRows.length > 0 && topPaddingHeight > 0 ? (
               <TableRow aria-hidden="true">
@@ -173,7 +175,9 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
             ) : null}
           </TableBody>
         </Table>
-      </div>
+
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       {rows.length === 0 ? (
         <div className="text-center">{t("participantsNotFound")}</div>
