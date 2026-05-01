@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 
+import { Alerts } from "@/components/alerts";
 import { Providers } from "@/components/providers";
-import { SolvroAlerts } from "@/components/solvro-alerts";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
@@ -81,7 +81,7 @@ export default async function RootLayout({
             <NextTopLoader />
             <Toaster />
             <div className="container mx-auto px-4 pt-4">
-              <SolvroAlerts />
+              <Alerts />
             </div>
             {children}
             <Script

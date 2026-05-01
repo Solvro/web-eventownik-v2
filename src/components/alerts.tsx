@@ -7,18 +7,18 @@ import sanitizeHtml from "sanitize-html";
 
 import { cn } from "@/lib/utils";
 
-const SOLVRO_ALERTS_ENDPOINT = "https://alerts.solvro.pl/api/v1/alerts/";
+const ALERTS_ENDPOINT = "https://alerts.solvro.pl/api/v1/alerts/";
 const DISMISSED_STORAGE_KEY = "solvro-alerts-dismissed";
 const DEFAULT_APP_CODE =
   process.env.NEXT_PUBLIC_SOLVRO_ALERTS_APP_CODE ?? "eventownik";
 
-type SolvroAlertType = "info" | "warning" | "critical";
+type AlertType = "info" | "warning" | "critical";
 
-interface SolvroAlert {
+interface Alert {
   id: string;
   title: string;
   content: string;
-  alert_type: SolvroAlertType;
+  alert_type: AlertType;
   link: string;
   is_global: boolean;
   is_dismissable: boolean;
@@ -50,7 +50,7 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
 };
 
 const VARIANT_STYLES: Record<
-  SolvroAlertType,
+  AlertType,
   { container: string; icon: typeof Info; iconClass: string }
 > = {
   info: {
@@ -106,36 +106,34 @@ function writeDismissed(ids: Set<string>) {
   }
 }
 
-async function fetchSolvroAlerts(appCode: string): Promise<SolvroAlert[]> {
-  const url = new URL(SOLVRO_ALERTS_ENDPOINT);
+async function fetchAlerts(appCode: string): Promise<Alert[]> {
+  const url = new URL(ALERTS_ENDPOINT);
   url.searchParams.set("app", appCode);
   const response = await fetch(url.toString());
   if (response.status === 400) {
     throw new Error(
-      `Solvro Alerts: unknown app code "${appCode}". Check NEXT_PUBLIC_SOLVRO_ALERTS_APP_CODE.`,
+      `Alerts: unknown app code "${appCode}". Check NEXT_PUBLIC_SOLVRO_ALERTS_APP_CODE.`,
     );
   }
   if (!response.ok) {
-    throw new Error(
-      `Solvro Alerts: request failed (${String(response.status)})`,
-    );
+    throw new Error(`Alerts: request failed (${String(response.status)})`);
   }
   const data: unknown = await response.json();
   if (!Array.isArray(data)) {
     return [];
   }
-  return data as SolvroAlert[];
+  return data as Alert[];
 }
 
 function isExternalLink(link: string) {
   return /^https?:\/\//i.test(link);
 }
 
-function SolvroAlertBanner({
+function AlertBanner({
   alert,
   onDismiss,
 }: {
-  alert: SolvroAlert;
+  alert: Alert;
   onDismiss: (id: string) => void;
 }) {
   const variant = VARIANT_STYLES[alert.alert_type];
@@ -170,7 +168,7 @@ function SolvroAlertBanner({
           <div className="font-semibold">{alert.title}</div>
         )}
         <div
-          className="solvro-alerts-content [&_a]:underline [&_a]:underline-offset-2"
+          className="[&_a]:underline [&_a]:underline-offset-2"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: sanitized }}
         />
@@ -191,7 +189,7 @@ function SolvroAlertBanner({
   );
 }
 
-export function SolvroAlerts({ appCode }: { appCode?: string } = {}) {
+export function Alerts({ appCode }: { appCode?: string } = {}) {
   const code = appCode ?? DEFAULT_APP_CODE;
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
   const [hydrated, setHydrated] = useState(false);
@@ -202,8 +200,8 @@ export function SolvroAlerts({ appCode }: { appCode?: string } = {}) {
   }, []);
 
   const { data } = useQuery({
-    queryKey: ["solvro-alerts", code],
-    queryFn: async () => fetchSolvroAlerts(code),
+    queryKey: ["alerts", code],
+    queryFn: async () => fetchAlerts(code),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -229,13 +227,9 @@ export function SolvroAlerts({ appCode }: { appCode?: string } = {}) {
   };
 
   return (
-    <div className="flex w-full flex-col gap-2" data-slot="solvro-alerts">
+    <div className="flex w-full flex-col gap-2" data-slot="alerts">
       {visible.map((alert) => (
-        <SolvroAlertBanner
-          key={alert.id}
-          alert={alert}
-          onDismiss={handleDismiss}
-        />
+        <AlertBanner key={alert.id} alert={alert} onDismiss={handleDismiss} />
       ))}
     </div>
   );
