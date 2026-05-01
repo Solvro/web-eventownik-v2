@@ -7,9 +7,5 @@ export const metadata = {
 };
 
 export default function EventsPage() {
-  return (
-    <div className="flex w-full flex-col items-center py-4">
-      <EventsPageContent />
-    </div>
-  );
+  return <EventsPageContent />;
 }

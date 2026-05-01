@@ -10,7 +10,7 @@ export default function EventsLayout({
 }) {
   return (
     <div className="text-foreground min-h-screen">
-      <div className="relative flex min-h-screen w-full flex-col bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
+      <div className="relative flex min-h-screen w-full flex-col bg-linear-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
         <div className="z-10 flex w-full flex-col items-center pt-4 lg:pt-12">
           <Navbar />
         </div>
@@ -20,7 +20,7 @@ export default function EventsLayout({
           alt=""
           width={3000}
           height={3000}
-          className="absolute inset-0 h-full w-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] opacity-10"
+          className="absolute inset-0 w-full mask-[linear-gradient(to_bottom,black_75%,transparent_100%)] opacity-10"
         />
 
         <main className="relative flex-1">{children}</main>

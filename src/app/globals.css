@@ -377,6 +377,23 @@
   object-fit: cover;
 }
 
+::view-transition-new(.photo-carousel-item),
+::view-transition-old(.photo-carousel-item) {
+  @apply h-full overflow-clip object-cover;
+}
+
+::view-transition-new(.photo-carousel-card),
+::view-transition-old(.photo-carousel-card) {
+  @apply rounded-4xl;
+}
+
+::view-transition-new(.photo-carousel-content-left),
+::view-transition-old(.photo-carousel-content-left),
+::view-transition-new(.photo-carousel-content-right),
+::view-transition-old(.photo-carousel-content-right) {
+  @apply brightness-55;
+}
+
 @utility scrollbar-hidden {
   &::-webkit-scrollbar {
     display: none;
