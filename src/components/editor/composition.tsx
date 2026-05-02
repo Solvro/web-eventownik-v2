@@ -58,6 +58,7 @@ const COMPONENT_ICONS = {
   ThreeByTwo: <Grid3x2 className={PUCK_ICON_CLASSNAME} />,
   ThreeByThree: <Grid3X3 className={PUCK_ICON_CLASSNAME} />,
   Link: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+  LinkImage: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
 } as const satisfies Record<keyof PuckConfig["components"], React.ReactElement>;
 
 type EmailTemplateFormValues = z.infer<typeof emailTemplateSchema>;
@@ -287,11 +288,7 @@ function BlocksAndSchemaSidebar() {
                                   className="flex w-full items-center justify-between gap-2 py-2"
                                 >
                                   <div>
-                                    {
-                                      COMPONENT_ICONS[
-                                        component as keyof typeof COMPONENT_ICONS
-                                      ]
-                                    }
+                                    {COMPONENT_ICONS[component]}
                                     {componentLabel}
                                   </div>
                                 </Button>

@@ -838,69 +838,43 @@ export const getPuckConfig = ({
               { label: "Pomniejsz", value: "scale-down" },
             ],
           },
-          href: {
-            type: "text",
-            label: "Odnośnik",
-            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
-          },
           ...withLayout,
         },
         defaultProps: {
           src: "",
           width: "128",
           height: "128",
-          href: "",
           objectFit: "contain",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({
-          width,
-          height,
-          src,
-          href,
-          objectFit,
-          layout: { margin, padding },
-        }) {
+        render({ width, height, src, objectFit, layout: { margin, padding } }) {
           const widthValue = width === "auto" ? "auto" : `${width}px`;
           const heightValue = height === "auto" ? "auto" : `${height}px`;
-
-          const image = (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={src === "" ? `/editor-image-placeholder.svg` : src}
-              alt=""
-              width={width === "auto" ? undefined : width}
-              height={height === "auto" ? undefined : height}
-              style={{
-                display: "block",
-                objectFit,
-                width: widthValue,
-                height: heightValue,
-                maxWidth: "100%",
-                padding: `${padding}px`,
-                margin: `${margin}px`,
-              }}
-            />
-          );
 
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
                 <tr>
                   <td align="center">
-                    {href === "" ? (
-                      image
-                    ) : (
-                      <a
-                        href={href}
-                        style={{ display: "block", width: "fit-content" }}
-                      >
-                        {image}
-                      </a>
-                    )}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src === "" ? `/editor-image-placeholder.svg` : src}
+                      alt=""
+                      width={width === "auto" ? undefined : width}
+                      height={height === "auto" ? undefined : height}
+                      style={{
+                        display: "block",
+                        objectFit,
+                        width: widthValue,
+                        height: heightValue,
+                        maxWidth: "100%",
+                        padding: `${padding}px`,
+                        margin: `${margin}px`,
+                      }}
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -909,11 +883,11 @@ export const getPuckConfig = ({
         },
       },
       Link: {
-        label: "Link",
+        label: "Przycisk z linkiem",
         fields: {
           title: {
             type: "text",
-            label: "Tytuł",
+            label: "Treść",
             labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
           },
           href: {
@@ -969,6 +943,184 @@ export const getPuckConfig = ({
           );
         },
       },
+      LinkImage: {
+        label: "Obraz z linkiem",
+        fields: {
+          src: {
+            type: "custom",
+            label: "Obraz",
+            render: ({ value, onChange }) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const fileInputRef = useRef<HTMLInputElement>(null);
+
+              return (
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    aria-label="Wybierz obraz"
+                    ref={fileInputRef}
+                    onChangeCapture={async (event) => {
+                      const input = event.target as HTMLInputElement;
+                      if (input.files?.[0] != null) {
+                        const newBlobUrl = URL.createObjectURL(input.files[0]);
+                        const base64 = await getBase64FromUrl(newBlobUrl);
+                        onChange(base64);
+                        URL.revokeObjectURL(newBlobUrl);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
+                  >
+                    <ImageIcon className={PUCK_ICON_CLASSNAME} />
+                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+                  </button>
+
+                  {value ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={value}
+                      alt=""
+                      className="h-20 w-full rounded object-contain"
+                    />
+                  ) : null}
+                </div>
+              );
+            },
+          },
+          width: {
+            label: "Szerokość",
+            labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            render: ({ name, onChange, value, field }) => (
+              <div className="space-y-2">
+                <FieldLabel
+                  label={field.label ?? name}
+                  icon={field.labelIcon}
+                />
+                <Button
+                  onClick={() => {
+                    onChange("auto");
+                  }}
+                  variant={value === "auto" ? "secondary" : "outline"}
+                  size="sm"
+                  className="w-full"
+                >
+                  Automatycznie
+                </Button>
+                <NumberButtonInput value={value} onChange={onChange} />
+              </div>
+            ),
+          },
+          height: {
+            label: "Wysokość",
+            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+            type: "custom",
+            render: ({ name, onChange, value, field }) => (
+              <div className="space-y-2">
+                <FieldLabel
+                  label={field.label ?? name}
+                  icon={field.labelIcon}
+                />
+                <Button
+                  onClick={() => {
+                    onChange("auto");
+                  }}
+                  variant={value === "auto" ? "secondary" : "outline"}
+                  size="sm"
+                  className="w-full"
+                >
+                  Automatycznie
+                </Button>
+                <NumberButtonInput value={value} onChange={onChange} />
+              </div>
+            ),
+          },
+          href: {
+            type: "text",
+            label: "Odnośnik",
+            labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
+          },
+          objectFit: {
+            type: "select",
+            label: "Dopasowanie",
+            labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
+            options: [
+              { label: "Brak", value: "none" },
+              { label: "Dopasuj", value: "contain" },
+              { label: "Wypełnij", value: "cover" },
+              { label: "Pomniejsz", value: "scale-down" },
+            ],
+          },
+          ...withLayout,
+        },
+        defaultProps: {
+          src: "",
+          width: "128",
+          height: "128",
+          objectFit: "contain",
+          href: "",
+          layout: {
+            margin: "0",
+            padding: "0",
+          },
+        },
+        render({
+          width,
+          height,
+          src,
+          objectFit,
+          href,
+          layout: { margin, padding },
+        }) {
+          const widthValue = width === "auto" ? "auto" : `${width}px`;
+          const heightValue = height === "auto" ? "auto" : `${height}px`;
+
+          const image = (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={src === "" ? `/editor-image-placeholder.svg` : src}
+              alt=""
+              width={width === "auto" ? undefined : width}
+              height={height === "auto" ? undefined : height}
+              style={{
+                display: "block",
+                objectFit,
+                width: widthValue,
+                height: heightValue,
+                maxWidth: "100%",
+                padding: `${padding}px`,
+                margin: `${margin}px`,
+              }}
+            />
+          );
+
+          return (
+            <table width="100%" {...tableProps} style={tableStyles}>
+              <tbody>
+                <tr>
+                  <td align="center">
+                    {href === "" ? (
+                      image
+                    ) : (
+                      <a
+                        href={href}
+                        style={{ display: "block", width: "fit-content" }}
+                      >
+                        {image}
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          );
+        },
+      },
     },
     categories: {
       typography: {
@@ -989,7 +1141,7 @@ export const getPuckConfig = ({
       },
       media: {
         title: "Media",
-        components: ["Image", "Link"],
+        components: ["Image", "Link", "LinkImage"],
       },
     },
     root: {

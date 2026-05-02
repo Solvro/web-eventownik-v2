@@ -14,8 +14,11 @@ export interface ImageFields extends LayoutFields {
   width: string;
   height: string;
   src: string;
-  href: string;
   objectFit: CSSProperties["objectFit"];
+}
+
+export interface LinkImageFields extends ImageFields, LayoutFields {
+  href: string;
 }
 
 export interface TwoByTwoFields
@@ -95,6 +98,7 @@ export interface PuckComponents {
   Divider: DividerFields;
   Image: ImageFields;
   Link: LinkFields;
+  LinkImage: LinkImageFields;
 }
 
 export interface RootSettings {
