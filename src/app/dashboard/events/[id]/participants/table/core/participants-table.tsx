@@ -112,7 +112,11 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                   const row = rows[virtualRow.index];
 
                   return (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={virtualRow.key}
+                      data-index={virtualRow.index}
+                      ref={rowVirtualizer.measureElement}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
