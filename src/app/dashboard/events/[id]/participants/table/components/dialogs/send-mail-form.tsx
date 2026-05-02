@@ -92,7 +92,12 @@ function SendMailForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="icon" variant="outline" aria-label={t("sendMail")}>
+            <Button
+              size="icon"
+              variant="outline"
+              aria-label={t("sendMail")}
+              disabled={targetParticipants.length === 0}
+            >
               <Mail />
             </Button>
           </DialogTrigger>
