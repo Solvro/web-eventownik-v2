@@ -5,16 +5,18 @@ import { AlertCircle, AlertTriangle, Info, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
-const ALERTS_ENDPOINT = "https://alerts.solvro.pl/api/v1/alerts/";
+const ALERTS_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLVRO_ALERTS_ENDPOINT ??
+  "https://alerts.solvro.pl/api/v1/alerts/";
 const DISMISSED_STORAGE_KEY = "solvro-alerts-dismissed";
-const DEFAULT_APP_CODE =
-  process.env.NEXT_PUBLIC_SOLVRO_ALERTS_APP_CODE ?? "eventownik";
+const APP_CODE = process.env.NEXT_PUBLIC_SOLVRO_ALERTS_APP_CODE ?? "eventownik";
 
 type AlertType = "info" | "warning" | "critical";
 
-interface Alert {
+interface AlertItem {
   id: string;
   title: string;
   content: string;
@@ -26,6 +28,12 @@ interface Alert {
   start_at: string | null;
   end_at: string | null;
 }
+
+const ICONS: Record<AlertType, typeof Info> = {
+  info: Info,
+  warning: AlertTriangle,
+  critical: AlertCircle,
+};
 
 const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: [
@@ -63,37 +71,13 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   allowedSchemes: ["http", "https", "mailto"],
 };
 
-const VARIANT_STYLES: Record<
-  AlertType,
-  { container: string; icon: typeof Info; iconClass: string }
-> = {
-  info: {
-    container:
-      "border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-100",
-    icon: Info,
-    iconClass: "text-blue-600 dark:text-blue-300",
-  },
-  warning: {
-    container:
-      "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-100",
-    icon: AlertTriangle,
-    iconClass: "text-amber-600 dark:text-amber-300",
-  },
-  critical: {
-    container:
-      "border-red-300 bg-red-50 text-red-900 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-100",
-    icon: AlertCircle,
-    iconClass: "text-red-600 dark:text-red-300",
-  },
-};
-
 function readDismissed(): Set<string> {
   if (typeof window === "undefined") {
     return new Set();
   }
   try {
     const raw = window.localStorage.getItem(DISMISSED_STORAGE_KEY);
-    if (raw == null) {
+    if (raw === null) {
       return new Set();
     }
     const parsed: unknown = JSON.parse(raw);
@@ -120,7 +104,7 @@ function writeDismissed(ids: Set<string>) {
   }
 }
 
-async function fetchAlerts(appCode: string): Promise<Alert[]> {
+async function fetchAlerts(appCode: string): Promise<AlertItem[]> {
   const url = new URL(ALERTS_ENDPOINT);
   url.searchParams.set("app", appCode);
   const response = await fetch(url.toString());
@@ -136,29 +120,22 @@ async function fetchAlerts(appCode: string): Promise<Alert[]> {
   if (!Array.isArray(data)) {
     return [];
   }
-  return data as Alert[];
+  return data as AlertItem[];
 }
 
 function AlertBanner({
   alert,
   onDismiss,
 }: {
-  alert: Alert;
+  alert: AlertItem;
   onDismiss: (id: string) => void;
 }) {
-  const variant = VARIANT_STYLES[alert.alert_type];
-  const Icon = variant.icon;
+  const Icon = ICONS[alert.alert_type];
   const sanitized = sanitizeHtml(alert.content, SANITIZE_OPTIONS);
   const hasLink = alert.link !== "";
 
   return (
-    <div
-      className={cn(
-        "relative flex items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-sm",
-        variant.container,
-      )}
-      role="alert"
-    >
+    <Alert variant={alert.alert_type} className="shadow-sm">
       {hasLink ? (
         <a
           href={alert.link}
@@ -168,20 +145,14 @@ function AlertBanner({
           className="absolute inset-0 rounded-lg focus:ring-2 focus:ring-current focus:outline-none"
         />
       ) : null}
-      <Icon
-        className={cn("mt-0.5 size-5 shrink-0", variant.iconClass)}
-        aria-hidden="true"
-      />
-      <div className="pointer-events-none relative min-w-0 flex-1">
-        {alert.title === "" ? null : (
-          <div className="font-semibold">{alert.title}</div>
-        )}
+      <Icon aria-hidden="true" />
+      {alert.title === "" ? null : <AlertTitle>{alert.title}</AlertTitle>}
+      <AlertDescription className="prose prose-sm dark:prose-invert max-w-none wrap-break-word">
         <div
-          className="prose prose-sm dark:prose-invert max-w-none"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: sanitized }}
         />
-      </div>
+      </AlertDescription>
       {alert.is_dismissable ? (
         <button
           type="button"
@@ -189,17 +160,16 @@ function AlertBanner({
             onDismiss(alert.id);
           }}
           aria-label="Dismiss alert"
-          className="relative -mr-1 rounded p-1 opacity-70 transition hover:bg-black/5 hover:opacity-100 focus:ring-2 focus:ring-current focus:outline-none dark:hover:bg-white/10"
+          className="absolute top-2 right-2 rounded p-1 opacity-70 transition hover:bg-black/5 hover:opacity-100 focus:ring-2 focus:ring-current focus:outline-none dark:hover:bg-white/10"
         >
           <X className="size-4" aria-hidden="true" />
         </button>
       ) : null}
-    </div>
+    </Alert>
   );
 }
 
 export function Alerts({ className }: { className?: string } = {}) {
-  const appCode = DEFAULT_APP_CODE;
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
   const [hydrated, setHydrated] = useState(false);
 
@@ -210,14 +180,19 @@ export function Alerts({ className }: { className?: string } = {}) {
     setHydrated(true);
   }, []);
 
-  const { data } = useQuery({
-    queryKey: ["alerts", appCode],
-    queryFn: async () => fetchAlerts(appCode),
+  const { data, error } = useQuery({
+    queryKey: ["alerts", APP_CODE],
+    queryFn: async () => fetchAlerts(APP_CODE),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
   });
+
+  if (error !== null) {
+    console.error(error);
+    return null;
+  }
 
   if (!hydrated || data == null || data.length === 0) {
     return null;
@@ -238,10 +213,7 @@ export function Alerts({ className }: { className?: string } = {}) {
   };
 
   return (
-    <div
-      className={cn("flex w-full flex-col gap-2", className)}
-      data-slot="alerts"
-    >
+    <div className={cn("flex w-full flex-col gap-2", className)}>
       {visible.map((alert) => (
         <AlertBanner key={alert.id} alert={alert} onDismiss={handleDismiss} />
       ))}

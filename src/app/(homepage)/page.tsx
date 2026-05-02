@@ -18,7 +18,7 @@ export default function Home() {
         <div className="z-10 flex w-full flex-col items-center gap-20 pt-4 lg:pt-12">
           <div className="flex w-full flex-col gap-4">
             <Navbar />
-            <Alerts className="container mx-auto max-sm:px-4 xl:max-w-6xl" />
+            <Alerts className="container mx-auto px-4 sm:px-0 xl:max-w-6xl" />
           </div>
           <Hero />
           <HighlightedEvents />
