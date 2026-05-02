@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import React from "react";
 
+import { Alerts } from "@/components/alerts";
 import { AuthButton } from "@/components/auth-button";
 import { Navbar } from "@/components/navbar";
 
@@ -19,8 +20,9 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen">
       <div className="container mx-auto">
-        <header className="flex justify-between p-4">
+        <header className="flex flex-col gap-4 p-4">
           <Navbar authButton={<AuthButton />} />
+          <Alerts />
         </header>
         <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
           {children}
