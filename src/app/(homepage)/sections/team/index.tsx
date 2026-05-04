@@ -82,6 +82,24 @@ const team: TeamMember[] = [
     url: "https://github.com/ibtyog",
   },
   {
+    name: "Hanna Bielecka",
+    roles: ["Backend Developer"],
+    image: "TODO: ADD PHOTO",
+    url: "https://github.com/293421-spec",
+  },
+  {
+    name: "Iga Posturzyńska",
+    roles: ["Backend Developer"],
+    image: "TODO: ADD PHOTO",
+    url: "https://github.com/ixgvah",
+  },
+  {
+    name: "Magdalena Charandziuk",
+    roles: ["Backend Developer"],
+    image: "TODO: ADD PHOTO",
+    url: "https://github.com/",
+  },
+  {
     name: "Wincenty Wensker",
     roles: ["UI/UX Designer"],
     image: "/assets/landing/team/wincenty-wensker.jpg",
@@ -189,6 +207,18 @@ const team: TeamMember[] = [
     roles: ["Frontend Developer"],
     image: "https://avatars.githubusercontent.com/u/81564272?v=4",
     url: "https://github.com/Kuzdra24",
+  },
+  {
+    name: "Stanisław Synowiec",
+    roles: ["Frontend Developer"],
+    image: "TODO: ADD PHOTO",
+    url: "https://github.com/ssynowiec",
+  },
+  {
+    name: "Nadia Gill",
+    roles: ["Frontend Developer"],
+    image: "TODO: ADD PHOTO",
+    url: "https://github.com/robuspospolitus",
   },
 
   {
