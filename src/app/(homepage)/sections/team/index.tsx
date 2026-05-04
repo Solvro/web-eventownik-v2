@@ -100,7 +100,7 @@ const team: TeamMember[] = [
     roles: ["Backend Developer"],
     image:
       "https://cms.solvro.pl/assets/226b3771-5780-44ac-a0a3-437601aa62db?key=member",
-    url: "#",
+    url: "https://github.com/mddchh",
   },
   {
     name: "Wincenty Wensker",
