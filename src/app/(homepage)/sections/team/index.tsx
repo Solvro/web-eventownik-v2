@@ -225,13 +225,26 @@ const team: TeamMember[] = [
       "https://cms.solvro.pl/assets/9c172769-611c-45e3-bc2e-08fb1c32d771?key=member",
     url: "https://github.com/robuspospolitus",
   },
-
+  {
+    name: "Marvin Ruciński",
+    roles: [],
+    image:
+      "https://cms.solvro.pl/assets/e2782462-f9b7-41a1-b10b-3c2eb6439e54?key=member",
+    url: "https://github.com/MarvinRucinski",
+  },
   {
     name: "Marcin Blicharski",
     roles: ["UI/UX Designer"],
     image:
       "https://cms.solvro.pl/assets/a1feda99-2541-40d9-9689-36ea06cf99c7?key=member",
     url: "https://github.com/MBlich",
+  },
+  {
+    name: "Hanna Kuczyńska",
+    roles: [],
+    image:
+      "https://cms.solvro.pl/assets/24f9abf8-9769-486e-b4f3-f73f0fea2182?key=member",
+    url: "#",
   },
   {
     name: "Karol Koenig",
