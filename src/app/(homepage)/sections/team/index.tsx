@@ -227,7 +227,7 @@ const team: TeamMember[] = [
   },
   {
     name: "Marvin Ruciński",
-    roles: [],
+    roles: ["QA"],
     image:
       "https://cms.solvro.pl/assets/e2782462-f9b7-41a1-b10b-3c2eb6439e54?key=member",
     url: "https://github.com/MarvinRucinski",
@@ -241,7 +241,7 @@ const team: TeamMember[] = [
   },
   {
     name: "Hanna Kuczyńska",
-    roles: [],
+    roles: ["QA"],
     image:
       "https://cms.solvro.pl/assets/24f9abf8-9769-486e-b4f3-f73f0fea2182?key=member",
     url: "https://github.com/hankucz",
