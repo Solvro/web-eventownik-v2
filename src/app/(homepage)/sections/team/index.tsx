@@ -244,7 +244,7 @@ const team: TeamMember[] = [
     roles: [],
     image:
       "https://cms.solvro.pl/assets/24f9abf8-9769-486e-b4f3-f73f0fea2182?key=member",
-    url: "#",
+    url: "https://github.com/hankucz",
   },
   {
     name: "Karol Koenig",
