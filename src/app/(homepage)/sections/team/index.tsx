@@ -84,20 +84,23 @@ const team: TeamMember[] = [
   {
     name: "Hanna Bielecka",
     roles: ["Backend Developer"],
-    image: "TODO: ADD PHOTO",
+    image:
+      "https://cms.solvro.pl/assets/8f024268-4fd2-4e0c-811a-1ae8d83821f9?key=member",
     url: "https://github.com/293421-spec",
   },
   {
     name: "Iga Posturzyńska",
     roles: ["Backend Developer"],
-    image: "TODO: ADD PHOTO",
+    image:
+      "https://cms.solvro.pl/assets/9bd527fd-18a3-4562-8651-e96376462089?key=member",
     url: "https://github.com/ixgvah",
   },
   {
     name: "Magdalena Charandziuk",
     roles: ["Backend Developer"],
-    image: "TODO: ADD PHOTO",
-    url: "https://github.com/",
+    image:
+      "https://cms.solvro.pl/assets/226b3771-5780-44ac-a0a3-437601aa62db?key=member",
+    url: "#",
   },
   {
     name: "Wincenty Wensker",
@@ -211,13 +214,15 @@ const team: TeamMember[] = [
   {
     name: "Stanisław Synowiec",
     roles: ["Frontend Developer"],
-    image: "TODO: ADD PHOTO",
+    image:
+      "https://cms.solvro.pl/assets/ee3933b2-eccb-4585-bcc3-cd2f41708069?key=member",
     url: "https://github.com/ssynowiec",
   },
   {
     name: "Nadia Gill",
     roles: ["Frontend Developer"],
-    image: "TODO: ADD PHOTO",
+    image:
+      "https://cms.solvro.pl/assets/9c172769-611c-45e3-bc2e-08fb1c32d771?key=member",
     url: "https://github.com/robuspospolitus",
   },
 
