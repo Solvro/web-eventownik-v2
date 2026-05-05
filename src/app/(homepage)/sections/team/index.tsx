@@ -33,7 +33,7 @@ const team: TeamMember[] = [
     roles: ["Project Manager"],
     image:
       "https://cms.solvro.pl/assets/843908e0-50c3-4618-ad9e-cdba9cd288af?key=member",
-    url: "https://github.com/Vichka005",
+    url: "https://github.com/ViktoriyaKazak",
   },
   {
     name: "Maciej Talarczyk",
