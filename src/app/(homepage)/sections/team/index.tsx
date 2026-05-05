@@ -157,6 +157,13 @@ const team: TeamMember[] = [
     url: "https://github.com/Antoni-Czaplicki",
   },
   {
+    name: "Kamil Marczak",
+    roles: ["Contributor"],
+    image:
+      "https://cms.solvro.pl/assets/1ef282e6-51b6-4feb-ac6d-119b4d7e1f80?key=member",
+    url: "https://github.com/qamarq",
+  },
+  {
     name: "Wojciech Kosmalski",
     roles: ["Frontend Developer"],
     image:

@@ -8,7 +8,8 @@ type role =
   | "Frontend Developer"
   | "UI/UX Designer"
   | "Devops Engineer"
-  | "Marketing Coordinator";
+  | "Marketing Coordinator"
+  | "Contributor";
 
 export interface TeamMember {
   name: string;
