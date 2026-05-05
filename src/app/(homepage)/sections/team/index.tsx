@@ -97,7 +97,7 @@ const team: TeamMember[] = [
   },
   {
     name: "Magdalena Charandziuk",
-    roles: ["Backend Developer"],
+    roles: ["UI/UX Designer"],
     image:
       "https://cms.solvro.pl/assets/226b3771-5780-44ac-a0a3-437601aa62db?key=member",
     url: "https://github.com/mddchh",
