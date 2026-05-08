@@ -12,6 +12,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { SanitizedContent } from "@/components/sanitized-content";
 import { ShareButton } from "@/components/share-button";
 import { SocialMediaLink } from "@/components/social-media-link";
@@ -57,11 +58,15 @@ export default async function DashboardEventPage({
           ) : null}
           <div className="flex flex-row items-center gap-2">
             <Calendar1 size={24} />
-            <p>{format(event.startDate, "dd.MM.yyyy HH:mm")}</p>
+            <p>
+              <ClientFormattedDate date={event.startDate} />
+            </p>
           </div>
           <div className="flex flex-row items-center gap-2">
             <CalendarX size={24} />
-            <p>{format(event.endDate, "dd.MM.yyyy HH:mm")}</p>
+            <p>
+              <ClientFormattedDate date={event.endDate} />
+            </p>
           </div>
           {event.participantsCount != null && (
             <div className="flex flex-row items-center gap-2">

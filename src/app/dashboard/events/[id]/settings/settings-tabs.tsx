@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Tabs from "@radix-ui/react-tabs";
-import { formatISO9075 } from "date-fns";
+import { formatISO, getHours, getMinutes } from "date-fns";
 import { Loader, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
@@ -78,17 +78,12 @@ const TABS: { name: string; value: string; component: TabComponent }[] = [
 
 interface TabsProps {
   unmodifiedEvent: Event;
-  /** Start/end time strings (HH:mm) computed on the server so form matches event page timezone */
-  displayStartTime: string;
-  displayEndTime: string;
   unmodifiedCoOrganizers: CoOrganizer[];
   unmodifiedAttributes: EventAttribute[];
 }
 
 export function EventSettingsTabs({
   unmodifiedEvent,
-  displayStartTime,
-  displayEndTime,
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
@@ -131,9 +126,9 @@ export function EventSettingsTabs({
       name: unmodifiedEvent.name,
       description: unmodifiedEvent.description ?? "",
       startDate: new Date(unmodifiedEvent.startDate),
-      startTime: displayStartTime,
+      startTime: `${getHours(new Date(unmodifiedEvent.startDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.startDate)).toString().padStart(2, "0")}`,
       endDate: new Date(unmodifiedEvent.endDate),
-      endTime: displayEndTime,
+      endTime: `${getHours(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}`,
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizer ?? "",
       termsLink: unmodifiedEvent.termsLink ?? "",
@@ -211,10 +206,8 @@ export function EventSettingsTabs({
       ...unmodifiedEvent,
       name: values.name,
       description: values.description ?? "",
-      startDate: formatISO9075(values.startDate, {
-        representation: "complete",
-      }),
-      endDate: formatISO9075(values.endDate, { representation: "complete" }),
+      startDate: formatISO(values.startDate, { representation: "complete" }),
+      endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
       termsLink: values.termsLink ?? "",
