@@ -12,5 +12,6 @@ export interface EventForm {
   endDate: Date;
   startTime: string;
   endTime: string;
+  order: number;
   attributes: FormAttribute[];
 }

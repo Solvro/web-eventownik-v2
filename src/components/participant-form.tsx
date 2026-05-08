@@ -4,7 +4,8 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -64,6 +65,7 @@ export function ParticipantForm({
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const locale = useLocale();
+  const router = useRouter();
 
   const [files, setFiles] = useState<File[]>([]);
   const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
@@ -82,7 +84,7 @@ export function ParticipantForm({
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
-  // generate schema for form based on attributes
+  // Generate schema for the form based on event attributes
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForAttributes(attributes),
@@ -105,6 +107,7 @@ export function ParticipantForm({
   });
 
   function resetStates() {
+    router.refresh();
     form.reset();
     setFiles([]);
     setSuccess(false);
@@ -116,7 +119,7 @@ export function ParticipantForm({
 
   const { toast } = useToast();
 
-  // temporarily disabled to avoid issues with dirty state not reseting after clearing values
+  // Temporarily disabled to avoid issues with dirty state not resetting after clearing values
   // useUnsavedForm(form.formState.isDirty);
 
   /**
@@ -285,7 +288,7 @@ export function ParticipantForm({
                     <TooltipTrigger type="button">
                       <span className="text-red-500">*</span>
                     </TooltipTrigger>
-                    <TooltipContent className="max-w-[var(--radix-tooltip-content-available-width)] text-wrap">
+                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
                       {t("emailIsRequiredTooltip")}
                     </TooltipContent>
                   </Tooltip>
@@ -307,80 +310,83 @@ export function ParticipantForm({
           />
         ) : null}
 
-        {sortedAttributes.map((attribute) => (
-          <FormField
-            key={attribute.id}
-            control={form.control}
-            name={attribute.id.toString()}
-            render={({ field }) => (
-              <FormItem
-                className={cn(
-                  attribute.type === "checkbox" &&
-                    "flex flex-row-reverse items-start justify-end space-y-0",
-                )}
-              >
-                <FormLabel htmlFor={attribute.id.toString()}>
-                  {getAttributeLabel(attribute.name, locale)}{" "}
-                  {attribute.isRequired ? (
-                    <Tooltip>
-                      <TooltipTrigger type="button">
-                        <span className="text-red-500">*</span>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        {t("attributeIsRequiredTooltip")}
-                      </TooltipContent>
-                    </Tooltip>
-                  ) : null}
-                </FormLabel>
-                <FormControl>
-                  {attribute.type === "file" ? (
-                    <AttributeInputFile
-                      attribute={attribute}
-                      field={field}
-                      setError={form.control.setError}
-                      resetField={form.resetField}
-                      setFiles={setFiles}
-                      lastUpdate={
-                        userData?.attributes.find(
-                          (attribute_) => attribute_.id === attribute.id,
-                        )?.meta.pivot_updated_at ?? null
-                      }
-                    />
-                  ) : attribute.type === "drawing" ? (
-                    <AttributeInputDrawing
-                      attribute={attribute}
-                      field={field}
-                      setError={form.control.setError}
-                      resetField={form.resetField}
-                      setFiles={setFiles}
-                      lastUpdate={
-                        userData?.attributes.find(
-                          (attribute_) => attribute_.id === attribute.id,
-                        )?.meta.pivot_updated_at ?? null
-                      }
-                    />
-                  ) : (
-                    <AttributeInput
-                      attribute={attribute}
-                      userData={userData}
-                      eventBlocks={eventBlocks.filter(
-                        (block) => block.attributeId === attribute.id,
-                      )}
-                      field={field}
-                    />
+        {sortedAttributes.map((attribute) => {
+          return (
+            <FormField
+              key={attribute.id}
+              control={form.control}
+              name={attribute.id.toString()}
+              render={({ field }) => (
+                <FormItem
+                  className={cn(
+                    attribute.type === "checkbox" &&
+                      "flex flex-row-reverse items-start justify-end space-y-0",
                   )}
-                </FormControl>
-                <FormMessage className="text-sm text-red-500">
-                  {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                    (form.formState.errors as any)[attribute.id.toString()]
-                      ?.message
-                  }
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-        ))}
+                >
+                  <FormLabel htmlFor={attribute.id.toString()}>
+                    {getAttributeLabel(attribute.name, locale)}{" "}
+                    {attribute.isRequired ? (
+                      <Tooltip>
+                        <TooltipTrigger type="button">
+                          <span className="text-red-500">*</span>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {t("attributeIsRequiredTooltip")}
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : null}
+                  </FormLabel>
+                  <FormControl>
+                    {attribute.type === "file" ? (
+                      <AttributeInputFile
+                        attribute={attribute}
+                        field={field}
+                        setError={form.control.setError}
+                        resetField={form.resetField}
+                        setFiles={setFiles}
+                        lastUpdate={
+                          userData?.attributes.find(
+                            (attribute_) => attribute_.id === attribute.id,
+                          )?.meta.pivot_updated_at ?? null
+                        }
+                      />
+                    ) : attribute.type === "drawing" ? (
+                      <AttributeInputDrawing
+                        attribute={attribute}
+                        field={field}
+                        setError={form.control.setError}
+                        resetField={form.resetField}
+                        setFiles={setFiles}
+                        lastUpdate={
+                          userData?.attributes.find(
+                            (attribute_) => attribute_.id === attribute.id,
+                          )?.meta.pivot_updated_at ?? null
+                        }
+                      />
+                    ) : (
+                      <AttributeInput
+                        attribute={attribute}
+                        userData={userData}
+                        eventBlocks={eventBlocks.filter(
+                          (block) => block.attributeId === attribute.id,
+                        )}
+                        field={field}
+                        shouldCheckUserData={editMode}
+                      />
+                    )}
+                  </FormControl>
+                  <FormMessage className="text-sm text-red-500">
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
+                      (form.formState.errors as any)[attribute.id.toString()]
+                        ?.message
+                    }
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+          );
+        })}
 
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">

@@ -89,7 +89,8 @@ export function Functionalities() {
         {/* Functionalities */}
         <div
           ref={targetRef}
-          className="z-10 w-full max-w-[104rem] rounded-t-[2.5rem] border-x border-t border-[#798DDE] bg-[#1B4AE4]/40 px-2 pt-2 drop-shadow-[0_-35px_250px_rgba(56,115,255,0.69)] sm:rounded-t-[3rem] sm:px-4 sm:pt-4 dark:bg-[#26486E]/40"
+          // Use box-shadow instead of drop-shadow on iOS as it causes performance issues because of huge blur radius
+          className="ios:drop-shadow-none ios:shadow-[0_-35px_250px_rgba(56,115,255,0.69)] z-10 w-full max-w-[104rem] rounded-t-[2.5rem] border-x border-t border-[#798DDE] bg-[#1B4AE4]/40 px-2 pt-2 drop-shadow-[0_-35px_250px_rgba(56,115,255,0.69)] sm:rounded-t-[3rem] sm:px-4 sm:pt-4 dark:bg-[#26486E]/40"
         >
           <div className="divide-input flex w-full flex-col divide-y-[1px] divide-dashed overflow-hidden rounded-t-4xl bg-[#ffffff] dark:bg-[#101011]">
             {/* Step 1 */}

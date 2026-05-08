@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
       {
         source: "/regulamin",
         destination:
-          "https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view",
+          "https://drive.google.com/file/d/1wr-MYjUZRggLmLFBxBLNDfZ1fA5XbN5C/view",
         permanent: false,
       },
     ];

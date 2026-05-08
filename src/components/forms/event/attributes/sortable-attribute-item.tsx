@@ -1,5 +1,4 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/react/sortable";
 import { GripVertical, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,27 +8,22 @@ import type { SortableAttributeItemProps } from "./types";
 
 export function SortableAttributeItem({
   id,
+  index,
   onRemove,
   ...props
 }: SortableAttributeItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id,
-    });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    transition,
-  };
+  const { ref, handleRef } = useSortable({
+    id,
+    index,
+  });
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={ref}>
       <div className="flex gap-2 rounded-lg">
         <div className="flex flex-col gap-2 sm:flex-row">
           <div
             className="my-2 inline-flex h-9 w-9 cursor-move items-center justify-center rounded-md border border-dashed pointer-coarse:hidden"
-            {...attributes}
-            {...listeners}
+            ref={handleRef}
           >
             <GripVertical className="text-muted-foreground h-4 w-4" />
           </div>
@@ -43,7 +37,7 @@ export function SortableAttributeItem({
           </Button>
         </div>
 
-        <AttributeItem {...props} />
+        <AttributeItem {...props} index={index} />
       </div>
     </div>
   );

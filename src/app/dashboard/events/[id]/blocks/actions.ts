@@ -5,6 +5,46 @@ import { redirect } from "next/navigation";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 
+export async function reorderBlockAttributes(
+  eventId: string,
+  orderedIds: number[],
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  const { bearerToken } = session;
+
+  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
+  const results = await Promise.all(
+    orderedIds.map(async (id, index) =>
+      fetch(`${API_URL}/events/${eventId}/attributes/${id.toString()}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify({ order: index }),
+      }),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderBlockAttributes action] Failed to reorder block attributes for event ${eventId}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
+
 export async function createBlock(
   eventId: string,
   attributeId: string,
@@ -98,6 +138,49 @@ export async function updateBlock(
       error: `Błąd ${response.status.toString()} ${response.statusText}`,
     };
   }
+}
+
+export async function reorderBlocks(
+  eventId: string,
+  attributeId: string,
+  orderedIds: number[],
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  const { bearerToken } = session;
+
+  const results = await Promise.all(
+    orderedIds.map(async (id, index) =>
+      fetch(
+        `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks/${id.toString()}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          body: JSON.stringify({ order: index }),
+        },
+      ),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderBlocks action] Failed to reorder blocks for event ${eventId}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+    };
+  }
+
+  return { success: true };
 }
 
 export async function deleteBlock(

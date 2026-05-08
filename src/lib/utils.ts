@@ -27,7 +27,7 @@ const POLISH_TO_ASCII: Record<string, string> = {
 
 /** Converts a name to a slug compatible with SLUG_REGEX (a-z, 0-9, hyphens). */
 export function nameToSlug(name: string): string {
-  const withAscii = name.replace(
+  const withAscii = name.replaceAll(
     /[ąćęłńóśźż]/gi,
     (char) => POLISH_TO_ASCII[char.toLowerCase()] ?? char,
   );
@@ -36,7 +36,7 @@ export function nameToSlug(name: string): string {
     .replaceAll(/\s+/g, "-")
     .replaceAll(/[^a-z0-9-]/g, "")
     .replaceAll(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replaceAll(/^-|-$/g, "");
 }
 
 // Helper function for string validation

@@ -41,9 +41,9 @@ export function TableToolbar({
   const t = useTranslations("Table");
 
   return (
-    <>
+    <div className="flex flex-wrap gap-2">
       <Input
-        className="h-10 w-32"
+        className="h-10 w-full md:w-32"
         placeholder={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
@@ -62,51 +62,53 @@ export function TableToolbar({
           }
         }}
       />
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            onClick={() => {
-              table.resetColumnFilters();
-            }}
-            size="icon"
-            variant="outline"
-            aria-label={t("resetFilters")}
-          >
-            <FilterX />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>{t("resetFilters")}</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            onClick={() => {
-              table.resetSorting();
-            }}
-            size="icon"
-            variant="outline"
-            aria-label={t("resetSorting")}
-          >
-            <ArrowUpDown />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>{t("resetSorting")}</TooltipContent>
-      </Tooltip>
-      <SendMailForm
-        eventId={eventId}
-        targetParticipants={table
-          .getSelectedRowModel()
-          .rows.map((row) => row.original)}
-        emails={emails}
-      />
-      <ExportButton eventId={eventId} />
-      <DeleteManyParticipantsDialog
-        isQuerying={isQuerying}
-        participants={table
-          .getSelectedRowModel()
-          .rows.map((row) => row.original.id.toString())}
-        deleteManyParticipants={deleteManyParticipants}
-      />
-    </>
+      <div className="flex gap-4 max-md:w-full">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label={t("resetFilters")}
+            >
+              <FilterX />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("resetFilters")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label={t("resetSorting")}
+            >
+              <ArrowUpDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("resetSorting")}</TooltipContent>
+        </Tooltip>
+        <SendMailForm
+          eventId={eventId}
+          targetParticipants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original)}
+          emails={emails}
+        />
+        <ExportButton eventId={eventId} />
+        <DeleteManyParticipantsDialog
+          isQuerying={isQuerying}
+          participants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original.id.toString())}
+          deleteManyParticipants={deleteManyParticipants}
+        />
+      </div>
+    </div>
   );
 }

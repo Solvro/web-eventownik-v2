@@ -7,7 +7,7 @@ import type { EventForm } from "@/types/forms";
 
 export interface NewEventForm extends Omit<
   EventForm,
-  "id" | "eventId" | "attributes"
+  "id" | "eventId" | "attributes" | "order"
 > {
   startTime: string;
   endTime: string;

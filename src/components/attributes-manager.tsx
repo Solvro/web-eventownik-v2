@@ -1,22 +1,9 @@
 "use client";
 
-import type { DragEndEvent } from "@dnd-kit/core";
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { RestrictToVerticalAxis } from "@dnd-kit/abstract/modifiers";
+import type { DragEndEvent } from "@dnd-kit/dom";
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable, useSortable } from "@dnd-kit/react/sortable";
 import { GripHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -26,6 +13,7 @@ import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 
 export interface AttributeItemProps {
   id: number;
+  index: number;
   attribute: EventAttribute;
   isIncluded: boolean;
   isRequired: boolean;
@@ -43,37 +31,24 @@ export interface AttributesReorderProps {
 
 function AttributeItem({
   id,
+  index,
   attribute,
   isIncluded,
   isRequired,
   handleIncludeToggle,
   handleRequiredToggle,
 }: AttributeItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const { ref, handleRef, isDragSource } = useSortable({ id, index });
 
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
+      ref={ref}
       className={`bg-accent/50 mb-2 flex items-center rounded-lg p-4 shadow-sm transition-shadow duration-200 hover:shadow-md ${
-        isDragging ? "z-50 opacity-50 shadow-lg" : ""
+        isDragSource ? "z-50 opacity-50 shadow-lg" : ""
       }`}
     >
       <button
-        {...listeners}
+        ref={handleRef}
         className="flex cursor-grab touch-none items-center px-2 opacity-50 hover:opacity-100 active:cursor-grabbing"
         type="button"
       >
@@ -109,12 +84,6 @@ function AttributesReorder({
   includedAttributes,
   setIncludedAttributes,
 }: AttributesReorderProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -160,67 +129,66 @@ function AttributesReorder({
     (attribute) => !includedIds.has(attribute.id),
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over == null || active.id === over.id) {
+  const handleDragEnd: DragEndEvent = (event) => {
+    if (event.canceled) {
       return;
     }
 
-    const oldIndex = includedAttributes.findIndex(
-      (attribute) => attribute.id === active.id,
-    );
-    const newIndex = includedAttributes.findIndex(
-      (attribute) => attribute.id === over.id,
-    );
+    const { source } = event.operation;
 
-    if (oldIndex === -1 || newIndex === -1) {
-      return;
+    if (source != null && isSortable(source)) {
+      const initialIndex = source.sortable.initialIndex;
+      const index = source.index;
+
+      if (initialIndex !== index) {
+        setIncludedAttributes((previous) => {
+          const newOrder = [...previous];
+          const [removed] = newOrder.splice(initialIndex, 1);
+          newOrder.splice(index, 0, removed);
+          return newOrder.map((attribute, index_) => ({
+            ...attribute,
+            order: index_,
+          }));
+        });
+      }
     }
-
-    const newOrder = arrayMove(includedAttributes, oldIndex, newIndex).map(
-      (attribute, index) => ({ ...attribute, order: index }),
-    );
-    setIncludedAttributes(newOrder);
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      modifiers={[restrictToVerticalAxis]}
+    <DragDropProvider
+      modifiers={[RestrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-4">
-        {isMounted ? ( // Only render SortableContext when mounted
-          <SortableContext items={includedAttributes}>
-            <div className="space-y-2">
-              <h2 className="text-sm">Wybrane atrybuty</h2>
-              {includedAttributes.map((attribute) => {
-                const fullAttribute = attributes.find(
-                  (a) => a.id === attribute.id,
-                );
-                if (fullAttribute == null) {
-                  return null;
-                }
-                return (
-                  <AttributeItem
-                    key={attribute.id}
-                    id={attribute.id}
-                    attribute={fullAttribute}
-                    isIncluded={true}
-                    isRequired={attribute.isRequired}
-                    handleIncludeToggle={handleIncludeToggle}
-                    handleRequiredToggle={handleRequiredToggle}
-                  />
-                );
-              })}
-              {includedAttributes.length === 0 && (
-                <p className="text-center text-sm text-gray-800">
-                  Nie dodano jeszcze żadnych atrybutów
-                </p>
-              )}
-            </div>
-          </SortableContext>
+        {isMounted ? (
+          <div className="space-y-2">
+            <h2 className="text-sm">Wybrane atrybuty</h2>
+            {includedAttributes.map((attribute, index) => {
+              const fullAttribute = attributes.find(
+                (a) => a.id === attribute.id,
+              );
+              if (fullAttribute == null) {
+                return null;
+              }
+              return (
+                <AttributeItem
+                  key={attribute.id}
+                  id={attribute.id}
+                  index={index}
+                  attribute={fullAttribute}
+                  isIncluded={true}
+                  isRequired={attribute.isRequired}
+                  handleIncludeToggle={handleIncludeToggle}
+                  handleRequiredToggle={handleRequiredToggle}
+                />
+              );
+            })}
+            {includedAttributes.length === 0 && (
+              <p className="text-center text-sm text-gray-800">
+                Nie dodano jeszcze żadnych atrybutów
+              </p>
+            )}
+          </div>
         ) : (
           // Server fallback without drag-and-drop features
           <div className="space-y-2">
@@ -256,7 +224,7 @@ function AttributesReorder({
           )}
         </div>
       </div>
-    </DndContext>
+    </DragDropProvider>
   );
 }
 

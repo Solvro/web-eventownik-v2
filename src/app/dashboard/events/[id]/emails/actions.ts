@@ -7,6 +7,15 @@ import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
+import { getSingleEventEmail } from "./data-access";
+
+export async function getSingleEventEmailAction(
+  eventId: string,
+  emailId: string,
+) {
+  return await getSingleEventEmail(eventId, emailId);
+}
+
 export async function createEventEmailTemplate(
   eventId: string,
   emailTemplate: NewEventEmailTemplate,
@@ -75,6 +84,41 @@ export async function updateEventEmail(
     return {
       success: false,
       error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
+
+export async function reorderEmails(eventId: string, orderedIds: number[]) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false, error: "Brak autoryzacji" };
+  }
+
+  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
+  const results = await Promise.all(
+    orderedIds.map(async (id, index) =>
+      fetch(`${API_URL}/events/${eventId}/emails/${id.toString()}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.bearerToken}`,
+        },
+        body: JSON.stringify({ order: index }),
+      }),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderEmails action] Failed to reorder emails for event ${eventId}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
     };
   }
 
