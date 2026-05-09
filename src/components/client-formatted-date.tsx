@@ -20,7 +20,7 @@ export function ClientFormattedDate({
 
   if (formatted === null) {
     return (
-      <span className="bg-muted inline-block h-4 w-32 animate-pulse rounded" />
+      <span className="bg-muted inline-block h-4 w-24 animate-pulse rounded" />
     );
   }
 

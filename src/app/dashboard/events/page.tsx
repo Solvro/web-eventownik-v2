@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -132,7 +133,7 @@ export default async function EventListPage() {
                       <EventInfoBlock>
                         <Calendar1 size={16} />
                         <p className="text-sm">
-                          {format(event.startDate, "dd.MM.yyyy HH:mm")}
+                          <ClientFormattedDate date={event.startDate} />
                         </p>
                       </EventInfoBlock>
                       <EventInfoBlock>
