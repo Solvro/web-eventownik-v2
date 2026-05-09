@@ -26,12 +26,13 @@ export const appearanceDefaults = {
   appearance: {
     color: "#000000",
     backgroundColor: "#FFFFFF",
-    image: {
-      backgroundImage: "",
-      backgroundPosition: "center",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-    },
+    // NOTE: Commented out until email content storage is implemented by the backend
+    // image: {
+    //   backgroundImage: "",
+    //   backgroundPosition: "center",
+    //   backgroundSize: "cover",
+    //   backgroundRepeat: "no-repeat",
+    // },
     border: {
       borderWidth: "0",
       borderStyle: "solid",

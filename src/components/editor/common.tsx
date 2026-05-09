@@ -17,28 +17,21 @@ import {
   ChevronsLeftRight,
   ChevronsUpDown,
   Container,
-  Image,
-  ImageIcon,
-  ImageUpscale,
   Layout,
   Minus,
-  Move,
   PaintBucket,
   Palette,
   PenLine,
   PenTool,
   Pipette,
   Ratio,
-  Repeat,
   SquareDashedTopSolid,
   SquareRoundCorner,
   SquareSquare,
   Type,
 } from "lucide-react";
-import { useRef } from "react";
 import type { CSSProperties } from "react";
 
-import { getBase64FromUrl } from "@/lib/utils";
 import type { LooseAutocomplete } from "@/types/utils";
 
 import { ColorPicker } from "./color-picker";
@@ -182,95 +175,96 @@ export const withAppearance = {
           </FieldLabel>
         ),
       },
-      image: {
-        type: "object",
-        label: "Obraz tła",
-        labelIcon: <Image className={PUCK_ICON_CLASSNAME} />,
-        objectFields: {
-          backgroundImage: {
-            type: "custom",
-            label: "Obraz",
-            render: ({ value, onChange }) => {
-              // eslint-disable-next-line react-hooks/rules-of-hooks
-              const fileInputRef = useRef<HTMLInputElement>(null);
+      // NOTE: Commented out until email content storage is implemented by the backend
+      // image: {
+      //   type: "object",
+      //   label: "Obraz tła",
+      //   labelIcon: <Image className={PUCK_ICON_CLASSNAME} />,
+      //   objectFields: {
+      //     backgroundImage: {
+      //       type: "custom",
+      //       label: "Obraz",
+      //       render: ({ value, onChange }) => {
+      //         // eslint-disable-next-line react-hooks/rules-of-hooks
+      //         const fileInputRef = useRef<HTMLInputElement>(null);
 
-              return (
-                <div className="flex flex-col gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="sr-only"
-                    aria-label="Wybierz obraz"
-                    ref={fileInputRef}
-                    onChangeCapture={async (event) => {
-                      const input = event.target as HTMLInputElement;
-                      const file = input.files?.[0];
-                      if (file != null) {
-                        const newBlobUrl = URL.createObjectURL(file);
-                        const base64 = await getBase64FromUrl(newBlobUrl);
-                        onChange(base64);
-                        URL.revokeObjectURL(newBlobUrl);
-                      }
-                    }}
-                  />
+      //         return (
+      //           <div className="flex flex-col gap-2">
+      //             <input
+      //               type="file"
+      //               accept="image/*"
+      //               className="sr-only"
+      //               aria-label="Wybierz obraz"
+      //               ref={fileInputRef}
+      //               onChangeCapture={async (event) => {
+      //                 const input = event.target as HTMLInputElement;
+      //                 const file = input.files?.[0];
+      //                 if (file != null) {
+      //                   const newBlobUrl = URL.createObjectURL(file);
+      //                   const base64 = await getBase64FromUrl(newBlobUrl);
+      //                   onChange(base64);
+      //                   URL.revokeObjectURL(newBlobUrl);
+      //                 }
+      //               }}
+      //             />
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
-                  >
-                    <ImageIcon className={PUCK_ICON_CLASSNAME} />
-                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
-                  </button>
+      //             <button
+      //               type="button"
+      //               onClick={() => fileInputRef.current?.click()}
+      //               className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
+      //             >
+      //               <ImageIcon className={PUCK_ICON_CLASSNAME} />
+      //               {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+      //             </button>
 
-                  {value ? (
-                    <div className="overflow-hidden rounded-md border border-gray-200">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={value}
-                        alt=""
-                        className="h-32 w-full bg-gray-50 object-contain"
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              );
-            },
-          },
-          backgroundPosition: {
-            type: "select",
-            label: "Pozycja",
-            labelIcon: <Move className={PUCK_ICON_CLASSNAME} />,
-            options: [
-              { label: "Góra", value: "top" },
-              { label: "Dół", value: "bottom" },
-              { label: "Lewo", value: "left" },
-              { label: "Prawo", value: "right" },
-              { label: "Środek", value: "center" },
-            ],
-          },
-          backgroundSize: {
-            type: "select",
-            label: "Dopasowanie",
-            labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
-            options: [
-              { label: "Dopasuj", value: "contain" },
-              { label: "Wypełnij", value: "cover" },
-            ],
-          },
-          backgroundRepeat: {
-            type: "select",
-            label: "Powtarzanie",
-            labelIcon: <Repeat className={PUCK_ICON_CLASSNAME} />,
-            options: [
-              { label: "Brak", value: "no-repeat" },
-              { label: "Powtarzaj", value: "repeat" },
-              { label: "Powtarzaj poziomo", value: "repeat-x" },
-              { label: "Powtarzaj pionowo", value: "repeat-y" },
-            ],
-          },
-        },
-      },
+      //             {value ? (
+      //               <div className="overflow-hidden rounded-md border border-gray-200">
+      //                 {/* eslint-disable-next-line @next/next/no-img-element */}
+      //                 <img
+      //                   src={value}
+      //                   alt=""
+      //                   className="h-32 w-full bg-gray-50 object-contain"
+      //                 />
+      //               </div>
+      //             ) : null}
+      //           </div>
+      //         );
+      //       },
+      //     },
+      //     backgroundPosition: {
+      //       type: "select",
+      //       label: "Pozycja",
+      //       labelIcon: <Move className={PUCK_ICON_CLASSNAME} />,
+      //       options: [
+      //         { label: "Góra", value: "top" },
+      //         { label: "Dół", value: "bottom" },
+      //         { label: "Lewo", value: "left" },
+      //         { label: "Prawo", value: "right" },
+      //         { label: "Środek", value: "center" },
+      //       ],
+      //     },
+      //     backgroundSize: {
+      //       type: "select",
+      //       label: "Dopasowanie",
+      //       labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
+      //       options: [
+      //         { label: "Dopasuj", value: "contain" },
+      //         { label: "Wypełnij", value: "cover" },
+      //       ],
+      //     },
+      //     backgroundRepeat: {
+      //       type: "select",
+      //       label: "Powtarzanie",
+      //       labelIcon: <Repeat className={PUCK_ICON_CLASSNAME} />,
+      //       options: [
+      //         { label: "Brak", value: "no-repeat" },
+      //         { label: "Powtarzaj", value: "repeat" },
+      //         { label: "Powtarzaj poziomo", value: "repeat-x" },
+      //         { label: "Powtarzaj pionowo", value: "repeat-y" },
+      //       ],
+      //     },
+      //   },
+      // },
       border: {
         type: "object",
         label: "Obramowanie",
@@ -319,12 +313,13 @@ export interface AppearanceFields {
   appearance: {
     color: string;
     backgroundColor: string;
-    image: {
-      backgroundImage: string;
-      backgroundPosition: string;
-      backgroundSize: string;
-      backgroundRepeat: string;
-    };
+    // NOTE: Commented out until email content storage is implemented by the backend
+    // image: {
+    //   backgroundImage: string;
+    //   backgroundPosition: string;
+    //   backgroundSize: string;
+    //   backgroundRepeat: string;
+    // };
     border: {
       borderWidth: string;
       borderStyle: string;
@@ -346,10 +341,11 @@ export const getAppearanceStyles = (
 
   return {
     backgroundColor: appearance.backgroundColor,
-    backgroundImage: `url('${appearance.image.backgroundImage}')`,
-    backgroundPosition: appearance.image.backgroundPosition,
-    backgroundSize: appearance.image.backgroundSize,
-    backgroundRepeat: appearance.image.backgroundRepeat,
+    // NOTE: Commented out until email content storage is implemented by the backend
+    // backgroundImage: `url('${appearance.image.backgroundImage}')`,
+    // backgroundPosition: appearance.image.backgroundPosition,
+    // backgroundSize: appearance.image.backgroundSize,
+    // backgroundRepeat: appearance.image.backgroundRepeat,
     color: appearance.color,
     borderRadius: `${appearance.border.borderRadius}px`,
     ...borderStyles,
