@@ -97,12 +97,21 @@ function SendMailForm({
               variant="outline"
               aria-label={t("sendMail")}
               disabled={targetParticipants.length === 0}
+              className={
+                targetParticipants.length === 0
+                  ? "hover:cursor-not-allowed disabled:pointer-events-auto"
+                  : ""
+              }
             >
               <Mail />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>{t("sendMail")}</TooltipContent>
+        <TooltipContent>
+          {targetParticipants.length === 0
+            ? t("noRecipientsTooltip")
+            : t("sendMail")}
+        </TooltipContent>
       </Tooltip>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader className="sr-only">

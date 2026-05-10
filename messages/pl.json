@@ -130,6 +130,7 @@
     "selectTemplate": "Wybierz szablon",
     "successTitle": "Wysłano wiadomości",
     "errorTitle": "Nie udało się wysłać wiadomości!",
+    "noRecipientsTooltip": "Najpierw zaznacz odbiorców wiadomości",
     "sendMail": "Wyślij maila",
     "step1": "Krok 1",
     "selectTemplateDescription": "Wybierz szablon maila",

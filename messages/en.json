@@ -130,6 +130,7 @@
     "selectTemplate": "Select a template",
     "successTitle": "Messages sent",
     "errorTitle": "Failed to send messages!",
+    "noRecipientsTooltip": "Select message recipients first",
     "sendMail": "Send email",
     "step1": "Step 1",
     "selectTemplateDescription": "Select an email template",
