@@ -46,7 +46,7 @@ export function AddToCalendarButton({ event }: { event: Event }) {
                 </div>
                 <div className="text-muted-foreground text-sm">
                   {format(event.startDate, "HH.mm")} -{" "}
-                  {format(event.startDate, "HH:mm")}
+                  {format(event.endDate, "HH:mm")}
                 </div>
               </div>
             </div>
