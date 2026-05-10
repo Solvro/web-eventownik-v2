@@ -127,7 +127,7 @@ export function EditParticipantButton({
     <div className="flex justify-end">
       <Button
         variant="default"
-        className="bg-background p-3"
+        className="bg-background text-foreground p-3 hover:bg-(--event-primary-color) hover:text-(--event-primary-foreground-color)"
         type="button"
         aria-label={"edit"}
         onClick={enterEditMode}
