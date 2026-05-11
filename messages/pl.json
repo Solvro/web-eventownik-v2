@@ -127,6 +127,14 @@
     "tryAgain": "Spróbuj ponownie",
     "exportToExcel": "Eksportuj do Excela"
   },
+  "Email": {
+    "chooseTemplateType": "Wybierz typ szablonu",
+    "simple": "Prosty",
+    "simpleDescription": "Klasyczny edytor WYSIWYG",
+    "blockBased": "Blokowy",
+    "blockBasedDescription": "Złożone układy",
+    "disclaimer": "Po utworzeniu szablonu danego typu, nie będzie możliwości jego zmiany"
+  },
   "EmailHistoryTable": {
     "searchPlaceholder": "Szukaj w historii",
     "openFilterMenu": "Otwórz menu filtrów",
