@@ -11,7 +11,8 @@ import type { MetadataRoute } from "next";
 import { API_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
-const BASE_URL = "https://eventownik.solvro.pl";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://eventownik.solvro.pl";
 
 function getEventsUrl(year: number, month: number) {
   const targetDate = set(new Date(), { year, month });
@@ -85,6 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const eventRoutes: MetadataRoute.Sitemap = events.map((event) => ({
     url: `${BASE_URL}/${event.slug}`,
+    // event.startDate bo event.updatedAt jest undefined, jakis backend skill issue
     lastModified: new Date(event.startDate),
     changeFrequency: "weekly" as const,
     priority: 0.8,
