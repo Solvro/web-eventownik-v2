@@ -33,7 +33,7 @@ const team: TeamMember[] = [
     roles: ["Project Manager"],
     image:
       "https://cms.solvro.pl/assets/843908e0-50c3-4618-ad9e-cdba9cd288af?key=member",
-    url: "https://github.com/Vichka005",
+    url: "https://github.com/ViktoriyaKazak",
   },
   {
     name: "Maciej Talarczyk",
@@ -80,6 +80,27 @@ const team: TeamMember[] = [
     image:
       "https://cms.solvro.pl/assets/fd7080a2-801d-40a9-9c65-f7fdfcfcd711?key=member",
     url: "https://github.com/ibtyog",
+  },
+  {
+    name: "Hanna Bielecka",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/8f024268-4fd2-4e0c-811a-1ae8d83821f9?key=member",
+    url: "https://github.com/293421-spec",
+  },
+  {
+    name: "Iga Posturzyńska",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/9bd527fd-18a3-4562-8651-e96376462089?key=member",
+    url: "https://github.com/ixgvah",
+  },
+  {
+    name: "Magdalena Charandziuk",
+    roles: ["UI/UX Designer"],
+    image:
+      "https://cms.solvro.pl/assets/226b3771-5780-44ac-a0a3-437601aa62db?key=member",
+    url: "https://github.com/mddchh",
   },
   {
     name: "Wincenty Wensker",
@@ -190,13 +211,40 @@ const team: TeamMember[] = [
     image: "https://avatars.githubusercontent.com/u/81564272?v=4",
     url: "https://github.com/Kuzdra24",
   },
-
+  {
+    name: "Stanisław Synowiec",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/ee3933b2-eccb-4585-bcc3-cd2f41708069?key=member",
+    url: "https://github.com/ssynowiec",
+  },
+  {
+    name: "Nadia Gill",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/9c172769-611c-45e3-bc2e-08fb1c32d771?key=member",
+    url: "https://github.com/robuspospolitus",
+  },
+  {
+    name: "Marvin Ruciński",
+    roles: ["QA"],
+    image:
+      "https://cms.solvro.pl/assets/e2782462-f9b7-41a1-b10b-3c2eb6439e54?key=member",
+    url: "https://github.com/MarvinRucinski",
+  },
   {
     name: "Marcin Blicharski",
     roles: ["UI/UX Designer"],
     image:
       "https://cms.solvro.pl/assets/a1feda99-2541-40d9-9689-36ea06cf99c7?key=member",
     url: "https://github.com/MBlich",
+  },
+  {
+    name: "Hanna Kuczyńska",
+    roles: ["QA"],
+    image:
+      "https://cms.solvro.pl/assets/24f9abf8-9769-486e-b4f3-f73f0fea2182?key=member",
+    url: "https://github.com/hankucz",
   },
   {
     name: "Karol Koenig",
@@ -216,6 +264,13 @@ const team: TeamMember[] = [
     roles: ["Devops Engineer"],
     image: "/assets/landing/team/jeremiasz-lizak.jpg",
     url: "https://github.com/JLizak",
+  },
+  {
+    name: "Paweł Łoćwin",
+    roles: ["Devops Engineer"],
+    image:
+      "https://cms.solvro.pl/assets/11379c05-405e-4256-af95-6c41288c17c7?key=member",
+    url: "https://github.com/baguetedev",
   },
   {
     name: "Daria Totoszko",

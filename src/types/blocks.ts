@@ -1,3 +1,6 @@
+import type { FormAttribute } from "./attributes";
+
+// TODO(refactor): Make this interface extend an attribute type from `./attributes.ts`
 export interface Block {
   id: number;
   name: string;
@@ -5,11 +8,14 @@ export interface Block {
   capacity: number | null;
   parentId: number | null;
   attributeId: number;
+  attribute: FormAttribute;
   order: number;
   createdAt: string;
   updatedAt: string;
   isRootBlock: boolean;
   children: Block[];
+  isMultiple: boolean;
+  maxSelections: number | null;
   meta: {
     participants: BlockParticipant[];
     participantsInBlockCount: number | undefined;
