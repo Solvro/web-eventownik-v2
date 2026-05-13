@@ -108,7 +108,7 @@ function MessageContentForm({
         ...newEmailTemplate,
         ...values,
         // NOTE: Simple emails have no schema
-        schema: "null",
+        schema: null,
       },
     });
 

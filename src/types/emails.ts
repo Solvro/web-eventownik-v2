@@ -47,7 +47,7 @@ export interface SingleEventEmail extends Omit<EventEmail, "meta"> {
 export interface UpdateEventEmailPayload {
   name: string;
   content: string;
-  schema: string;
+  schema: string | null;
   trigger: string;
   triggerValue: string | null;
   triggerValue2?: string | null;

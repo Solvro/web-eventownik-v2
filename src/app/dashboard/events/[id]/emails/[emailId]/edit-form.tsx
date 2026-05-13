@@ -243,7 +243,7 @@ function EventEmailEditForm({
           ? null
           : values.triggerValue,
       // NOTE: Simple emails have no schema
-      schema: "null",
+      schema: null,
     };
     const result = await updateEventEmail({
       eventId,

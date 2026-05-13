@@ -43,7 +43,7 @@ export default async function EventMailEditPage({
     notFound();
   }
 
-  const isBlockBased = emailToEdit.schema !== "null";
+  const isBlockBased = emailToEdit.schema !== null;
 
   const [attributes, forms] = await Promise.all([
     getEventAttributes(id),
