@@ -7,7 +7,6 @@ import { StarterKit } from "@tiptap/starter-kit";
 import {
   ChevronsLeftRight,
   ChevronsUpDown,
-  ExternalLink,
   FileSpreadsheet,
   ImageIcon,
   ImageUpscale,
@@ -895,28 +894,18 @@ export const getPuckConfig = ({
             label: "Odnośnik",
             labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
           },
-          target: {
-            type: "radio",
-            options: [
-              { label: "Nowa karta", value: "_blank" },
-              { label: "Aktualna karta", value: "_self" },
-            ],
-            label: "Zachowanie",
-            labelIcon: <ExternalLink className={PUCK_ICON_CLASSNAME} />,
-          },
           ...withAppearance,
         },
         defaultProps: {
           title: "Kliknij tutaj",
           href: "",
-          target: "_blank",
           appearance: {
             ...appearanceDefaults.appearance,
             backgroundColor: "#3571fd",
             color: "#fbfbfb",
           },
         },
-        render({ title, href, target, appearance }) {
+        render({ title, href, appearance }) {
           return (
             <table width="100%" style={tableStyles}>
               <tbody>
@@ -924,7 +913,6 @@ export const getPuckConfig = ({
                   <td align="center">
                     <a
                       href={href}
-                      target={target}
                       rel="noreferrer"
                       style={{
                         width: "fit-content",

@@ -84,7 +84,6 @@ export interface RichTextFields extends AppearanceFields {
 export interface LinkFields extends AppearanceFields {
   title: string;
   href: string;
-  target: "_blank" | "_self";
 }
 
 export interface PuckComponents {
