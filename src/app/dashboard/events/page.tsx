@@ -1,5 +1,6 @@
 import {
   AlertCircle,
+  AlertCircleIcon,
   Calendar1,
   CalendarDays,
   CircleHelpIcon,
@@ -105,6 +106,18 @@ export default async function EventListPage() {
             ) : null}
           </div>
         </div>
+        <Alert>
+          <AlertCircleIcon />
+          <AlertTitle className="line-clamp-0">
+            Ważna informacja dla organizatorów
+          </AlertTitle>
+          <AlertDescription className="text-foreground inline">
+            Eventownik jest obecnie dostępny w wersji pilotażowej. Przed
+            rozpoczęciem zapisów na wydarzenie prosimy o poinformowanie naszego
+            zespołu o tym fakcie drogą mailową na adres:{" "}
+            <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl.</a>
+          </AlertDescription>
+        </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
             events.map((event) => (
