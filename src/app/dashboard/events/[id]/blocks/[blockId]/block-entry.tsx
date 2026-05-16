@@ -31,8 +31,8 @@ function BlockEntry({
       : Math.round(
           (Number(valueOrZero(block.meta.participantsInBlockCount)) /
             block.capacity) *
-            10_000,
-        ) / 100;
+            100,
+        );
 
   return (
     <div
