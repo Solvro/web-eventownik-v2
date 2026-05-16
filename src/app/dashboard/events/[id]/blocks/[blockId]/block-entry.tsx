@@ -1,8 +1,12 @@
+import { useAtom } from "jotai";
 import { Users } from "lucide-react";
 
+import { BlockParticipantsList } from "@/app/dashboard/events/[id]/blocks/[blockId]/block-participants-list";
+import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Progress } from "@/components/ui/progress";
 import type { Block } from "@/types/blocks";
 
-import { BlockParticipantsPopup } from "./block-participants-popup";
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
 
@@ -19,10 +23,19 @@ function BlockEntry({
   eventId: string;
   attributeId: string;
 }) {
+  const [areParticipantsVisible] = useAtom(participantsVisibilityAtom);
+
+  const percentOccupancy =
+    block.capacity == null
+      ? 0
+      : (Number(valueOrZero(block.meta.participantsInBlockCount)) /
+          block.capacity) *
+        100;
+
   return (
     <div
       key={block.id}
-      className="flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
+      className="flex flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
       <div className="flex justify-end gap-2">
         <EditBlockEntry
@@ -31,7 +44,6 @@ function BlockEntry({
           attributeId={attributeId}
           parentId={block.id.toString()}
         />
-        <BlockParticipantsPopup participants={block.meta.participants} />
         <DeleteBlockPopup
           eventId={eventId}
           blockId={block.id.toString()}
@@ -40,13 +52,22 @@ function BlockEntry({
         />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4 text-center">
-        <p className="text-lg font-bold">{block.name}</p>
+        <p className="text-2xl font-bold">{block.name}</p>
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
             ? valueOrZero(block.meta.participantsInBlockCount)
             : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
         </div>
+        <Field className="w-full max-w-sm">
+          <Progress value={percentOccupancy} id="progress-upload" />
+          <FieldLabel htmlFor="progress-upload">
+            <span className="ml-auto">{percentOccupancy}%</span>
+          </FieldLabel>
+        </Field>
+        {areParticipantsVisible ? (
+          <BlockParticipantsList participants={block.meta.participants} />
+        ) : null}
       </div>
     </div>
   );
