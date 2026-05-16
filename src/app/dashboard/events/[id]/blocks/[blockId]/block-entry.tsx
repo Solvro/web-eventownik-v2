@@ -28,9 +28,11 @@ function BlockEntry({
   const percentOccupancy =
     block.capacity == null
       ? 0
-      : (Number(valueOrZero(block.meta.participantsInBlockCount)) /
-          block.capacity) *
-        100;
+      : Math.round(
+          (Number(valueOrZero(block.meta.participantsInBlockCount)) /
+            block.capacity) *
+            10_000,
+        ) / 100;
 
   return (
     <div
