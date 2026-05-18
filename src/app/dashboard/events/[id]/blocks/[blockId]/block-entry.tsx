@@ -52,8 +52,8 @@ function BlockEntry({
           attributeId={attributeId}
         />
       </div>
-      <div className="flex grow flex-col items-center justify-center gap-4 text-center">
-        <p className="text-2xl font-bold">{block.name}</p>
+      <div className="flex grow flex-col items-center justify-center gap-4">
+        <p className="text-center text-2xl font-bold">{block.name}</p>
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
