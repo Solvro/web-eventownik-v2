@@ -24,7 +24,6 @@ function BlockEntry({
   attributeId: string;
 }) {
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
-
   const percentOccupancy =
     block.capacity == null
       ? 0
@@ -62,7 +61,11 @@ function BlockEntry({
             : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
         </div>
         <Field className="w-full max-w-sm">
-          <Progress value={percentOccupancy} id="progress-upload" />
+          <Progress
+            value={percentOccupancy}
+            id="progress-upload"
+            className={block.capacity === null ? "bg-muted" : ""}
+          />
           <FieldLabel htmlFor="progress-upload">
             <span className="ml-auto">{percentOccupancy}%</span>
           </FieldLabel>
