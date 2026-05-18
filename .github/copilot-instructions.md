@@ -114,13 +114,13 @@ await page.locator('[data-testid="submit"]').click();
 ## Essential Commands
 
 ```bash
-npm run dev           # Start dev server (Turbopack)
-npm run build         # Production build
-npm run test          # Vitest unit tests
-npm run e2e           # Playwright E2E tests
-npm run lint          # ESLint
-npm run typecheck     # TypeScript check
-npm run format        # Prettier format
+pnpm run dev           # Start dev server (Turbopack)
+pnpm run build         # Production build
+pnpm run test          # Vitest unit tests
+pnpm run e2e           # Playwright E2E tests
+pnpm run lint          # ESLint
+pnpm run typecheck     # TypeScript check
+pnpm run format        # Prettier format
 ```
 
 Always run `lint`, `typecheck`, and `format:check` before committing.
