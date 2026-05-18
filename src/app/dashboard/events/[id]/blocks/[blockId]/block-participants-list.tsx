@@ -1,7 +1,5 @@
-import { Expand } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { BlockParticipant } from "@/types/blocks";
 
@@ -27,9 +25,6 @@ export function BlockParticipantsList({
           </li>
         ))}
       </ul>
-      <Button className="absolute right-0 bottom-0" variant="ghost" size="icon">
-        <Expand />
-      </Button>
     </ScrollArea>
   );
 }
