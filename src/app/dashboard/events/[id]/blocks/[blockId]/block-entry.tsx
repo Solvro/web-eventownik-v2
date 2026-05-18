@@ -67,7 +67,11 @@ function BlockEntry({
             className={block.capacity === null ? "bg-muted" : ""}
           />
           <FieldLabel htmlFor="progress-upload">
-            <span className="ml-auto">{percentOccupancy}%</span>
+            <span className="ml-auto">
+              {block.capacity === null
+                ? "Bez limitu"
+                : `${percentOccupancy.toString()}%`}
+            </span>
           </FieldLabel>
         </Field>
         {areParticipantsVisible ? (
