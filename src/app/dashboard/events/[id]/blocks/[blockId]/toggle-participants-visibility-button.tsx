@@ -12,7 +12,7 @@ export function ToggleParticipantsVisibilityButton() {
   );
   return (
     <Button
-      className="ml-auto flex"
+      className="ml-auto flex w-full md:w-auto"
       variant="ghost"
       onClick={() => {
         setAreParticipantsVisible((previous) => !previous);
