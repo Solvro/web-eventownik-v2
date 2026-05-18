@@ -28,6 +28,8 @@
     }
   },
   "dependencies": {
+    "@dnd-kit/abstract": "^0.4.0",
+    "@dnd-kit/dom": "^0.4.0",
     "@dnd-kit/helpers": "^0.3.2",
     "@dnd-kit/react": "^0.3.2",
     "@hcaptcha/react-hcaptcha": "^1.14.0",
@@ -38,6 +40,7 @@
     "@opentelemetry/context-zone-peer-dep": "^2.5.1",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.212.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.212.0",
+    "@opentelemetry/instrumentation": "^0.218.0",
     "@opentelemetry/instrumentation-document-load": "^0.56.0",
     "@opentelemetry/instrumentation-fetch": "^0.212.0",
     "@opentelemetry/instrumentation-user-interaction": "^0.55.0",
@@ -87,6 +90,7 @@
     "cmdk": "^1.1.1",
     "country-flag-icons": "^1.5.20",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.38.0",
     "ics": "^3.8.1",
     "jose": "^6.0.10",
     "jotai": "^2.12.2",
