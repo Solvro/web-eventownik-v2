@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 
 import { BlockParticipantsList } from "@/app/dashboard/events/[id]/blocks/[blockId]/block-participants-list";
