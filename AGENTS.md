@@ -16,7 +16,7 @@ Eventownik is an event management platform designed to support event organizatio
 
 ## General Guidelines
 
-- Always use npm for package management
+- Always use pnpm for package management
 - We use GitHub Issues for issue tracking
 - When starting a new feature, create a branch from `main` with the format `<type>[scope]/<description>`
 - PR titles should follow [Conventional Commits](https://www.conventionalcommits.org/) format
@@ -27,27 +27,27 @@ Eventownik is an event management platform designed to support event organizatio
 ### Development
 
 ```bash
-npm run dev       # Start development server with Turbopack
-npm run build     # Build for production
-npm run start     # Start production server
+pnpm run dev       # Start development server with Turbopack
+pnpm run build     # Build for production
+pnpm run start     # Start production server
 ```
 
 ### Testing
 
 ```bash
-npm run test      # Run Vitest unit tests
-npm run test:ui   # Run Vitest with UI
-npm run e2e       # Run Playwright E2E tests
-npm run e2e:ui    # Run Playwright with UI
+pnpm run test      # Run Vitest unit tests
+pnpm run test:ui   # Run Vitest with UI
+pnpm run e2e       # Run Playwright E2E tests
+pnpm run e2e:ui    # Run Playwright with UI
 ```
 
 ### Code Quality
 
 ```bash
-npm run lint          # Run ESLint
-npm run typecheck     # Run TypeScript type checking
-npm run format        # Format code with Prettier
-npm run format:check  # Check code formatting
+pnpm run lint          # Run ESLint
+pnpm run typecheck     # Run TypeScript type checking
+pnpm run format        # Format code with Prettier
+pnpm run format:check  # Check code formatting
 ```
 
 Always run `lint`, `typecheck`, and `format:check` before committing.

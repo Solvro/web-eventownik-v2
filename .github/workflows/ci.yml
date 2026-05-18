@@ -14,25 +14,30 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: "true"
+
       - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci --force
+        run: pnpm install
 
       - name: Check commit name
         if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        run: pnpm commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
       - name: Format check
-        run: npm run format:check
+        run: pnpm run format:check
         if: always()
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
         env:
           NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
@@ -46,5 +51,5 @@ jobs:
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
           NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
-        run: npm run build
+        run: pnpm run build
         if: always()
