@@ -23,7 +23,7 @@ function BlockEntry({
   eventId: string;
   attributeId: string;
 }) {
-  const [areParticipantsVisible] = useAtom(participantsVisibilityAtom);
+  const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
 
   const percentOccupancy =
     block.capacity == null
