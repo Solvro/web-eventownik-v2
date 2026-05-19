@@ -238,6 +238,10 @@ export function AttributeValueInput({
     }
 
     case "block": {
+      // TODO remove after debug
+      // eslint-disable-next-line no-console
+      console.log(attribute);
+
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
       return (
