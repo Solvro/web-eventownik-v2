@@ -233,6 +233,10 @@ export function AttributeValueInput({
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
 
+      if (rootBlock?.isMultiple ?? false) {
+        return renderMultiOptions();
+      }
+
       const selectedBlock = rootBlock?.children.find(
         (block) => block.id.toString() === value,
       );
