@@ -3,6 +3,7 @@
 import { eachMonthOfInterval, getMonth, getYear } from "date-fns";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 import { motion } from "motion/react";
+import { useLocale } from "next-intl";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,7 @@ export function Timeline({
   setFilters: ({ month, year }: { month: number; year: number }) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
   const [width, setWidth] = useState(0);
 
   // Get the width of the timeline
@@ -159,7 +161,7 @@ export function Timeline({
           {monthYears.map(({ year, month }, index) => (
             <TimelineStep
               key={`${year.toString()}-${month.toString()}`}
-              month={new Date(year, month, 1).toLocaleString("pl", {
+              month={new Date(year, month, 1).toLocaleString(locale, {
                 month: "long",
               })}
               isFirst={index === 0}

@@ -1,23 +1,26 @@
 import { ArrowRight, Heart } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { buttonVariants } from "../../../components/ui/button";
-
 export function Footer() {
+  const t = useTranslations("Homepage");
   return (
     <footer className="z-10 flex w-full flex-col items-center bg-white dark:bg-[#101011]">
       <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 pt-16 pb-8 sm:gap-32 sm:py-16 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
-          <p>Zostań na bieżąco z Eventownikiem Solvro</p>
+          <p>{t("stayUpdatedWithEventownik")}</p>
           <Link
             href="/newsletter-eventownik"
             className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"
           >
-            <span className="text-[#6583C8]">i zapisz się do newslettera.</span>
+            <span className="text-[#6583C8]">
+              {t("andSubscribeToNewsletter")}
+            </span>
             <ArrowRight size={32} />
           </Link>
           {/*
@@ -37,29 +40,29 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Regulamin
+              {t("termsOfService")}
             </a>
             <a href="mailto:eventownik@pwr.edu.pl?subject=Zgłoszenie%20błędu">
-              Zgłoś błąd
+              {t("reportBug")}
             </a>
           </div>
           <div className="flex w-full flex-col items-center justify-between gap-8 sm:flex-row">
             <a
-              title="Koło Naukowe Solvro"
+              title={t("knsolvro")}
               href="https://solvro.pwr.edu.pl/"
               target="_blank"
               rel="noopener noreferrer"
             >
               <Image
                 src="/assets/logo/solvro_black.png"
-                alt="Logo Koła Naukowego Solvro"
+                alt={t("solvroLogoAlt")}
                 className="block dark:hidden"
                 width={200}
                 height={200}
               />
               <Image
                 src="/assets/logo/solvro_white.png"
-                alt="Logo Koła Naukowego Solvro"
+                alt={t("solvroLogoAlt")}
                 className="hidden dark:block"
                 width={200}
                 height={200}
@@ -67,7 +70,7 @@ export function Footer() {
             </a>
             <div className="flex flex-row gap-6">
               <a
-                title="Repozytorium Eventownika na Githubie"
+                title={t("eventownikGithubRepo")}
                 href="https://github.com/Solvro/web-eventownik-v2"
                 target="_blank"
                 className={cn(
@@ -79,7 +82,7 @@ export function Footer() {
                 <FaGithub />
               </a>
               <a
-                title="Profil Koła Naukowego Solvro na Instagramie"
+                title={t("solvroInstagram")}
                 href="https://www.instagram.com/knsolvro/"
                 target="_blank"
                 className={cn(
@@ -91,7 +94,7 @@ export function Footer() {
                 <FaInstagram />
               </a>
               <a
-                title="Profil Koła Naukowego Solvro na Facebooku"
+                title={t("solvroFacebook")}
                 href="https://www.facebook.com/knsolvro"
                 target="_blank"
                 className={cn(
@@ -103,7 +106,7 @@ export function Footer() {
                 <FaFacebook />
               </a>
               <a
-                title="Profil Koła Naukowego Solvro na LinkedIn"
+                title={t("solvroLinkedIn")}
                 href="https://www.linkedin.com/company/knsolvro/"
                 target="_blank"
                 className={cn(
@@ -125,14 +128,14 @@ export function Footer() {
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
                   src="/logo_outline_light.png"
-                  alt="Eventownik logo"
+                  alt={t("eventownikLogo")}
                   width="1500"
                   height="1000"
                   className="block dark:hidden"
                 />
                 <Image
                   src="/logo_outline_dark.png"
-                  alt="Eventownik logo"
+                  alt={t("eventownikLogo")}
                   width="1500"
                   height="1000"
                   className="hidden dark:block"

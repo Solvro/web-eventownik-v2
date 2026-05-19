@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -12,7 +13,9 @@ import { Button } from "@/components/ui/button";
 import { AppLogo } from "../app-logo";
 
 export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
+  const t = useTranslations("Homepage");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <div className="flex w-full flex-col items-center gap-4">
       <header className="container flex w-full flex-row items-center justify-between gap-4 lg:hidden">
@@ -61,7 +64,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                     setIsOpen(false);
                   }}
                 >
-                  Wydarzenia
+                  {t("events")}
                 </Link>
                 <Link
                   href="#functionalities"
@@ -69,7 +72,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                     setIsOpen(false);
                   }}
                 >
-                  Funkcjonalności
+                  {t("features")}
                 </Link>
                 <Link
                   href="#faq"
@@ -85,7 +88,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                     setIsOpen(false);
                   }}
                 >
-                  Zespół
+                  {t("team")}
                 </Link>
               </div>
             </div>
