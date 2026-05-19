@@ -31,6 +31,42 @@ export function AttributeValueInput({
   onChange,
   idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
+  function renderMultiOptions() {
+    const selected = value === "" ? [] : value.split(",");
+
+    return (
+      <div className="flex flex-col gap-1">
+        {attribute.options?.map((option) => {
+          const optionValue =
+            typeof option === "string" ? option : option.value;
+          const optionLabel =
+            typeof option === "string" ? option : option.label;
+          return (
+            <div key={optionValue} className="flex items-center gap-1.5">
+              <Checkbox
+                id={`${idPrefix}-${optionValue}`}
+                checked={selected.includes(optionValue)}
+                onCheckedChange={(checked) => {
+                  const next =
+                    checked === true
+                      ? [...selected, optionValue]
+                      : selected.filter((item) => item !== optionValue);
+                  onChange(next.join(","));
+                }}
+              />
+              <Label
+                htmlFor={`${idPrefix}-${optionValue}`}
+                className="text-sm font-normal"
+              >
+                {optionLabel}
+              </Label>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   switch (attribute.type) {
     case "text": {
       return (
@@ -160,6 +196,10 @@ export function AttributeValueInput({
     }
 
     case "select": {
+      if (attribute.isMultiple) {
+        return renderMultiOptions();
+      }
+
       return (
         <Select
           value={value}
@@ -186,38 +226,7 @@ export function AttributeValueInput({
     }
 
     case "multiselect": {
-      const selected = value === "" ? [] : value.split(",");
-      return (
-        <div className="flex flex-col gap-1">
-          {attribute.options?.map((option) => {
-            const optionValue =
-              typeof option === "string" ? option : option.value;
-            const optionLabel =
-              typeof option === "string" ? option : option.label;
-            return (
-              <div key={optionValue} className="flex items-center gap-1.5">
-                <Checkbox
-                  id={`${idPrefix}-${optionValue}`}
-                  checked={selected.includes(optionValue)}
-                  onCheckedChange={(checked) => {
-                    const next =
-                      checked === true
-                        ? [...selected, optionValue]
-                        : selected.filter((v) => v !== optionValue);
-                    onChange(next.join(","));
-                  }}
-                />
-                <Label
-                  htmlFor={`${idPrefix}-${optionValue}`}
-                  className="text-sm font-normal"
-                >
-                  {optionLabel}
-                </Label>
-              </div>
-            );
-          })}
-        </div>
-      );
+      return renderMultiOptions();
     }
 
     case "block": {
