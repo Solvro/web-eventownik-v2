@@ -32,10 +32,6 @@ export function AttributeValueInput({
   idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
   function renderMultiOptions() {
-    // TODO remove after debug
-    // eslint-disable-next-line no-console
-    console.log(attribute);
-
     const selected = value === "" ? [] : value.split(",");
 
     return (
@@ -200,10 +196,6 @@ export function AttributeValueInput({
     }
 
     case "select": {
-      // TODO remove after debug
-      // eslint-disable-next-line no-console
-      console.log(attribute);
-
       if (attribute.isMultiple) {
         return renderMultiOptions();
       }
@@ -238,17 +230,16 @@ export function AttributeValueInput({
     }
 
     case "block": {
-      // TODO remove after debug
-      // eslint-disable-next-line no-console
-      console.log(attribute);
-      // eslint-disable-next-line no-console
-      console.log(blocks);
-
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
 
+      const selectedBlock = rootBlock?.children.find(
+        (block) => block.id.toString() === value,
+      );
+
       // eslint-disable-next-line no-console
-      console.log(rootBlock?.children.find((b) => b.id === Number(value)));
+      console.log("root block children:", rootBlock?.children);
+
       return (
         <Select
           value={value}
@@ -257,10 +248,7 @@ export function AttributeValueInput({
           }}
         >
           <SelectTrigger>
-            <SelectValue>
-              {rootBlock?.children.find((b) => b.id === Number(value))?.name ??
-                value}
-            </SelectValue>
+            <SelectValue>{selectedBlock?.name ?? "Brak"}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value=" ">Brak</SelectItem>
