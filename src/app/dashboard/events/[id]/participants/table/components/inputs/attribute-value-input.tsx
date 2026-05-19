@@ -237,9 +237,6 @@ export function AttributeValueInput({
         (block) => block.id.toString() === value,
       );
 
-      // eslint-disable-next-line no-console
-      console.log("root block children:", rootBlock?.children);
-
       return (
         <Select
           value={value}
