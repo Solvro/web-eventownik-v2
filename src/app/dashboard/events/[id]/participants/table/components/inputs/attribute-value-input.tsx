@@ -241,9 +241,14 @@ export function AttributeValueInput({
       // TODO remove after debug
       // eslint-disable-next-line no-console
       console.log(attribute);
+      // eslint-disable-next-line no-console
+      console.log(blocks);
 
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
+
+      // eslint-disable-next-line no-console
+      console.log(rootBlock?.children.find((b) => b.id === Number(value)));
       return (
         <Select
           value={value}
