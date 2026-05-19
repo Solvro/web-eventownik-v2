@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Attribute } from "@/types/attributes";
+import type { Attribute, AttributeOption } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 
 interface AttributeValueInputProps {
@@ -31,16 +31,31 @@ export function AttributeValueInput({
   onChange,
   idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
-  function renderMultiOptions(options: Attribute["options"]) {
+  type MultiOption = AttributeOption | Block;
+
+  function resolveMultiOption(option: MultiOption): {
+    value: string;
+    label: string;
+  } {
+    if (typeof option === "string") {
+      return { value: option, label: option };
+    }
+
+    if ("id" in option) {
+      return { value: option.id.toString(), label: option.name };
+    }
+
+    return { value: option.value, label: option.label };
+  }
+
+  function renderMultiOptions(options: MultiOption[] | undefined | null) {
     const selected = value === "" ? [] : value.split(",");
 
     return (
       <div className="flex flex-col gap-1">
         {options?.map((option) => {
-          const optionValue =
-            typeof option === "string" ? option : option.value;
-          const optionLabel =
-            typeof option === "string" ? option : option.label;
+          const { value: optionValue, label: optionLabel } =
+            resolveMultiOption(option);
           return (
             <div key={optionValue} className="flex items-center gap-1.5">
               <Checkbox
@@ -233,12 +248,9 @@ export function AttributeValueInput({
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
 
-      // eslint-disable-next-line no-console
-      console.log("root block:", rootBlock);
-
-      // if (rootBlock?.attribute.isMultiple ?? false) {
-      //   return renderMultiOptions(rootBlock?.attribute.options);
-      // }
+      if (rootBlock?.attribute.isMultiple ?? false) {
+        return renderMultiOptions(rootBlock?.children);
+      }
 
       const selectedBlock = rootBlock?.children.find(
         (block) => block.id.toString() === value,
