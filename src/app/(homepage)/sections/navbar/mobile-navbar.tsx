@@ -26,7 +26,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
         <Button
           variant="outline"
           className="bg-background aspect-square h-full rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141] [&_svg]:size-8"
-          title="Otwórz menu"
+          title={t("openMenu")}
           onClick={() => {
             setIsOpen(!isOpen);
           }}
@@ -49,7 +49,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 <Button
                   variant="ghost"
                   className="p-0 [&_svg]:size-8"
-                  title="Otwórz menu"
+                  title={t("closeMenu")}
                   onClick={() => {
                     setIsOpen(!isOpen);
                   }}
