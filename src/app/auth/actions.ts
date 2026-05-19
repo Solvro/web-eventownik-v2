@@ -28,15 +28,15 @@ export async function register(
       token: values.token,
     }),
   }).then(async (response) => {
-    if (response.status === 200) {
+    if (response.status === 201) {
       return response.json() as Promise<AuthSuccessResponse>;
     }
     console.error("Error when registering", response);
     return response.json() as Promise<AuthErrorResponse>;
   });
-  if ("token" in data) {
+  if ("access_token" in data) {
     try {
-      await createSession({ bearerToken: data.token });
+      await createSession({ bearerToken: data.access_token });
     } catch (error) {
       console.error("Error when creating session", error);
       return { errors: ["Internal server error"] };
@@ -62,10 +62,10 @@ export async function login(
       }),
     }).then(async (response) => {
       switch (response.status) {
-        case 200: {
+        case 201: {
           return response.json() as Promise<AuthSuccessResponse>;
         }
-        case 400: {
+        case 401: {
           return { error: "Nieprawidłowe dane logowania" };
         }
         default: {
@@ -76,7 +76,7 @@ export async function login(
     if ("error" in user) {
       return { success: false, error: user.error };
     }
-    await createSession({ bearerToken: user.token });
+    await createSession({ bearerToken: user.access_token });
     //return user;
   } catch (error) {
     console.error("Error during logging in", error);
@@ -89,7 +89,7 @@ export async function sendPasswordResetToken(
   values: z.infer<typeof sendPasswordResetTokenSchema> & { token: string },
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -122,14 +122,14 @@ export async function resetPassword(
   values: z.infer<typeof resetPasswordSchema>,
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/resetPassword`, {
+    const response = await fetch(`${API_URL}/auth/reset-password`, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
         token: values.token,
-        newPassword: values.newPassword,
+        password: values.newPassword,
       }),
     });
 
