@@ -32,6 +32,10 @@ export function AttributeValueInput({
   idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
   function renderMultiOptions() {
+    // TODO remove after debug
+    // eslint-disable-next-line no-console
+    console.log(attribute);
+
     const selected = value === "" ? [] : value.split(",");
 
     return (
