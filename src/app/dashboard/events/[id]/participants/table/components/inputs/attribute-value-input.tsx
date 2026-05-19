@@ -217,7 +217,7 @@ export function AttributeValueInput({
                 key={typeof option === "string" ? option : option.value}
                 value={typeof option === "string" ? option : option.value}
               >
-                {typeof option === "string" ? option : option.label}
+                {typeof option === "string" ? option : option.value}
               </SelectItem>
             ))}
           </SelectContent>
