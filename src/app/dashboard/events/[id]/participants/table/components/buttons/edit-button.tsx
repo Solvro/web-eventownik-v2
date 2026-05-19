@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant } from "@/types/participant";
 
@@ -24,9 +25,22 @@ export function EditParticipantButton({
   const participant = row.original;
   const isEditing = participant.mode === "edit";
   const [isSaving, setIsSaving] = useState(false);
+  const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
   const { toast } = useToast();
 
+  function areRowsEqual(
+    current: FlattenedParticipant,
+    previous: FlattenedParticipant,
+  ) {
+    const normalizedCurrent = { ...current, mode: "view" };
+    const normalizedPrevious = { ...previous, mode: "view" };
+    return (
+      JSON.stringify(normalizedCurrent) === JSON.stringify(normalizedPrevious)
+    );
+  }
+
   function enterEditMode() {
+    table.options.meta?.setRowSnapshot(row.index, participant);
     table.options.meta?.updateData(row.index, {
       ...participant,
       mode: "edit",
@@ -34,10 +48,21 @@ export function EditParticipantButton({
   }
 
   function cancelEdit() {
-    table.options.meta?.updateData(row.index, {
-      ...participant,
-      mode: "view",
-    });
+    const snapshot = table.options.meta?.getRowSnapshot(row.index);
+
+    if (snapshot == null) {
+      table.options.meta?.updateData(row.index, {
+        ...participant,
+        mode: "view",
+      });
+    } else {
+      table.options.meta?.updateData(row.index, {
+        ...snapshot,
+        mode: "view",
+      });
+    }
+
+    table.options.meta?.clearRowSnapshot(row.index);
   }
 
   async function saveChanges() {
@@ -83,6 +108,7 @@ export function EditParticipantButton({
         ...participant,
         mode: "view",
       });
+      table.options.meta?.clearRowSnapshot(row.index);
     } else {
       toast({
         variant: "destructive",
@@ -113,12 +139,29 @@ export function EditParticipantButton({
         <Button
           variant="destructive"
           type="button"
-          onClick={cancelEdit}
+          onClick={() => {
+            const snapshot = table.options.meta?.getRowSnapshot(row.index);
+            if (snapshot != null && !areRowsEqual(participant, snapshot)) {
+              setIsDiscardDialogOpen(true);
+              return;
+            }
+
+            cancelEdit();
+          }}
           aria-label="cancel"
           size="sm"
         >
           <X size={16} />
         </Button>
+        <UnsavedChangesAlert
+          active={isDiscardDialogOpen}
+          setActive={setIsDiscardDialogOpen}
+          setDialogOpen={setIsDiscardDialogOpen}
+          onCancel={() => {
+            setIsDiscardDialogOpen(false);
+          }}
+          onConfirm={cancelEdit}
+        />
       </div>
     );
   }

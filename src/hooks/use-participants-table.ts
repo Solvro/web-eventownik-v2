@@ -15,6 +15,14 @@ import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
+function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
+  if (typeof structuredClone === "function") {
+    return structuredClone(row);
+  }
+
+  return JSON.parse(JSON.stringify(row)) as FlattenedParticipant;
+}
+
 interface UseParticipantTableProps {
   data: FlattenedParticipant[];
   attributes: Attribute[];
@@ -37,6 +45,9 @@ export function useParticipantsTable({
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [rowSnapshots, setRowSnapshots] = useState<
+    Record<number, FlattenedParticipant>
+  >({});
 
   useLayoutEffect(() => {
     try {
@@ -94,6 +105,25 @@ export function useParticipantsTable({
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {
         setLoadingRows((previous) => ({ ...previous, [rowIndex]: isLoading }));
+      },
+      setRowSnapshot: (rowIndex: number, value: FlattenedParticipant) => {
+        setRowSnapshots((previous) => {
+          return {
+            ...previous,
+            [rowIndex]: cloneParticipantRow(value),
+          };
+        });
+      },
+      getRowSnapshot: (rowIndex: number) => rowSnapshots[rowIndex],
+      clearRowSnapshot: (rowIndex: number) => {
+        setRowSnapshots((previous) => {
+          if (!(rowIndex in previous)) {
+            return previous;
+          }
+
+          const { [rowIndex]: _removed, ...rest } = previous;
+          return rest;
+        });
       },
     },
 

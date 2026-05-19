@@ -33,6 +33,9 @@ declare module "@tanstack/react-table" {
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
     setRowLoading: (rowIndex: number, isLoading: boolean) => void;
+    setRowSnapshot: (rowIndex: number, value: TData) => void;
+    getRowSnapshot: (rowIndex: number) => TData | undefined;
+    clearRowSnapshot: (rowIndex: number) => void;
   }
 }
 
