@@ -196,6 +196,10 @@ export function AttributeValueInput({
     }
 
     case "select": {
+      // TODO remove after debug
+      // eslint-disable-next-line no-console
+      console.log(attribute);
+
       if (attribute.isMultiple) {
         return renderMultiOptions();
       }
