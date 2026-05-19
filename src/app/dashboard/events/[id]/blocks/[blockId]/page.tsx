@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { CreateBlockForm } from "@/app/dashboard/events/[id]/blocks/[blockId]/create-block-form";
+import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[id]/blocks/[blockId]/toggle-participants-visibility-button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
@@ -110,7 +111,7 @@ export default async function EventBlockEditPage({
   } else {
     return (
       <div className="flex grow flex-col gap-8">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="md:space-y-2">
             <h1 className="text-3xl font-bold">{rootBlockName}</h1>
             <span className="text-muted-foreground text-lg">
@@ -120,6 +121,7 @@ export default async function EventBlockEditPage({
                 .reduce((a, b) => a + b, 0)}{" "}
             </span>
           </div>
+          <ToggleParticipantsVisibilityButton />
           <CreateBlockForm
             eventId={eventId}
             attributeId={rootBlockId}
