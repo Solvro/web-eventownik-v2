@@ -233,6 +233,9 @@ export function AttributeValueInput({
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
 
+      // eslint-disable-next-line no-console
+      console.log("root block:", rootBlock);
+
       if (rootBlock?.isMultiple ?? false) {
         return renderMultiOptions();
       }
