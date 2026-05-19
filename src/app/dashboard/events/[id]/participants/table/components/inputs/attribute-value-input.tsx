@@ -31,12 +31,12 @@ export function AttributeValueInput({
   onChange,
   idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
-  function renderMultiOptions() {
+  function renderMultiOptions(options: Attribute["options"]) {
     const selected = value === "" ? [] : value.split(",");
 
     return (
       <div className="flex flex-col gap-1">
-        {attribute.options?.map((option) => {
+        {options?.map((option) => {
           const optionValue =
             typeof option === "string" ? option : option.value;
           const optionLabel =
@@ -197,7 +197,7 @@ export function AttributeValueInput({
 
     case "select": {
       if (attribute.isMultiple) {
-        return renderMultiOptions();
+        return renderMultiOptions(attribute.options);
       }
 
       return (
@@ -226,16 +226,19 @@ export function AttributeValueInput({
     }
 
     case "multiselect": {
-      return renderMultiOptions();
+      return renderMultiOptions(attribute.options);
     }
 
     case "block": {
       const rootBlock =
         blocks.find((b) => b?.attributeId === attribute.id) ?? null;
 
-      if (rootBlock?.attribute.isMultiple ?? false) {
-        return renderMultiOptions();
-      }
+      // eslint-disable-next-line no-console
+      console.log("root block:", rootBlock);
+
+      // if (rootBlock?.attribute.isMultiple ?? false) {
+      //   return renderMultiOptions(rootBlock?.attribute.options);
+      // }
 
       const selectedBlock = rootBlock?.children.find(
         (block) => block.id.toString() === value,
