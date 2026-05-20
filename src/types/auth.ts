@@ -1,8 +1,8 @@
 import type { JWTPayload } from "jose";
 
 export interface AuthSuccessResponse {
-  admin: Admin;
-  token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface AuthErrorResponse {
