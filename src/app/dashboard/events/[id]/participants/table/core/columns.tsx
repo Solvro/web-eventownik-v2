@@ -35,7 +35,7 @@ function getBaseColumns(t: TableTranslator) {
           onCheckedChange={(value) => {
             table.toggleAllPageRowsSelected(Boolean(value));
           }}
-          aria-label="Wybierz wszystkie na stronie"
+          aria-label={t("selectAllPageRows")}
         />
       ),
       cell: ({ row }) => (
@@ -44,7 +44,7 @@ function getBaseColumns(t: TableTranslator) {
           onCheckedChange={(value) => {
             row.toggleSelected(Boolean(value));
           }}
-          aria-label="Wybierz wiersz"
+          aria-label={t("selectRow")}
         ></Checkbox>
       ),
       enableSorting: false,
@@ -68,16 +68,18 @@ function getBaseColumns(t: TableTranslator) {
       size: 200,
       minSize: 120,
       maxSize: 300,
-      meta: { name: "Email" },
-      header: (info) => <SortHeader info={info} name="Email" />,
+      meta: { name: t("columnEmailTitle") },
+      header: (info) => <SortHeader info={info} name={t("columnEmailTitle")} />,
       cell: (info) => <EditableCell info={info} />,
     }),
     columnHelper.accessor("createdAt", {
       size: 160,
       minSize: 200,
       maxSize: 240,
-      meta: { name: "Data rejestracji" },
-      header: (info) => <SortHeader info={info} name="Data rejestracji" />,
+      meta: { name: t("columnCreatedAtTitle") },
+      header: (info) => (
+        <SortHeader info={info} name={t("columnCreatedAtTitle")} />
+      ),
       cell: (info) => info.getValue(),
     }),
   ];
