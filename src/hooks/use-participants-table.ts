@@ -20,7 +20,7 @@ function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
     return structuredClone(row);
   }
 
-  return JSON.parse(JSON.stringify(row)) as FlattenedParticipant;
+  return structuredClone(row);
 }
 
 interface UseParticipantTableProps {
@@ -64,8 +64,8 @@ export function useParticipantsTable({
   }, [storageKey, t, toast]);
 
   const columns = useMemo(
-    () => createColumns(attributes, blocks ?? []),
-    [attributes, blocks],
+    () => createColumns(attributes, blocks ?? [], t),
+    [attributes, blocks, t],
   );
 
   const table = useReactTable<FlattenedParticipant>({

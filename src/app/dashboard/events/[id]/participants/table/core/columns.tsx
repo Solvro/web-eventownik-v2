@@ -1,5 +1,6 @@
 import type { Row } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
+import type { useTranslations as UseTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Attribute } from "@/types/attributes";
@@ -16,71 +17,76 @@ import { SortHeader } from "../components/table-ui/sort-header";
 
 const columnHelper = createColumnHelper<FlattenedParticipant>();
 
-const BASE_COLUMNS = [
-  columnHelper.display({
-    id: "select",
-    size: 40,
-    minSize: 40,
-    maxSize: 40,
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(Boolean(value));
-        }}
-        aria-label="Wybierz wszystkie na stronie"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => {
-          row.toggleSelected(Boolean(value));
-        }}
-        aria-label="Wybierz wiersz"
-      ></Checkbox>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-    enableResizing: false,
-  }),
-  columnHelper.display({
-    id: "no",
-    size: 52,
-    minSize: 52,
-    maxSize: 52,
-    header: "No.",
-    cell: ({ row }) => {
-      return row.index + 1;
-    },
-    enableSorting: false,
-    enableHiding: false,
-    enableResizing: false,
-  }),
-  columnHelper.accessor("email", {
-    size: 200,
-    minSize: 120,
-    maxSize: 300,
-    meta: { name: "Email" },
-    header: (info) => <SortHeader info={info} name="Email" />,
-    cell: (info) => <EditableCell info={info} />,
-  }),
-  columnHelper.accessor("createdAt", {
-    size: 160,
-    minSize: 200,
-    maxSize: 240,
-    meta: { name: "Data rejestracji" },
-    header: (info) => <SortHeader info={info} name="Data rejestracji" />,
-    cell: (info) => info.getValue(),
-  }),
-];
+type TableTranslator = ReturnType<typeof UseTranslations<"Table">>;
+
+function getBaseColumns(t: TableTranslator) {
+  return [
+    columnHelper.display({
+      id: "select",
+      size: 40,
+      minSize: 40,
+      maxSize: 40,
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(Boolean(value));
+          }}
+          aria-label="Wybierz wszystkie na stronie"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            row.toggleSelected(Boolean(value));
+          }}
+          aria-label="Wybierz wiersz"
+        ></Checkbox>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
+    }),
+    columnHelper.display({
+      id: "no",
+      size: 52,
+      minSize: 52,
+      maxSize: 52,
+      header: t("rowNumberTitle"),
+      cell: ({ row }) => {
+        return row.index + 1;
+      },
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
+    }),
+    columnHelper.accessor("email", {
+      size: 200,
+      minSize: 120,
+      maxSize: 300,
+      meta: { name: "Email" },
+      header: (info) => <SortHeader info={info} name="Email" />,
+      cell: (info) => <EditableCell info={info} />,
+    }),
+    columnHelper.accessor("createdAt", {
+      size: 160,
+      minSize: 200,
+      maxSize: 240,
+      meta: { name: "Data rejestracji" },
+      header: (info) => <SortHeader info={info} name="Data rejestracji" />,
+      cell: (info) => info.getValue(),
+    }),
+  ];
+}
 
 export function createColumns(
   attributes: Attribute[],
   blocks: (Block | null)[],
+  t: TableTranslator,
 ) {
   const attributeColumns = attributes
     .filter((attribute) => attribute.showInList)
@@ -149,5 +155,5 @@ export function createColumns(
     enableResizing: false,
   });
 
-  return [...BASE_COLUMNS, ...attributeColumns, editColumn];
+  return [...getBaseColumns(t), ...attributeColumns, editColumn];
 }
