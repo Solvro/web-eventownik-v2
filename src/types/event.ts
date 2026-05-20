@@ -2,7 +2,7 @@ import type { EventAttribute } from "./attributes";
 import type { EventForm } from "./forms";
 
 export interface Event {
-  id: number;
+  uuid: string;
   organizerId: number;
   name: string;
   description: string | null;
