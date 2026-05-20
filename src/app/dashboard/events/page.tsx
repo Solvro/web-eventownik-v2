@@ -122,12 +122,12 @@ export default async function EventListPage() {
           {events.length > 0 ? (
             events.map((event) => (
               <div
-                key={event.id}
+                key={event.uuid}
                 className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
               >
                 <Link
                   className="relative"
-                  href={`/dashboard/events/${event.id.toString()}`}
+                  href={`/dashboard/events/${event.uuid}`}
                 >
                   <Image
                     src={
@@ -157,13 +157,13 @@ export default async function EventListPage() {
                 </Link>
                 <div className="flex flex-1 flex-col justify-between p-4">
                   <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-                    <Link href={`/dashboard/events/${event.id.toString()}`}>
+                    <Link href={`/dashboard/events/${event.uuid}`}>
                       {event.name}
                     </Link>
                   </h3>
                   <div className="flex w-full items-center justify-between">
                     <Button asChild variant="ghost">
-                      <Link href={`/dashboard/events/${event.id.toString()}`}>
+                      <Link href={`/dashboard/events/${event.uuid}`}>
                         <CircleHelpIcon className="mr-2 size-4" />
                         Wyświetl szczegóły
                       </Link>

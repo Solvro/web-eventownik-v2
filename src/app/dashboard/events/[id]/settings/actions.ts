@@ -97,7 +97,7 @@ export async function updateEvent(
       }
     }
 
-    const response = await fetch(`${API_URL}/events/${event.id.toString()}`, {
+    const response = await fetch(`${API_URL}/events/${event.uuid}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${bearerToken}` },
       body: formData,
@@ -131,7 +131,7 @@ export async function updateEvent(
       switch (change.type) {
         case "add": {
           const response = await fetch(
-            `${API_URL}/events/${event.id.toString()}/organizers`,
+            `${API_URL}/events/${event.uuid}/organizers`,
             {
               method: "POST",
               headers: {
@@ -166,7 +166,7 @@ export async function updateEvent(
           }
 
           const response = await fetch(
-            `${API_URL}/events/${String(event.id)}/organizers/${change.data.id}`,
+            `${API_URL}/events/${event.uuid}/organizers/${change.data.id}`,
             {
               method: "PATCH",
               headers: {
@@ -200,7 +200,7 @@ export async function updateEvent(
           }
 
           const response = await fetch(
-            `${API_URL}/events/${String(event.id)}/organizers/${change.data.id}`,
+            `${API_URL}/events/${event.uuid}/organizers/${change.data.id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${bearerToken}` },
@@ -240,7 +240,7 @@ export async function updateEvent(
       switch (change.type) {
         case "add": {
           const response = await fetch(
-            `${API_URL}/events/${String(event.id)}/attributes`,
+            `${API_URL}/events/${event.uuid}/attributes`,
             {
               method: "POST",
               headers: {
@@ -299,7 +299,7 @@ export async function updateEvent(
           }
 
           const response = await fetch(
-            `${API_URL}/events/${String(event.id)}/attributes/${String(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${String(change.data.id)}`,
             {
               method: "PATCH",
               headers: {
@@ -358,7 +358,7 @@ export async function updateEvent(
           }
 
           const response = await fetch(
-            `${API_URL}/events/${String(event.id)}/attributes/${String(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${String(change.data.id)}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${bearerToken}` },
@@ -390,7 +390,7 @@ export async function updateEvent(
     }
   }
 
-  revalidatePath(`/dashboard/events/${String(event.id)}/settings`);
+  revalidatePath(`/dashboard/events/${event.uuid}/settings`);
 
   // Return errors if any, otherwise return the updated event
   if (result.errors.length > 0) {
@@ -401,7 +401,7 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(
-  eventId: number,
+  eventUuid: string,
 ): Promise<object | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
@@ -410,7 +410,7 @@ export async function deleteEvent(
   const { bearerToken } = session;
 
   try {
-    const response = await fetch(`${API_URL}/events/${eventId.toString()}`, {
+    const response = await fetch(`${API_URL}/events/${eventUuid}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${bearerToken}` },
     });

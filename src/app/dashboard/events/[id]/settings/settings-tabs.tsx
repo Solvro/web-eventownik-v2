@@ -311,7 +311,7 @@ export function EventSettingsTabs({
   };
 
   const handleDeleteEvent = async () => {
-    const result = await deleteEvent(unmodifiedEvent.id);
+    const result = await deleteEvent(unmodifiedEvent.uuid);
     if ("errors" in result) {
       toast({
         variant: "destructive",

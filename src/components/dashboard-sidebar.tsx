@@ -54,7 +54,7 @@ export function DashboardSidebar({
         {
           title: "Wydarzenie",
           icon: <Play />,
-          route: event.id.toString(),
+          route: event.uuid,
         },
         {
           title: "Formularze",
@@ -93,7 +93,7 @@ export function DashboardSidebar({
   function isActiveLink(linkRoute: string) {
     return (
       pathname.endsWith(`events/${linkRoute}`) ||
-      (linkRoute !== event.id.toString() && pathname.includes(linkRoute))
+      (linkRoute !== event.uuid && pathname.includes(linkRoute))
     );
   }
 
@@ -117,7 +117,7 @@ export function DashboardSidebar({
                     asChild
                   >
                     <Link
-                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                      href={`/dashboard/events/${event.uuid}/${link.route === event.uuid ? "" : link.route}`}
                     >
                       {link.icon}
                       <span className="truncate">{link.title}</span>
@@ -155,7 +155,7 @@ export function DashboardSidebar({
                   className="size-10"
                 >
                   <Link
-                    href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                    href={`/dashboard/events/${event.uuid}/${link.route === event.uuid ? "" : link.route}`}
                   >
                     {link.icon}
                   </Link>

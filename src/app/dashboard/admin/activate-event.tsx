@@ -8,11 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import { activateEvent } from "./actions";
 
 function ActivateEvent({
-  eventId,
+  eventUuid,
   isActive,
   bearerToken,
 }: {
-  eventId: number;
+  eventUuid: string;
   isActive: boolean;
   bearerToken: string;
 }) {
@@ -20,7 +20,7 @@ function ActivateEvent({
   const router = useRouter();
 
   const handleClick = async () => {
-    const response = await activateEvent(isActive, eventId, bearerToken);
+    const response = await activateEvent(isActive, eventUuid, bearerToken);
     if ("error" in response) {
       toast({
         title: "Błąd",
