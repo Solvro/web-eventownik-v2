@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import type { ResetPassTokenError } from "@/types/auth";
+import { RESET_PASS_TOKEN_ERRORS } from "@/types/auth";
 import { sendPasswordResetTokenSchema } from "@/types/schemas";
+import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { sendPasswordResetToken } from "../actions";
 
@@ -58,23 +61,27 @@ export default function ForgotPasswordPage() {
       if (result.success) {
         setEmailSent(true);
         toast({
-          title: "Email został wysłany!",
-          description: "Sprawdź swoją skrzynkę pocztową, aby zresetować hasło.",
+          title: t("emailSent"),
+          description: t("checkEmailToResetPassword"),
           duration: 5000,
         });
       } else {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: result.error,
+          title: t("somethingWentWrong"),
+          description: RESET_PASS_TOKEN_ERRORS.includes(
+            result.error as ResetPassTokenError,
+          )
+            ? t(result.error as ResetPassTokenError)
+            : result.error,
         });
       }
     } catch (error) {
       console.error("Password reset request failed", error);
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Wystąpił błąd serwera. Spróbuj ponownie później.",
+        title: t("somethingWentWrong"),
+        description: t("serverErrorTryLater"),
       });
     } finally {
       hCaptchaRef.current?.resetCaptcha();
@@ -114,18 +121,15 @@ export default function ForgotPasswordPage() {
     return (
       <>
         <div className="space-y-2 text-center">
-          <p className="text-3xl font-black">Email został wysłany!</p>
-          <p className="text-muted-foreground">
-            Sprawdź swoją skrzynkę pocztową i kliknij w link, aby zresetować
-            hasło.
-          </p>
+          <p className="text-3xl font-black">{t("emailSent")}</p>
+          <p className="text-muted-foreground">{t("passwordResetEmailLink")}</p>
         </div>
         <div className="w-full max-w-sm space-y-4">
           <Link
             href="/auth/login"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
           >
-            Powrót do logowania
+            {t("loginReturn")}
           </Link>
         </div>
       </>
@@ -135,8 +139,8 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">{t("resetPasswordTitle")}</p>
-        <p className="text-neutral-600">{t("resetPasswordDescription")}</p>
+        <p className="text-3xl font-black">{t("forgotPassword")}</p>
+        <p className="text-neutral-600">{t("forgotPasswordDescription")}</p>
       </div>
       <Form {...form}>
         <form
@@ -148,17 +152,22 @@ export default function ForgotPasswordPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">E-mail</FormLabel>
+                <FormLabel className="sr-only">{t("email")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-                    placeholder="E-mail"
+                    placeholder={t("email")}
                     {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.email?.message}
+                  {typeof form.formState.errors.email?.message === "string"
+                    ? t(
+                        form.formState.errors.email
+                          .message as AuthSchemaErrorKeys,
+                      )
+                    : null}
                 </FormMessage>
               </FormItem>
             )}

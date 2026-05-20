@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useAnimation, useInView } from "motion/react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -40,6 +41,7 @@ export function ToPWr() {
   const ref = useRef(null);
   const isInview = useInView(ref, { once: true, amount: 0.2 });
   const controls = useAnimation();
+  const t = useTranslations("Homepage");
 
   useEffect(() => {
     if (isInview) {
@@ -68,16 +70,16 @@ export function ToPWr() {
                 variants={childVariants}
                 className="font-mono text-sm font-semibold tracking-wider text-orange-500 uppercase"
               >
-                Jesteś studentem politechniki wrocławskiej?
+                {t("areYouPwrStudent")}
               </motion.h2>
               <motion.h3
                 variants={childVariants}
                 className="mx-auto mt-4 max-w-xs text-3xl font-bold sm:max-w-none sm:text-4xl md:text-5xl"
               >
-                Koniecznie zainstaluj aplikację{" "}
+                {t("installApp")}{" "}
                 <Image
                   src={"/assets/logo/topwr_logo.svg"}
-                  alt={"ToPWR Logo"}
+                  alt={t("topwrLogo")}
                   className="inline brightness-0 dark:invert"
                   width={140}
                   height={50}
@@ -87,8 +89,7 @@ export function ToPWr() {
                 variants={childVariants}
                 className="mx-auto mt-6 max-w-2xl text-lg leading-6 text-balance text-slate-600 dark:text-slate-300"
               >
-                Znajdziesz w niej wszystkie potrzebne informacje o parkingach,
-                menu w SKS, mapie kampusu i wiele więcej.
+                {t("topwrFeaturesDescription")}
               </motion.p>
             </div>
 
@@ -105,7 +106,7 @@ export function ToPWr() {
                 >
                   <Image
                     src={"/assets/landing/topwr/google_play.png"}
-                    alt={"Pobierz z google play"}
+                    alt={t("downloadFromGooglePlay")}
                     width={160}
                     height={50}
                     className="w-[160px]"
@@ -119,7 +120,7 @@ export function ToPWr() {
                 >
                   <Image
                     src={"/assets/landing/topwr/apple_store.png"}
-                    alt={"Pobierz z app store"}
+                    alt={t("downloadFromAppStore")}
                     width={144}
                     height={50}
                     className="w-[144px]"

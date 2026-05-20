@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -19,11 +20,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { RESET_ERRORS } from "@/types/auth";
+import type { ResetError } from "@/types/auth";
 import { resetPasswordSchema } from "@/types/schemas";
 
 import { resetPassword } from "../actions";
 
 function ResetPasswordForm() {
+  const t = useTranslations("Auth");
   const { toast } = useToast();
   const searchParameters = useSearchParams();
   const token = searchParameters.get("token");
@@ -43,15 +47,17 @@ function ResetPasswordForm() {
     if (result.success) {
       setPasswordReset(true);
       toast({
-        title: "Hasło zostało zresetowane!",
-        description: "Możesz się teraz zalogować używając nowego hasła.",
+        title: t("passwordResetSuccess"),
+        description: t("loginWithNewPassword"),
         duration: 5000,
       });
     } else {
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: result.error,
+        title: t("somethingWentWrong"),
+        description: RESET_ERRORS.includes(result.error as ResetError)
+          ? t(result.error as ResetError)
+          : result.error,
       });
     }
   }
@@ -60,17 +66,15 @@ function ResetPasswordForm() {
     return (
       <>
         <div className="space-y-2 text-center">
-          <p className="text-3xl font-black">Nieprawidłowy link</p>
-          <p className="text-neutral-600">
-            Link do resetowania hasła jest nieprawidłowy lub wygasł.
-          </p>
+          <p className="text-3xl font-black">{t("invalidLink")}</p>
+          <p className="text-neutral-600">{t("resetLinkInvalidOrExpired")} </p>
         </div>
         <div className="w-full max-w-sm space-y-4">
           <Link
             href="/auth/forgot-password"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
           >
-            Wyślij nowy link
+            {t("sendNewLink")}
           </Link>
           <Link
             href="/auth/login"
@@ -78,7 +82,7 @@ function ResetPasswordForm() {
               variant: "link",
             })}`}
           >
-            Powrót do logowania
+            {t("loginReturn")}
           </Link>
         </div>
       </>
@@ -89,17 +93,15 @@ function ResetPasswordForm() {
     return (
       <>
         <div className="space-y-2 text-center">
-          <p className="text-3xl font-black">Hasło zostało zresetowane!</p>
-          <p className="text-muted-foreground">
-            Możesz się teraz zalogować używając nowego hasła.
-          </p>
+          <p className="text-3xl font-black">{t("passwordResetSuccess")}</p>
+          <p className="text-muted-foreground">{t("loginWithNewPassword")}</p>
         </div>
         <div className="w-full max-w-sm space-y-4">
           <Link
             href="/auth/login"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
           >
-            Przejdź do logowania
+            {t("goToLogin")}
           </Link>
         </div>
       </>
@@ -109,10 +111,8 @@ function ResetPasswordForm() {
   return (
     <>
       <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">Resetowanie hasła</p>
-        <p className="text-muted-foreground">
-          Wprowadź nowe hasło do swojego konta.
-        </p>
+        <p className="text-3xl font-black">{t("resettingPassword")}</p>
+        <p className="text-muted-foreground">{t("enterNewPassword")}</p>
       </div>
       <Form {...form}>
         <form
@@ -124,12 +124,12 @@ function ResetPasswordForm() {
             name="newPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">Nowe hasło</FormLabel>
+                <FormLabel className="sr-only">{t("newPassword")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
                     disabled={form.formState.isSubmitting}
-                    placeholder="Nowe hasło"
+                    placeholder={t("newPassword")}
                     {...field}
                   />
                 </FormControl>
@@ -144,12 +144,14 @@ function ResetPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">Potwierdź hasło</FormLabel>
+                <FormLabel className="sr-only">
+                  {t("confirmPassword")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"
                     disabled={form.formState.isSubmitting}
-                    placeholder="Potwierdź hasło"
+                    placeholder={t("confirmPassword")}
                     {...field}
                   />
                 </FormControl>
@@ -166,10 +168,10 @@ function ResetPasswordForm() {
           >
             {form.formState.isSubmitting ? (
               <>
-                <Loader2 className="animate-spin" /> Resetowanie...
+                <Loader2 className="animate-spin" /> {t("resetting")}
               </>
             ) : (
-              "Zresetuj hasło"
+              t("resetPassword")
             )}
           </Button>
           <Link
@@ -178,7 +180,7 @@ function ResetPasswordForm() {
               variant: "link",
             })}`}
           >
-            Powrót do logowania
+            {t("loginReturn")}
           </Link>
         </form>
       </Form>

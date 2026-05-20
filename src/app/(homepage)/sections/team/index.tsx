@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FaGithub } from "react-icons/fa";
 
 import { HighlightedMembers } from "./highlighted-members";
@@ -280,13 +281,9 @@ const team: TeamMember[] = [
   },
 ];
 
-export async function Team() {
-  const repositoryData = await fetch(
-    "https://api.github.com/repos/Solvro/web-eventownik-v2",
-  );
-  const { stargazers_count } = (await repositoryData.json()) as {
-    stargazers_count: number;
-  };
+export function TeamView({ stargazersCount }: { stargazersCount: number }) {
+  const t = useTranslations("Homepage");
+
   return (
     <section
       id="team"
@@ -297,11 +294,11 @@ export async function Team() {
           Solvro Team
         </p>
         <p className="text-center text-3xl font-medium">
-          Eventownik powstał dzięki pracy{" "}
-          <span className="text-[#6583C8]">{team.length} osób</span> z naszego
-          zespołu.
-          <br />
-          Stworzyliśmy go, by ułatwić organizowanie wydarzeń i poznawanie ludzi.
+          {t.rich("teamIntroDescription", {
+            span: (chunks) => <span className="text-[#6583C8]">{chunks}</span>,
+            br: () => <br />,
+            count: team.length,
+          })}
         </p>
       </div>
       <div className="flex flex-col items-center gap-16 lg:gap-32">
@@ -314,8 +311,7 @@ export async function Team() {
       </div>
       <div className="flex flex-col items-center gap-12">
         <p className="text-center text-lg font-medium sm:text-2xl">
-          Jeśli doceniasz naszą pracę nad Eventownikiem, zostaw gwiazdkę na
-          GitHubie — to dla nas duża motywacja do dalszego rozwoju!
+          {t("githubStarMotivation")}
         </p>
         <a
           href="https://github.com/solvro/web-eventownik-v2"
@@ -324,13 +320,24 @@ export async function Team() {
           rel="noreferrer noopener"
         >
           <FaGithub size={20} />
-          <p className="font-medium whitespace-nowrap">Walnij nam gwiazdkę</p>
+          <p className="font-medium whitespace-nowrap">{t("giveUsAStar")}</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
-            <p className="font-medium">{stargazers_count}</p>
+            <p className="font-medium">{stargazersCount}</p>
           </div>
         </a>
       </div>
     </section>
   );
+}
+
+export async function Team() {
+  const repositoryData = await fetch(
+    "https://api.github.com/repos/Solvro/web-eventownik-v2",
+  );
+  const { stargazers_count } = (await repositoryData.json()) as {
+    stargazers_count: number;
+  };
+
+  return <TeamView stargazersCount={stargazers_count} />;
 }
