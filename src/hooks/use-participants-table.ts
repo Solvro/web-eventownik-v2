@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
-import { generateColumns } from "@/app/dashboard/events/[id]/participants/table/columns";
+import { generateColumns } from "@/app/dashboard/events/[uuid]/participants/table/columns";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -17,7 +17,7 @@ interface UseParticipantTableProps {
   data: FlattenedParticipant[];
   attributes: Attribute[];
   blocks: (Block | null)[] | null;
-  eventId: string;
+  eventUuid: string;
   onUpdateData: (rowIndex: number, value: FlattenedParticipant) => void;
 }
 
@@ -26,14 +26,14 @@ export function useParticipantsTable({
   attributes,
   blocks,
   onUpdateData,
-  eventId,
+  eventUuid,
 }: UseParticipantTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
 
   const columns = useMemo(
-    () => generateColumns(attributes, blocks ?? [], eventId),
-    [attributes, blocks, eventId],
+    () => generateColumns(attributes, blocks ?? [], eventUuid),
+    [attributes, blocks, eventUuid],
   );
 
   const table = useReactTable<FlattenedParticipant>({

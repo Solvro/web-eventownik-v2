@@ -5,8 +5,8 @@ import {
   deleteManyParticipants,
   deleteParticipant,
   getParticipants,
-} from "@/app/dashboard/events/[id]/participants/actions";
-import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/data";
+} from "@/app/dashboard/events/[uuid]/participants/actions";
+import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/table/data";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
