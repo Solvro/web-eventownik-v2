@@ -140,7 +140,7 @@ export default async function FormPage({ params }: FormPageProps) {
         attributes={form.attributes}
         userData={userData}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.id.toString()}
+        formId={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}
         editMode={true}

@@ -9,7 +9,7 @@ import type { EventForm } from "@/types/forms";
 
 type Payload = Omit<
   EventForm,
-  "eventUuid" | "id" | "slug" | "attributes" | "order"
+  "eventUuid" | "uuid" | "slug" | "attributes" | "order"
 > & {
   attributes: FormAttributeBase[];
 };
@@ -70,7 +70,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
 
 export async function updateEventForm(
   eventUuid: string,
-  formId: string,
+  formUuid: string,
   form: Payload,
 ) {
   const session = await verifySession();
@@ -88,7 +88,7 @@ export async function updateEventForm(
   form.endDate.setMinutes(Number.parseInt(form.endTime.split(":")[1]));
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/forms/${formId}`,
+    `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
     {
       method: "PATCH",
       headers: {
@@ -113,7 +113,7 @@ export async function updateEventForm(
       errors: [{ message: string }] | undefined;
     };
     console.error(
-      `[updateEventForm action] Failed to update event form ${formId} for event ${eventUuid}:`,
+      `[updateEventForm action] Failed to update event form ${formUuid} for event ${eventUuid}:`,
       error,
     );
     const errorMessages = [
@@ -169,7 +169,7 @@ export async function reorderForms(eventUuid: string, orderedIds: number[]) {
   return { success: true };
 }
 
-export async function deleteEventForm(eventUuid: string, formId: string) {
+export async function deleteEventForm(eventUuid: string, formUuid: string) {
   const session = await verifySession();
 
   if (session == null) {
@@ -180,7 +180,7 @@ export async function deleteEventForm(eventUuid: string, formId: string) {
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/forms/${formId}`,
+    `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
     {
       method: "DELETE",
       headers: {
@@ -192,7 +192,7 @@ export async function deleteEventForm(eventUuid: string, formId: string) {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteEventForm action] Failed to delete event form ${formId} for event ${eventUuid}:`,
+      `[deleteEventForm action] Failed to delete event form ${formUuid} for event ${eventUuid}:`,
       error,
     );
     return {

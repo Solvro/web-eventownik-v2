@@ -1,7 +1,7 @@
 import type { FormAttribute } from "@/types/attributes";
 
 export interface Form {
-  id: number;
+  uuid: string;
   name: string;
   slug: string;
   startDate: string;

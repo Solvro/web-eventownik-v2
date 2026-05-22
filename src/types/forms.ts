@@ -1,7 +1,7 @@
 import type { FormAttribute } from "./attributes";
 
 export interface EventForm {
-  id: number;
+  uuid: string;
   eventUuid: string;
   isOpen: boolean;
   isFirstForm: boolean;

@@ -17,7 +17,7 @@ function FormEntry({
     <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" asChild>
-          <Link href={`forms/${form.id.toString()}`}>
+          <Link href={`forms/${form.uuid}`}>
             <SquarePen />
             <span className="sr-only">Edytuj formularz</span>
           </Link>
@@ -31,7 +31,7 @@ function FormEntry({
         {/*</Button>*/}
         <DeleteFormPopup
           eventUuid={eventUuid}
-          formId={form.id.toString()}
+          formId={form.uuid}
           formName={form.name}
         />
       </div>

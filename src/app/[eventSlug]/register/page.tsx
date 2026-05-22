@@ -121,7 +121,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <FormGenerator
         attributes={form.attributes}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.id.toString()}
+        formId={form.uuid}
         eventSlug={eventSlug}
         editMode={false}
       />

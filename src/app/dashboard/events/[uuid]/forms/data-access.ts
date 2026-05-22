@@ -57,32 +57,34 @@ async function getEventForms(eventUuid: string) {
   return parsed.data;
 }
 
-const getSingleEventForm = cache(async (eventUuid: string, formId: string) => {
-  const session = await verifySession();
-  if (session == null) {
-    return null;
-  }
+const getSingleEventForm = cache(
+  async (eventUuid: string, formUuid: string) => {
+    const session = await verifySession();
+    if (session == null) {
+      return null;
+    }
 
-  const response = await fetch(
-    `${API_URL}/events/${eventUuid}/forms/${formId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
+    const response = await fetch(
+      `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session.bearerToken}`,
+        },
       },
-    },
-  );
-
-  if (!response.ok) {
-    console.error(
-      `[getSingleEventForm] Failed to fetch form ${formId} for event ${eventUuid}:`,
-      response,
     );
-    return null;
-  }
 
-  const parsed = (await response.json()) as EventForm;
-  return parsed;
-});
+    if (!response.ok) {
+      console.error(
+        `[getSingleEventForm] Failed to fetch form ${formUuid} for event ${eventUuid}:`,
+        response,
+      );
+      return null;
+    }
+
+    const parsed = (await response.json()) as EventForm;
+    return parsed;
+  },
+);
 
 export { getEventAttributes, getEventForms, getSingleEventForm };

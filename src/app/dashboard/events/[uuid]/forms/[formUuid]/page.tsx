@@ -9,11 +9,11 @@ import { EventFormEditForm } from "./edit-form";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ uuid: string; formId: string }>;
+  params: Promise<{ uuid: string; formUuid: string }>;
 }): Promise<Metadata> {
-  const { uuid, formId } = await params;
+  const { uuid, formUuid } = await params;
 
-  const formToEdit = await getSingleEventForm(uuid, formId);
+  const formToEdit = await getSingleEventForm(uuid, formUuid);
 
   return {
     title: `Edytowanie ${formToEdit?.name ?? "formularza"}`,
@@ -23,11 +23,11 @@ export async function generateMetadata({
 export default async function EventFormEditPage({
   params,
 }: {
-  params: Promise<{ uuid: string; formId: string }>;
+  params: Promise<{ uuid: string; formUuid: string }>;
 }) {
-  const { uuid, formId } = await params;
+  const { uuid, formUuid } = await params;
 
-  const formToEdit = await getSingleEventForm(uuid, formId);
+  const formToEdit = await getSingleEventForm(uuid, formUuid);
   const eventAttributes = await getEventAttributes(uuid);
 
   if (formToEdit == null) {

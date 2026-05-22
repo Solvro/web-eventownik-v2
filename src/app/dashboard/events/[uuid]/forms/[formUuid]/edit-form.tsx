@@ -56,15 +56,11 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
-      const result = await updateEventForm(
-        eventUuid,
-        formToEdit.id.toString(),
-        {
-          ...formToEdit,
-          ...values,
-          attributes: includedAttributes,
-        },
-      );
+      const result = await updateEventForm(eventUuid, formToEdit.uuid, {
+        ...formToEdit,
+        ...values,
+        attributes: includedAttributes,
+      });
 
       if (result.success) {
         toast({
