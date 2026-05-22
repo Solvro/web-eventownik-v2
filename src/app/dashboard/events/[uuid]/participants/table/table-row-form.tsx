@@ -68,28 +68,24 @@ function BlockSelect({
     return (
       <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
         {childBlocks?.map((block) => (
-          <div key={block.id} className="mb-2 flex items-center space-x-2">
+          <div key={block.uuid} className="mb-2 flex items-center space-x-2">
             <Checkbox
-              id={`${rootBlock.id.toString()}-${block.id.toString()}`}
+              id={`${rootBlock.uuid}-${block.uuid}`}
               disabled={field.disabled}
-              checked={currentValues.includes(block.id.toString())}
+              checked={currentValues.includes(block.uuid)}
               onCheckedChange={(checked) => {
                 if (checked === true) {
-                  field.onChange(
-                    [...currentValues, block.id.toString()].join(","),
-                  );
+                  field.onChange([...currentValues, block.uuid].join(","));
                 } else {
                   field.onChange(
                     currentValues
-                      .filter((value) => value !== block.id.toString())
+                      .filter((value) => value !== block.uuid)
                       .join(","),
                   );
                 }
               }}
             />
-            <Label
-              htmlFor={`${rootBlock.id.toString()}-${block.id.toString()}`}
-            >
+            <Label htmlFor={`${rootBlock.uuid}-${block.uuid}`}>
               {block.name}
             </Label>
           </div>
@@ -107,13 +103,13 @@ function BlockSelect({
       <SelectTrigger>
         <SelectValue {...field}>
           {" "}
-          {childBlocks?.find((b) => b.id === Number(field.value))?.name}
+          {childBlocks?.find((b) => b.uuid === field.value)?.name}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value=" ">Żaden</SelectItem>
         {childBlocks?.map((block) => (
-          <SelectItem key={block.id} value={block.id.toString()}>
+          <SelectItem key={block.uuid} value={block.uuid}>
             {block.name}
           </SelectItem>
         ))}

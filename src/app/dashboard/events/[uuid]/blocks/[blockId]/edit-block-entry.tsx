@@ -72,7 +72,7 @@ function EditBlockEntry({
     const result = await updateBlock(
       eventUuid,
       attributeId,
-      blockToEdit.id.toString(),
+      blockToEdit.uuid,
       data.name,
       null,
       data.capacity === "" || data.capacity === undefined

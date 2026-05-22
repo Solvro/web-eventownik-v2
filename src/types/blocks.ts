@@ -2,7 +2,7 @@ import type { FormAttribute } from "./attributes";
 
 // TODO(refactor): Make this interface extend an attribute type from `./attributes.ts`
 export interface Block {
-  id: number;
+  uuid: string;
   name: string;
   description: string | null;
   capacity: number | null;

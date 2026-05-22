@@ -125,7 +125,7 @@ export default async function EventBlockEditPage({
           <CreateBlockForm
             eventUuid={eventUuid}
             attributeId={rootBlockId}
-            parentId={rootBlock.id.toString()}
+            parentId={rootBlock.uuid}
           />
         </div>
         {rootBlock.children.length > 0 ? (

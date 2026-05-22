@@ -35,7 +35,7 @@ function BlockEntry({
 
   return (
     <div
-      key={block.id}
+      key={block.uuid}
       className="flex flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
       <div className="flex justify-end gap-2">
@@ -43,11 +43,11 @@ function BlockEntry({
           blockToEdit={block}
           eventUuid={eventUuid}
           attributeId={attributeId}
-          parentId={block.id.toString()}
+          parentId={block.uuid}
         />
         <DeleteBlockPopup
           eventUuid={eventUuid}
-          blockId={block.id.toString()}
+          blockId={block.uuid}
           blockName={block.name}
           attributeId={attributeId}
         />

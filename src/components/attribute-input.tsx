@@ -203,7 +203,7 @@ export function AttributeInput({
         <>
           {eventBlocks.map((rootBlock) => (
             <AttributeBlocksWrapper
-              key={rootBlock.id}
+              key={rootBlock.uuid}
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}

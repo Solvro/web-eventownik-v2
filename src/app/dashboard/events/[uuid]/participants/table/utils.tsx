@@ -48,9 +48,7 @@ export function formatAttributeValue(
       ) {
         const ids = (value as string).split(",").filter(Boolean);
         return ids
-          .map(
-            (id) => rootBlock.children.find((b) => b.id === Number(id))?.name,
-          )
+          .map((id) => rootBlock.children.find((b) => b.uuid === id)?.name)
           .filter(Boolean)
           .join(", ");
       }
