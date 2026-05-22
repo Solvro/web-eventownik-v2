@@ -1,20 +1,19 @@
 import { HttpResponse, http } from "msw";
 
 import { API_URL } from "@/lib/api";
-import type { SessionPayload } from "@/types/auth.js";
 import type { Participant } from "@/types/participant";
 
 export function mockVerifySession() {
   return {
     verifySession: vi.fn(() => {
-      return { bearerToken: "BEARERTOKEN" } as SessionPayload;
+      return { bearerToken: "BEARERTOKEN" };
     }),
   };
 }
 
 export function mockParticipantGet(testCaseData: Participant[]) {
-  return http.get<{ eventId: string; participantId: string }>(
-    `${API_URL}/events/:eventId/participants/:participantId`,
+  return http.get<{ eventUuid: string; participantId: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantId`,
     ({ params }) => {
       const { participantId } = params;
       const participant: Participant | undefined = testCaseData.find(
@@ -34,8 +33,8 @@ export function mockParticipantGet(testCaseData: Participant[]) {
 }
 
 export function mockParticipantsGet(testCaseData: Participant[]) {
-  return http.get<{ eventId: string }>(
-    `${API_URL}/events/:eventId/participants`,
+  return http.get<{ eventUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants`,
     () => {
       return HttpResponse.json(testCaseData);
     },

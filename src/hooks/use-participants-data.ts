@@ -10,14 +10,14 @@ import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
-  eventId: string,
+  eventUuid: string,
   initialParticipants: Participant[] = [],
 ) {
   const queryClient = useQueryClient();
 
   const { data: participants, isFetching } = useQuery({
-    queryKey: ["participants", eventId],
-    queryFn: async () => getParticipants(eventId),
+    queryKey: ["participants", eventUuid],
+    queryFn: async () => getParticipants(eventUuid),
     initialData: initialParticipants,
   });
 
@@ -32,19 +32,20 @@ export function useParticipantsData(
   }, [participants]);
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => deleteParticipant(eventId, id.toString()),
+    mutationFn: async (id: number) =>
+      deleteParticipant(eventUuid, id.toString()),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["participants", eventId],
+        queryKey: ["participants", eventUuid],
       });
     },
   });
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
+    mutationFn: async (ids: string[]) => deleteManyParticipants(eventUuid, ids),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["participants", eventId],
+        queryKey: ["participants", eventUuid],
       });
     },
   });

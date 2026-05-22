@@ -7,7 +7,7 @@ import type { Participant } from "./participant";
  */
 export interface EventEmail {
   id: number;
-  eventId: number;
+  eventUuid: string;
   name: string;
   trigger: (typeof EMAIL_TRIGGERS)[number]["value"];
   triggerValue: string | null;

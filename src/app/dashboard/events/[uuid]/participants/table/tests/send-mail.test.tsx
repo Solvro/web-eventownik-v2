@@ -120,8 +120,8 @@ describe("Send mails", () => {
     const participantsToBeSelected = participants.slice(0, 2);
 
     server.use(
-      http.post<{ eventId: string; emailId: string }>(
-        `${API_URL}/events/:eventId/emails/send/:emailId`,
+      http.post<{ eventUuid: string; emailId: string }>(
+        `${API_URL}/events/:eventUuid/emails/send/:emailId`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },

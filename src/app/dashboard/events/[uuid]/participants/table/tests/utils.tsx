@@ -17,7 +17,7 @@ export function renderTable(
 
   render(
     <ParticipantTable
-      eventUuid="100"
+      eventUuid="e171f4c9-e2be-47fb-831c-ab783c2bf1ff"
       participants={participants}
       attributes={attributes}
       emails={emails}

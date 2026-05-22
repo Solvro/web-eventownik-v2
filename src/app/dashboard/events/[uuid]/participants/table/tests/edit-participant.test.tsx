@@ -97,8 +97,8 @@ describe("Editing participant", () => {
       attributes,
     );
     server.use(
-      http.patch<{ eventId: string; participantId: string }>(
-        `${API_URL}/events/:eventId/participants/:participantId`,
+      http.patch<{ eventUuid: string; participantId: string }>(
+        `${API_URL}/events/:eventUuid/participants/:participantId`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },

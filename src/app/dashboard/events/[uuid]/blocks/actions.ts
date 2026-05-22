@@ -46,7 +46,7 @@ export async function reorderBlockAttributes(
 }
 
 export async function createBlock(
-  eventId: string,
+  eventUuid: string,
   attributeId: string,
   parentId: string,
   name: string,
@@ -60,7 +60,7 @@ export async function createBlock(
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks`,
     {
       method: "POST",
       headers: {
@@ -83,7 +83,7 @@ export async function createBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[createBlock action] Failed to create a block for event ${eventId}:`,
+      `[createBlock action] Failed to create a block for event ${eventUuid}:`,
       error,
     );
     return {
@@ -94,7 +94,7 @@ export async function createBlock(
 }
 
 export async function updateBlock(
-  eventId: string,
+  eventUuid: string,
   attributeId: string,
   blockId: string,
   name: string,
@@ -108,7 +108,7 @@ export async function updateBlock(
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks/${blockId}`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockId}`,
     {
       method: "PATCH",
       headers: {
@@ -130,7 +130,7 @@ export async function updateBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateBlock action] Failed to update block ${blockId} for event ${eventId}:`,
+      `[updateBlock action] Failed to update block ${blockId} for event ${eventUuid}:`,
       error,
     );
     return {
@@ -141,7 +141,7 @@ export async function updateBlock(
 }
 
 export async function reorderBlocks(
-  eventId: string,
+  eventUuid: string,
   attributeId: string,
   orderedIds: number[],
 ) {
@@ -156,7 +156,7 @@ export async function reorderBlocks(
   const results = await Promise.all(
     orderedIds.map(async (id, index) =>
       fetch(
-        `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks/${id.toString()}`,
+        `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${id.toString()}`,
         {
           method: "PATCH",
           headers: {
@@ -172,7 +172,7 @@ export async function reorderBlocks(
   const failed = results.find((r) => !r.ok);
   if (failed !== undefined) {
     console.error(
-      `[reorderBlocks action] Failed to reorder blocks for event ${eventId}`,
+      `[reorderBlocks action] Failed to reorder blocks for event ${eventUuid}`,
     );
     return {
       success: false,
@@ -184,7 +184,7 @@ export async function reorderBlocks(
 }
 
 export async function deleteBlock(
-  eventId: string,
+  eventUuid: string,
   blockId: string,
   attributeId: string,
 ) {
@@ -195,7 +195,7 @@ export async function deleteBlock(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventId}/attributes/${attributeId}/blocks/${blockId}`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockId}`,
     {
       method: "DELETE",
       headers: {
@@ -207,7 +207,7 @@ export async function deleteBlock(
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteBlock action] Failed to delete block ${blockId} for event ${eventId}:`,
+      `[deleteBlock action] Failed to delete block ${blockId} for event ${eventUuid}:`,
       error,
     );
     return {

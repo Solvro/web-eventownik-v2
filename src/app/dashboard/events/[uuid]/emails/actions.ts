@@ -90,7 +90,7 @@ export async function updateEventEmail(
   return { success: true };
 }
 
-export async function reorderEmails(eventId: string, orderedIds: number[]) {
+export async function reorderEmails(eventUuid: string, orderedIds: number[]) {
   const session = await verifySession();
 
   if (session == null) {
@@ -100,7 +100,7 @@ export async function reorderEmails(eventId: string, orderedIds: number[]) {
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
   const results = await Promise.all(
     orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventId}/emails/${id.toString()}`, {
+      fetch(`${API_URL}/events/${eventUuid}/emails/${id.toString()}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export async function reorderEmails(eventId: string, orderedIds: number[]) {
   const failed = results.find((r) => !r.ok);
   if (failed !== undefined) {
     console.error(
-      `[reorderEmails action] Failed to reorder emails for event ${eventId}`,
+      `[reorderEmails action] Failed to reorder emails for event ${eventUuid}`,
     );
     return {
       success: false,

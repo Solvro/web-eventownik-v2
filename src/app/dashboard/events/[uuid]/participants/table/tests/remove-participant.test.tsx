@@ -101,8 +101,8 @@ describe("Removing participant", () => {
       attributes,
     );
     server.use(
-      http.delete<{ eventId: string; participantId: string }>(
-        `${API_URL}/events/:eventId/participants/:participantId`,
+      http.delete<{ eventUuid: string; participantId: string }>(
+        `${API_URL}/events/:eventUuid/participants/:participantId`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },
@@ -144,8 +144,8 @@ describe("Removing participant", () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRows } = renderTable(participants, attributes);
     server.use(
-      http.delete<{ eventId: string }>(
-        `${API_URL}/events/:eventId/participants`,
+      http.delete<{ eventUuid: string }>(
+        `${API_URL}/events/:eventUuid/participants`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },

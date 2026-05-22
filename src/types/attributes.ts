@@ -6,7 +6,7 @@ export interface EventAttribute {
   id: number;
   name: string;
   slug: string | null;
-  eventId: number;
+  eventUuid: number;
   options: string[] | null;
   type: string;
   rootBlockId: number | undefined;
@@ -31,7 +31,7 @@ export interface AttributeBase {
 }
 
 export interface Attribute extends Omit<AttributeBase, "value"> {
-  eventId: number;
+  eventUuid: string;
   showInList: boolean;
   options: string[] | null;
   type: AttributeType;

@@ -9,7 +9,7 @@ import type { EventForm } from "@/types/forms";
 
 type Payload = Omit<
   EventForm,
-  "eventId" | "id" | "slug" | "attributes" | "order"
+  "eventUuid" | "id" | "slug" | "attributes" | "order"
 > & {
   attributes: FormAttributeBase[];
 };

@@ -78,7 +78,7 @@ export function FormGenerator({
         submitParticipantForm({
           values,
           formId,
-          eventId: eventSlug,
+          eventUuid: eventSlug,
           participantSlug: userSlug,
           files,
         })

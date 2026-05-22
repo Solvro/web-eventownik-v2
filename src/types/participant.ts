@@ -10,7 +10,7 @@ export interface Participant {
 }
 
 export interface PublicParticipant extends Omit<Participant, "attributes"> {
-  eventId: number;
+  eventUuid: string;
   attributes: PublicParticipantAttribute[];
 }
 

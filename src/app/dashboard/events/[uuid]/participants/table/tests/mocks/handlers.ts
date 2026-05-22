@@ -8,14 +8,14 @@ import { deleteParticipantCaseData } from "./test-cases-data";
 let DELETE_PARTICIPANTS_MOCK = { ...deleteParticipantCaseData };
 
 export const handlers = [
-  http.patch<{ eventId: string; participantId: string }>(
-    `${API_URL}/events/:eventId/participants/:participantId`,
+  http.patch<{ eventUuid: string; participantId: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantId`,
     () => {
       return HttpResponse.json();
     },
   ),
-  http.delete<{ eventId: string; participantId: string }>(
-    `${API_URL}/events/:eventId/participants/:participantId`,
+  http.delete<{ eventUuid: string; participantId: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantId`,
     ({ params }) => {
       const { participantId } = params;
       DELETE_PARTICIPANTS_MOCK = {
@@ -27,8 +27,8 @@ export const handlers = [
       return HttpResponse.json();
     },
   ),
-  http.delete<{ eventId: string }>(
-    `${API_URL}/events/:eventId/participants`,
+  http.delete<{ eventUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants`,
     async ({ request }) => {
       const { participantsToUnregisterIds } = (await request.json()) as {
         participantsToUnregisterIds: string[];
@@ -43,14 +43,14 @@ export const handlers = [
       return HttpResponse.json();
     },
   ),
-  http.get<{ eventId: string }>(
-    `${API_URL}/events/:eventId/participants/export`,
+  http.get<{ eventUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants/export`,
     () => {
       return HttpResponse.json();
     },
   ),
-  http.post<{ eventId: string; emailId: string }>(
-    `${API_URL}/events/:eventId/emails/send/:emailId`,
+  http.post<{ eventUuid: string; emailId: string }>(
+    `${API_URL}/events/:eventUuid/emails/send/:emailId`,
     () => {
       return HttpResponse.json();
     },
