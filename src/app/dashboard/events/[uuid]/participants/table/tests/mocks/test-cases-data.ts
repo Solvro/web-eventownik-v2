@@ -27,7 +27,7 @@ export const textCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:01:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Medium", // Middle value
@@ -42,7 +42,7 @@ export const textCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:00:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Alpha", // First alphabetically
@@ -57,7 +57,7 @@ export const textCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Zebra", // Last alphabetically
@@ -67,7 +67,7 @@ export const textCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0000-000000000004",
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -129,7 +129,7 @@ export const selectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Male",
@@ -144,7 +144,7 @@ export const selectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Female",
@@ -159,7 +159,7 @@ export const selectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:04:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Other",
@@ -169,7 +169,7 @@ export const selectCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 6,
+      uuid: "00000000-0000-0000-0000-000000000006",
       name: "Gender",
       slug: "gender",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -195,7 +195,7 @@ export const emailCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:05:00Z",
       attributes: [
         {
-          id: 7,
+          uuid: "00000000-0000-0000-0000-000000000007",
           name: "Contact Email",
           slug: "contact-email",
           value: "middle@example.com",
@@ -210,7 +210,7 @@ export const emailCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:06:00Z",
       attributes: [
         {
-          id: 7,
+          uuid: "00000000-0000-0000-0000-000000000007",
           name: "Contact Email",
           slug: "contact-email",
           value: "auser@example.com",
@@ -225,7 +225,7 @@ export const emailCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:07:00Z",
       attributes: [
         {
-          id: 7,
+          uuid: "00000000-0000-0000-0000-000000000007",
           name: "Contact Email",
           slug: "contact-email",
           value: "zuser@example.com",
@@ -235,7 +235,7 @@ export const emailCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 7,
+      uuid: "00000000-0000-0000-0000-000000000007",
       name: "Contact Email",
       slug: "contact-email",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -261,7 +261,7 @@ export const textareaCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:08:00Z",
       attributes: [
         {
-          id: 8,
+          uuid: "00000000-0000-0000-0000-000000000008",
           name: "About Me",
           slug: "about-me",
           value: "Love hiking and running marathons.",
@@ -276,7 +276,7 @@ export const textareaCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:07:00Z",
       attributes: [
         {
-          id: 8,
+          uuid: "00000000-0000-0000-0000-000000000008",
           name: "About Me",
           slug: "about-me",
           value: "Software engineer and cat lover.",
@@ -291,7 +291,7 @@ export const textareaCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:09:00Z",
       attributes: [
         {
-          id: 8,
+          uuid: "00000000-0000-0000-0000-000000000008",
           name: "About Me",
           slug: "about-me",
           value: "Creative writer and book enthusiast.",
@@ -301,7 +301,7 @@ export const textareaCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 8,
+      uuid: "00000000-0000-0000-0000-000000000008",
       name: "About Me",
       slug: "about-me",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -327,7 +327,7 @@ export const multiselectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:10:00Z",
       attributes: [
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "Rust,Go",
@@ -342,7 +342,7 @@ export const multiselectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:10:00Z",
       attributes: [
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "Go,Rust",
@@ -357,7 +357,7 @@ export const multiselectCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:09:00Z",
       attributes: [
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "JavaScript,Python",
@@ -367,7 +367,7 @@ export const multiselectCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 10,
+      uuid: "00000000-0000-0000-0000-000000000010",
       name: "Skills",
       slug: "skills",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -393,7 +393,7 @@ export const colorCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:12:00Z",
       attributes: [
         {
-          id: 14,
+          uuid: "00000000-0000-0000-0000-000000000014",
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#0000ff", // blue
@@ -408,7 +408,7 @@ export const colorCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:11:00Z",
       attributes: [
         {
-          id: 14,
+          uuid: "00000000-0000-0000-0000-000000000014",
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#ff0000", // red
@@ -423,7 +423,7 @@ export const colorCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:13:00Z",
       attributes: [
         {
-          id: 14,
+          uuid: "00000000-0000-0000-0000-000000000014",
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#00ff00", // green
@@ -433,7 +433,7 @@ export const colorCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 14,
+      uuid: "00000000-0000-0000-0000-000000000014",
       name: "Favorite Color",
       slug: "favorite-color",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -459,7 +459,7 @@ export const numberCaseData: TestCaseData = {
       updatedAt: "2025-07-01T11:02:00Z",
       attributes: [
         {
-          id: 1,
+          uuid: "00000000-0000-0000-0000-000000000001",
           name: "Age",
           slug: "age",
           value: "35",
@@ -474,7 +474,7 @@ export const numberCaseData: TestCaseData = {
       updatedAt: "2025-07-01T11:00:00Z",
       attributes: [
         {
-          id: 1,
+          uuid: "00000000-0000-0000-0000-000000000001",
           name: "Age",
           slug: "age",
           value: "22",
@@ -489,7 +489,7 @@ export const numberCaseData: TestCaseData = {
       updatedAt: "2025-07-01T11:01:00Z",
       attributes: [
         {
-          id: 1,
+          uuid: "00000000-0000-0000-0000-000000000001",
           name: "Age",
           slug: "age",
           value: "45",
@@ -499,7 +499,7 @@ export const numberCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 1,
+      uuid: "00000000-0000-0000-0000-000000000001",
       name: "Age",
       slug: "age",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -525,7 +525,7 @@ export const telCaseData: TestCaseData = {
       updatedAt: "2025-07-01T14:02:00Z",
       attributes: [
         {
-          id: 13,
+          uuid: "00000000-0000-0000-0000-000000000013",
           name: "Phone Number",
           slug: "phone-number",
           value: "+49-151-12345678",
@@ -540,7 +540,7 @@ export const telCaseData: TestCaseData = {
       updatedAt: "2025-07-01T14:00:00Z",
       attributes: [
         {
-          id: 13,
+          uuid: "00000000-0000-0000-0000-000000000013",
           name: "Phone Number",
           slug: "phone-number",
           value: "+1-202-555-0101",
@@ -555,7 +555,7 @@ export const telCaseData: TestCaseData = {
       updatedAt: "2025-07-01T14:01:00Z",
       attributes: [
         {
-          id: 13,
+          uuid: "00000000-0000-0000-0000-000000000013",
           name: "Phone Number",
           slug: "phone-number",
           value: "+44-7700-900123",
@@ -565,7 +565,7 @@ export const telCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 13,
+      uuid: "00000000-0000-0000-0000-000000000013",
       name: "Phone Number",
       slug: "phone-number",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -591,7 +591,7 @@ export const checkboxCaseData: TestCaseData = {
       updatedAt: "2025-07-01T13:00:00Z",
       attributes: [
         {
-          id: 2,
+          uuid: "00000000-0000-0000-0000-000000000002",
           name: "Subscribed",
           slug: "subscribed",
           value: "true",
@@ -606,7 +606,7 @@ export const checkboxCaseData: TestCaseData = {
       updatedAt: "2025-07-01T13:01:00Z",
       attributes: [
         {
-          id: 2,
+          uuid: "00000000-0000-0000-0000-000000000002",
           name: "Subscribed",
           slug: "subscribed",
           value: "false",
@@ -621,7 +621,7 @@ export const checkboxCaseData: TestCaseData = {
       updatedAt: "2025-07-01T13:02:00Z",
       attributes: [
         {
-          id: 2,
+          uuid: "00000000-0000-0000-0000-000000000002",
           name: "Subscribed",
           slug: "subscribed",
           value: "true",
@@ -631,7 +631,7 @@ export const checkboxCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 2,
+      uuid: "00000000-0000-0000-0000-000000000002",
       name: "Subscribed",
       slug: "subscribed",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -657,7 +657,7 @@ export const timeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:03:00Z",
       attributes: [
         {
-          id: 3,
+          uuid: "00000000-0000-0000-0000-000000000003",
           name: "Preferred Time",
           slug: "preferred-time",
           value: "17:15:00",
@@ -672,7 +672,7 @@ export const timeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:02:00Z",
       attributes: [
         {
-          id: 3,
+          uuid: "00000000-0000-0000-0000-000000000003",
           name: "Preferred Time",
           slug: "preferred-time",
           value: "08:30:00",
@@ -687,7 +687,7 @@ export const timeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:04:00Z",
       attributes: [
         {
-          id: 3,
+          uuid: "00000000-0000-0000-0000-000000000003",
           name: "Preferred Time",
           slug: "preferred-time",
           value: "12:45:00",
@@ -697,7 +697,7 @@ export const timeCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 3,
+      uuid: "00000000-0000-0000-0000-000000000003",
       name: "Preferred Time",
       slug: "preferred-time",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -723,7 +723,7 @@ export const dateCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:01:00Z",
       attributes: [
         {
-          id: 12,
+          uuid: "00000000-0000-0000-0000-000000000012",
           name: "Birth Date",
           slug: "birth-date",
           value: "1990-05-14",
@@ -738,7 +738,7 @@ export const dateCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:00:00Z",
       attributes: [
         {
-          id: 12,
+          uuid: "00000000-0000-0000-0000-000000000012",
           name: "Birth Date",
           slug: "birth-date",
           value: "1985-11-20",
@@ -753,7 +753,7 @@ export const dateCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:02:00Z",
       attributes: [
         {
-          id: 12,
+          uuid: "00000000-0000-0000-0000-000000000012",
           name: "Birth Date",
           slug: "birth-date",
           value: "1995-03-08",
@@ -763,7 +763,7 @@ export const dateCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 12,
+      uuid: "00000000-0000-0000-0000-000000000012",
       name: "Birth Date",
       slug: "birth-date",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -789,7 +789,7 @@ export const datetimeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:05:00Z",
       attributes: [
         {
-          id: 5,
+          uuid: "00000000-0000-0000-0000-000000000005",
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-07-01T14:45:00Z",
@@ -804,7 +804,7 @@ export const datetimeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:04:00Z",
       attributes: [
         {
-          id: 5,
+          uuid: "00000000-0000-0000-0000-000000000005",
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-06-10T09:15:00Z",
@@ -819,7 +819,7 @@ export const datetimeCaseData: TestCaseData = {
       updatedAt: "2025-07-01T12:06:00Z",
       attributes: [
         {
-          id: 5,
+          uuid: "00000000-0000-0000-0000-000000000005",
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-08-15T18:30:00Z",
@@ -829,7 +829,7 @@ export const datetimeCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 5,
+      uuid: "00000000-0000-0000-0000-000000000005",
       name: "Registration Datetime",
       slug: "registration-datetime",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -854,13 +854,13 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Male",
         },
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "Rust,Go",
@@ -875,13 +875,13 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Female",
         },
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "JavaScript,Python",
@@ -896,13 +896,13 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:04:00Z",
       attributes: [
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Gender",
           slug: "gender",
           value: "Other",
         },
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Skills",
           slug: "skills",
           value: "Go,Rust",
@@ -912,7 +912,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 6,
+      uuid: "00000000-0000-0000-0000-000000000006",
       name: "Gender",
       slug: "gender",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -924,7 +924,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:05:00Z",
     },
     {
-      id: 10,
+      uuid: "00000000-0000-0000-0000-000000000010",
       name: "Skills",
       slug: "skills",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -948,7 +948,7 @@ export const editParticipantTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Nickname",
           slug: "nickname",
           value: "chewmanji",
@@ -958,7 +958,7 @@ export const editParticipantTestCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 6,
+      uuid: "00000000-0000-0000-0000-000000000006",
       name: "Age",
       slug: "age",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -970,7 +970,7 @@ export const editParticipantTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:05:00Z",
     },
     {
-      id: 10,
+      uuid: "00000000-0000-0000-0000-000000000010",
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -994,13 +994,13 @@ export const editParticipantDetailsTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          id: 10,
+          uuid: "00000000-0000-0000-0000-000000000010",
           name: "Nickname",
           slug: "nickname",
           value: "chewmanji",
         },
         {
-          id: 6,
+          uuid: "00000000-0000-0000-0000-000000000006",
           name: "Age",
           slug: "age",
           value: "42",
@@ -1022,7 +1022,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:01:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Medium", // Middle value
@@ -1037,7 +1037,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:00:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Alpha", // First alphabetically
@@ -1052,7 +1052,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          id: 4,
+          uuid: "00000000-0000-0000-0000-000000000004",
           name: "Nickname",
           slug: "nickname",
           value: "Zebra", // Last alphabetically
@@ -1062,7 +1062,7 @@ export const deleteParticipantCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0000-000000000004",
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
