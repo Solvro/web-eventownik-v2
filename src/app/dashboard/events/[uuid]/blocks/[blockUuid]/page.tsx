@@ -2,8 +2,8 @@ import { Cuboid } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { CreateBlockForm } from "@/app/dashboard/events/[uuid]/blocks/[blockId]/create-block-form";
-import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[uuid]/blocks/[blockId]/toggle-participants-visibility-button";
+import { CreateBlockForm } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/create-block-form";
+import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/toggle-participants-visibility-button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
@@ -13,11 +13,11 @@ import { SortableBlockGrid } from "./sortable-block-grid";
 
 async function getRootBlock(
   eventUuid: string,
-  blockId: string,
+  blockUuid: string,
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${blockId}/blocks`,
+    `${API_URL}/events/${eventUuid}/attributes/${blockUuid}/blocks`,
     {
       method: "GET",
       headers: {
@@ -31,7 +31,7 @@ async function getRootBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[getRootBlock] Failed to fetch root block ${blockId} for event ${eventUuid}:`,
+      `[getRootBlock] Failed to fetch root block ${blockUuid} for event ${eventUuid}:`,
       error,
     );
     return null;
@@ -67,14 +67,14 @@ async function getRootBlockAttributeName(
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ uuid: string; blockId: string }>;
+  params: Promise<{ uuid: string; blockUuid: string }>;
 }): Promise<Metadata> {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
   const { bearerToken } = session;
-  const { uuid: eventUuid, blockId: rootBlockId } = await params;
+  const { uuid: eventUuid, blockUuid: rootBlockId } = await params;
 
   const rootBlockName = await getRootBlockAttributeName(
     eventUuid,
@@ -90,9 +90,9 @@ export async function generateMetadata({
 export default async function EventBlockEditPage({
   params,
 }: {
-  params: Promise<{ uuid: string; blockId: string }>;
+  params: Promise<{ uuid: string; blockUuid: string }>;
 }) {
-  const { uuid: eventUuid, blockId: rootBlockId } = await params;
+  const { uuid: eventUuid, blockUuid: rootBlockId } = await params;
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");

@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 
-import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockId]/block-participants-list";
+import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
@@ -47,7 +47,7 @@ function BlockEntry({
         />
         <DeleteBlockPopup
           eventUuid={eventUuid}
-          blockId={block.uuid}
+          blockUuid={block.uuid}
           blockName={block.name}
           attributeId={attributeId}
         />

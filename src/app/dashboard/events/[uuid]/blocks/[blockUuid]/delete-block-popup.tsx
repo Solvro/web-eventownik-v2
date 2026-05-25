@@ -8,12 +8,12 @@ import { deleteBlock } from "../actions";
 
 function DeleteBlockPopup({
   eventUuid,
-  blockId,
+  blockUuid,
   blockName,
   attributeId,
 }: {
   eventUuid: string;
-  blockId: string;
+  blockUuid: string;
   blockName: string;
   attributeId: string;
 }) {
@@ -23,7 +23,7 @@ function DeleteBlockPopup({
     <DeleteResourcePopup
       resourceName={blockName}
       resourceType="Blok"
-      onDelete={async () => deleteBlock(eventUuid, blockId, attributeId)}
+      onDelete={async () => deleteBlock(eventUuid, blockUuid, attributeId)}
       onSuccess={() => {
         router.refresh();
       }}
