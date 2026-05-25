@@ -185,7 +185,7 @@ export async function reorderBlocks(
 
 export async function deleteBlock(
   eventUuid: string,
-  blockId: string,
+  blockUuid: string,
   attributeId: string,
 ) {
   const session = await verifySession();
@@ -195,7 +195,7 @@ export async function deleteBlock(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockId}`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockUuid}`,
     {
       method: "DELETE",
       headers: {
@@ -207,7 +207,7 @@ export async function deleteBlock(
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteBlock action] Failed to delete block ${blockId} for event ${eventUuid}:`,
+      `[deleteBlock action] Failed to delete block ${blockUuid} for event ${eventUuid}:`,
       error,
     );
     return {
