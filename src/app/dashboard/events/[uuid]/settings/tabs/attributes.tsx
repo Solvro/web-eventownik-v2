@@ -16,14 +16,14 @@ type AttributeFormData = Pick<
   | "reason"
   | "isMultiple"
   | "maxSelections"
-> & { id?: number };
+> & { uuid?: string };
 
 const toChangeData = (
   attribute: AttributeFormData,
   original?: EventAttribute,
   fallbackId?: number,
 ): AttributeChange["data"] => ({
-  id: attribute.id ?? original?.id ?? fallbackId,
+  uuid: attribute.uuid ?? original?.uuid ?? fallbackId,
   name: attribute.name,
   slug: attribute.slug ?? original?.slug ?? null,
   type: attribute.type,
@@ -95,7 +95,7 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
       );
 
       // If the attribute was newly added and then removed
-      if (attributeToDelete.id == null || attributeToDelete.id < 0) {
+      if (attributeToDelete.uuid == null) {
         return filtered;
       }
 

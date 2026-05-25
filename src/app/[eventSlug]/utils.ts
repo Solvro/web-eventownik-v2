@@ -3,10 +3,10 @@ import type { PublicBlock } from "@/types/blocks";
 
 export async function getEventBlockAttributeBlocks(
   eventSlug: string,
-  attributeId: string,
+  attributeUuid: string,
 ) {
   const blocksResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/attributes/${attributeId}/blocks`,
+    `${API_URL}/events/${eventSlug}/attributes/${attributeUuid}/blocks`,
     {
       method: "GET",
     },

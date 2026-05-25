@@ -232,14 +232,14 @@ export function TableRowForm({
                       disabled={formDisabled}
                       control={form.control}
                       key={cell.id}
-                      name={attribute.id.toString()}
+                      name={attribute.uuid}
                       render={({ field }) => {
                         if (attribute.type === "block") {
                           return (
                             <BlockSelect
                               rootBlock={
                                 blocks.find(
-                                  (b) => b?.attributeId === attribute.id,
+                                  (b) => b?.attributeUuid === attribute.uuid,
                                 ) ?? null
                               }
                               field={field}
@@ -256,18 +256,18 @@ export function TableRowForm({
                       }}
                     ></Controller>
                   ) : attribute?.type === "file" &&
-                    row.original[attribute.id] !== null &&
-                    row.original[attribute.id] !== undefined &&
-                    row.original[attribute.id] !== "" ? (
+                    row.original[attribute.uuid] !== null &&
+                    row.original[attribute.uuid] !== undefined &&
+                    row.original[attribute.uuid] !== "" ? (
                     <DownloadAttributeFileButton
                       attribute={attribute}
                       eventUuid={eventUuid}
                       participant={row.original}
                     />
                   ) : attribute?.type === "drawing" &&
-                    row.original[attribute.id] !== null &&
-                    row.original[attribute.id] !== undefined &&
-                    row.original[attribute.id] !== "" ? (
+                    row.original[attribute.uuid] !== null &&
+                    row.original[attribute.uuid] !== undefined &&
+                    row.original[attribute.uuid] !== "" ? (
                     <DrawingPreviewButton
                       attribute={attribute}
                       eventUuid={eventUuid}
@@ -299,7 +299,7 @@ export function TableRowForm({
                   return attribute === undefined ? null : (
                     <div key={cell.id} className="space-y-1">
                       <div className="text-muted-foreground text-sm font-medium">
-                        {attribute.name || attribute.id}
+                        {attribute.name || attribute.uuid}
                       </div>
                       <div className="min-h-10">
                         {isEditMode ? (
@@ -308,14 +308,15 @@ export function TableRowForm({
                             disabled={formDisabled}
                             control={form.control}
                             key={cell.id}
-                            name={attribute.id.toString()}
+                            name={attribute.uuid}
                             render={({ field }) => {
                               if (attribute.type === "block") {
                                 return (
                                   <BlockSelect
                                     rootBlock={
                                       blocks.find(
-                                        (b) => b?.attributeId === attribute.id,
+                                        (b) =>
+                                          b?.attributeUuid === attribute.uuid,
                                       ) ?? null
                                     }
                                     field={field}
@@ -332,18 +333,18 @@ export function TableRowForm({
                             }}
                           ></Controller>
                         ) : attribute.type === "file" &&
-                          row.original[attribute.id] !== null &&
-                          row.original[attribute.id] !== undefined &&
-                          row.original[attribute.id] !== "" ? (
+                          row.original[attribute.uuid] !== null &&
+                          row.original[attribute.uuid] !== undefined &&
+                          row.original[attribute.uuid] !== "" ? (
                           <DownloadAttributeFileButton
                             attribute={attribute}
                             eventUuid={eventUuid}
                             participant={row.original}
                           />
                         ) : attribute.type === "drawing" &&
-                          row.original[attribute.id] !== null &&
-                          row.original[attribute.id] !== undefined &&
-                          row.original[attribute.id] !== "" ? (
+                          row.original[attribute.uuid] !== null &&
+                          row.original[attribute.uuid] !== undefined &&
+                          row.original[attribute.uuid] !== "" ? (
                           <DrawingPreviewButton
                             attribute={attribute}
                             eventUuid={eventUuid}

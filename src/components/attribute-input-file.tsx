@@ -59,17 +59,14 @@ export function AttributeInputFile({
     if (file === undefined) {
       setFiles((previousFiles) =>
         previousFiles.filter(
-          (existingFile) => existingFile.name !== attribute.id.toString(),
+          (existingFile) => existingFile.name !== attribute.uuid,
         ),
       );
       return;
     }
 
     if (validateFile(file)) {
-      const fileWithAttributeIdAsName = new File(
-        [file],
-        attribute.id.toString(),
-      );
+      const fileWithAttributeIdAsName = new File([file], attribute.uuid);
       setFiles((previousFiles) => {
         const filtered = previousFiles.filter(
           (existingFile) =>
@@ -83,10 +80,10 @@ export function AttributeInputFile({
   function validateFile(file: File) {
     const result = fileSchema.safeParse(file);
     if (result.success) {
-      resetField(attribute.id.toString());
+      resetField(attribute.uuid);
       return true;
     } else {
-      setError(attribute.id.toString(), {
+      setError(attribute.uuid, {
         message: result.error.errors[0].message,
       });
       return false;
@@ -104,7 +101,7 @@ export function AttributeInputFile({
       )}
       <Input
         type="file"
-        id={attribute.id.toString()}
+        id={attribute.uuid}
         {...field}
         onChange={handleFileChange}
       />

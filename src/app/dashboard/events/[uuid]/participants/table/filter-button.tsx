@@ -26,7 +26,7 @@ export function FilterButton({
   options_: string[] | null;
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
   blocks: (Block | null)[] | null;
-  attributeId: number;
+  attributeId: string;
 }) {
   if (
     attributeType === "checkbox" ||
@@ -53,11 +53,11 @@ export function FilterButton({
     }
 
     if (attributeType === "block") {
-      const rootBlock = blocks?.find((b) => b?.attributeId === attributeId);
+      const rootBlock = blocks?.find((b) => b?.attributeUuid === attributeId);
       options =
         rootBlock?.children.map((block) => ({
           label: block.name,
-          value: block.id.toString(),
+          value: block.uuid,
         })) ?? [];
     }
 

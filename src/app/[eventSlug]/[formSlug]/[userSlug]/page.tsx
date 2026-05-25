@@ -62,7 +62,7 @@ async function getUserData(
   );
 
   for (const attribute of formAttributes) {
-    attributesUrl.searchParams.append("attributes[]", attribute.id.toString());
+    attributesUrl.searchParams.append("attributes[]", attribute.uuid);
   }
 
   const userDataResponse = await fetch(attributesUrl, {
@@ -113,7 +113,7 @@ export default async function FormPage({ params }: FormPageProps) {
 
   const eventBlocks = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
-      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+      getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
@@ -140,7 +140,7 @@ export default async function FormPage({ params }: FormPageProps) {
         attributes={form.attributes}
         userData={userData}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.uuid}
+        formUuid={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}
         editMode={true}

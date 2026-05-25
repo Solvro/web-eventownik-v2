@@ -22,7 +22,7 @@ export function getAriaSort(
 export function formatAttributeValue(
   value: ParticipantAttributeValueType,
   type: Attribute["type"],
-  attributeId: number,
+  attributeUuid: string,
   blocks: (Block | null)[],
 ) {
   if (value === undefined || value === null || value === "") {
@@ -38,7 +38,7 @@ export function formatAttributeValue(
         "dd-MM-yyyy HH:mm:ss",
       );
     case "block": {
-      const rootBlock = blocks.find((b) => b?.attributeId === attributeId);
+      const rootBlock = blocks.find((b) => b?.attributeUuid === attributeUuid);
 
       if (
         // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -55,7 +55,7 @@ export function formatAttributeValue(
 
       return (
         rootBlock?.children.find((b) => {
-          return b.id === Number(value);
+          return b.uuid === value;
         })?.name ?? value
       );
     }

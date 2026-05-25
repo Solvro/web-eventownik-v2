@@ -47,7 +47,7 @@ export async function reorderBlockAttributes(
 
 export async function createBlock(
   eventUuid: string,
-  attributeId: string,
+  attributeUuid: string,
   parentId: string,
   name: string,
   description: string | null,
@@ -60,7 +60,7 @@ export async function createBlock(
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks`,
     {
       method: "POST",
       headers: {
@@ -95,7 +95,7 @@ export async function createBlock(
 
 export async function updateBlock(
   eventUuid: string,
-  attributeId: string,
+  attributeUuid: string,
   blockId: string,
   name: string,
   description: string | null,
@@ -108,7 +108,7 @@ export async function updateBlock(
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockId}`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${blockId}`,
     {
       method: "PATCH",
       headers: {
@@ -142,8 +142,8 @@ export async function updateBlock(
 
 export async function reorderBlocks(
   eventUuid: string,
-  attributeId: string,
-  orderedIds: number[],
+  attributeUuid: string,
+  orderedIds: string[],
 ) {
   const session = await verifySession();
 
@@ -154,9 +154,9 @@ export async function reorderBlocks(
   const { bearerToken } = session;
 
   const results = await Promise.all(
-    orderedIds.map(async (id, index) =>
+    orderedIds.map(async (uuid, index) =>
       fetch(
-        `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${id.toString()}`,
+        `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${uuid}`,
         {
           method: "PATCH",
           headers: {
@@ -186,7 +186,7 @@ export async function reorderBlocks(
 export async function deleteBlock(
   eventUuid: string,
   blockUuid: string,
-  attributeId: string,
+  attributeUuid: string,
 ) {
   const session = await verifySession();
 
@@ -195,7 +195,7 @@ export async function deleteBlock(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks/${blockUuid}`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${blockUuid}`,
     {
       method: "DELETE",
       headers: {

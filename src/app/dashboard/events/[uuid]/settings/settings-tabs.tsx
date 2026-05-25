@@ -147,7 +147,7 @@ export function EventSettingsTabs({
       })),
       // Attributes fields
       attributes: unmodifiedAttributes.map((attribute) => ({
-        id: attribute.id,
+        uuid: attribute.uuid,
         name: attribute.name,
         slug: attribute.slug ?? "",
         type: attribute.type,

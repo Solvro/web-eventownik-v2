@@ -13,7 +13,7 @@ export type AttributeChangeData = Pick<
   | "reason"
   | "isMultiple"
   | "maxSelections"
-> & { id?: number };
+> & { uuid?: string };
 
 export interface AttributeChange {
   type: "add" | "update" | "delete";

@@ -43,7 +43,7 @@ export function DashboardSidebar({
         ({
           title: block.name,
           icon: <Cuboid />,
-          route: `blocks/${block.id.toString()}`,
+          route: `blocks/${block.uuid}`,
         }) as SidebarLink,
     );
 

@@ -106,7 +106,7 @@ export function generateColumns(
     .map((attribute) => {
       //accessor must match keys in flatParticipant (check ./data.ts)
       const showInTable = attribute.showInList;
-      return columnHelper.accessor(attribute.id.toString(), {
+      return columnHelper.accessor(attribute.uuid, {
         meta: {
           attribute,
           showInTable,
@@ -120,7 +120,7 @@ export function generateColumns(
               options_={attribute.options}
               blocks={blocks}
               column={column}
-              attributeId={attribute.id}
+              attributeId={attribute.uuid}
             />
             <HeaderWithSort
               column={column}
@@ -133,7 +133,7 @@ export function generateColumns(
           formatAttributeValue(
             info.getValue(),
             attribute.type,
-            attribute.id,
+            attribute.uuid,
             blocks,
           ),
         //sortingFn: () => { } There we may implement custom logic for sorting, for example dependent on attribute type

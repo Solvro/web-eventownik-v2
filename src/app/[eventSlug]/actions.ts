@@ -14,7 +14,7 @@ interface SubmitFormOptions {
    * Legacy events have IDs, new events have slugs - this handles both
    */
   eventUuid: string;
-  formId: string;
+  formUuid: string;
   files: File[];
   participantSlug?: string;
 }
@@ -31,7 +31,7 @@ interface SubmitFormResult {
 export async function submitParticipantForm({
   values,
   eventUuid,
-  formId,
+  formUuid,
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
@@ -65,7 +65,7 @@ export async function submitParticipantForm({
     }
 
     const response = await fetch(
-      `${API_URL}/events/${eventUuid}/forms/${formId}/submit`,
+      `${API_URL}/events/${eventUuid}/forms/${formUuid}/submit`,
       {
         method: "POST",
         body: formData,

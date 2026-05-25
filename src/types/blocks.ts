@@ -7,7 +7,7 @@ export interface Block {
   description: string | null;
   capacity: number | null;
   parentId: number | null;
-  attributeId: number;
+  attributeUuid: string;
   attribute: FormAttribute;
   order: number;
   createdAt: string;

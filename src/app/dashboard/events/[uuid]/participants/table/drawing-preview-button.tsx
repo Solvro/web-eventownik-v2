@@ -48,7 +48,7 @@ export function DrawingPreviewButton({
       const { success, file } = await downloadAttributeFileAction(
         eventUuid,
         participant.id.toString(),
-        attribute.id.toString(),
+        attribute.uuid,
       );
 
       if (success && file != null) {
@@ -68,7 +68,7 @@ export function DrawingPreviewButton({
       const { success, file, error } = await downloadAttributeFileAction(
         eventUuid,
         participant.id.toString(),
-        attribute.id.toString(),
+        attribute.uuid,
       );
       setIsQuerying(false);
 

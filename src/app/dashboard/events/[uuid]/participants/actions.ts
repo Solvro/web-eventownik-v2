@@ -96,11 +96,7 @@ export async function getBlocks(eventUuid: string, attributes: Attribute[]) {
     const rootBlocksPromises = attributes
       .filter((attribute) => attribute.type === "block")
       .map(async (attribute) => {
-        return getBlockData(
-          eventUuid,
-          attribute.id.toString(),
-          session.bearerToken,
-        );
+        return getBlockData(eventUuid, attribute.uuid, session.bearerToken);
       });
 
     const responses = await Promise.all(rootBlocksPromises);
@@ -321,7 +317,7 @@ export async function sendMail(
 export async function downloadAttributeFile(
   eventUuid: string,
   participantId: string,
-  attributeId: string,
+  attributeUuid: string,
 ) {
   const session = await verifySession();
   if (session === null) {
@@ -329,7 +325,7 @@ export async function downloadAttributeFile(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantId}/attributes/${attributeId}`,
+    `${API_URL}/events/${eventUuid}/participants/${participantId}/attributes/${attributeUuid}`,
     {
       method: "GET",
       headers: {

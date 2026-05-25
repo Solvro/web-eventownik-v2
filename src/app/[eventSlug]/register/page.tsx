@@ -74,7 +74,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const eventBlocks = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
-      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+      getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
@@ -121,7 +121,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <FormGenerator
         attributes={form.attributes}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.uuid}
+        formUuid={form.uuid}
         eventSlug={eventSlug}
         editMode={false}
       />

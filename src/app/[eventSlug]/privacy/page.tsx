@@ -106,7 +106,7 @@ export default async function EventPage({ params }: EventPageProps) {
               </li>
               {event.attributes.map((attribute) => {
                 return (
-                  <li key={attribute.id}>
+                  <li key={attribute.uuid}>
                     {getAttributeLabel(attribute.name, "pl")}
                     {attribute.isSensitiveData
                       ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`
