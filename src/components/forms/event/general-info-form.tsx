@@ -128,6 +128,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
+                        aria-label="Kalendarz daty rozpoczęcia"
                         className="z-50"
                         mode="single"
                         selected={field.value}
@@ -148,6 +149,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      aria-label="Godzina rozpoczęcia"
                       {...field}
                     />
                   </FormControl>
@@ -185,6 +187,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
+                        aria-label="Kalendarz daty zakończenia"
                         className="z-50"
                         mode="single"
                         selected={field.value}
@@ -211,6 +214,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      aria-label="Godzina zakończenia"
                       {...field}
                     />
                   </FormControl>
