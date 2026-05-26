@@ -36,21 +36,24 @@ export async function getParticipants(eventUuid: string) {
   return participants;
 }
 
-export async function getParticipant(eventUuid: string, participantId: string) {
+export async function getParticipant(
+  eventUuid: string,
+  participantUuid: string,
+) {
   const session = await verifySession();
   if (session === null) {
     redirect("/auth/login");
   }
 
-  if (!isValidUuid(eventUuid) || !isValidUuid(participantId)) {
+  if (!isValidUuid(eventUuid) || !isValidUuid(participantUuid)) {
     console.error(
-      `[getParticipant] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantId}`,
+      `[getParticipant] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantUuid}`,
     );
     return null;
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantUuid)}`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
