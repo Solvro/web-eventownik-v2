@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 
 export interface AttributeItemProps {
-  id: string;
+  uuid: string;
   index: number;
   attribute: EventAttribute;
   isIncluded: boolean;
@@ -30,7 +30,7 @@ export interface AttributesReorderProps {
 }
 
 function AttributeItem({
-  id,
+  uuid,
   index,
   attribute,
   isIncluded,
@@ -38,7 +38,7 @@ function AttributeItem({
   handleIncludeToggle,
   handleRequiredToggle,
 }: AttributeItemProps) {
-  const { ref, handleRef, isDragSource } = useSortable({ id, index });
+  const { ref, handleRef, isDragSource } = useSortable({ id: uuid, index });
 
   return (
     <div
@@ -175,7 +175,7 @@ function AttributesReorder({
               return (
                 <AttributeItem
                   key={attribute.uuid}
-                  id={attribute.uuid}
+                  uuid={attribute.uuid}
                   index={index}
                   attribute={fullAttribute}
                   isIncluded={true}
