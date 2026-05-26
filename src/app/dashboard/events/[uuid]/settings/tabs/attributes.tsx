@@ -21,7 +21,7 @@ type AttributeFormData = Pick<
 const toChangeData = (
   attribute: AttributeFormData,
   original?: EventAttribute,
-  fallbackId?: number,
+  fallbackId?: string,
 ): AttributeChange["data"] => ({
   uuid: attribute.uuid ?? original?.uuid ?? fallbackId,
   name: attribute.name,
@@ -46,7 +46,11 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
 
   // Track changes using form callbacks
   const handleAdd = (attribute: AttributeFormData) => {
-    const newAttribute = toChangeData(attribute, undefined, -Date.now());
+    const newAttribute = toChangeData(
+      attribute,
+      undefined,
+      `-${crypto.randomUUID()}`,
+    );
 
     setAttributesChanges((previous: AttributeChange[]) => {
       const newChange: AttributeChange = {
