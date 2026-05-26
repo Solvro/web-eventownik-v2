@@ -20,14 +20,14 @@ export const textCaseData: TestCaseData = {
   participants: [
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
-      uuid: "00000000-0000-0000-0001-000000000002",
+      uuid: crypto.randomUUID(),
       email: "bob@domain.com", // email domain changed for filtering tests
       slug: "bob",
       createdAt: "2025-07-01T10:01:00Z",
       updatedAt: "2025-07-01T10:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Medium", // Middle value
@@ -35,14 +35,14 @@ export const textCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000001",
+      uuid: crypto.randomUUID(),
       email: "anna@domain.com", // email domain changed for filtering tests
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
       updatedAt: "2025-07-01T10:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Alpha", // First alphabetically
@@ -50,14 +50,14 @@ export const textCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000003",
+      uuid: crypto.randomUUID(),
       email: "charlie@example.com",
       slug: "charlie",
       createdAt: "2025-07-01T10:02:00Z",
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Zebra", // Last alphabetically
@@ -67,7 +67,7 @@ export const textCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000004",
+      uuid: crypto.randomUUID(),
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -82,7 +82,7 @@ export const textCaseData: TestCaseData = {
   attributeType: "text",
   emails: [
     {
-      uuid: "00000000-0000-0000-0000-000000001001",
+      uuid: crypto.randomUUID(),
       eventUuid: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
       name: "Welcome Email - New Registration",
       trigger: "participant_registered",
@@ -122,14 +122,14 @@ export const selectCaseData: TestCaseData = {
   participants: [
     // Initial order: Male, Female, Other (not alphabetical)
     {
-      uuid: "00000000-0000-0000-0001-000000000004",
+      uuid: crypto.randomUUID(),
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Male",
@@ -137,14 +137,14 @@ export const selectCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000003",
+      uuid: crypto.randomUUID(),
       email: "carol@example.com",
       slug: "carol",
       createdAt: "2025-07-01T10:02:00Z",
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Female",
@@ -152,14 +152,14 @@ export const selectCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000005",
+      uuid: crypto.randomUUID(),
       email: "eli@example.com",
       slug: "eli",
       createdAt: "2025-07-01T10:04:00Z",
       updatedAt: "2025-07-01T10:04:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Other",
@@ -169,7 +169,7 @@ export const selectCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000006",
+      uuid: crypto.randomUUID(),
       name: "Gender",
       slug: "gender",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -188,14 +188,14 @@ export const emailCaseData: TestCaseData = {
   participants: [
     // Initial order: middle@, auser@, zuser@ (not sorted)
     {
-      uuid: "00000000-0000-0000-0001-000000000006",
+      uuid: crypto.randomUUID(),
       email: "frank@example.com",
       slug: "frank",
       createdAt: "2025-07-01T10:05:00Z",
       updatedAt: "2025-07-01T10:05:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000007",
+          uuid: crypto.randomUUID(),
           name: "Contact Email",
           slug: "contact-email",
           value: "middle@example.com",
@@ -203,14 +203,14 @@ export const emailCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000007",
+      uuid: crypto.randomUUID(),
       email: "grace@example.com",
       slug: "grace",
       createdAt: "2025-07-01T10:06:00Z",
       updatedAt: "2025-07-01T10:06:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000007",
+          uuid: crypto.randomUUID(),
           name: "Contact Email",
           slug: "contact-email",
           value: "auser@example.com",
@@ -218,14 +218,14 @@ export const emailCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000008",
+      uuid: crypto.randomUUID(),
       email: "henry@example.com",
       slug: "henry",
       createdAt: "2025-07-01T10:07:00Z",
       updatedAt: "2025-07-01T10:07:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000007",
+          uuid: crypto.randomUUID(),
           name: "Contact Email",
           slug: "contact-email",
           value: "zuser@example.com",
@@ -235,7 +235,7 @@ export const emailCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000007",
+      uuid: crypto.randomUUID(),
       name: "Contact Email",
       slug: "contact-email",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -254,14 +254,14 @@ export const textareaCaseData: TestCaseData = {
   participants: [
     // Initial order: Love hiking, Software engineer, Creative writer
     {
-      uuid: "00000000-0000-0000-0001-000000000009",
+      uuid: crypto.randomUUID(),
       email: "ivy@example.com",
       slug: "ivy",
       createdAt: "2025-07-01T10:08:00Z",
       updatedAt: "2025-07-01T10:08:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000008",
+          uuid: crypto.randomUUID(),
           name: "About Me",
           slug: "about-me",
           value: "Love hiking and running marathons.",
@@ -269,14 +269,14 @@ export const textareaCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000008",
+      uuid: crypto.randomUUID(),
       email: "hank@example.com",
       slug: "hank",
       createdAt: "2025-07-01T10:07:00Z",
       updatedAt: "2025-07-01T10:07:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000008",
+          uuid: crypto.randomUUID(),
           name: "About Me",
           slug: "about-me",
           value: "Software engineer and cat lover.",
@@ -284,14 +284,14 @@ export const textareaCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000010",
+      uuid: crypto.randomUUID(),
       email: "jack@example.com",
       slug: "jack",
       createdAt: "2025-07-01T10:09:00Z",
       updatedAt: "2025-07-01T10:09:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000008",
+          uuid: crypto.randomUUID(),
           name: "About Me",
           slug: "about-me",
           value: "Creative writer and book enthusiast.",
@@ -301,7 +301,7 @@ export const textareaCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000008",
+      uuid: crypto.randomUUID(),
       name: "About Me",
       slug: "about-me",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -320,14 +320,14 @@ export const multiselectCaseData: TestCaseData = {
   participants: [
     // Initial order: Rust,Go then Go,Rust then JavaScript,Python (not alphabetical)
     {
-      uuid: "00000000-0000-0000-0001-000000000012",
+      uuid: crypto.randomUUID(),
       email: "aren@example.com",
       slug: "aren",
       createdAt: "2025-07-01T10:10:00Z",
       updatedAt: "2025-07-01T10:10:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "Rust,Go",
@@ -335,14 +335,14 @@ export const multiselectCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000011",
+      uuid: crypto.randomUUID(),
       email: "karen@example.com",
       slug: "karen",
       createdAt: "2025-07-01T10:10:00Z",
       updatedAt: "2025-07-01T10:10:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "Go,Rust",
@@ -350,14 +350,14 @@ export const multiselectCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000010",
+      uuid: crypto.randomUUID(),
       email: "john@example.com",
       slug: "john",
       createdAt: "2025-07-01T10:09:00Z",
       updatedAt: "2025-07-01T10:09:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "JavaScript,Python",
@@ -367,7 +367,7 @@ export const multiselectCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000010",
+      uuid: crypto.randomUUID(),
       name: "Skills",
       slug: "skills",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -386,14 +386,14 @@ export const colorCaseData: TestCaseData = {
   participants: [
     // Initial order: #0000ff (blue), #ff0000 (red), #00ff00 (green)
     {
-      uuid: "00000000-0000-0000-0001-000000000013",
+      uuid: crypto.randomUUID(),
       email: "mila@example.com",
       slug: "mila",
       createdAt: "2025-07-01T10:12:00Z",
       updatedAt: "2025-07-01T10:12:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000014",
+          uuid: crypto.randomUUID(),
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#0000ff", // blue
@@ -401,14 +401,14 @@ export const colorCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000012",
+      uuid: crypto.randomUUID(),
       email: "leo@example.com",
       slug: "leo",
       createdAt: "2025-07-01T10:11:00Z",
       updatedAt: "2025-07-01T10:11:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000014",
+          uuid: crypto.randomUUID(),
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#ff0000", // red
@@ -416,14 +416,14 @@ export const colorCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000014",
+      uuid: crypto.randomUUID(),
       email: "nina@example.com",
       slug: "nina",
       createdAt: "2025-07-01T10:13:00Z",
       updatedAt: "2025-07-01T10:13:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000014",
+          uuid: crypto.randomUUID(),
           name: "Favorite Color",
           slug: "favorite-color",
           value: "#00ff00", // green
@@ -433,7 +433,7 @@ export const colorCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000014",
+      uuid: crypto.randomUUID(),
       name: "Favorite Color",
       slug: "favorite-color",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -452,14 +452,14 @@ export const numberCaseData: TestCaseData = {
   participants: [
     // Initial order: 35, 22, 45 (not in ascending or descending order)
     {
-      uuid: "00000000-0000-0000-0001-000000000016",
+      uuid: crypto.randomUUID(),
       email: "peter@example.com",
       slug: "peter",
       createdAt: "2025-07-01T11:02:00Z",
       updatedAt: "2025-07-01T11:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000001",
+          uuid: crypto.randomUUID(),
           name: "Age",
           slug: "age",
           value: "35",
@@ -467,14 +467,14 @@ export const numberCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000014",
+      uuid: crypto.randomUUID(),
       email: "noah@example.com",
       slug: "noah",
       createdAt: "2025-07-01T11:00:00Z",
       updatedAt: "2025-07-01T11:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000001",
+          uuid: crypto.randomUUID(),
           name: "Age",
           slug: "age",
           value: "22",
@@ -482,14 +482,14 @@ export const numberCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000015",
+      uuid: crypto.randomUUID(),
       email: "olivia@example.com",
       slug: "olivia",
       createdAt: "2025-07-01T11:01:00Z",
       updatedAt: "2025-07-01T11:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000001",
+          uuid: crypto.randomUUID(),
           name: "Age",
           slug: "age",
           value: "45",
@@ -499,7 +499,7 @@ export const numberCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000001",
+      uuid: crypto.randomUUID(),
       name: "Age",
       slug: "age",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -518,14 +518,14 @@ export const telCaseData: TestCaseData = {
   participants: [
     // Initial order: +49, +1, +44 (not in ascending order)
     {
-      uuid: "00000000-0000-0000-0001-000000000028",
+      uuid: crypto.randomUUID(),
       email: "bella@example.com",
       slug: "bella",
       createdAt: "2025-07-01T14:02:00Z",
       updatedAt: "2025-07-01T14:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000013",
+          uuid: crypto.randomUUID(),
           name: "Phone Number",
           slug: "phone-number",
           value: "+49-151-12345678",
@@ -533,14 +533,14 @@ export const telCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000026",
+      uuid: crypto.randomUUID(),
       email: "zoe@example.com",
       slug: "zoe",
       createdAt: "2025-07-01T14:00:00Z",
       updatedAt: "2025-07-01T14:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000013",
+          uuid: crypto.randomUUID(),
           name: "Phone Number",
           slug: "phone-number",
           value: "+1-202-555-0101",
@@ -548,14 +548,14 @@ export const telCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000027",
+      uuid: crypto.randomUUID(),
       email: "alex@example.com",
       slug: "alex",
       createdAt: "2025-07-01T14:01:00Z",
       updatedAt: "2025-07-01T14:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000013",
+          uuid: crypto.randomUUID(),
           name: "Phone Number",
           slug: "phone-number",
           value: "+44-7700-900123",
@@ -565,7 +565,7 @@ export const telCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000013",
+      uuid: crypto.randomUUID(),
       name: "Phone Number",
       slug: "phone-number",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -584,14 +584,14 @@ export const checkboxCaseData: TestCaseData = {
   participants: [
     // Initial order: true, false, true (not sorted)
     {
-      uuid: "00000000-0000-0000-0001-000000000023",
+      uuid: crypto.randomUUID(),
       email: "will@example.com",
       slug: "will",
       createdAt: "2025-07-01T13:00:00Z",
       updatedAt: "2025-07-01T13:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000002",
+          uuid: crypto.randomUUID(),
           name: "Subscribed",
           slug: "subscribed",
           value: "true",
@@ -599,14 +599,14 @@ export const checkboxCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000024",
+      uuid: crypto.randomUUID(),
       email: "xena@example.com",
       slug: "xena",
       createdAt: "2025-07-01T13:01:00Z",
       updatedAt: "2025-07-01T13:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000002",
+          uuid: crypto.randomUUID(),
           name: "Subscribed",
           slug: "subscribed",
           value: "false",
@@ -614,14 +614,14 @@ export const checkboxCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000025",
+      uuid: crypto.randomUUID(),
       email: "yuri@example.com",
       slug: "yuri",
       createdAt: "2025-07-01T13:02:00Z",
       updatedAt: "2025-07-01T13:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000002",
+          uuid: crypto.randomUUID(),
           name: "Subscribed",
           slug: "subscribed",
           value: "true",
@@ -631,7 +631,7 @@ export const checkboxCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000002",
+      uuid: crypto.randomUUID(),
       name: "Subscribed",
       slug: "subscribed",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -650,14 +650,14 @@ export const timeCaseData: TestCaseData = {
   participants: [
     // Initial order: 17:15, 08:30, 12:45 (not in time order)
     {
-      uuid: "00000000-0000-0000-0001-000000000020",
+      uuid: crypto.randomUUID(),
       email: "tom@example.com",
       slug: "tom",
       createdAt: "2025-07-01T12:03:00Z",
       updatedAt: "2025-07-01T12:03:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000003",
+          uuid: crypto.randomUUID(),
           name: "Preferred Time",
           slug: "preferred-time",
           value: "17:15:00",
@@ -665,14 +665,14 @@ export const timeCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000019",
+      uuid: crypto.randomUUID(),
       email: "sara@example.com",
       slug: "sara",
       createdAt: "2025-07-01T12:02:00Z",
       updatedAt: "2025-07-01T12:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000003",
+          uuid: crypto.randomUUID(),
           name: "Preferred Time",
           slug: "preferred-time",
           value: "08:30:00",
@@ -680,14 +680,14 @@ export const timeCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000021",
+      uuid: crypto.randomUUID(),
       email: "una@example.com",
       slug: "una",
       createdAt: "2025-07-01T12:04:00Z",
       updatedAt: "2025-07-01T12:04:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000003",
+          uuid: crypto.randomUUID(),
           name: "Preferred Time",
           slug: "preferred-time",
           value: "12:45:00",
@@ -697,7 +697,7 @@ export const timeCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000003",
+      uuid: crypto.randomUUID(),
       name: "Preferred Time",
       slug: "preferred-time",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -716,14 +716,14 @@ export const dateCaseData: TestCaseData = {
   participants: [
     // Initial order: 1990-05-14, 1985-11-20, 1995-03-08 (not sorted)
     {
-      uuid: "00000000-0000-0000-0001-000000000018",
+      uuid: crypto.randomUUID(),
       email: "ryan@example.com",
       slug: "ryan",
       createdAt: "2025-07-01T12:01:00Z",
       updatedAt: "2025-07-01T12:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000012",
+          uuid: crypto.randomUUID(),
           name: "Birth Date",
           slug: "birth-date",
           value: "1990-05-14",
@@ -731,14 +731,14 @@ export const dateCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000017",
+      uuid: crypto.randomUUID(),
       email: "quinn@example.com",
       slug: "quinn",
       createdAt: "2025-07-01T12:00:00Z",
       updatedAt: "2025-07-01T12:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000012",
+          uuid: crypto.randomUUID(),
           name: "Birth Date",
           slug: "birth-date",
           value: "1985-11-20",
@@ -746,14 +746,14 @@ export const dateCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000019",
+      uuid: crypto.randomUUID(),
       email: "sophie@example.com",
       slug: "sophie",
       createdAt: "2025-07-01T12:02:00Z",
       updatedAt: "2025-07-01T12:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000012",
+          uuid: crypto.randomUUID(),
           name: "Birth Date",
           slug: "birth-date",
           value: "1995-03-08",
@@ -763,7 +763,7 @@ export const dateCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000012",
+      uuid: crypto.randomUUID(),
       name: "Birth Date",
       slug: "birth-date",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -782,14 +782,14 @@ export const datetimeCaseData: TestCaseData = {
   participants: [
     // Initial order: 2025-07-01T14:45, 2025-06-10T09:15, 2025-08-15T18:30
     {
-      uuid: "00000000-0000-0000-0001-000000000022",
+      uuid: crypto.randomUUID(),
       email: "vince@example.com",
       slug: "vince",
       createdAt: "2025-07-01T12:05:00Z",
       updatedAt: "2025-07-01T12:05:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000005",
+          uuid: crypto.randomUUID(),
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-07-01T14:45:00Z",
@@ -797,14 +797,14 @@ export const datetimeCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000021",
+      uuid: crypto.randomUUID(),
       email: "uma@example.com",
       slug: "uma",
       createdAt: "2025-07-01T12:04:00Z",
       updatedAt: "2025-07-01T12:04:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000005",
+          uuid: crypto.randomUUID(),
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-06-10T09:15:00Z",
@@ -812,14 +812,14 @@ export const datetimeCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000023",
+      uuid: crypto.randomUUID(),
       email: "walter@example.com",
       slug: "walter",
       createdAt: "2025-07-01T12:06:00Z",
       updatedAt: "2025-07-01T12:06:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000005",
+          uuid: crypto.randomUUID(),
           name: "Registration Datetime",
           slug: "registration-datetime",
           value: "2025-08-15T18:30:00Z",
@@ -829,7 +829,7 @@ export const datetimeCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000005",
+      uuid: crypto.randomUUID(),
       name: "Registration Datetime",
       slug: "registration-datetime",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -847,20 +847,20 @@ export const datetimeCaseData: TestCaseData = {
 export const selectAndMultiselectTestCaseData: TestCaseData = {
   participants: [
     {
-      uuid: "00000000-0000-0000-0001-000000000004",
+      uuid: crypto.randomUUID(),
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Male",
         },
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "Rust,Go",
@@ -868,20 +868,20 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000003",
+      uuid: crypto.randomUUID(),
       email: "carol@example.com",
       slug: "carol",
       createdAt: "2025-07-01T10:02:00Z",
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Female",
         },
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "JavaScript,Python",
@@ -889,20 +889,20 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000005",
+      uuid: crypto.randomUUID(),
       email: "eli@example.com",
       slug: "eli",
       createdAt: "2025-07-01T10:04:00Z",
       updatedAt: "2025-07-01T10:04:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Gender",
           slug: "gender",
           value: "Other",
         },
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Skills",
           slug: "skills",
           value: "Go,Rust",
@@ -912,7 +912,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000006",
+      uuid: crypto.randomUUID(),
       name: "Gender",
       slug: "gender",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -924,7 +924,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:05:00Z",
     },
     {
-      uuid: "00000000-0000-0000-0000-000000000010",
+      uuid: crypto.randomUUID(),
       name: "Skills",
       slug: "skills",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -941,14 +941,14 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
 export const editParticipantTestCaseData: TestCaseData = {
   participants: [
     {
-      uuid: "00000000-0000-0000-0001-000000000004",
+      uuid: crypto.randomUUID(),
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "chewmanji",
@@ -958,7 +958,7 @@ export const editParticipantTestCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000006",
+      uuid: crypto.randomUUID(),
       name: "Age",
       slug: "age",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -970,7 +970,7 @@ export const editParticipantTestCaseData: TestCaseData = {
       updatedAt: "2025-07-01T10:05:00Z",
     },
     {
-      uuid: "00000000-0000-0000-0000-000000000010",
+      uuid: crypto.randomUUID(),
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
@@ -987,20 +987,20 @@ export const editParticipantTestCaseData: TestCaseData = {
 export const editParticipantDetailsTestCaseData: TestCaseData = {
   participants: [
     {
-      uuid: "00000000-0000-0000-0001-000000000004",
+      uuid: crypto.randomUUID(),
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000010",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "chewmanji",
         },
         {
-          uuid: "00000000-0000-0000-0000-000000000006",
+          uuid: crypto.randomUUID(),
           name: "Age",
           slug: "age",
           value: "42",
@@ -1015,14 +1015,14 @@ export const deleteParticipantCaseData: TestCaseData = {
   participants: [
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
-      uuid: "00000000-0000-0000-0001-000000000002",
+      uuid: crypto.randomUUID(),
       email: "bob@domain.com",
       slug: "bob",
       createdAt: "2025-07-01T10:01:00Z",
       updatedAt: "2025-07-01T10:01:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Medium", // Middle value
@@ -1030,14 +1030,14 @@ export const deleteParticipantCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000001",
+      uuid: crypto.randomUUID(),
       email: "anna@domain.com",
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
       updatedAt: "2025-07-01T10:00:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Alpha", // First alphabetically
@@ -1045,14 +1045,14 @@ export const deleteParticipantCaseData: TestCaseData = {
       ],
     },
     {
-      uuid: "00000000-0000-0000-0001-000000000003",
+      uuid: crypto.randomUUID(),
       email: "charlie@example.com",
       slug: "charlie",
       createdAt: "2025-07-01T10:02:00Z",
       updatedAt: "2025-07-01T10:02:00Z",
       attributes: [
         {
-          uuid: "00000000-0000-0000-0000-000000000004",
+          uuid: crypto.randomUUID(),
           name: "Nickname",
           slug: "nickname",
           value: "Zebra", // Last alphabetically
@@ -1062,7 +1062,7 @@ export const deleteParticipantCaseData: TestCaseData = {
   ],
   attributes: [
     {
-      uuid: "00000000-0000-0000-0000-000000000004",
+      uuid: crypto.randomUUID(),
       name: "Nickname",
       slug: "nickname",
       eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
