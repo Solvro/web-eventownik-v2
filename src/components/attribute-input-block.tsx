@@ -124,7 +124,7 @@ export function AttributeInputBlock({
                       occupant.name === "" || occupant.name === undefined;
                     return (
                       <li
-                        key={occupant.id}
+                        key={occupant.uuid}
                         className={cn(
                           "rounded-sm px-2 py-1.5 text-sm",
                           isAnonymous && "text-muted-foreground italic",

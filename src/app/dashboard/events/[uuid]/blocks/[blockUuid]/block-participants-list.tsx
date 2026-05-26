@@ -20,7 +20,7 @@ export function BlockParticipantsList({
       ) : (
         <ul>
           {participants.map((participant) => (
-            <li key={participant.id} className="py-1 text-sm">
+            <li key={participant.uuid} className="py-1 text-sm">
               {participant.name}
             </li>
           ))}

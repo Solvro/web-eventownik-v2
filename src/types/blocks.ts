@@ -23,7 +23,7 @@ export interface Block {
 }
 
 export interface BlockParticipant {
-  id: string;
+  uuid: string;
   email: string;
   name?: string;
 }
