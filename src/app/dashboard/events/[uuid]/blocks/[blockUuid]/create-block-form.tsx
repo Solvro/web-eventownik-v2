@@ -43,11 +43,11 @@ const BlockSchema = z.object({
 function CreateBlockForm({
   eventUuid,
   attributeId,
-  parentId,
+  parentUuid,
 }: {
   eventUuid: string;
   attributeId: string;
-  parentId: string;
+  parentUuid: string;
 }) {
   const form = useForm<z.infer<typeof BlockSchema>>({
     resolver: zodResolver(BlockSchema),
@@ -69,7 +69,7 @@ function CreateBlockForm({
     const result = await createBlock(
       eventUuid,
       attributeId,
-      parentId,
+      parentUuid,
       data.name,
       null,
       data.capacity === "" || data.capacity === undefined

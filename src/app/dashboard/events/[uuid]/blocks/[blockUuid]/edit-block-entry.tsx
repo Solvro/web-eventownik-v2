@@ -49,7 +49,7 @@ function EditBlockEntry({
   blockToEdit: Block;
   eventUuid: string;
   attributeId: string;
-  parentId: string;
+  parentUuid: string;
 }) {
   const form = useForm<z.infer<typeof BlockSchema>>({
     resolver: zodResolver(BlockSchema),

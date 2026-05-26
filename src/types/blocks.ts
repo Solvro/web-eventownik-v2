@@ -6,7 +6,7 @@ export interface Block {
   name: string;
   description: string | null;
   capacity: number | null;
-  parentId: number | null;
+  parentUuid: string | null;
   attributeUuid: string;
   attribute: FormAttribute;
   order: number;

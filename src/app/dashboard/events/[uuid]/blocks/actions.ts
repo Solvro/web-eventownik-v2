@@ -48,7 +48,7 @@ export async function reorderBlockAttributes(
 export async function createBlock(
   eventUuid: string,
   attributeUuid: string,
-  parentId: string,
+  parentUuid: string,
   name: string,
   description: string | null,
   capacity: number | null,
@@ -68,7 +68,7 @@ export async function createBlock(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        parentId,
+        parentUuid,
         name,
         description: description ?? null,
         capacity: capacity ?? null,

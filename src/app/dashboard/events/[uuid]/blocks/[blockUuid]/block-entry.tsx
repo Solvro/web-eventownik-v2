@@ -43,7 +43,7 @@ function BlockEntry({
           blockToEdit={block}
           eventUuid={eventUuid}
           attributeId={attributeId}
-          parentId={block.uuid}
+          parentUuid={block.uuid}
         />
         <DeleteBlockPopup
           eventUuid={eventUuid}
