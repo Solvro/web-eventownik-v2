@@ -3,7 +3,7 @@ import type { EventForm } from "./forms";
 
 export interface Event {
   uuid: string;
-  organizerId: number;
+  organizerUuid: string;
   name: string;
   description: string | null;
   slug: string;
