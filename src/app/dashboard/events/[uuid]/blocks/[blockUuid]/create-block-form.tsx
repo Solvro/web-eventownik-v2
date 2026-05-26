@@ -42,11 +42,11 @@ const BlockSchema = z.object({
 
 function CreateBlockForm({
   eventUuid,
-  attributeId,
+  attributeUuid,
   parentUuid,
 }: {
   eventUuid: string;
-  attributeId: string;
+  attributeUuid: string;
   parentUuid: string;
 }) {
   const form = useForm<z.infer<typeof BlockSchema>>({
@@ -68,7 +68,7 @@ function CreateBlockForm({
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await createBlock(
       eventUuid,
-      attributeId,
+      attributeUuid,
       parentUuid,
       data.name,
       null,

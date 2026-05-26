@@ -65,11 +65,11 @@ export async function getAttributes(eventUuid: string) {
 
 async function getBlockData(
   eventUuid: string,
-  attributeId: string,
+  attributeUuid: string,
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeId}/blocks`,
+    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks`,
     {
       method: "GET",
       headers: {
@@ -79,7 +79,7 @@ async function getBlockData(
   );
   if (!response.ok) {
     console.error(
-      `Failed to fetch blocks of attribute ID = ${attributeId}`,
+      `Failed to fetch blocks of attribute ID = ${attributeUuid}`,
       response,
     );
     return null;
@@ -197,7 +197,7 @@ export async function updateParticipant(
           //multiselect case - unchecking all options in multiselect doesn't work because of this filter
           //However, I suppose there won't be many cases when it's needed (if any)
           .map(([key, value]) => {
-            return { attributeId: key, value: value === "" ? null : value };
+            return { attributeUuid: key, value: value === "" ? null : value };
           }),
       }),
     },

@@ -9,23 +9,23 @@ import { BlockEntry } from "./block-entry";
 function SortableBlockGrid({
   blocks,
   eventUuid,
-  attributeId,
+  attributeUuid,
 }: {
   blocks: Block[];
   eventUuid: string;
-  attributeId: string;
+  attributeUuid: string;
 }) {
   return (
     <SortableTileGrid
       items={blocks}
       onReorder={async (orderedIds) =>
-        reorderBlocks(eventUuid, attributeId, orderedIds)
+        reorderBlocks(eventUuid, attributeUuid, orderedIds)
       }
       renderItem={(block) => (
         <BlockEntry
           block={block}
           eventUuid={eventUuid}
-          attributeId={attributeId}
+          attributeUuid={attributeUuid}
         />
       )}
     />

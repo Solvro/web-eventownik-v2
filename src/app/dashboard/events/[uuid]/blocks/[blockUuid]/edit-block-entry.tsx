@@ -44,11 +44,11 @@ const BlockSchema = z.object({
 function EditBlockEntry({
   blockToEdit,
   eventUuid,
-  attributeId,
+  attributeUuid,
 }: {
   blockToEdit: Block;
   eventUuid: string;
-  attributeId: string;
+  attributeUuid: string;
   parentUuid: string;
 }) {
   const form = useForm<z.infer<typeof BlockSchema>>({
@@ -71,7 +71,7 @@ function EditBlockEntry({
   const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
     const result = await updateBlock(
       eventUuid,
-      attributeId,
+      attributeUuid,
       blockToEdit.uuid,
       data.name,
       null,

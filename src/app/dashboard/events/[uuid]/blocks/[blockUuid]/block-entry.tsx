@@ -17,11 +17,11 @@ const valueOrZero = (value: number | null | undefined) => {
 function BlockEntry({
   block,
   eventUuid,
-  attributeId,
+  attributeUuid,
 }: {
   block: Block;
   eventUuid: string;
-  attributeId: string;
+  attributeUuid: string;
 }) {
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
   const percentOccupancy =
@@ -42,14 +42,14 @@ function BlockEntry({
         <EditBlockEntry
           blockToEdit={block}
           eventUuid={eventUuid}
-          attributeId={attributeId}
+          attributeUuid={attributeUuid}
           parentUuid={block.uuid}
         />
         <DeleteBlockPopup
           eventUuid={eventUuid}
           blockUuid={block.uuid}
           blockName={block.name}
-          attributeId={attributeId}
+          attributeUuid={attributeUuid}
         />
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4">

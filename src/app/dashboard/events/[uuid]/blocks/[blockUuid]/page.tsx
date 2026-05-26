@@ -40,11 +40,11 @@ async function getRootBlock(
 
 async function getRootBlockAttributeName(
   eventUuid: string,
-  rootBlockAttributeId: string,
+  rootBlockAttributeUuid: string,
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${rootBlockAttributeId}`,
+    `${API_URL}/events/${eventUuid}/attributes/${rootBlockAttributeUuid}`,
     {
       method: "GET",
       headers: {
@@ -58,7 +58,7 @@ async function getRootBlockAttributeName(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[getRootBlockAttributeName] Failed to fetch attribute name for block ${rootBlockAttributeId} in event ${eventUuid}:`,
+      `[getRootBlockAttributeName] Failed to fetch attribute name for block ${rootBlockAttributeUuid} in event ${eventUuid}:`,
       error,
     );
   }
@@ -92,17 +92,17 @@ export default async function EventBlockEditPage({
 }: {
   params: Promise<{ uuid: string; blockUuid: string }>;
 }) {
-  const { uuid: eventUuid, blockUuid: rootBlockId } = await params;
+  const { uuid: eventUuid, blockUuid: rootBlockUuid } = await params;
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
   const { bearerToken } = session;
 
-  const rootBlock = await getRootBlock(eventUuid, rootBlockId, bearerToken);
+  const rootBlock = await getRootBlock(eventUuid, rootBlockUuid, bearerToken);
   const rootBlockName = await getRootBlockAttributeName(
     eventUuid,
-    rootBlockId,
+    rootBlockUuid,
     bearerToken,
   );
 
@@ -124,7 +124,7 @@ export default async function EventBlockEditPage({
           <ToggleParticipantsVisibilityButton />
           <CreateBlockForm
             eventUuid={eventUuid}
-            attributeId={rootBlockId}
+            attributeUuid={rootBlockUuid}
             parentUuid={rootBlock.uuid}
           />
         </div>
@@ -132,7 +132,7 @@ export default async function EventBlockEditPage({
           <SortableBlockGrid
             blocks={rootBlock.children}
             eventUuid={eventUuid}
-            attributeId={rootBlockId}
+            attributeUuid={rootBlockUuid}
           />
         ) : (
           <div className="flex flex-wrap justify-center gap-8 sm:justify-start">

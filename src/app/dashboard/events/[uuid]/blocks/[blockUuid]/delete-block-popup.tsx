@@ -10,12 +10,12 @@ function DeleteBlockPopup({
   eventUuid,
   blockUuid,
   blockName,
-  attributeId,
+  attributeUuid,
 }: {
   eventUuid: string;
   blockUuid: string;
   blockName: string;
-  attributeId: string;
+  attributeUuid: string;
 }) {
   const router = useRouter();
 
@@ -23,7 +23,7 @@ function DeleteBlockPopup({
     <DeleteResourcePopup
       resourceName={blockName}
       resourceType="Blok"
-      onDelete={async () => deleteBlock(eventUuid, blockUuid, attributeId)}
+      onDelete={async () => deleteBlock(eventUuid, blockUuid, attributeUuid)}
       onSuccess={() => {
         router.refresh();
       }}

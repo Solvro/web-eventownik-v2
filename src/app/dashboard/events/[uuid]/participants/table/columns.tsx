@@ -120,7 +120,7 @@ export function generateColumns(
               options_={attribute.options}
               blocks={blocks}
               column={column}
-              attributeId={attribute.uuid}
+              attributeUuid={attribute.uuid}
             />
             <HeaderWithSort
               column={column}
