@@ -27,7 +27,7 @@ function SortableBlockAttributeGrid({
           <div className="flex grow flex-col items-center justify-center gap-2 text-center">
             <p className="text-lg font-bold">{block.name}</p>
             <Button variant="outline" className="w-full" asChild>
-              <Link href={`blocks/${block.id.toString()}`}>
+              <Link href={`blocks/${block.uuid}`}>
                 <PackageOpenIcon />
                 Otwórz
               </Link>

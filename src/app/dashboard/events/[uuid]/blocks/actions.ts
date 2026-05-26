@@ -7,7 +7,7 @@ import { verifySession } from "@/lib/session";
 
 export async function reorderBlockAttributes(
   eventUuid: string,
-  orderedIds: number[],
+  orderedIds: string[],
 ) {
   const session = await verifySession();
 
@@ -20,7 +20,7 @@ export async function reorderBlockAttributes(
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
   const results = await Promise.all(
     orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventUuid}/attributes/${id.toString()}`, {
+      fetch(`${API_URL}/events/${eventUuid}/attributes/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
