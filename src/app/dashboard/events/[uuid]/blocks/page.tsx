@@ -24,11 +24,14 @@ export default async function DashboardEventBlocksPage({
   const { bearerToken } = session;
   const { uuid } = await params;
 
-  const response = await fetch(`${API_URL}/events/${uuid}/attributes`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     notFound();

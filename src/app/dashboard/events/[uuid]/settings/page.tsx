@@ -24,18 +24,21 @@ export default async function DashboardEventSettingsPage({
   const { bearerToken } = session;
   const { uuid } = await params;
 
-  const eventResponse = await fetch(`${API_URL}/events/${uuid}`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
+  const eventResponse = await fetch(
+    `${API_URL}/events/${encodeURIComponent(uuid)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
     },
-  });
+  );
   if (!eventResponse.ok) {
     notFound();
   }
   const event = (await eventResponse.json()) as Event;
 
   const coOrganizersResponse = await fetch(
-    `${API_URL}/events/${uuid}/organizers`,
+    `${API_URL}/events/${encodeURIComponent(uuid)}/organizers`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
@@ -48,7 +51,7 @@ export default async function DashboardEventSettingsPage({
   const coOrganizers = (await coOrganizersResponse.json()) as CoOrganizer[];
 
   const attributesResponse = await fetch(
-    `${API_URL}/events/${uuid}/attributes`,
+    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,

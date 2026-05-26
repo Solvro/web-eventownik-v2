@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 
 export async function reorderBlockAttributes(
@@ -15,19 +16,26 @@ export async function reorderBlockAttributes(
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid) || orderedIds.some((id) => !isValidUuid(id))) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
   const { bearerToken } = session;
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
   const results = await Promise.all(
     orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventUuid}/attributes/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${bearerToken}`,
+      fetch(
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          body: JSON.stringify({ order: index }),
         },
-        body: JSON.stringify({ order: index }),
-      }),
+      ),
     ),
   );
 
@@ -57,10 +65,19 @@ export async function createBlock(
   if (session == null) {
     redirect("/auth/login");
   }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    !isValidUuid(parentUuid)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
     {
       method: "POST",
       headers: {
@@ -105,10 +122,19 @@ export async function updateBlock(
   if (session == null) {
     redirect("/auth/login");
   }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    !isValidUuid(blockId)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${blockId}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockId)}`,
     {
       method: "PATCH",
       headers: {
@@ -151,12 +177,20 @@ export async function reorderBlocks(
     redirect("/auth/login");
   }
 
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    orderedIds.some((uuid) => !isValidUuid(uuid))
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
   const { bearerToken } = session;
 
   const results = await Promise.all(
     orderedIds.map(async (uuid, index) =>
       fetch(
-        `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${uuid}`,
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(uuid)}`,
         {
           method: "PATCH",
           headers: {
@@ -194,8 +228,16 @@ export async function deleteBlock(
     redirect("/auth/login");
   }
 
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(blockUuid) ||
+    !isValidUuid(attributeUuid)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${blockUuid}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
     {
       method: "DELETE",
       headers: {

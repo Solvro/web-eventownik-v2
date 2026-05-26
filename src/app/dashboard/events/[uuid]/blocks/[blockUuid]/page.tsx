@@ -17,7 +17,7 @@ async function getRootBlock(
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${blockUuid}/blocks`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(blockUuid)}/blocks`,
     {
       method: "GET",
       headers: {
@@ -44,7 +44,7 @@ async function getRootBlockAttributeName(
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${rootBlockAttributeUuid}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(rootBlockAttributeUuid)}`,
     {
       method: "GET",
       headers: {

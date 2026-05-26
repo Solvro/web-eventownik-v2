@@ -1,6 +1,7 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 
 async function activateEvent(
   wasActive: boolean,
@@ -10,13 +11,23 @@ async function activateEvent(
   const formData = new FormData();
   formData.append("isActive", (!wasActive).toString());
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/activate`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[activateEvent action] Invalid event UUID: ${eventUuid}`);
+    return {
+      error: "Invalid event identifier",
+    };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/activate`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: formData,
     },
-    body: formData,
-  });
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);

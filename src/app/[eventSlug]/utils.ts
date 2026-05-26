@@ -6,7 +6,7 @@ export async function getEventBlockAttributeBlocks(
   attributeUuid: string,
 ) {
   const blocksResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/attributes/${attributeUuid}/blocks`,
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
     {
       method: "GET",
     },

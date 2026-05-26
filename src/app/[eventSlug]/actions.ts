@@ -1,6 +1,7 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 import type { FormErrorObject } from "@/types/form";
 
 interface ErrorResponse {
@@ -35,6 +36,10 @@ export async function submitParticipantForm({
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
+  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
+    return { success: false, error: "Invalid form identifier" };
+  }
+
   try {
     const formData = new FormData();
 
@@ -65,7 +70,7 @@ export async function submitParticipantForm({
     }
 
     const response = await fetch(
-      `${API_URL}/events/${eventUuid}/forms/${formUuid}/submit`,
+      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
         body: formData,

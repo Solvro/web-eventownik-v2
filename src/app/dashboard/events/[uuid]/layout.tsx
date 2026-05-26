@@ -16,7 +16,7 @@ async function fetchEventAndAttributes(eventUuid: string) {
   const { bearerToken } = session;
 
   const attributesResponse = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
@@ -24,11 +24,14 @@ async function fetchEventAndAttributes(eventUuid: string) {
     },
   );
 
-  const eventResponse = await fetch(`${API_URL}/events/${eventUuid}`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
+  const eventResponse = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
     },
-  });
+  );
 
   if (!eventResponse.ok || !attributesResponse.ok) {
     notFound();

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
@@ -14,10 +15,19 @@ export async function getParticipants(eventUuid: string) {
   if (session === null) {
     redirect("/auth/login");
   }
-  const response = await fetch(`${API_URL}/events/${eventUuid}/participants`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${session.bearerToken}` },
-  });
+
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[getParticipants] Invalid event UUID: ${eventUuid}`);
+    return null;
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    },
+  );
   if (!response.ok) {
     console.error("Failed to fetch participants", response);
     return null;
@@ -31,8 +41,16 @@ export async function getParticipant(eventUuid: string, participantId: string) {
   if (session === null) {
     redirect("/auth/login");
   }
+
+  if (!isValidUuid(eventUuid) || !isValidUuid(participantId)) {
+    console.error(
+      `[getParticipant] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantId}`,
+    );
+    return null;
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantId}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
@@ -51,10 +69,19 @@ export async function getAttributes(eventUuid: string) {
   if (session === null) {
     redirect("/auth/login");
   }
-  const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${session.bearerToken}` },
-  });
+
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[getAttributes] Invalid event UUID: ${eventUuid}`);
+    return null;
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    },
+  );
   if (!response.ok) {
     console.error("Failed to fetch attributes", response);
     return null;
@@ -69,7 +96,7 @@ async function getBlockData(
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
     {
       method: "GET",
       headers: {
@@ -92,9 +119,16 @@ export async function getBlocks(eventUuid: string, attributes: Attribute[]) {
   if (session == null) {
     redirect("/auth/login");
   }
+
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[getBlocks] Invalid event UUID: ${eventUuid}`);
+    return null;
+  }
+
   try {
     const rootBlocksPromises = attributes
       .filter((attribute) => attribute.type === "block")
+      .filter((attribute) => isValidUuid(attribute.uuid))
       .map(async (attribute) => {
         return getBlockData(eventUuid, attribute.uuid, session.bearerToken);
       });
@@ -116,14 +150,25 @@ export async function deleteManyParticipants(
     redirect("/auth/login");
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/participants`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
-      "Content-Type": "application/json",
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[deleteManyParticipants] Invalid event UUID: ${eventUuid}`);
+    return {
+      success: false,
+      error: "Nieprawidłowy identyfikator wydarzenia",
+    };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ participantsToUnregisterIds: participants }),
     },
-    body: JSON.stringify({ participantsToUnregisterIds: participants }),
-  });
+  );
 
   if (!response.ok) {
     console.error(
@@ -153,8 +198,15 @@ export async function deleteParticipant(
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid) || !isValidUuid(participantUuid)) {
+    console.error(
+      `[deleteParticipant] Invalid UUID: eventUuid=${eventUuid}, participantUuid=${participantUuid}`,
+    );
+    return { success: false };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantUuid}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantUuid)}`,
     {
       method: "DELETE",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
@@ -184,8 +236,15 @@ export async function updateParticipant(
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid) || !isValidUuid(participantId)) {
+    console.error(
+      `[updateParticipant] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantId}`,
+    );
+    return { success: false };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantId}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}`,
     {
       method: "PATCH",
       headers: {
@@ -222,12 +281,20 @@ export async function getEmails(eventUuid: string) {
     redirect("/auth/login");
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/emails`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[getEmails] Invalid event UUID: ${eventUuid}`);
+    return null;
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     console.error("Failed to fetch mails", response);
@@ -243,8 +310,16 @@ export async function exportData(eventUuid: string) {
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[exportData] Invalid event UUID: ${eventUuid}`);
+    return {
+      success: false,
+      error: "Nieprawidłowy identyfikator wydarzenia",
+    };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/export`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/export`,
     {
       method: "GET",
       headers: {
@@ -285,8 +360,18 @@ export async function sendMail(
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid) || !isValidUuid(emailId)) {
+    console.error(
+      `[sendMail] Invalid UUID: eventUuid=${eventUuid}, emailId=${emailId}`,
+    );
+    return {
+      success: false,
+      error: "Nieprawidłowy identyfikator",
+    };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/send/${emailId}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/send/${encodeURIComponent(emailId)}`,
     {
       method: "POST",
       headers: {
@@ -324,8 +409,19 @@ export async function downloadAttributeFile(
     redirect("/auth/login");
   }
 
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(participantId) ||
+    !isValidUuid(attributeUuid)
+  ) {
+    console.error(
+      `[downloadAttributeFile] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantId}, attributeUuid=${attributeUuid}`,
+    );
+    return { success: false };
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantId}/attributes/${attributeUuid}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}/attributes/${encodeURIComponent(attributeUuid)}`,
     {
       method: "GET",
       headers: {
