@@ -294,12 +294,12 @@ export async function updateEvent(
           break;
         }
         case "update": {
-          if (change.data.id == null || change.data.id < 0) {
+          if (change.data.uuid == null) {
             continue;
           }
 
           const response = await fetch(
-            `${API_URL}/events/${event.uuid}/attributes/${String(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${change.data.uuid}`,
             {
               method: "PATCH",
               headers: {
@@ -353,12 +353,12 @@ export async function updateEvent(
           break;
         }
         case "delete": {
-          if (change.data.id == null || change.data.id < 0) {
+          if (change.data.uuid == null) {
             continue;
           }
 
           const response = await fetch(
-            `${API_URL}/events/${event.uuid}/attributes/${String(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${change.data.uuid}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${bearerToken}` },
