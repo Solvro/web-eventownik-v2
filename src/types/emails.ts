@@ -6,7 +6,7 @@ import type { Participant } from "./participant";
  * Data about a single email when fetching the entire list
  */
 export interface EventEmail {
-  id: number;
+  uuid: string;
   eventUuid: string;
   name: string;
   trigger: (typeof EMAIL_TRIGGERS)[number]["value"];

@@ -82,7 +82,7 @@ export const textCaseData: TestCaseData = {
   attributeType: "text",
   emails: [
     {
-      id: 1001,
+      uuid: "00000000-0000-0000-0000-000000001001",
       eventUuid: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
       name: "Welcome Email - New Registration",
       trigger: "participant_registered",

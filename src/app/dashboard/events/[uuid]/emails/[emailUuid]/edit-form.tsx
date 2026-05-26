@@ -241,7 +241,7 @@ function EventEmailEditForm({
     };
     const result = await updateEventEmail(
       eventUuid,
-      emailToEdit.id.toString(),
+      emailToEdit.uuid,
       updatedMail,
     );
 

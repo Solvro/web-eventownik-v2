@@ -13,11 +13,11 @@ import { EventEmailEditForm } from "./edit-form";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ uuid: string; emailId: string }>;
+  params: Promise<{ uuid: string; emailUuid: string }>;
 }): Promise<Metadata> {
-  const { uuid, emailId } = await params;
+  const { uuid, emailUuid } = await params;
 
-  const emailToEdit = await getSingleEventEmail(uuid, emailId);
+  const emailToEdit = await getSingleEventEmail(uuid, emailUuid);
 
   return {
     title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
@@ -27,11 +27,11 @@ export async function generateMetadata({
 export default async function EventMailEditPage({
   params,
 }: {
-  params: Promise<{ uuid: string; emailId: string }>;
+  params: Promise<{ uuid: string; emailUuid: string }>;
 }) {
-  const { uuid, emailId } = await params;
+  const { uuid, emailUuid } = await params;
 
-  const emailToEdit = await getSingleEventEmail(uuid, emailId);
+  const emailToEdit = await getSingleEventEmail(uuid, emailUuid);
   const attributes = await getEventAttributes(uuid);
   const forms = await getEventForms(uuid);
 
