@@ -25,7 +25,7 @@ export function DownloadAttributeFileButton({
       setIsQuerying(true);
       const { success, file, error } = await downloadAttributeFileAction(
         eventUuid,
-        participant.id.toString(),
+        participant.uuid,
         attribute.uuid,
       );
       setIsQuerying(false);

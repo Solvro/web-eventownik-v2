@@ -32,8 +32,7 @@ export function useParticipantsData(
   }, [participants]);
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) =>
-      deleteParticipant(eventUuid, id.toString()),
+    mutationFn: async (uuid: string) => deleteParticipant(eventUuid, uuid),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventUuid],

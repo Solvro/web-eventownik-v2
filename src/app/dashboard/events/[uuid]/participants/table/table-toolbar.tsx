@@ -105,7 +105,7 @@ export function TableToolbar({
           isQuerying={isQuerying}
           participants={table
             .getSelectedRowModel()
-            .rows.map((row) => row.original.id.toString())}
+            .rows.map((row) => row.original.uuid)}
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>

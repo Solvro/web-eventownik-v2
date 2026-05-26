@@ -90,9 +90,10 @@ export function ParticipantTable({
     },
   });
 
-  async function deleteParticipant(participantId: number) {
+  async function deleteParticipant(participantUuid: string) {
     try {
-      const { success, error } = await deleteParticipantMutation(participantId);
+      const { success, error } =
+        await deleteParticipantMutation(participantUuid);
 
       if (!success) {
         toast({
@@ -105,7 +106,7 @@ export function ParticipantTable({
       table.resetExpanded();
       setData((previousData) => {
         return previousData.filter(
-          (participant) => participant.id !== participantId,
+          (participant) => participant.uuid !== participantUuid,
         );
       });
       toast({
@@ -129,7 +130,7 @@ export function ParticipantTable({
       if (response.success) {
         setData((previousData) => {
           return previousData.filter(
-            (participant) => !_participants.includes(participant.id.toString()),
+            (participant) => !_participants.includes(participant.uuid),
           );
         });
         table.resetRowSelection();

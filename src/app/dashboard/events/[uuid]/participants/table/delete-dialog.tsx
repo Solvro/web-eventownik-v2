@@ -18,12 +18,12 @@ import { Button, buttonVariants } from "@/components/ui/button";
 
 export function DeleteParticipantDialog({
   isQuerying,
-  participantId,
+  participantUuid,
   deleteParticipant,
 }: {
   isQuerying: boolean;
-  participantId: number;
-  deleteParticipant: (_participantId: number) => Promise<void>;
+  participantUuid: string;
+  deleteParticipant: (_participantUuid: string) => Promise<void>;
 }) {
   const t = useTranslations("Table");
 
@@ -53,7 +53,7 @@ export function DeleteParticipantDialog({
         <AlertDialogFooter className="flex gap-x-4">
           <AlertDialogAction
             onClick={async () => {
-              await deleteParticipant(participantId);
+              await deleteParticipant(participantUuid);
             }}
             className={buttonVariants({
               variant: "destructive",

@@ -38,7 +38,7 @@ export function EditParticipantButton({
         event.preventDefault();
         setData((previousData) => {
           return previousData.map((_participant) =>
-            _participant.id === participant.id
+            _participant.uuid === participant.uuid
               ? { ..._participant, mode: "edit" }
               : _participant,
           );

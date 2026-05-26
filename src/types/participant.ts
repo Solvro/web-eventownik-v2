@@ -1,7 +1,7 @@
 import type { AttributeBase, PublicParticipantAttribute } from "./attributes";
 
 export interface Participant {
-  id: number;
+  uuid: string;
   email: string;
   slug: string;
   createdAt: string;
@@ -15,7 +15,7 @@ export interface PublicParticipant extends Omit<Participant, "attributes"> {
 }
 
 export interface FlattenedParticipant {
-  id: number;
+  uuid: string;
   email: string;
   slug: string;
   createdAt: string;

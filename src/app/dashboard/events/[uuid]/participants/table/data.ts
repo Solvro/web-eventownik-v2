@@ -11,7 +11,7 @@ export function flattenParticipant(
   wasExpanded = false,
 ) {
   const flattenedParticipant: FlattenedParticipant = {
-    id: participant.id,
+    uuid: participant.uuid,
     email: participant.email,
     slug: participant.slug,
     createdAt: participant.createdAt,

@@ -8,20 +8,20 @@ import { deleteParticipantCaseData } from "./test-cases-data";
 let DELETE_PARTICIPANTS_MOCK = { ...deleteParticipantCaseData };
 
 export const handlers = [
-  http.patch<{ eventUuid: string; participantId: string }>(
-    `${API_URL}/events/:eventUuid/participants/:participantId`,
+  http.patch<{ eventUuid: string; participantUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantUuid`,
     () => {
       return HttpResponse.json();
     },
   ),
-  http.delete<{ eventUuid: string; participantId: string }>(
-    `${API_URL}/events/:eventUuid/participants/:participantId`,
+  http.delete<{ eventUuid: string; participantUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantUuid`,
     ({ params }) => {
-      const { participantId } = params;
+      const { participantUuid } = params;
       DELETE_PARTICIPANTS_MOCK = {
         ...DELETE_PARTICIPANTS_MOCK,
         participants: DELETE_PARTICIPANTS_MOCK.participants.filter(
-          (p) => p.id !== Number(participantId),
+          (p) => p.uuid !== participantUuid,
         ),
       };
       return HttpResponse.json();
@@ -37,7 +37,7 @@ export const handlers = [
       DELETE_PARTICIPANTS_MOCK = {
         ...DELETE_PARTICIPANTS_MOCK,
         participants: DELETE_PARTICIPANTS_MOCK.participants.filter(
-          (p) => !participantsToUnregisterIds.includes(p.id.toString()),
+          (p) => !participantsToUnregisterIds.includes(p.uuid),
         ),
       };
       return HttpResponse.json();

@@ -216,10 +216,7 @@ export async function fetchAdditionalParticipantData(
 ) {
   if (!row.getIsExpanded() && !row.original.wasExpanded) {
     table.options.meta?.setRowLoading(row.index, true);
-    const newParticipant = await getParticipant(
-      eventUuid,
-      row.original.id.toString(),
-    );
+    const newParticipant = await getParticipant(eventUuid, row.original.uuid);
     if (newParticipant !== null) {
       table.options.meta?.updateData(
         row.index,

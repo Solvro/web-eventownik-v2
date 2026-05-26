@@ -20,7 +20,7 @@ export const textCaseData: TestCaseData = {
   participants: [
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
-      id: 2,
+      uuid: "00000000-0000-0000-0001-000000000002",
       email: "bob@domain.com", // email domain changed for filtering tests
       slug: "bob",
       createdAt: "2025-07-01T10:01:00Z",
@@ -35,7 +35,7 @@ export const textCaseData: TestCaseData = {
       ],
     },
     {
-      id: 1,
+      uuid: "00000000-0000-0000-0001-000000000001",
       email: "anna@domain.com", // email domain changed for filtering tests
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
@@ -50,7 +50,7 @@ export const textCaseData: TestCaseData = {
       ],
     },
     {
-      id: 3,
+      uuid: "00000000-0000-0000-0001-000000000003",
       email: "charlie@example.com",
       slug: "charlie",
       createdAt: "2025-07-01T10:02:00Z",
@@ -122,7 +122,7 @@ export const selectCaseData: TestCaseData = {
   participants: [
     // Initial order: Male, Female, Other (not alphabetical)
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0001-000000000004",
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
@@ -137,7 +137,7 @@ export const selectCaseData: TestCaseData = {
       ],
     },
     {
-      id: 3,
+      uuid: "00000000-0000-0000-0001-000000000003",
       email: "carol@example.com",
       slug: "carol",
       createdAt: "2025-07-01T10:02:00Z",
@@ -152,7 +152,7 @@ export const selectCaseData: TestCaseData = {
       ],
     },
     {
-      id: 5,
+      uuid: "00000000-0000-0000-0001-000000000005",
       email: "eli@example.com",
       slug: "eli",
       createdAt: "2025-07-01T10:04:00Z",
@@ -188,7 +188,7 @@ export const emailCaseData: TestCaseData = {
   participants: [
     // Initial order: middle@, auser@, zuser@ (not sorted)
     {
-      id: 6,
+      uuid: "00000000-0000-0000-0001-000000000006",
       email: "frank@example.com",
       slug: "frank",
       createdAt: "2025-07-01T10:05:00Z",
@@ -203,7 +203,7 @@ export const emailCaseData: TestCaseData = {
       ],
     },
     {
-      id: 7,
+      uuid: "00000000-0000-0000-0001-000000000007",
       email: "grace@example.com",
       slug: "grace",
       createdAt: "2025-07-01T10:06:00Z",
@@ -218,7 +218,7 @@ export const emailCaseData: TestCaseData = {
       ],
     },
     {
-      id: 8,
+      uuid: "00000000-0000-0000-0001-000000000008",
       email: "henry@example.com",
       slug: "henry",
       createdAt: "2025-07-01T10:07:00Z",
@@ -254,7 +254,7 @@ export const textareaCaseData: TestCaseData = {
   participants: [
     // Initial order: Love hiking, Software engineer, Creative writer
     {
-      id: 9,
+      uuid: "00000000-0000-0000-0001-000000000009",
       email: "ivy@example.com",
       slug: "ivy",
       createdAt: "2025-07-01T10:08:00Z",
@@ -269,7 +269,7 @@ export const textareaCaseData: TestCaseData = {
       ],
     },
     {
-      id: 8,
+      uuid: "00000000-0000-0000-0001-000000000008",
       email: "hank@example.com",
       slug: "hank",
       createdAt: "2025-07-01T10:07:00Z",
@@ -284,7 +284,7 @@ export const textareaCaseData: TestCaseData = {
       ],
     },
     {
-      id: 10,
+      uuid: "00000000-0000-0000-0001-000000000010",
       email: "jack@example.com",
       slug: "jack",
       createdAt: "2025-07-01T10:09:00Z",
@@ -320,7 +320,7 @@ export const multiselectCaseData: TestCaseData = {
   participants: [
     // Initial order: Rust,Go then Go,Rust then JavaScript,Python (not alphabetical)
     {
-      id: 12,
+      uuid: "00000000-0000-0000-0001-000000000012",
       email: "aren@example.com",
       slug: "aren",
       createdAt: "2025-07-01T10:10:00Z",
@@ -335,7 +335,7 @@ export const multiselectCaseData: TestCaseData = {
       ],
     },
     {
-      id: 11,
+      uuid: "00000000-0000-0000-0001-000000000011",
       email: "karen@example.com",
       slug: "karen",
       createdAt: "2025-07-01T10:10:00Z",
@@ -350,7 +350,7 @@ export const multiselectCaseData: TestCaseData = {
       ],
     },
     {
-      id: 10,
+      uuid: "00000000-0000-0000-0001-000000000010",
       email: "john@example.com",
       slug: "john",
       createdAt: "2025-07-01T10:09:00Z",
@@ -386,7 +386,7 @@ export const colorCaseData: TestCaseData = {
   participants: [
     // Initial order: #0000ff (blue), #ff0000 (red), #00ff00 (green)
     {
-      id: 13,
+      uuid: "00000000-0000-0000-0001-000000000013",
       email: "mila@example.com",
       slug: "mila",
       createdAt: "2025-07-01T10:12:00Z",
@@ -401,7 +401,7 @@ export const colorCaseData: TestCaseData = {
       ],
     },
     {
-      id: 12,
+      uuid: "00000000-0000-0000-0001-000000000012",
       email: "leo@example.com",
       slug: "leo",
       createdAt: "2025-07-01T10:11:00Z",
@@ -416,7 +416,7 @@ export const colorCaseData: TestCaseData = {
       ],
     },
     {
-      id: 14,
+      uuid: "00000000-0000-0000-0001-000000000014",
       email: "nina@example.com",
       slug: "nina",
       createdAt: "2025-07-01T10:13:00Z",
@@ -452,7 +452,7 @@ export const numberCaseData: TestCaseData = {
   participants: [
     // Initial order: 35, 22, 45 (not in ascending or descending order)
     {
-      id: 16,
+      uuid: "00000000-0000-0000-0001-000000000016",
       email: "peter@example.com",
       slug: "peter",
       createdAt: "2025-07-01T11:02:00Z",
@@ -467,7 +467,7 @@ export const numberCaseData: TestCaseData = {
       ],
     },
     {
-      id: 14,
+      uuid: "00000000-0000-0000-0001-000000000014",
       email: "noah@example.com",
       slug: "noah",
       createdAt: "2025-07-01T11:00:00Z",
@@ -482,7 +482,7 @@ export const numberCaseData: TestCaseData = {
       ],
     },
     {
-      id: 15,
+      uuid: "00000000-0000-0000-0001-000000000015",
       email: "olivia@example.com",
       slug: "olivia",
       createdAt: "2025-07-01T11:01:00Z",
@@ -518,7 +518,7 @@ export const telCaseData: TestCaseData = {
   participants: [
     // Initial order: +49, +1, +44 (not in ascending order)
     {
-      id: 28,
+      uuid: "00000000-0000-0000-0001-000000000028",
       email: "bella@example.com",
       slug: "bella",
       createdAt: "2025-07-01T14:02:00Z",
@@ -533,7 +533,7 @@ export const telCaseData: TestCaseData = {
       ],
     },
     {
-      id: 26,
+      uuid: "00000000-0000-0000-0001-000000000026",
       email: "zoe@example.com",
       slug: "zoe",
       createdAt: "2025-07-01T14:00:00Z",
@@ -548,7 +548,7 @@ export const telCaseData: TestCaseData = {
       ],
     },
     {
-      id: 27,
+      uuid: "00000000-0000-0000-0001-000000000027",
       email: "alex@example.com",
       slug: "alex",
       createdAt: "2025-07-01T14:01:00Z",
@@ -584,7 +584,7 @@ export const checkboxCaseData: TestCaseData = {
   participants: [
     // Initial order: true, false, true (not sorted)
     {
-      id: 23,
+      uuid: "00000000-0000-0000-0001-000000000023",
       email: "will@example.com",
       slug: "will",
       createdAt: "2025-07-01T13:00:00Z",
@@ -599,7 +599,7 @@ export const checkboxCaseData: TestCaseData = {
       ],
     },
     {
-      id: 24,
+      uuid: "00000000-0000-0000-0001-000000000024",
       email: "xena@example.com",
       slug: "xena",
       createdAt: "2025-07-01T13:01:00Z",
@@ -614,7 +614,7 @@ export const checkboxCaseData: TestCaseData = {
       ],
     },
     {
-      id: 25,
+      uuid: "00000000-0000-0000-0001-000000000025",
       email: "yuri@example.com",
       slug: "yuri",
       createdAt: "2025-07-01T13:02:00Z",
@@ -650,7 +650,7 @@ export const timeCaseData: TestCaseData = {
   participants: [
     // Initial order: 17:15, 08:30, 12:45 (not in time order)
     {
-      id: 20,
+      uuid: "00000000-0000-0000-0001-000000000020",
       email: "tom@example.com",
       slug: "tom",
       createdAt: "2025-07-01T12:03:00Z",
@@ -665,7 +665,7 @@ export const timeCaseData: TestCaseData = {
       ],
     },
     {
-      id: 19,
+      uuid: "00000000-0000-0000-0001-000000000019",
       email: "sara@example.com",
       slug: "sara",
       createdAt: "2025-07-01T12:02:00Z",
@@ -680,7 +680,7 @@ export const timeCaseData: TestCaseData = {
       ],
     },
     {
-      id: 21,
+      uuid: "00000000-0000-0000-0001-000000000021",
       email: "una@example.com",
       slug: "una",
       createdAt: "2025-07-01T12:04:00Z",
@@ -716,7 +716,7 @@ export const dateCaseData: TestCaseData = {
   participants: [
     // Initial order: 1990-05-14, 1985-11-20, 1995-03-08 (not sorted)
     {
-      id: 18,
+      uuid: "00000000-0000-0000-0001-000000000018",
       email: "ryan@example.com",
       slug: "ryan",
       createdAt: "2025-07-01T12:01:00Z",
@@ -731,7 +731,7 @@ export const dateCaseData: TestCaseData = {
       ],
     },
     {
-      id: 17,
+      uuid: "00000000-0000-0000-0001-000000000017",
       email: "quinn@example.com",
       slug: "quinn",
       createdAt: "2025-07-01T12:00:00Z",
@@ -746,7 +746,7 @@ export const dateCaseData: TestCaseData = {
       ],
     },
     {
-      id: 19,
+      uuid: "00000000-0000-0000-0001-000000000019",
       email: "sophie@example.com",
       slug: "sophie",
       createdAt: "2025-07-01T12:02:00Z",
@@ -782,7 +782,7 @@ export const datetimeCaseData: TestCaseData = {
   participants: [
     // Initial order: 2025-07-01T14:45, 2025-06-10T09:15, 2025-08-15T18:30
     {
-      id: 22,
+      uuid: "00000000-0000-0000-0001-000000000022",
       email: "vince@example.com",
       slug: "vince",
       createdAt: "2025-07-01T12:05:00Z",
@@ -797,7 +797,7 @@ export const datetimeCaseData: TestCaseData = {
       ],
     },
     {
-      id: 21,
+      uuid: "00000000-0000-0000-0001-000000000021",
       email: "uma@example.com",
       slug: "uma",
       createdAt: "2025-07-01T12:04:00Z",
@@ -812,7 +812,7 @@ export const datetimeCaseData: TestCaseData = {
       ],
     },
     {
-      id: 23,
+      uuid: "00000000-0000-0000-0001-000000000023",
       email: "walter@example.com",
       slug: "walter",
       createdAt: "2025-07-01T12:06:00Z",
@@ -847,7 +847,7 @@ export const datetimeCaseData: TestCaseData = {
 export const selectAndMultiselectTestCaseData: TestCaseData = {
   participants: [
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0001-000000000004",
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
@@ -868,7 +868,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       ],
     },
     {
-      id: 3,
+      uuid: "00000000-0000-0000-0001-000000000003",
       email: "carol@example.com",
       slug: "carol",
       createdAt: "2025-07-01T10:02:00Z",
@@ -889,7 +889,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       ],
     },
     {
-      id: 5,
+      uuid: "00000000-0000-0000-0001-000000000005",
       email: "eli@example.com",
       slug: "eli",
       createdAt: "2025-07-01T10:04:00Z",
@@ -941,7 +941,7 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
 export const editParticipantTestCaseData: TestCaseData = {
   participants: [
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0001-000000000004",
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
@@ -987,7 +987,7 @@ export const editParticipantTestCaseData: TestCaseData = {
 export const editParticipantDetailsTestCaseData: TestCaseData = {
   participants: [
     {
-      id: 4,
+      uuid: "00000000-0000-0000-0001-000000000004",
       email: "dan@example.com",
       slug: "dan",
       createdAt: "2025-07-01T10:03:00Z",
@@ -1015,7 +1015,7 @@ export const deleteParticipantCaseData: TestCaseData = {
   participants: [
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
-      id: 2,
+      uuid: "00000000-0000-0000-0001-000000000002",
       email: "bob@domain.com",
       slug: "bob",
       createdAt: "2025-07-01T10:01:00Z",
@@ -1030,7 +1030,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       ],
     },
     {
-      id: 1,
+      uuid: "00000000-0000-0000-0001-000000000001",
       email: "anna@domain.com",
       slug: "anna",
       createdAt: "2025-07-01T10:00:00Z",
@@ -1045,7 +1045,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       ],
     },
     {
-      id: 3,
+      uuid: "00000000-0000-0000-0001-000000000003",
       email: "charlie@example.com",
       slug: "charlie",
       createdAt: "2025-07-01T10:02:00Z",

@@ -38,7 +38,7 @@ interface TableRowFormProps {
   eventUuid: string;
   setData: Dispatch<SetStateAction<FlattenedParticipant[]>>;
   isQuerying: boolean;
-  deleteParticipant: (participantId: number) => Promise<void>;
+  deleteParticipant: (participantUuid: string) => Promise<void>;
   blocks: (Block | null)[];
 }
 
@@ -159,7 +159,7 @@ export function TableRowForm({
     const { success, error } = await updateParticipant(
       values,
       eventUuid,
-      participant.id.toString(),
+      participant.uuid,
     );
 
     if (success) {
@@ -183,7 +183,7 @@ export function TableRowForm({
     row.toggleExpanded();
     setData((previousData) => {
       return previousData.map((_participant) =>
-        _participant.id === participant.id
+        _participant.uuid === participant.uuid
           ? { ..._participant, ...values, mode: "view" }
           : _participant,
       );
@@ -381,7 +381,7 @@ export function TableRowForm({
                 {participant.mode === "view" ? (
                   <DeleteParticipantDialog
                     isQuerying={isQuerying}
-                    participantId={row.original.id}
+                    participantUuid={row.original.uuid}
                     deleteParticipant={deleteParticipant}
                   />
                 ) : (
@@ -392,7 +392,7 @@ export function TableRowForm({
                       event.preventDefault();
                       setData((previousData) => {
                         return previousData.map((_participant) =>
-                          _participant.id === participant.id
+                          _participant.uuid === participant.uuid
                             ? { ..._participant, mode: "view" }
                             : _participant,
                         );

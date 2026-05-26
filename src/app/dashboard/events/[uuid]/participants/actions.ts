@@ -146,7 +146,7 @@ export async function deleteManyParticipants(
 
 export async function deleteParticipant(
   eventUuid: string,
-  participantId: string,
+  participantUuid: string,
 ) {
   const session = await verifySession();
   if (session === null) {
@@ -154,7 +154,7 @@ export async function deleteParticipant(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/participants/${participantId}`,
+    `${API_URL}/events/${eventUuid}/participants/${participantUuid}`,
     {
       method: "DELETE",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
@@ -278,7 +278,7 @@ export async function exportData(eventUuid: string) {
 export async function sendMail(
   eventUuid: string,
   emailId: string,
-  participants: number[],
+  participants: string[],
 ) {
   const session = await verifySession();
   if (session === null) {

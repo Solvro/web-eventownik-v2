@@ -12,17 +12,17 @@ export function mockVerifySession() {
 }
 
 export function mockParticipantGet(testCaseData: Participant[]) {
-  return http.get<{ eventUuid: string; participantId: string }>(
-    `${API_URL}/events/:eventUuid/participants/:participantId`,
+  return http.get<{ eventUuid: string; participantUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants/:participantUuid`,
     ({ params }) => {
-      const { participantId } = params;
+      const { participantUuid } = params;
       const participant: Participant | undefined = testCaseData.find(
-        (p) => p.id === Number(participantId),
+        (p) => p.uuid === participantUuid,
       );
       if (participant === undefined) {
         return HttpResponse.json(
           {
-            message: `Participant with id = ${participantId} not found! Check test case data`,
+            message: `Participant with id = ${participantUuid} not found! Check test case data`,
           },
           { status: 404 },
         );

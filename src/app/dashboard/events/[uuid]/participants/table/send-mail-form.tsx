@@ -68,7 +68,7 @@ function SendMailForm({
     const result = await sendMail(
       eventUuid,
       values.template,
-      targetParticipants.map((participant) => participant.id),
+      targetParticipants.map((participant) => participant.uuid),
     );
 
     if (result.success) {

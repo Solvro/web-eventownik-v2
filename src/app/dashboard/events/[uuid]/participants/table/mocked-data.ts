@@ -166,7 +166,7 @@ export const mockedAttributes: Omit<Attribute, keyof FormAttribute>[] = [
 // Define the participants
 export const mockedParticipants: Participant[] = [
   {
-    id: 1001,
+    uuid: "00000000-0000-0000-0000-000000001001",
     email: "emma.rodriguez@example.com",
     slug: "emma-rodriguez",
     createdAt: "2025-02-22T10:15:00Z",
@@ -247,7 +247,7 @@ export const mockedParticipants: Participant[] = [
     ],
   },
   {
-    id: 1002,
+    uuid: "00000000-0000-0000-0000-000000001002",
     email: "james.kim@example.com",
     slug: "james-kim",
     createdAt: "2025-02-22T11:45:00Z",
@@ -328,7 +328,7 @@ export const mockedParticipants: Participant[] = [
     ],
   },
   {
-    id: 1003,
+    uuid: "00000000-0000-0000-0000-000000001003",
     email: "maya.patel@example.com",
     slug: "maya-patel",
     createdAt: "2025-02-23T08:30:00Z",
