@@ -143,10 +143,7 @@ function SendMailForm({
                         </FormControl>
                         <SelectContent>
                           {emails.map((email) => (
-                            <SelectItem
-                              key={email.id}
-                              value={email.id.toString()}
-                            >
+                            <SelectItem key={email.uuid} value={email.uuid}>
                               {email.name}
                             </SelectItem>
                           ))}
