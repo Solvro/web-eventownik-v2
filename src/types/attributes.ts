@@ -9,7 +9,7 @@ export interface EventAttribute {
   eventUuid: number;
   options: string[] | null;
   type: string;
-  rootBlockId: number | undefined;
+  rootBlockUuid: string | undefined;
   showInList: boolean;
   order: number | null;
   createdAt: string;
