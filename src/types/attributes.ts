@@ -3,13 +3,13 @@ import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 // TODO(refactor): Refactor types across this entire file.
 
 export interface EventAttribute {
-  id: number;
+  uuid: string;
   name: string;
   slug: string | null;
-  eventId: number;
+  eventUuid: number;
   options: string[] | null;
   type: string;
-  rootBlockId: number | undefined;
+  rootBlockUuid: string | undefined;
   showInList: boolean;
   order: number | null;
   createdAt: string;
@@ -24,14 +24,14 @@ export interface EventAttribute {
  * @param value - Data returned from API is always a string (even numbers, booleans are in string format - "true", "123")
  */
 export interface AttributeBase {
-  id: number;
+  uuid: string;
   name: string;
   value: string | string[];
   slug: string | null;
 }
 
 export interface Attribute extends Omit<AttributeBase, "value"> {
-  eventId: number;
+  eventUuid: string;
   showInList: boolean;
   options: string[] | null;
   type: AttributeType;
@@ -46,7 +46,7 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
 }
 
 export interface FormAttribute extends Attribute {
-  id: number;
+  uuid: string;
   order: number | null;
   isRequired: boolean;
   isEditable: boolean;
@@ -55,7 +55,7 @@ export interface FormAttribute extends Attribute {
 }
 
 export interface FormAttributeBase {
-  id: number;
+  uuid: string;
   order?: number | null;
   isRequired: boolean;
   isEditable: boolean;

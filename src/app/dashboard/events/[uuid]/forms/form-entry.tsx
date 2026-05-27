@@ -1,0 +1,53 @@
+import { SquarePen } from "lucide-react";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import type { EventForm } from "@/types/forms";
+
+import { DeleteFormPopup } from "./delete-form-popup";
+
+function FormEntry({
+  form,
+  eventUuid,
+}: {
+  form: EventForm;
+  eventUuid: string;
+}) {
+  return (
+    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
+      <div className="flex items-center justify-end">
+        <Button variant="eventGhost" size="icon" asChild>
+          <Link href={`forms/${form.uuid}`}>
+            <SquarePen />
+            <span className="sr-only">Edytuj formularz</span>
+          </Link>
+        </Button>
+        {/* TODO: Implement form preview */}
+        {/*<Button variant="eventGhost" size="icon" asChild>*/}
+        {/*  <Link href="/">*/}
+        {/*    <Eye />*/}
+        {/*    <span className="sr-only">Podgląd formularzu</span>*/}
+        {/*  </Link>*/}
+        {/*</Button>*/}
+        <DeleteFormPopup
+          eventUuid={eventUuid}
+          formId={form.uuid}
+          formName={form.name}
+        />
+      </div>
+      <div className="flex grow flex-col items-center justify-center gap-2 text-center">
+        <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
+          {form.name}
+        </p>
+        {/*
+        <p className="text-muted-foreground">
+          {new Date(form.startDate).toLocaleDateString()} -{" "}
+          {new Date(form.endDate).toLocaleDateString()}
+        </p>
+        */}
+      </div>
+    </div>
+  );
+}
+
+export { FormEntry };

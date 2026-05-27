@@ -1,7 +1,7 @@
 import type { FormAttribute } from "@/types/attributes";
 
 export interface Form {
-  id: number;
+  uuid: string;
   name: string;
   slug: string;
   startDate: string;
@@ -9,7 +9,7 @@ export interface Form {
   isFirstForm: boolean;
   description: string;
   endDate: string;
-  eventId: number;
+  eventUuid: string;
   createdAt: string;
   updatedAt: string;
   attributes: FormAttribute[];

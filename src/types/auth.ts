@@ -15,7 +15,7 @@ export interface AuthErrorResponse {
 }
 
 export interface Admin {
-  id: number;
+  uuid: string;
   firstName: string;
   lastName: string;
   email: string;

@@ -24,9 +24,12 @@ export async function generateMetadata({
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -50,9 +53,12 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
@@ -74,7 +80,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const eventBlocks = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
-      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+      getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
@@ -121,7 +127,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <FormGenerator
         attributes={form.attributes}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.id.toString()}
+        formUuid={form.uuid}
         eventSlug={eventSlug}
         editMode={false}
       />

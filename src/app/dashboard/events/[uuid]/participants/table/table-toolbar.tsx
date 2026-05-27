@@ -1,0 +1,114 @@
+import type { Table } from "@tanstack/react-table";
+import { ArrowUpDown, FilterX } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { Dispatch, SetStateAction } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import type { EventEmail } from "@/types/emails";
+import type { FlattenedParticipant } from "@/types/participant";
+
+import { DeleteManyParticipantsDialog } from "./delete-many-dialog";
+import { ExportButton } from "./export-button";
+import { SendMailForm } from "./send-mail-form";
+
+interface TableToolbarProps {
+  table: Table<FlattenedParticipant>;
+  globalFilter: string;
+  eventUuid: string;
+  emails: EventEmail[] | null;
+  isQuerying: boolean;
+  deleteManyParticipants: (_participants: string[]) => Promise<void>;
+  pageBeforeSearch: number;
+  setIsUserSearching: Dispatch<SetStateAction<boolean>>;
+}
+
+export function TableToolbar({
+  table,
+  globalFilter,
+  eventUuid,
+  emails,
+  isQuerying,
+  deleteManyParticipants,
+  pageBeforeSearch,
+  setIsUserSearching,
+}: TableToolbarProps) {
+  const t = useTranslations("Table");
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Input
+        className="h-10 w-full md:w-32"
+        placeholder={t("searchPlaceholder")}
+        value={globalFilter}
+        onChange={(event) => {
+          setIsUserSearching(true);
+          const searchValue = event.target.value;
+          table.setGlobalFilter(searchValue);
+
+          if (
+            pageBeforeSearch > 0 &&
+            table.getState().pagination.pageIndex > 0
+          ) {
+            table.firstPage();
+          } else if (searchValue === "") {
+            table.setPageIndex(pageBeforeSearch);
+            setIsUserSearching(false);
+          }
+        }}
+      />
+      <div className="flex gap-4 max-md:w-full">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetColumnFilters();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label={t("resetFilters")}
+            >
+              <FilterX />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("resetFilters")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                table.resetSorting();
+              }}
+              size="icon"
+              variant="outline"
+              aria-label={t("resetSorting")}
+            >
+              <ArrowUpDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("resetSorting")}</TooltipContent>
+        </Tooltip>
+        <SendMailForm
+          eventUuid={eventUuid}
+          targetParticipants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original)}
+          emails={emails}
+        />
+        <ExportButton eventUuid={eventUuid} />
+        <DeleteManyParticipantsDialog
+          isQuerying={isQuerying}
+          participants={table
+            .getSelectedRowModel()
+            .rows.map((row) => row.original.uuid)}
+          deleteManyParticipants={deleteManyParticipants}
+        />
+      </div>
+    </div>
+  );
+}

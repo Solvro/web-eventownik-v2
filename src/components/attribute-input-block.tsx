@@ -47,8 +47,8 @@ export function AttributeInputBlock({
       ? false
       : userData.attributes.some((attribute) =>
           attribute.type === "block" && attribute.isMultiple
-            ? attribute.meta.pivot_value.includes(block.id.toString())
-            : attribute.meta.pivot_value === block.id.toString(),
+            ? attribute.meta.pivot_value.includes(block.uuid)
+            : attribute.meta.pivot_value === block.uuid,
         );
 
   const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
@@ -66,7 +66,7 @@ export function AttributeInputBlock({
           />
         ) : (
           <FormControl>
-            <RadioGroupItem value={block.id.toString()} disabled={isDisabled} />
+            <RadioGroupItem value={block.uuid} disabled={isDisabled} />
           </FormControl>
         )}
         <FormLabel className="flex grow">
@@ -124,7 +124,7 @@ export function AttributeInputBlock({
                       occupant.name === "" || occupant.name === undefined;
                     return (
                       <li
-                        key={occupant.id}
+                        key={occupant.uuid}
                         className={cn(
                           "rounded-sm px-2 py-1.5 text-sm",
                           isAnonymous && "text-muted-foreground italic",

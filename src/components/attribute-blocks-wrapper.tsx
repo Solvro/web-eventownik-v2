@@ -158,18 +158,16 @@ export function AttributeBlocksWrapper({
           </Activity>
           {filteredBlocks.map((childBlock) => (
             <AttributeInputBlock
-              key={childBlock.id}
+              key={childBlock.uuid}
               userData={userData}
               block={childBlock}
               isMultiple={true}
-              checked={selectedValues?.includes(childBlock.id.toString())}
+              checked={selectedValues?.includes(childBlock.uuid)}
               onCheckedChange={(checked) => {
-                handleMultiChange(childBlock.id.toString(), checked);
+                handleMultiChange(childBlock.uuid, checked);
               }}
               disabled={
-                !(
-                  selectedValues?.includes(childBlock.id.toString()) ?? false
-                ) &&
+                !(selectedValues?.includes(childBlock.uuid) ?? false) &&
                 maxSelections !== null &&
                 (selectedValues?.length ?? 0) >= maxSelections
               }
@@ -206,7 +204,7 @@ export function AttributeBlocksWrapper({
           </Activity>
           {filteredBlocks.map((childBlock) => (
             <AttributeInputBlock
-              key={childBlock.id}
+              key={childBlock.uuid}
               userData={userData}
               block={childBlock}
               isMultiple={false}
