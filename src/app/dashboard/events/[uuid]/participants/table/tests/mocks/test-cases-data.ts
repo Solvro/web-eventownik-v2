@@ -966,6 +966,12 @@ export const editParticipantTestCaseData: TestCaseData = {
           slug: "nickname",
           value: "chewmanji",
         },
+        {
+          uuid: ageAttributeUuid,
+          name: "age",
+          slug: "age",
+          value: "42",
+        },
       ],
     },
   ],
