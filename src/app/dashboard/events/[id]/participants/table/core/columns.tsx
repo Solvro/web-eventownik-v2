@@ -99,7 +99,9 @@ export function createColumns(
           name: attribute.name,
           showInTable: attribute.showInList,
         },
-        ...(attribute.type === "multiselect" ? { minSize: 240 } : {}),
+        ...(["multiselect", "block"].includes(attribute.type)
+          ? { minSize: 240 }
+          : {}),
         filterFn: (
           row: Row<FlattenedParticipant>,
           columnId: string,
