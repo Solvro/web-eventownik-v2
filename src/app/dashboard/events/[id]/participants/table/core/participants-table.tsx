@@ -20,6 +20,8 @@ import type { FlattenedParticipant } from "@/types/participant";
 
 import { TableColumnHeader } from "../components/table-ui/table-column-header";
 
+const DEFAULT_ROW_HEIGHT = 72;
+
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -48,6 +50,8 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
     null,
   );
+  const [rowHeights, setRowHeights] = useState<Record<string, number>>({});
+  const [resizingRowId, setResizingRowId] = useState<string | null>(null);
 
   const rows = table.getRowModel().rows;
 
@@ -59,7 +63,10 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     count: rows.length,
     enabled: scrollElement !== null,
     getScrollElement: () => scrollElement,
-    estimateSize: () => 72,
+    estimateSize: (index) => {
+      const row = rows[index];
+      return rowHeights[row.id] ?? DEFAULT_ROW_HEIGHT;
+    },
     overscan: 8,
     initialRect: {
       height: 800,
@@ -75,9 +82,52 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     virtualRows.length > 0 ? totalHeight - (lastVirtualRow?.end ?? 0) : 0;
 
   useEffect(() => {
-    document.body.style.cursor = isResizingColumn ? "col-resize" : "";
-    document.body.style.userSelect = isResizingColumn ? "none" : "";
-  }, [isResizingColumn]);
+    const isResizingRow = resizingRowId !== null;
+
+    document.body.style.cursor =
+      isResizingColumn || isResizingRow
+        ? isResizingColumn
+          ? "col-resize"
+          : "row-resize"
+        : "";
+
+    document.body.style.userSelect =
+      isResizingColumn || isResizingRow ? "none" : "";
+  }, [isResizingColumn, resizingRowId]);
+
+  const handleRowResizeStart = (
+    event: React.MouseEvent,
+    rowId: string,
+    rowIndex: number,
+    currentHeight: number,
+  ) => {
+    event.preventDefault();
+
+    setResizingRowId(rowId);
+
+    const startY = event.clientY;
+    const startHeight = currentHeight;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const nextHeight = Math.max(40, startHeight + moveEvent.clientY - startY);
+
+      setRowHeights((previous) => ({
+        ...previous,
+        [rowId]: nextHeight,
+      }));
+
+      rowVirtualizer.resizeItem(rowIndex, nextHeight);
+    };
+
+    const onMouseUp = () => {
+      setResizingRowId(null);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
 
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
@@ -118,7 +168,15 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                     <TableRow
                       key={virtualRow.key}
                       data-index={virtualRow.index}
-                      ref={rowVirtualizer.measureElement}
+                      ref={
+                        rowHeights[row.id]
+                          ? undefined
+                          : rowVirtualizer.measureElement
+                      }
+                      style={{
+                        height: rowHeights[row.id],
+                        position: "relative",
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
@@ -138,6 +196,24 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                             cell.column.columnDef.cell,
                             cell.getContext(),
                           )}
+
+                          <div
+                            aria-hidden="true"
+                            className={cn(
+                              "hover:bg-primary absolute bottom-0 left-0 h-0.5 w-full cursor-row-resize bg-transparent transition-colors",
+                              resizingRowId === row.id
+                                ? "bg-primary"
+                                : "bg-transparent",
+                            )}
+                            onMouseDown={(event) => {
+                              handleRowResizeStart(
+                                event,
+                                row.id,
+                                virtualRow.index,
+                                rowHeights[row.id] ?? virtualRow.size,
+                              );
+                            }}
+                          />
                         </TableCell>
                       ))}
                     </TableRow>
