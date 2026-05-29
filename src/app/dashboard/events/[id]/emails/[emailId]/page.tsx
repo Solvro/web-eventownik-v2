@@ -2,8 +2,10 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import sanitize from "sanitize-html";
 
 import { Editor } from "@/components/editor/index";
+import { EMAIL_ALLOWED_ATTRIBUTES, EMAIL_ALLOWED_TAGS } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
@@ -37,11 +39,19 @@ export default async function EventMailEditPage({
 }) {
   const { id, emailId } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailId);
+  const fetchedEmail = await getSingleEventEmail(id, emailId);
 
-  if (emailToEdit == null) {
+  if (fetchedEmail == null) {
     notFound();
   }
+
+  const emailToEdit = {
+    ...fetchedEmail,
+    content: sanitize(fetchedEmail.content, {
+      allowedTags: EMAIL_ALLOWED_TAGS,
+      allowedAttributes: EMAIL_ALLOWED_ATTRIBUTES,
+    }),
+  };
 
   const isBlockBased = emailToEdit.schema !== null;
 
