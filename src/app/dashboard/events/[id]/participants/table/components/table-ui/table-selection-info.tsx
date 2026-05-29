@@ -11,12 +11,10 @@ interface TableSelectionInfoProps {
 export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
   const t = useTranslations("Table");
   const selectedCount = table.getSelectedRowModel().rows.length;
-  const pageRows = table.getPaginationRowModel().rows;
-  const totalFilteredCount = table.getFilteredRowModel().rows.length;
-
-  const allSelectedOnPage =
-    pageRows.length > 0 && pageRows.every((r) => r.getIsSelected());
-  const hasMoreThanOnePage = totalFilteredCount > pageRows.length;
+  const filteredRows = table.getFilteredRowModel().rows;
+  const totalFilteredCount = filteredRows.length;
+  const canSelectAllFiltered =
+    totalFilteredCount > 0 && selectedCount < totalFilteredCount;
   const isAllRowsSelected = table.getIsAllRowsSelected();
 
   if (selectedCount === 0) {
@@ -25,8 +23,13 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
 
   return (
     <div className="text-muted-foreground flex items-center gap-x-2 text-sm">
-      <span>{t("selectedCount", { count: selectedCount })}</span>
-      {allSelectedOnPage && hasMoreThanOnePage && !isAllRowsSelected ? (
+      <span>
+        {t("selectedCount", {
+          count: selectedCount,
+          total: totalFilteredCount,
+        })}
+      </span>
+      {canSelectAllFiltered && !isAllRowsSelected ? (
         <Button
           variant="link"
           size="sm"
@@ -38,7 +41,7 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
           {t("selectAll", { count: totalFilteredCount })}
         </Button>
       ) : null}
-      {isAllRowsSelected && hasMoreThanOnePage ? (
+      {isAllRowsSelected && totalFilteredCount > 0 ? (
         <span className="text-primary">
           {t("allSelected", { count: totalFilteredCount })}
         </span>

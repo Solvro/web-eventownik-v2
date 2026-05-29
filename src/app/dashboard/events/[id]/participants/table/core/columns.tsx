@@ -1,0 +1,168 @@
+import type { Row } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import type { useTranslations as UseTranslations } from "next-intl";
+
+import { Checkbox } from "@/components/ui/checkbox";
+import type { Attribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
+
+import { EditParticipantButton } from "../components/buttons/edit-button";
+import { FilterButton } from "../components/buttons/filter-button";
+import { EditableCell } from "../components/table-ui/editable-cell";
+import { SortHeader } from "../components/table-ui/sort-header";
+
+const columnHelper = createColumnHelper<FlattenedParticipant>();
+
+type TableTranslator = ReturnType<typeof UseTranslations<"Table">>;
+
+function getBaseColumns(t: TableTranslator) {
+  return [
+    columnHelper.display({
+      id: "select",
+      size: 40,
+      minSize: 40,
+      maxSize: 40,
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(Boolean(value));
+          }}
+          aria-label={t("selectAllPageRows")}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            row.toggleSelected(Boolean(value));
+          }}
+          aria-label={t("selectRow")}
+        ></Checkbox>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
+    }),
+    columnHelper.display({
+      id: "no",
+      size: 52,
+      minSize: 52,
+      maxSize: 52,
+      header: t("rowNumberTitle"),
+      cell: ({ row }) => {
+        return row.index + 1;
+      },
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
+    }),
+    columnHelper.accessor("email", {
+      size: 200,
+      minSize: 120,
+      maxSize: 300,
+      meta: { name: t("columnEmailTitle") },
+      header: (info) => <SortHeader info={info} name={t("columnEmailTitle")} />,
+      cell: (info) => <EditableCell info={info} />,
+    }),
+    columnHelper.accessor("createdAt", {
+      size: 160,
+      minSize: 200,
+      maxSize: 240,
+      meta: { name: t("columnCreatedAtTitle") },
+      header: (info) => (
+        <SortHeader info={info} name={t("columnCreatedAtTitle")} />
+      ),
+      cell: (info) => info.getValue(),
+    }),
+  ];
+}
+
+export function createColumns(
+  attributes: Attribute[],
+  blocks: (Block | null)[],
+  t: TableTranslator,
+) {
+  const attributeColumns = attributes
+    .filter((attribute) => attribute.showInList)
+    .map((attribute) =>
+      columnHelper.accessor(attribute.id.toString(), {
+        meta: {
+          attribute,
+          name: attribute.name,
+          showInTable: attribute.showInList,
+        },
+        ...(["multiselect", "block"].includes(attribute.type)
+          ? { minSize: 240 }
+          : {}),
+        filterFn: (
+          row: Row<FlattenedParticipant>,
+          columnId: string,
+          filterValue: ParticipantAttributeValueType[],
+        ) => {
+          if (filterValue.length === 0) {
+            return true;
+          }
+          const rowValue = row.original[columnId] ?? null;
+
+          // Multiselect case has to be handled separately
+          // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+          if (rowValue !== null && attribute.type === "multiselect") {
+            const rawValue = String(row.original[columnId]);
+            const normalized = rawValue
+              .replaceAll(/^{|}$/g, "")
+              .replaceAll('"', "");
+            const values = new Set(
+              normalized === "" ? [] : normalized.split(","),
+            );
+            return filterValue.some((value) => values.has(value as string));
+          }
+
+          // Special case when attribute of single select type is set empty
+          // Check implementation of AttributeInput for explanation
+          if (rowValue === " " && filterValue.includes(null)) {
+            return true;
+          }
+
+          return filterValue.includes(rowValue);
+        },
+        header: (info) => (
+          <div className="flex items-center gap-1">
+            <FilterButton
+              attributeType={attribute.type}
+              options_={attribute.options}
+              blocks={blocks}
+              column={info.column}
+              attributeId={attribute.id}
+            />
+            <div className="min-w-0 flex-1">
+              <SortHeader info={info} name={attribute.name} truncate />
+            </div>
+          </div>
+        ),
+        cell: (info) => (
+          <EditableCell info={info} attribute={attribute} blocks={blocks} />
+        ),
+      }),
+    );
+
+  const editColumn = columnHelper.display({
+    id: "edit",
+    cell: ({ row, table }) => <EditParticipantButton row={row} table={table} />,
+    size: 48,
+    minSize: 48,
+    maxSize: 48,
+    enableSorting: false,
+    enableHiding: false,
+    enableResizing: false,
+  });
+
+  return [...getBaseColumns(t), ...attributeColumns, editColumn];
+}

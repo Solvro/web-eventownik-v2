@@ -1,13 +1,14 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
 // TODO(refactor): Refactor types across this entire file.
+export type AttributeOption = string | { label: string; value: string };
 
 export interface EventAttribute {
   id: number;
   name: string;
   slug: string | null;
   eventId: number;
-  options: string[] | null;
+  options: AttributeOption[] | null;
   type: string;
   rootBlockId: number | undefined;
   showInList: boolean;
@@ -33,7 +34,7 @@ export interface AttributeBase {
 export interface Attribute extends Omit<AttributeBase, "value"> {
   eventId: number;
   showInList: boolean;
-  options: string[] | null;
+  options: AttributeOption[] | null;
   type: AttributeType;
   order: number | null;
   createdAt: string;

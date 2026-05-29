@@ -27,6 +27,12 @@ vi.mock("next-navigation-guard", () => ({
 
 globalThis.ResizeObserver = ResizeObserver;
 
+globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
 globalThis.HTMLElement.prototype.scrollIntoView = vi.fn();
 globalThis.HTMLElement.prototype.hasPointerCapture = vi.fn();
 globalThis.HTMLElement.prototype.releasePointerCapture = vi.fn();

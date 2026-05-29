@@ -61,7 +61,29 @@ export function formatAttributeValue(
         })?.name ?? value
       );
     }
+    case "multiselect": {
+      const items = parseMultiValue(String(value)).filter(Boolean);
+      return items.join(", ");
+    }
     default:
       return value;
   }
+}
+
+function parseMultiValue(raw: string): string[] {
+  const trimmed = raw.trim();
+  if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+    return trimmed === "" ? [] : trimmed.split(",");
+  }
+  const inner = trimmed.slice(1, -1);
+  if (inner === "") {
+    return [];
+  }
+  const matches = [...inner.matchAll(/"((?:[^"\\]|\\.)*)"/g)];
+  if (matches.length > 0) {
+    return matches.map((match) =>
+      match[1].replaceAll(String.raw`\"`, '"').replaceAll("\\\\", "\\"),
+    );
+  }
+  return inner.split(",");
 }

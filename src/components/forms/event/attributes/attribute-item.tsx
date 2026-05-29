@@ -41,6 +41,23 @@ import type { AttributeItemProps, NewEventAttribute } from "./types";
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
+const getOptionValue = (option: unknown): string => {
+  if (typeof option === "string") {
+    return option;
+  }
+
+  if (
+    typeof option === "object" &&
+    option !== null &&
+    "value" in option &&
+    typeof (option as { value: unknown }).value === "string"
+  ) {
+    return (option as { value: string }).value;
+  }
+
+  return "";
+};
+
 export function AttributeItem({
   attribute,
   index,
@@ -126,7 +143,7 @@ export function AttributeItem({
             onUpdateItem?.(index, getValues(`attributes.${index}`));
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -255,14 +272,17 @@ export function AttributeItem({
               modifiers={[RestrictToHorizontalAxis]}
             >
               {watch(`attributes.${index}.options`)?.map(
-                (option, optionIndex) => (
-                  <SortableOption
-                    key={option}
-                    option={option}
-                    index={optionIndex}
-                    onRemove={handleRemoveOption}
-                  />
-                ),
+                (option, optionIndex) => {
+                  const optionValue = getOptionValue(option);
+                  return (
+                    <SortableOption
+                      key={optionValue}
+                      option={optionValue}
+                      index={optionIndex}
+                      onRemove={handleRemoveOption}
+                    />
+                  );
+                },
               )}
             </DragDropProvider>
           </div>
@@ -297,7 +317,9 @@ export function AttributeItem({
               setValue(`attributes.${index}.options`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
-            defaultValue={getValues(`attributes.${index}.options`) ?? []}
+            defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
+              (option) => getOptionValue(option),
+            )}
             placeholder="Wybierz atrybuty do wyświetlenia"
           />
           <p className="text-muted-foreground text-sm">
