@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
-import { getPuckSchemaFromLegacyEmail } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
 import type { MessageTag } from "@/lib/extensions/tags";
 import { getAttributeLabel } from "@/lib/utils";
@@ -62,23 +61,15 @@ export default async function EventMailEditPage({
     };
   }) satisfies MessageTag[];
 
-  if (emailToEdit == null) {
-    notFound();
+  if (emailToEdit?.schema == null) {
+    redirect(`/dashboard/events/${id}/emails/${emailId}`);
   } else {
-    const isLegacyEmail = emailToEdit.schema === null;
-
-    const initialData = (
-      isLegacyEmail
-        ? getPuckSchemaFromLegacyEmail(emailToEdit)
-        : JSON.parse(emailToEdit.schema ?? "")
-    ) as PuckData;
-
     return (
       <Editor
         tags={[...attributeTags, ...formTags]}
         forms={forms}
         attributes={attributes}
-        initialData={initialData}
+        initialData={JSON.parse(emailToEdit.schema) as PuckData}
         mutationData={{
           emailId: emailToEdit.id.toString(),
           eventId: id,
