@@ -52,7 +52,7 @@ export function AttributeValueInput({
     const selected = value === "" ? [] : value.split(",");
 
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex max-h-24 flex-col gap-1 overflow-auto pr-1">
         {options?.map((option) => {
           const { value: optionValue, label: optionLabel } =
             resolveMultiOption(option);
