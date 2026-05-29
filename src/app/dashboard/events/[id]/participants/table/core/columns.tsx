@@ -112,8 +112,12 @@ export function createColumns(
           // Multiselect case has to be handled separately
           // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
           if (rowValue !== null && attribute.type === "multiselect") {
+            const rawValue = String(row.original[columnId]);
+            const normalized = rawValue
+              .replaceAll(/^{|}$/g, "")
+              .replaceAll('"', "");
             const values = new Set(
-              (row.original[columnId] as string).split(","),
+              normalized === "" ? [] : normalized.split(","),
             );
             return filterValue.some((value) => values.has(value as string));
           }

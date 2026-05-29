@@ -4,7 +4,7 @@ import { format } from "date-fns";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -29,7 +29,6 @@ export function AttributeValueInput({
   blocks,
   value,
   onChange,
-  idPrefix = attribute.id.toString(),
 }: AttributeValueInputProps) {
   type MultiOption = AttributeOption | Block;
 
@@ -49,36 +48,22 @@ export function AttributeValueInput({
   }
 
   function renderMultiOptions(options: MultiOption[] | undefined | null) {
-    const selected = value === "" ? [] : value.split(",");
+    const normalizedValue = value.replaceAll(/^{|}$/g, "").replaceAll('"', "");
+    const selected = normalizedValue === "" ? [] : normalizedValue.split(",");
+    const resolvedOptions = (options ?? []).map((option) => {
+      const resolved = resolveMultiOption(option);
+      return { label: resolved.label, value: resolved.value };
+    });
 
     return (
-      <div className="flex max-h-24 flex-col gap-1 overflow-auto pr-1">
-        {options?.map((option) => {
-          const { value: optionValue, label: optionLabel } =
-            resolveMultiOption(option);
-          return (
-            <div key={optionValue} className="flex items-center gap-1.5">
-              <Checkbox
-                id={`${idPrefix}-${optionValue}`}
-                checked={selected.includes(optionValue)}
-                onCheckedChange={(checked) => {
-                  const next =
-                    checked === true
-                      ? [...selected, optionValue]
-                      : selected.filter((item) => item !== optionValue);
-                  onChange(next.join(","));
-                }}
-              />
-              <Label
-                htmlFor={`${idPrefix}-${optionValue}`}
-                className="text-sm font-normal"
-              >
-                {optionLabel}
-              </Label>
-            </div>
-          );
-        })}
-      </div>
+      <MultiSelect
+        maxCount={2}
+        options={resolvedOptions}
+        defaultValue={selected}
+        onValueChange={(next) => {
+          onChange(next.join(","));
+        }}
+      />
     );
   }
 
