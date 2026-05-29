@@ -8,7 +8,6 @@ import {
   ChevronsUpDown,
   FileSpreadsheet,
   ImageIcon,
-  ImageUpscale,
   Lightbulb,
   LinkIcon,
   Mail,
@@ -802,31 +801,18 @@ export const getPuckConfig = ({
               </div>
             ),
           },
-          objectFit: {
-            type: "select",
-            label: "Dopasowanie",
-            labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
-            options: [
-              { label: "Brak", value: "none" },
-              { label: "Dopasuj", value: "contain" },
-              { label: "Wypełnij", value: "cover" },
-              { label: "Pomniejsz", value: "scale-down" },
-            ],
-          },
           ...withLayout,
         },
         defaultProps: {
           src: "",
           size: "128",
-          objectFit: "contain",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ size, src, objectFit, layout: { margin, padding } }) {
+        render({ size, src, layout: { margin, padding } }) {
           const sizeValue = size === "auto" ? "auto" : `${size}px`;
-
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
               <tbody>
@@ -839,7 +825,7 @@ export const getPuckConfig = ({
                       width={sizeValue === "auto" ? undefined : sizeValue}
                       style={{
                         display: "block",
-                        objectFit,
+                        objectFit: "contain",
                         width: sizeValue,
                         maxWidth: "100%",
                         padding: `${padding}px`,
@@ -981,30 +967,18 @@ export const getPuckConfig = ({
             label: "Odnośnik",
             labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
           },
-          objectFit: {
-            type: "select",
-            label: "Dopasowanie",
-            labelIcon: <ImageUpscale className={PUCK_ICON_CLASSNAME} />,
-            options: [
-              { label: "Brak", value: "none" },
-              { label: "Dopasuj", value: "contain" },
-              { label: "Wypełnij", value: "cover" },
-              { label: "Pomniejsz", value: "scale-down" },
-            ],
-          },
           ...withLayout,
         },
         defaultProps: {
           src: "",
           size: "128",
-          objectFit: "contain",
           href: "",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ size, src, objectFit, href, layout: { margin, padding } }) {
+        render({ size, src, href, layout: { margin, padding } }) {
           const sizeValue = size === "auto" ? "auto" : `${size}px`;
 
           const image = (
@@ -1015,7 +989,7 @@ export const getPuckConfig = ({
               width={sizeValue === "auto" ? undefined : sizeValue}
               style={{
                 display: "block",
-                objectFit,
+                objectFit: "contain",
                 width: sizeValue,
                 maxWidth: "100%",
                 padding: `${padding}px`,

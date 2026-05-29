@@ -13,7 +13,6 @@ import type { LooseAutocomplete } from "./utils";
 export interface ImageFields extends LayoutFields {
   size: string;
   src: string;
-  objectFit: CSSProperties["objectFit"];
 }
 
 export interface LinkImageFields extends ImageFields, LayoutFields {
