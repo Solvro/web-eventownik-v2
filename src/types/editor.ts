@@ -11,8 +11,7 @@ import type { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { LooseAutocomplete } from "./utils";
 
 export interface ImageFields extends LayoutFields {
-  width: string;
-  height: string;
+  size: string;
   src: string;
   objectFit: CSSProperties["objectFit"];
 }

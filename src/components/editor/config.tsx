@@ -5,7 +5,6 @@ import type { Field } from "@puckeditor/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { StarterKit } from "@tiptap/starter-kit";
 import {
-  ChevronsLeftRight,
   ChevronsUpDown,
   FileSpreadsheet,
   ImageIcon,
@@ -14,6 +13,7 @@ import {
   LinkIcon,
   Mail,
   Palette,
+  Scaling,
   Tag,
   Type,
   X,
@@ -778,33 +778,9 @@ export const getPuckConfig = ({
               );
             },
           },
-          width: {
-            label: "Szerokość",
-            labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
-            type: "custom",
-            render: ({ name, onChange, value, field }) => (
-              <div className="space-y-2">
-                <FieldLabel
-                  label={field.label ?? name}
-                  icon={field.labelIcon}
-                />
-                <Button
-                  onClick={() => {
-                    onChange("auto");
-                  }}
-                  variant={value === "auto" ? "secondary" : "outline"}
-                  size="sm"
-                  className="w-full"
-                >
-                  Automatycznie
-                </Button>
-                <NumberButtonInput value={value} onChange={onChange} />
-              </div>
-            ),
-          },
-          height: {
-            label: "Wysokość",
-            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+          size: {
+            label: "Rozmiar",
+            labelIcon: <Scaling className={PUCK_ICON_CLASSNAME} />,
             type: "custom",
             render: ({ name, onChange, value, field }) => (
               <div className="space-y-2">
@@ -841,17 +817,15 @@ export const getPuckConfig = ({
         },
         defaultProps: {
           src: "",
-          width: "128",
-          height: "128",
+          size: "128",
           objectFit: "contain",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ width, height, src, objectFit, layout: { margin, padding } }) {
-          const widthValue = width === "auto" ? "auto" : `${width}px`;
-          const heightValue = height === "auto" ? "auto" : `${height}px`;
+        render({ size, src, objectFit, layout: { margin, padding } }) {
+          const sizeValue = size === "auto" ? "auto" : `${size}px`;
 
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
@@ -862,13 +836,11 @@ export const getPuckConfig = ({
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
                       alt=""
-                      width={width === "auto" ? undefined : width}
-                      height={height === "auto" ? undefined : height}
+                      width={sizeValue === "auto" ? undefined : sizeValue}
                       style={{
                         display: "block",
                         objectFit,
-                        width: widthValue,
-                        height: heightValue,
+                        width: sizeValue,
                         maxWidth: "100%",
                         padding: `${padding}px`,
                         margin: `${margin}px`,
@@ -980,33 +952,9 @@ export const getPuckConfig = ({
               );
             },
           },
-          width: {
-            label: "Szerokość",
-            labelIcon: <ChevronsLeftRight className={PUCK_ICON_CLASSNAME} />,
-            type: "custom",
-            render: ({ name, onChange, value, field }) => (
-              <div className="space-y-2">
-                <FieldLabel
-                  label={field.label ?? name}
-                  icon={field.labelIcon}
-                />
-                <Button
-                  onClick={() => {
-                    onChange("auto");
-                  }}
-                  variant={value === "auto" ? "secondary" : "outline"}
-                  size="sm"
-                  className="w-full"
-                >
-                  Automatycznie
-                </Button>
-                <NumberButtonInput value={value} onChange={onChange} />
-              </div>
-            ),
-          },
-          height: {
-            label: "Wysokość",
-            labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
+          size: {
+            label: "Rozmiar",
+            labelIcon: <Scaling className={PUCK_ICON_CLASSNAME} />,
             type: "custom",
             render: ({ name, onChange, value, field }) => (
               <div className="space-y-2">
@@ -1048,8 +996,7 @@ export const getPuckConfig = ({
         },
         defaultProps: {
           src: "",
-          width: "128",
-          height: "128",
+          size: "128",
           objectFit: "contain",
           href: "",
           layout: {
@@ -1057,29 +1004,19 @@ export const getPuckConfig = ({
             padding: "0",
           },
         },
-        render({
-          width,
-          height,
-          src,
-          objectFit,
-          href,
-          layout: { margin, padding },
-        }) {
-          const widthValue = width === "auto" ? "auto" : `${width}px`;
-          const heightValue = height === "auto" ? "auto" : `${height}px`;
+        render({ size, src, objectFit, href, layout: { margin, padding } }) {
+          const sizeValue = size === "auto" ? "auto" : `${size}px`;
 
           const image = (
-            /* eslint-disable-next-line @next/next/no-img-element */
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={src === "" ? `/editor-image-placeholder.svg` : src}
               alt=""
-              width={width === "auto" ? undefined : width}
-              height={height === "auto" ? undefined : height}
+              width={sizeValue === "auto" ? undefined : sizeValue}
               style={{
                 display: "block",
                 objectFit,
-                width: widthValue,
-                height: heightValue,
+                width: sizeValue,
                 maxWidth: "100%",
                 padding: `${padding}px`,
                 margin: `${margin}px`,
