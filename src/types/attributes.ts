@@ -1,5 +1,7 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
+// TODO(refactor): Refactor types across this entire file.
+
 export interface EventAttribute {
   id: number;
   name: string;
@@ -14,6 +16,8 @@ export interface EventAttribute {
   updatedAt: string;
   isSensitiveData: boolean;
   reason: string | null;
+  isMultiple: boolean;
+  maxSelections: number | null;
 }
 
 /**
@@ -22,7 +26,7 @@ export interface EventAttribute {
 export interface AttributeBase {
   id: number;
   name: string;
-  value: string;
+  value: string | string[];
   slug: string | null;
 }
 
@@ -34,6 +38,11 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   order: number | null;
   createdAt: string;
   updatedAt: string;
+  // TODO(refactor): Cleanup type definitions. Added here for now to implement multiselect blocks.
+  isRequired: boolean;
+  isEditable: boolean;
+  isMultiple: boolean;
+  maxSelections: number | null;
 }
 
 export interface FormAttribute extends Attribute {
@@ -41,6 +50,8 @@ export interface FormAttribute extends Attribute {
   order: number | null;
   isRequired: boolean;
   isEditable: boolean;
+  isMultiple: boolean;
+  maxSelections: number | null;
 }
 
 export interface FormAttributeBase {

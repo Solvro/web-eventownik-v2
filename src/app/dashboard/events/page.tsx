@@ -1,6 +1,6 @@
-import { format } from "date-fns";
 import {
   AlertCircle,
+  AlertCircleIcon,
   Calendar1,
   CalendarDays,
   CircleHelpIcon,
@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -105,6 +106,18 @@ export default async function EventListPage() {
             ) : null}
           </div>
         </div>
+        <Alert>
+          <AlertCircleIcon />
+          <AlertTitle className="line-clamp-0">
+            Ważna informacja dla organizatorów
+          </AlertTitle>
+          <AlertDescription className="text-foreground inline">
+            Eventownik jest obecnie dostępny w wersji pilotażowej. Przed
+            rozpoczęciem zapisów na wydarzenie prosimy o poinformowanie naszego
+            zespołu o tym fakcie drogą mailową na adres:{" "}
+            <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl.</a>
+          </AlertDescription>
+        </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
             events.map((event) => (
@@ -132,7 +145,7 @@ export default async function EventListPage() {
                       <EventInfoBlock>
                         <Calendar1 size={16} />
                         <p className="text-sm">
-                          {format(event.startDate, "dd.MM.yyyy HH:mm")}
+                          <ClientFormattedDate date={event.startDate} />
                         </p>
                       </EventInfoBlock>
                       <EventInfoBlock>

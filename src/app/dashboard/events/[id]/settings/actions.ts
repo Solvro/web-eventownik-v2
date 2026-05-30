@@ -1,6 +1,5 @@
 "use server";
 
-import { formatISO } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
@@ -51,8 +50,8 @@ export async function updateEvent(
 
     // Basic fields
     formData.append("name", event.name);
-    formData.append("startDate", formatISO(event.startDate));
-    formData.append("endDate", formatISO(event.endDate));
+    formData.append("startDate", event.startDate);
+    formData.append("endDate", event.endDate);
     formData.append("description", event.description ?? "");
     formData.append("organizer", event.organizer ?? "");
     if (event.slug !== unmodifiedEvent.slug) {
@@ -248,6 +247,8 @@ export async function updateEvent(
                 Authorization: `Bearer ${bearerToken}`,
                 "Content-Type": "application/json",
               },
+              // NOTE: This payload should probably be inferred entirely from the `change.data` object,
+              // so that manual changes after adding new attribute field in `attribute-item` are not required here
               body: JSON.stringify({
                 name: change.data.name,
                 type: change.data.type,
@@ -260,6 +261,8 @@ export async function updateEvent(
                     : undefined,
                 isSensitiveData: change.data.isSensitiveData,
                 reason: change.data.reason,
+                isMultiple: change.data.isMultiple,
+                maxSelections: change.data.maxSelections,
               }),
             },
           );
@@ -303,6 +306,7 @@ export async function updateEvent(
                 Authorization: `Bearer ${bearerToken}`,
                 "Content-Type": "application/json",
               },
+              // NOTE: Duplicate of the note comment above
               body: JSON.stringify({
                 name: change.data.name,
                 type: change.data.type,
@@ -315,6 +319,8 @@ export async function updateEvent(
                     : undefined,
                 isSensitiveData: change.data.isSensitiveData,
                 reason: change.data.reason,
+                isMultiple: change.data.isMultiple,
+                maxSelections: change.data.maxSelections,
               }),
             },
           );

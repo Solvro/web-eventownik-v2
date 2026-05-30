@@ -3,6 +3,7 @@
 import { ChevronRight, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -22,31 +23,52 @@ const valueOrZero = (value: number | null | undefined) => {
 export function AttributeInputBlock({
   block,
   userData,
+  isMultiple,
+  checked,
+  onCheckedChange,
+  disabled: disabledFromParent,
 }: {
   block: PublicBlock;
   userData: PublicParticipant | undefined;
+  isMultiple: boolean;
+  /**
+   * Only required when isMultiple is true
+   */
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
 }) {
   const t = useTranslations("Form");
   const isFull =
     block.capacity !== null && block.meta.participants.length >= block.capacity;
+
   const isRegistered =
     userData === undefined
       ? false
-      : userData.attributes.some(
-          (attribute) =>
-            attribute.type === "block" &&
-            attribute.meta.pivot_value === block.id.toString(),
+      : userData.attributes.some((attribute) =>
+          attribute.type === "block" && attribute.isMultiple
+            ? attribute.meta.pivot_value.includes(block.id.toString())
+            : attribute.meta.pivot_value === block.id.toString(),
         );
+
+  const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
 
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
       <div className="flex items-start gap-4">
-        <FormControl>
-          <RadioGroupItem
-            value={block.id.toString()}
-            disabled={!isRegistered && isFull}
+        {isMultiple ? (
+          <Checkbox
+            checked={checked}
+            disabled={isDisabled}
+            onCheckedChange={(innerChecked) =>
+              onCheckedChange?.(innerChecked === true)
+            }
           />
-        </FormControl>
+        ) : (
+          <FormControl>
+            <RadioGroupItem value={block.id.toString()} disabled={isDisabled} />
+          </FormControl>
+        )}
         <FormLabel className="flex grow">
           <div className="grid w-full grow grid-cols-[1fr_auto] items-start gap-4 font-semibold">
             <p
@@ -95,7 +117,7 @@ export function AttributeInputBlock({
                 {t("noParticipants")}
               </p>
             ) : (
-              <ScrollArea className="[&>[data-slot='scroll-area-viewport']]:max-h-64">
+              <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
                 <ul className="divide-border/60 space-y-0.5 px-1">
                   {block.meta.participants.map((occupant) => {
                     const isAnonymous =
