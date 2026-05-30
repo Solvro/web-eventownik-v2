@@ -101,7 +101,8 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                     )}
                     key={tag.value}
                     onMouseDown={(event) => {
-                      event.preventDefault();
+                      event.stopPropagation();
+                      selectItem(flatIndex);
                     }}
                     onClick={(event) => {
                       event.stopPropagation();

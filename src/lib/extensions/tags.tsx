@@ -112,6 +112,7 @@ const MESSAGE_TAGS: MessageTag[] = [
 
 /**
  * NOTE: This function assumes that the TipTap editor with Tags extensions mounted is located in a Puck editor instance
+ * but it works fine outside it as well
  */
 const updatePosition = async (
   editor: Editor,
