@@ -822,11 +822,13 @@ export const getPuckConfig = ({
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
                       alt=""
-                      width={sizeValue === "auto" ? undefined : sizeValue}
+                      width={size === "auto" ? undefined : size}
+                      height={size === "auto" ? undefined : size}
                       style={{
                         display: "block",
                         objectFit: "contain",
                         width: sizeValue,
+                        height: sizeValue,
                         maxWidth: "100%",
                         padding: `${padding}px`,
                         margin: `${margin}px`,
