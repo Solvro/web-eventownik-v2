@@ -128,6 +128,14 @@
     "tryAgain": "Try again",
     "exportToExcel": "Export to Excel"
   },
+  "Email": {
+    "chooseTemplateType": "Choose template type",
+    "simple": "Simple",
+    "simpleDescription": "Classic WYSIWYG editor",
+    "blockBased": "Block-based",
+    "blockBasedDescription": "Advanced block-based editor for custom layouts",
+    "disclaimer": "After creating a template of a given type, it will no longer be possible to change it"
+  },
   "EmailHistoryTable": {
     "searchPlaceholder": "Search in history",
     "openFilterMenu": "Open filter menu",

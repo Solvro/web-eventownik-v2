@@ -79,7 +79,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   }
 
   return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
+    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
       <div className="flex items-center gap-2">
         <Lightbulb className="size-4" /> Wyjaśnienie
       </div>
@@ -156,54 +156,54 @@ function TriggerConfigurationInputs({
     // NOTE: Commented out because this trigger is not yet implemented on the backend.
     // Uncomment when the backend supports this feature.
     // case "attribute_changed": {
-    //   return (
-    //     <div className="flex flex-col gap-2">
-    //       <FormField
-    //         control={form.control}
-    //         name="triggerValue"
-    //         render={({ field }) => (
-    //           <FormItem className="space-y-3">
-    //             <FormLabel>Atrybut</FormLabel>
-    //             <Select
-    //               onValueChange={field.onChange}
-    //               defaultValue={field.value}
-    //             >
-    //               <FormControl>
-    //                 <SelectTrigger>
-    //                   <SelectValue placeholder="Wybierz atrybut" />
-    //                 </SelectTrigger>
-    //               </FormControl>
-    //               <SelectContent>
-    //                 {eventAttributes.map((attribute) => (
-    //                   <SelectItem
-    //                     key={attribute.id}
-    //                     value={String(attribute.id)}
-    //                   >
-    //                     {attribute.name}
-    //                   </SelectItem>
-    //                 ))}
-    //               </SelectContent>
-    //             </Select>
-    //             <FormMessage />
-    //           </FormItem>
-    //         )}
-    //       />
-    //       <FormField
-    //         control={form.control}
-    //         name="triggerValue2"
-    //         render={({ field }) => (
-    //           <FormItem className="space-y-3">
-    //             <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
+    //   return null;
+    // return (
+    //   <div className="flex flex-col gap-2">
+    //     <FormField
+    //       control={form.control}
+    //       name="triggerValue"
+    //       render={({ field }) => (
+    //         <FormItem className="space-y-3">
+    //           <FormLabel>Atrybut</FormLabel>
+    //           <Select
+    //             onValueChange={field.onChange}
+    //             defaultValue={field.value}
+    //           >
     //             <FormControl>
-    //               <Input type="text" placeholder="tak" {...field} />
+    //               <SelectTrigger>
+    //                 <SelectValue placeholder="Wybierz atrybut" />
+    //               </SelectTrigger>
     //             </FormControl>
-    //             <FormMessage />
-    //           </FormItem>
-    //         )}
-    //       />
-    //     </div>
-    //   );
-    // }
+    //             <SelectContent>
+    //               {eventAttributes.map((attribute) => (
+    //                 <SelectItem
+    //                   key={attribute.id}
+    //                   value={String(attribute.id)}
+    //                 >
+    //                   {attribute.name}
+    //                 </SelectItem>
+    //               ))}
+    //             </SelectContent>
+    //           </Select>
+    //           <FormMessage />
+    //         </FormItem>
+    //       )}
+    //     />
+    //     <FormField
+    //       control={form.control}
+    //       name="triggerValue2"
+    //       render={({ field }) => (
+    //         <FormItem className="space-y-3">
+    //           <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
+    //           <FormControl>
+    //             <Input type="text" placeholder="tak" {...field} />
+    //           </FormControl>
+    //           <FormMessage />
+    //         </FormItem>
+    //       )}
+    //     />
+    //   </div>
+    // );
   }
 }
 
@@ -241,12 +241,14 @@ function EventEmailEditForm({
         values.triggerValue === "" || values.triggerValue === undefined
           ? null
           : values.triggerValue,
+      // NOTE: Simple emails have no schema
+      schema: null,
     };
-    const result = await updateEventEmail(
+    const result = await updateEventEmail({
       eventId,
-      emailToEdit.id.toString(),
-      updatedMail,
-    );
+      mailId: emailToEdit.id.toString(),
+      emailTemplate: updatedMail,
+    });
 
     if (result.success) {
       toast({
@@ -291,7 +293,7 @@ function EventEmailEditForm({
         onConfirm={onConfirm}
       />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
+        <div className="flex items-center gap-4 rounded-md bg-(--event-primary-color)/10 p-4 text-2xl font-semibold">
           <div className="border-foreground rounded-full border p-2">
             <Zap />
           </div>
@@ -335,8 +337,8 @@ function EventEmailEditForm({
             <TriggerTypeExplanation trigger={form.getValues("trigger")} />
           )}
         </div>
-        <div className="bg-muted/25 h-[1px] w-full" />
-        <div className="flex min-h-[216px] flex-col gap-4">
+        <div className="bg-muted/25 h-px w-full" />
+        <div className="flex min-h-54 flex-col gap-4">
           <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
           <FormMessage>
             {Object.keys(form.formState.errors).length > 0
@@ -351,7 +353,7 @@ function EventEmailEditForm({
               form={form}
             />
           </div>
-          <div className="flex items-center gap-4 rounded-md bg-[var(--event-primary-color)]/10 p-4 text-2xl font-semibold">
+          <div className="flex items-center gap-4 rounded-md bg-(--event-primary-color)/10 p-4 text-2xl font-semibold">
             <div className="border-foreground rounded-full border p-2">
               <Text />
             </div>
