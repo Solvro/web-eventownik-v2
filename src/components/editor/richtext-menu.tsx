@@ -101,90 +101,85 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
 function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        {/* NOTE: Tooltip fix - the DropdownMenu must contain the Trigger, but the Trigger is what the Tooltip attaches to */}
-        <DropdownMenu>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant={
-                  activeState.alignCenter ||
-                  activeState.alignRight ||
-                  activeState.alignJustify
-                    ? "eventDefault"
-                    : "eventGhost"
-                }
-                type="button"
-                className="size-7"
-              >
-                {activeState.alignCenter ? (
-                  <AlignCenter className="size-4!" />
-                ) : null}
-                {activeState.alignRight ? (
-                  <AlignRight className="size-4!" />
-                ) : null}
-                {activeState.alignJustify ? (
-                  <AlignJustify className="size-4!" />
-                ) : null}
-                {!activeState.alignCenter &&
-                  !activeState.alignRight &&
-                  !activeState.alignJustify && (
-                    <AlignLeft className="size-4!" />
-                  )}
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              onClick={() => editor?.chain().focus().setTextAlign("left").run()}
-              className={activeState.alignLeft ? "bg-accent" : ""}
+      <DropdownMenu>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="icon"
+              variant={
+                activeState.alignCenter ||
+                activeState.alignRight ||
+                activeState.alignJustify
+                  ? "eventDefault"
+                  : "eventGhost"
+              }
+              type="button"
+              className="size-7"
             >
-              <AlignLeft className="mr-2 size-4" />
-              <span>Wyrównanie do lewej</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                if (editor?.isActive({ textAlign: "center" }) ?? false) {
-                  editor?.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor?.chain().focus().setTextAlign("center").run();
-                }
-              }}
-              className={activeState.alignCenter ? "bg-accent" : ""}
-            >
-              <AlignCenter className="mr-2 size-4" />
-              <span>Wyrównanie do środka</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                if (editor?.isActive({ textAlign: "right" }) ?? false) {
-                  editor?.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor?.chain().focus().setTextAlign("right").run();
-                }
-              }}
-              className={activeState.alignRight ? "bg-accent" : ""}
-            >
-              <AlignRight className="mr-2 size-4" />
-              <span>Wyrównanie w prawo</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                if (editor?.isActive({ textAlign: "justify" }) ?? false) {
-                  editor?.chain().focus().setTextAlign("left").run();
-                } else {
-                  editor?.chain().focus().setTextAlign("justify").run();
-                }
-              }}
-              className={activeState.alignJustify ? "bg-accent" : ""}
-            >
-              <AlignJustify className="mr-2 size-4" />
-              <span>Justowanie</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TooltipTrigger>
+              {activeState.alignCenter ? (
+                <AlignCenter className="size-4!" />
+              ) : null}
+              {activeState.alignRight ? (
+                <AlignRight className="size-4!" />
+              ) : null}
+              {activeState.alignJustify ? (
+                <AlignJustify className="size-4!" />
+              ) : null}
+              {!activeState.alignCenter &&
+                !activeState.alignRight &&
+                !activeState.alignJustify && <AlignLeft className="size-4!" />}
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem
+            onClick={() => editor?.chain().focus().setTextAlign("left").run()}
+            className={activeState.alignLeft ? "bg-accent" : ""}
+          >
+            <AlignLeft className="mr-2 size-4" />
+            <span>Wyrównanie do lewej</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              if (editor?.isActive({ textAlign: "center" }) ?? false) {
+                editor?.chain().focus().setTextAlign("left").run();
+              } else {
+                editor?.chain().focus().setTextAlign("center").run();
+              }
+            }}
+            className={activeState.alignCenter ? "bg-accent" : ""}
+          >
+            <AlignCenter className="mr-2 size-4" />
+            <span>Wyrównanie do środka</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              if (editor?.isActive({ textAlign: "right" }) ?? false) {
+                editor?.chain().focus().setTextAlign("left").run();
+              } else {
+                editor?.chain().focus().setTextAlign("right").run();
+              }
+            }}
+            className={activeState.alignRight ? "bg-accent" : ""}
+          >
+            <AlignRight className="mr-2 size-4" />
+            <span>Wyrównanie w prawo</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              if (editor?.isActive({ textAlign: "justify" }) ?? false) {
+                editor?.chain().focus().setTextAlign("left").run();
+              } else {
+                editor?.chain().focus().setTextAlign("justify").run();
+              }
+            }}
+            className={activeState.alignJustify ? "bg-accent" : ""}
+          >
+            <AlignJustify className="mr-2 size-4" />
+            <span>Justowanie</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <TooltipContent side="bottom">Wyrównanie tekstu</TooltipContent>
     </Tooltip>
   );

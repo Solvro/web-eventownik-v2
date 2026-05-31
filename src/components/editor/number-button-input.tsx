@@ -115,7 +115,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
       </Button>
       <Input
         type="number"
-        value={value}
+        value={value === "auto" ? "" : value}
         name={name}
         min={0}
         onChange={(event) => {

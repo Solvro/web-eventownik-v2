@@ -210,7 +210,6 @@ function MessageContentForm({
                   onChange={field.onChange}
                   extensions={setupSuggestions([...attributeTags, ...formTags])}
                   isEmailEditor
-                  className="email-editor"
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

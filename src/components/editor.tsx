@@ -94,7 +94,7 @@ function WysiwygEditor({
       <ScrollArea className="min-h-0 flex-1">
         <EditorContent
           editor={editor}
-          className={isEmailEditor ? "text-black dark:text-white" : ""}
+          className={isEmailEditor ? "email-root" : ""}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

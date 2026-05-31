@@ -56,6 +56,8 @@ export function ColorPicker({
 
       <Input
         id={name}
+        name={name}
+        value={value === defaultValue ? "inherit" : value}
         type="color"
         className="pointer-events-none absolute size-0 pb-14 opacity-0"
         onChange={(event) => {

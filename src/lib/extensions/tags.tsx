@@ -14,10 +14,6 @@ import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
 import { TagsList } from "@/components/tags-list";
 import type { LooseAutocomplete } from "@/types/utils";
 
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
-
 type MessageTagColor = LooseAutocomplete<
   | "red"
   | "orange"
@@ -124,7 +120,8 @@ const updatePosition = async (
       let rect = getClientRect?.();
 
       const isInvalidRect =
-        !rect ||
+        rect === null ||
+        rect === undefined ||
         (rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0);
 
       if (isInvalidRect) {
@@ -135,7 +132,11 @@ const updatePosition = async (
 
       const iframeWindow = editor.view.dom.ownerDocument.defaultView;
 
-      if (iframeWindow?.frameElement && rect) {
+      if (
+        iframeWindow?.frameElement != null &&
+        rect !== null &&
+        rect !== undefined
+      ) {
         const iframeRect = iframeWindow.frameElement.getBoundingClientRect();
 
         rect = new DOMRect(
@@ -189,7 +190,7 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
       return {
         onStart: async (props: SuggestionProps) => {
           // If another popup is already open, don't open a second one
-          if (activePopupEditor) {
+          if (activePopupEditor !== null) {
             return;
           }
 
@@ -226,6 +227,7 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
             return true;
           }
           // @ts-expect-error: ReactRenderer types
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
           return component.ref?.onKeyDown(props.event);
         },
 

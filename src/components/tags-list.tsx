@@ -104,10 +104,6 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                       event.stopPropagation();
                       selectItem(flatIndex);
                     }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      selectItem(flatIndex);
-                    }}
                     title={tag.description}
                     ref={isSelected ? selectedTagRef : null}
                   >
