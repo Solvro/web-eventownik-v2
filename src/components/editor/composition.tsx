@@ -359,7 +359,7 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
       <div className="flex flex-col gap-4">
         <Link
           href={`/dashboard/events/${mutationData.eventId}/emails`}
-          className="flex items-center gap-2 underline"
+          className="flex max-w-fit items-center gap-2 underline"
         >
           <ArrowLeft className="h-4 w-4" /> Wróć do szablonów
         </Link>
