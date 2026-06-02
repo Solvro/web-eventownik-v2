@@ -74,7 +74,7 @@ function getBaseColumns(t: TableTranslator) {
     }),
     columnHelper.accessor("createdAt", {
       size: 160,
-      minSize: 200,
+      minSize: 160,
       maxSize: 240,
       meta: { name: t("columnCreatedAtTitle") },
       header: (info) => (

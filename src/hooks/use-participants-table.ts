@@ -16,11 +16,9 @@ import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
-  if (typeof structuredClone === "function") {
-    return structuredClone(row);
-  }
-
-  return structuredClone(row);
+  return typeof structuredClone === "function"
+    ? structuredClone(row)
+    : { ...row };
 }
 
 interface UseParticipantTableProps {

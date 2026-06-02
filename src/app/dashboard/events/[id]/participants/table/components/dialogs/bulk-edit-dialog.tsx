@@ -131,6 +131,7 @@ export function BulkEditDialog({
             size="icon"
             disabled={true}
             className="hover:cursor-not-allowed disabled:pointer-events-auto"
+            aria-label={t("bulkEditTitle")}
           >
             <PencilLine />
           </Button>
@@ -145,7 +146,11 @@ export function BulkEditDialog({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={t("bulkEditTitle")}
+            >
               <PencilLine />
             </Button>
           </DialogTrigger>

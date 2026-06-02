@@ -35,7 +35,7 @@ export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
       {header.column.getCanResize() && (
         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
-          id="resize_"
+          id={`resize_${header.column.id}`}
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
           className={cn(
