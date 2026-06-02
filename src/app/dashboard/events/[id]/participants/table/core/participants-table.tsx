@@ -187,7 +187,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                             maxWidth: cell.column.getSize(),
                           }}
                           className={cn(
-                            "wrap-break-word whitespace-normal",
+                            "w-full wrap-break-word whitespace-normal",
                             cell.column.id === "edit" &&
                               "sticky z-10 overflow-visible",
                           )}
