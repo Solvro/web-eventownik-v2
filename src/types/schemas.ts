@@ -28,3 +28,12 @@ export const resetPasswordSchema = z
     message: "Hasła muszą być takie same.",
     path: ["confirmPassword"],
   });
+
+export const emailTemplateSchema = z.object({
+  name: z.string().min(1, "Nazwa jest wymagana"),
+  content: z.string().min(1, "Zawartość HTML jest wymagana"),
+  schema: z.string().min(1, "Struktura edytora jest wymagana"),
+  trigger: z.string().min(1, "Wyzwalacz jest wymagany"),
+  triggerValue: z.string().nullable().default(null),
+  triggerValue2: z.string().nullable().optional(),
+});
