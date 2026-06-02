@@ -266,6 +266,13 @@ const team: TeamMember[] = [
     url: "https://github.com/JLizak",
   },
   {
+    name: "Paweł Łoćwin",
+    roles: ["Devops Engineer"],
+    image:
+      "https://cms.solvro.pl/assets/11379c05-405e-4256-af95-6c41288c17c7?key=member",
+    url: "https://github.com/baguetedev",
+  },
+  {
     name: "Daria Totoszko",
     roles: ["Marketing Coordinator"],
     image: "/assets/landing/team/daria-totoszko.jpg",

@@ -1,0 +1,120 @@
+.Puck {
+  /* -- Schema/outline panel -- */
+
+  #outline svg {
+    margin-bottom: 0.25rem;
+    stroke: var(--event-primary-color);
+  }
+
+  #outline [class*="_LayerTree_"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  #outline [class*="_Layer_"] {
+    border-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 80%
+    );
+  }
+
+  #outline [class*="_Layer-inner_"] {
+    color: var(--foreground);
+    background-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 90%
+    );
+    transition: border-color 0.2s;
+  }
+
+  #outline [class*="_Layer-inner_"]:hover {
+    border-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 40%
+    );
+  }
+
+  [class*="_Layer-zones_"] [class*="_Layer-inner_"] {
+    color: var(--foreground);
+    background-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 90%
+    );
+  }
+
+  [class*="_Layer-zones_"] [class*="_Layer-inner_"]:hover {
+    color: var(--foreground);
+    border-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 40%
+    );
+    background-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 80%
+    );
+  }
+
+  [class*="_Layer-zones_"] {
+    background-color: transparent;
+  }
+
+  /* -- Fields panel -- */
+  & [class*="_PuckFields-field"] {
+    border-color: color-mix(
+      in oklab,
+      var(--event-primary-color) 50%,
+      transparent
+    ) !important;
+
+    & [class*="_Input-label"] {
+      color: var(--color-foreground);
+    }
+  }
+
+  & [class*="_RichTextEditor"] {
+    background-color: transparent;
+    border-color: color-mix(
+      in oklab,
+      var(--event-primary-color),
+      transparent 40%
+    );
+  }
+
+  & [class*="_RichTextEditor-menu"] {
+    border: none;
+
+    div {
+      background-color: color-mix(
+        in oklab,
+        var(--event-primary-color) 20%,
+        transparent
+      );
+    }
+  }
+
+  & [class*="_ObjectField"] {
+    border: none;
+    border-radius: var(--radius-lg);
+    background-color: color-mix(
+      in oklab,
+      var(--event-primary-color) 2%,
+      transparent
+    );
+  }
+
+  & button,
+  input {
+    color: var(--color-foreground);
+  }
+
+  /* Color picker value */
+  & label > p {
+    color: var(--color-foreground);
+  }
+}

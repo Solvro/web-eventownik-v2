@@ -110,7 +110,7 @@ function CreateBlockForm({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-fit">
+        <Button variant="outline" className="w-full lg:w-fit">
           <SquarePlus className="h-6 w-6" /> Stwórz blok
         </Button>
       </DialogTrigger>

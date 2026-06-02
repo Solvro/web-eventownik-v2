@@ -32,7 +32,7 @@ import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
-import { createEventEmailTemplate } from "../actions";
+import { createEventEmail } from "../actions";
 
 const EventEmailTemplateContentSchema = z.object({
   name: z.string().nonempty({ message: "Tytuł nie może być pusty." }),
@@ -102,9 +102,14 @@ function MessageContentForm({
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
   ) {
-    const result = await createEventEmailTemplate(eventId, {
-      ...newEmailTemplate,
-      ...values,
+    const result = await createEventEmail({
+      eventId,
+      emailTemplate: {
+        ...newEmailTemplate,
+        ...values,
+        // NOTE: Simple emails have no schema
+        schema: null,
+      },
     });
 
     if (result.success) {
@@ -205,7 +210,6 @@ function MessageContentForm({
                   onChange={field.onChange}
                   extensions={setupSuggestions([...attributeTags, ...formTags])}
                   isEmailEditor
-                  className="email-editor"
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}

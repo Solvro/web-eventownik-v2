@@ -1,8 +1,11 @@
+import "server-only";
+
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventEmail, SingleEventEmail } from "@/types/emails";
+import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 
 export async function getEventEmails(eventId: string) {
@@ -108,4 +111,29 @@ export async function getEventForms(eventId: string) {
 
   const parsed = (await response.json()) as PaginatedResponse<EventForm>;
   return parsed.data;
+}
+
+export async function getEmailEventInfo(eventId: string) {
+  const session = await verifySession();
+  if (session == null) {
+    return null;
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(
+      `[getEmailEventInfo] Failed to fetch event info for event ${eventId}:`,
+      response,
+    );
+    return null;
+  }
+
+  const event = (await response.json()) as Event;
+  return event;
 }
