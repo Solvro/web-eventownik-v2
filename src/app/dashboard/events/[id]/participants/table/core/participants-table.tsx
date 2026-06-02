@@ -189,7 +189,7 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                           className={cn(
                             "wrap-break-word whitespace-normal",
                             cell.column.id === "edit" &&
-                              "sticky right-3 z-10 overflow-visible",
+                              "sticky z-10 overflow-visible",
                           )}
                         >
                           {flexRender(
