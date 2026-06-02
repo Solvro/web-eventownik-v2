@@ -20,7 +20,8 @@ import {
   Type,
   Undo2,
 } from "lucide-react";
-import React, { useRef } from "react";
+import { useRouter } from "next/navigation";
+import React, { useRef, useState } from "react";
 import type * as z from "zod";
 
 import {
@@ -69,8 +70,10 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
   const appState = usePuck((s) => s.appState);
   const config = usePuck((s) => s.config);
   const setHistories = usePuck((s) => s.history.setHistories);
+  const [shouldExit, setShouldExit] = useState<boolean>(false);
   const renderWrapperRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const queryClient = useQueryClient();
 
@@ -84,7 +87,6 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
     },
     onSuccess: (result) => {
       if (!result.success) {
-        // Server returned a logical error (not a thrown exception)
         toast({
           title: "Błąd",
           description: result.error ?? "Nieznany błąd",
@@ -105,9 +107,12 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
             ? "Dodano nowy szablon"
             : "Zapisano zmiany w szablonie",
       });
+
+      if (mutationData.mode === "create") {
+        setShouldExit(true);
+      }
     },
     onError: (error) => {
-      // Network/unexpected errors
       toast({
         title: "Błąd",
         description: error.message,
@@ -143,6 +148,10 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
 
     publish(parsed.data);
   };
+
+  if (shouldExit) {
+    router.push(`/dashboard/events/${mutationData.eventId}/emails`);
+  }
 
   return (
     <>
