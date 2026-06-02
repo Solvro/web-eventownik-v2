@@ -36,6 +36,11 @@ export default async function EventMailEditPage({
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
+
+  if (emailToEdit?.schema == null) {
+    redirect(`/dashboard/events/${id}/emails/${emailId}`);
+  }
+
   const attributes = await getEventAttributes(id);
   const forms = await getEventForms(id);
   const event = await getEmailEventInfo(id);
@@ -61,25 +66,21 @@ export default async function EventMailEditPage({
     };
   }) satisfies MessageTag[];
 
-  if (emailToEdit?.schema == null) {
-    redirect(`/dashboard/events/${id}/emails/${emailId}`);
-  } else {
-    return (
-      <Editor
-        tags={[...attributeTags, ...formTags]}
-        forms={forms}
-        attributes={attributes}
-        initialData={JSON.parse(emailToEdit.schema) as PuckData}
-        mutationData={{
-          emailId: emailToEdit.id.toString(),
-          eventId: id,
-          mode: "update",
-        }}
-        eventData={{
-          name: event?.name ?? "Wydarzenie",
-          photoUrl: event?.photoUrl ?? "",
-        }}
-      />
-    );
-  }
+  return (
+    <Editor
+      tags={[...attributeTags, ...formTags]}
+      forms={forms}
+      attributes={attributes}
+      initialData={JSON.parse(emailToEdit.schema) as PuckData}
+      mutationData={{
+        emailId: emailToEdit.id.toString(),
+        eventId: id,
+        mode: "update",
+      }}
+      eventData={{
+        name: event?.name ?? "Wydarzenie",
+        photoUrl: event?.photoUrl ?? "",
+      }}
+    />
+  );
 }
