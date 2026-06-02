@@ -1,5 +1,5 @@
 import { setupServer } from "msw/node";
 
-import { handlers } from "../../src/app/dashboard/events/[id]/participants/table/tests/mocks/handlers.js";
+import { handlers } from "@/app/dashboard/events/[id]/participants/table/__tests__/mocks/handlers";
 
 export const server = setupServer(...handlers);

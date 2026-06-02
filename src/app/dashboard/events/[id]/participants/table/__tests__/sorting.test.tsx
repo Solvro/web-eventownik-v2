@@ -9,6 +9,7 @@ import { renderTable } from "./utils";
  * So testing sorting for each attribute type is redundant for now
  * But maybe it will be useful in the future, maybe...
  */
+
 describe("Sorting", () => {
   // In current implementation first 4 columns are fixed:
   // Select checkbox | No. | Registration date | Email
@@ -27,30 +28,24 @@ describe("Sorting", () => {
         attributes,
       );
 
-      const sortHeader = screen.getByRole("button", {
-        name: attributes[0].name,
-      });
+      const getSortHeader = () =>
+        screen.getByRole("button", {
+          name: attributes[0].name,
+        });
 
-      // Step 1: Capture initial order
       const initialOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
-      // Step 2: Click to sort ascending
-      await user.click(sortHeader);
+      await user.click(getSortHeader());
       const ascendingOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
-      // Step 3: Click to sort descending
-      await user.click(sortHeader);
+      await user.click(getSortHeader());
       const descendingOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
-      // Step 4: Click to return to no sorting
-      await user.click(sortHeader);
+      await user.click(getSortHeader());
       const finalOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
 
-      // These assertions highly depend on test data so it's important to keep the data robust
-      expect(ascendingOrder).not.toEqual(initialOrder); // Something changed
-      expect(descendingOrder).not.toEqual(initialOrder); // Still different from initial
-      expect(descendingOrder).not.toEqual(ascendingOrder); // Different from first sort
-      expect(finalOrder).toEqual(initialOrder); // Back to original
+      expect(descendingOrder).not.toEqual(ascendingOrder);
+      expect(finalOrder).toEqual(initialOrder);
     },
   );
 
@@ -82,41 +77,41 @@ describe("Sorting", () => {
     const { participants, attributes } = textCaseData;
     const { user } = renderTable(participants, attributes);
 
-    const textSortHeader = screen.getByRole("columnheader", {
-      name: attributes[0].name,
-    });
-    const textSortHeaderButton = screen.getByRole("button", {
-      name: attributes[0].name,
-    });
+    const getTextSortHeader = () =>
+      screen.getByRole("columnheader", {
+        name: attributes[0].name,
+      });
+    const getTextSortHeaderButton = () =>
+      screen.getByRole("button", {
+        name: attributes[0].name,
+      });
 
-    const emailSortHeader = screen.getByRole("columnheader", {
-      name: "Email",
-    });
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const getEmailSortHeader = () =>
+      screen.getByRole("columnheader", {
+        name: "Email",
+      });
 
-    const emailSortHeaderButton = screen.getByRole("button", {
-      name: "Email",
-    });
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const getEmailSortHeaderButton = () =>
+      screen.getByRole("button", {
+        name: "Email",
+      });
 
-    //Step 1: No columns are sorted
-    expect(textSortHeader).toHaveAttribute("aria-sort");
-    expect(textSortHeader.getAttribute("aria-sort")).toBe("none");
-    expect(emailSortHeader).toHaveAttribute("aria-sort");
-    expect(emailSortHeader.getAttribute("aria-sort")).toBe("none");
+    expect(getTextSortHeader().getAttribute("aria-sort")).toBe("none");
+    expect(getEmailSortHeader().getAttribute("aria-sort")).toBe("none");
 
-    //Step 2: Sort only text column
-    await user.click(textSortHeaderButton);
-    expect(textSortHeader.getAttribute("aria-sort")).toBe("ascending");
+    await user.click(getTextSortHeaderButton());
+    expect(getTextSortHeader().getAttribute("aria-sort")).toBe("ascending");
 
-    //Step 3: Press and hold Shift and click email column (multisort)
     await user.keyboard("{Shift>}");
-    await user.click(emailSortHeaderButton);
-    expect(textSortHeader.getAttribute("aria-sort")).toBe("ascending");
-    expect(emailSortHeader.getAttribute("aria-sort")).toBe("ascending");
-
-    //Step 4: Release Shift and click email column - only text column should be sorted
+    await user.click(getEmailSortHeaderButton());
     await user.keyboard("{/Shift}");
-    await user.click(textSortHeaderButton);
-    expect(emailSortHeader.getAttribute("aria-sort")).toBe("none");
-    expect(textSortHeader.getAttribute("aria-sort")).toBe("descending");
+    expect(getTextSortHeader().getAttribute("aria-sort")).toBe("ascending");
+    expect(getEmailSortHeader().getAttribute("aria-sort")).toBe("ascending");
+
+    await user.click(getTextSortHeaderButton());
+    expect(getTextSortHeader().getAttribute("aria-sort")).toBe("descending");
+    expect(getEmailSortHeader().getAttribute("aria-sort")).toBe("none");
   });
 });

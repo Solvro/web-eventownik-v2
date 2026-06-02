@@ -39,7 +39,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
-import { sendMail } from "../actions";
+import { sendMail } from "../../../actions";
 
 function SendMailForm({
   eventId,
@@ -92,12 +92,26 @@ function SendMailForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="icon" variant="outline" aria-label={t("sendMail")}>
+            <Button
+              size="icon"
+              variant="outline"
+              aria-label={t("sendMail")}
+              disabled={targetParticipants.length === 0}
+              className={
+                targetParticipants.length === 0
+                  ? "hover:cursor-not-allowed disabled:pointer-events-auto"
+                  : ""
+              }
+            >
               <Mail />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>{t("sendMail")}</TooltipContent>
+        <TooltipContent>
+          {targetParticipants.length === 0
+            ? t("noRecipientsTooltip")
+            : t("sendMail")}
+        </TooltipContent>
       </Tooltip>
       <DialogContent aria-describedby={undefined}>
         <DialogHeader className="sr-only">

@@ -23,7 +23,7 @@ export function FilterButton({
   attributeId,
 }: {
   attributeType: AttributeType;
-  options_: string[] | null;
+  options_: (string | { label: string; value: string })[] | null;
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
   blocks: (Block | null)[] | null;
   attributeId: number;
@@ -40,10 +40,11 @@ export function FilterButton({
     }[] =
       options_ === null
         ? []
-        : options_.map((option) => ({
-            label: option,
-            value: option,
-          }));
+        : options_.map((option) =>
+            typeof option === "string"
+              ? { label: option, value: option }
+              : { label: option.label, value: option.value },
+          );
 
     if (attributeType === "checkbox" && options_ === null) {
       options = [
@@ -83,8 +84,7 @@ export function FilterButton({
           {options.map(({ label, value }) => {
             return (
               <DropdownMenuCheckboxItem
-                // Setting key to " " when filter value is null prevents from adding reserved keywords for end users
-                key={value === null ? " " : label}
+                key={value === null ? "__null__" : label}
                 onSelect={(event) => {
                   event.preventDefault();
                 }}
