@@ -4,6 +4,7 @@ import { Drawer, Puck, Render, createUsePuck } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowLeft,
   Columns2,
   Columns3,
   Columns4,
@@ -20,6 +21,7 @@ import {
   Type,
   Undo2,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import type * as z from "zod";
@@ -354,9 +356,17 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
-      <div className="mb-2 flex justify-between">
-        <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
-        <SaveButton mutationData={mutationData} />
+      <div className="flex flex-col gap-4">
+        <Link
+          href={`/dashboard/events/${mutationData.eventId}/emails`}
+          className="flex items-center gap-2 underline"
+        >
+          <ArrowLeft className="h-4 w-4" /> Wróć do szablonów
+        </Link>
+        <div className="mb-2 flex justify-between">
+          <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
+          <SaveButton mutationData={mutationData} />
+        </div>
       </div>
       <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/5">
         <Toolbar />
