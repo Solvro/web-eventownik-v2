@@ -288,22 +288,20 @@ export default function RegisterPage() {
       <Suspense>
         <RegisterForm />
       </Suspense>
-      <div className="text-muted-foreground flex max-w-sm flex-col items-center justify-center gap-2 pb-4 text-center text-sm sm:pb-0">
-        <Info className="size-6" />
-        <p>
-          {t.rich("termsAgreement", {
-            Link: (chunks) => (
-              <Link
-                href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
-                className="text-primary/90"
-                target="_blank"
-              >
-                {chunks}
-              </Link>
-            ),
-          })}
-        </p>
-      </div>
+      <p className="text-foreground/50 max-w-sm text-center text-sm">
+        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
+        {t.rich("termsAgreement", {
+          Link: (chunks) => (
+            <Link
+              href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
+              className="text-primary/90"
+              target="_blank"
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
     </>
   );
 }

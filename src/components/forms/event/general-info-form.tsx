@@ -2,6 +2,7 @@
 
 import { format, subDays } from "date-fns";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -61,6 +62,7 @@ export const EventGeneralInfoSchema = z
 export function GeneralInfoForm({ className }: { className?: string }) {
   const { control, formState, getValues } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
+  const t = useTranslations("EventDetails");
 
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
@@ -69,12 +71,12 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Nazwa</FormLabel>
+            <FormLabel>{t("name")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj nazwę wydarzenia"
+                placeholder={t("enterEventName")}
                 {...field}
               />
             </FormControl>
@@ -89,12 +91,12 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Miejsce</FormLabel>
+            <FormLabel>{t("location")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj miejsce wydarzenia"
+                placeholder={t("enterEventLocation")}
                 {...field}
               />
             </FormControl>
@@ -112,7 +114,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>Data i godzina rozpoczęcia</FormLabel>
+                  <FormLabel>{t("startDateTime")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -169,7 +171,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>Data i godzina zakończenia</FormLabel>
+                  <FormLabel>{t("endDateTime")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -231,12 +233,12 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Organizator</FormLabel>
+            <FormLabel>{t("organizer")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj organizatora wydarzenia"
+                placeholder={t("enterEventOrganizer")}
                 {...field}
               />
             </FormControl>
@@ -252,7 +254,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Email do kontaktu</FormLabel>
+            <FormLabel>{t("contactEmail")}</FormLabel>
             <FormControl>
               <Input
                 type="email"
@@ -273,11 +275,12 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         name="description"
         render={({ field }) => (
           <FormItem className="col-span-full flex flex-col">
-            <FormLabel>Opis</FormLabel>
+            <FormLabel>{t("description")}</FormLabel>
             <WysiwygEditor
               content={getValues("description") ?? ""}
               onChange={field.onChange}
               editorClassName="min-h-[150px] h-full"
+              placeholder={t("eventDescrPlaceholder")}
             />
             <FormMessage>{formState.errors.description?.message}</FormMessage>
           </FormItem>

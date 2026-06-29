@@ -2,6 +2,7 @@
 
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -12,13 +13,15 @@ import { Button } from "@/components/ui/button";
 
 import { LanguageSwitch } from "./language-switch";
 
-const navigation = [
-  // { name: "Dashboard", href: "/dashboard" },
-  { name: "Wydarzenia", href: "/dashboard/events" },
-  // { name: "Ustawienia konta", href: "/dashboard/settings" },
-];
-
 export function Navbar({ authButton }: { authButton: React.ReactNode }) {
+  const t = useTranslations("Dashboard");
+
+  const navigation = [
+    // { name: "Dashboard", href: "/dashboard" },
+    { name: t("events"), href: "/dashboard/events" },
+    // { name: t("accountSettings"), href: "/dashboard/settings" },
+  ];
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 

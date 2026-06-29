@@ -104,7 +104,7 @@ export function DashboardSidebar({
       <nav className="border-muted hidden w-64 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
         {[
           ...sections,
-          ...(blocks.length > 0 ? [{ title: "Bloki", links: blocks }] : []),
+          ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
             <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>

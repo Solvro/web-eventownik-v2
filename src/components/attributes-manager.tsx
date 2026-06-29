@@ -5,6 +5,7 @@ import type { DragEndEvent } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable, useSortable } from "@dnd-kit/react/sortable";
 import { GripHorizontal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,6 +40,7 @@ function AttributeItem({
   handleRequiredToggle,
 }: AttributeItemProps) {
   const { ref, handleRef, isDragSource } = useSortable({ id, index });
+  const t = useTranslations("EventDetails");
 
   return (
     <div
@@ -65,7 +67,9 @@ function AttributeItem({
         <h3 className="font-semibold">{attribute.name}</h3>
       </div>
       <span className="bg-popover flex items-center rounded-full px-3 py-1 text-sm">
-        <Label htmlFor={`required-${attribute.id.toString()}`}>Wymagane</Label>
+        <Label htmlFor={`required-${attribute.id.toString()}`}>
+          {t("required")}
+        </Label>
         <Checkbox
           id={`required-${attribute.id.toString()}`}
           className="ml-2"
@@ -84,6 +88,7 @@ function AttributesReorder({
   includedAttributes,
   setIncludedAttributes,
 }: AttributesReorderProps) {
+  const t = useTranslations("EventDetails");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -162,7 +167,7 @@ function AttributesReorder({
       <div className="space-y-4">
         {isMounted ? (
           <div className="space-y-2">
-            <h2 className="text-sm">Wybrane atrybuty</h2>
+            <h2 className="text-sm">{t("selectedAttributes")}</h2>
             {includedAttributes.map((attribute, index) => {
               const fullAttribute = attributes.find(
                 (a) => a.id === attribute.id,
@@ -184,8 +189,8 @@ function AttributesReorder({
               );
             })}
             {includedAttributes.length === 0 && (
-              <p className="text-center text-sm text-gray-800">
-                Nie dodano jeszcze żadnych atrybutów
+              <p className="text-center text-sm text-gray-600">
+                {t("noAttributesYet")}
               </p>
             )}
           </div>
@@ -193,13 +198,13 @@ function AttributesReorder({
           // Server fallback without drag-and-drop features
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              Ładowanie atrybutów...
+              {t("loadingAttributes")}
             </p>
           </div>
         )}
 
         <div className="space-y-2">
-          <h2 className="text-sm">Pozostałe atrybuty</h2>
+          <h2 className="text-sm">{t("remainingAttributes")}</h2>
           {nonIncludedAttributes.map((attribute) => (
             <div
               key={attribute.id}
@@ -218,8 +223,8 @@ function AttributesReorder({
             </div>
           ))}
           {nonIncludedAttributes.length === 0 && (
-            <p className="text-center text-sm text-gray-500">
-              Wszystkie atrybuty są już dodane
+            <p className="text-center text-sm text-gray-600">
+              {t("allAttributesAlreadyAdded")}
             </p>
           )}
         </div>

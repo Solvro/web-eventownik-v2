@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -51,6 +52,7 @@ function EditBlockEntry({
   attributeId: string;
   parentId: string;
 }) {
+  const t = useTranslations("EventDetails");
   const form = useForm<z.infer<typeof BlockSchema>>({
     resolver: zodResolver(BlockSchema),
     defaultValues: {
@@ -81,7 +83,7 @@ function EditBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Zapisano zmiany w bloku",
+        title: t("blockChangesSaved"),
       });
       form.reset();
       setDialogOpen(false);
@@ -90,7 +92,7 @@ function EditBlockEntry({
       }, 100);
     } else {
       toast({
-        title: "Nie udało się zapisać zmian w bloku!",
+        title: t("failedToSaveBlockChanges"),
         description: result.error,
         variant: "destructive",
       });
@@ -115,12 +117,12 @@ function EditBlockEntry({
       <DialogTrigger asChild>
         <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
-          <span className="sr-only">Edytuj blok</span>
+          <span className="sr-only">{t("editBlock")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
         <DialogHeader>
-          <DialogTitle>Edytuj blok</DialogTitle>
+          <DialogTitle>{t("editBlock")}</DialogTitle>
         </DialogHeader>
         <UnsavedChangesAlert
           active={alertActive}
@@ -139,9 +141,9 @@ function EditBlockEntry({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nazwa bloku" {...field} />
+                    <Input placeholder={t("blockName")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,15 +154,14 @@ function EditBlockEntry({
               name="capacity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Maksymalna liczba osób</FormLabel>
+                  <FormLabel>{t("maxParticipants")}</FormLabel>
                   <FormDescription>
-                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
-                    miejsc
+                    {t("leaveEmptyForUnlimited")}
                   </FormDescription>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Pojemność bloku"
+                      placeholder={t("blockCapacity")}
                       {...field}
                     />
                   </FormControl>
@@ -179,7 +180,7 @@ function EditBlockEntry({
               ) : (
                 <Save />
               )}{" "}
-              Zapisz
+              {t("save")}
             </Button>
           </form>
         </Form>

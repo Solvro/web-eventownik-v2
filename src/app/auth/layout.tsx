@@ -1,8 +1,12 @@
-import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Uwierzytelnianie",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Auth");
+
+  return {
+    title: t("authentication"),
+  };
+}
 
 export default function AuthLayout({
   children,

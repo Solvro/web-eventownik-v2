@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, SquarePlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,7 @@ function CreateBlockForm({
   attributeId: string;
   parentId: string;
 }) {
+  const t = useTranslations("EventDetails");
   const form = useForm<z.infer<typeof BlockSchema>>({
     resolver: zodResolver(BlockSchema),
     defaultValues: {
@@ -78,7 +80,7 @@ function CreateBlockForm({
     );
     if (result.success) {
       toast({
-        title: "Dodano nowy blok",
+        title: t("newBlockCreated"),
       });
       form.reset();
       setDialogOpen(false);
@@ -87,7 +89,7 @@ function CreateBlockForm({
       }, 100);
     } else {
       toast({
-        title: "Nie udało się dodać bloku!",
+        title: t("failedToCreateBlock"),
         description: result.error,
         variant: "destructive",
       });
@@ -111,12 +113,12 @@ function CreateBlockForm({
     >
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full lg:w-fit">
-          <SquarePlus className="h-6 w-6" /> Stwórz blok
+          <SquarePlus className="h-6 w-6" /> {t("createBlock")}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
         <DialogHeader>
-          <DialogTitle>Stwórz blok</DialogTitle>
+          <DialogTitle>{t("createBlock")}</DialogTitle>
         </DialogHeader>
         <UnsavedChangesAlert
           active={alertActive}
@@ -135,9 +137,9 @@ function CreateBlockForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nazwa bloku" {...field} />
+                    <Input placeholder={t("blockName")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,15 +150,14 @@ function CreateBlockForm({
               name="capacity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Maksymalna liczba osób</FormLabel>
+                  <FormLabel>{t("maxParticipants")}</FormLabel>
                   <FormDescription>
-                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
-                    miejsc
+                    {t("leaveEmptyForUnlimited")}
                   </FormDescription>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Pojemność bloku"
+                      placeholder={t("blockCapacity")}
                       {...field}
                     />
                   </FormControl>
@@ -172,10 +173,10 @@ function CreateBlockForm({
             >
               {form.formState.isSubmitting ? (
                 <>
-                  <Loader className="animate-spin" /> Tworzenie bloku...
+                  <Loader className="animate-spin" /> {t("creatingBlock")}
                 </>
               ) : (
-                "Stwórz blok"
+                t("createBlock")
               )}
             </Button>
           </form>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ChangeEvent } from "react";
 import type {
   ControllerRenderProps,
@@ -53,6 +54,8 @@ export function AttributeInputFile({
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   lastUpdate: string | null;
 }) {
+  const t = useTranslations("EventDetails");
+
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
@@ -98,7 +101,9 @@ export function AttributeInputFile({
       {lastUpdate != null && (
         <div className="mb-2">
           <span className="text-sm text-gray-500">
-            Ostatnio wgrany plik: {new Date(lastUpdate).toLocaleString()}
+            {t("lastUploadedFile", {
+              date: new Date(lastUpdate).toLocaleString(),
+            })}
           </span>
         </div>
       )}

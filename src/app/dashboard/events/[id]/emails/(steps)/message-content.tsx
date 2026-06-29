@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -39,19 +40,22 @@ const EventEmailTemplateContentSchema = z.object({
   content: z.string().nonempty({ message: "Treść nie może być pusta." }),
 });
 
-function getTitlePlaceholder(trigger: string) {
+export function getTitlePlaceholder(
+  trigger: string,
+  t: ReturnType<typeof useTranslations>,
+) {
   switch (trigger) {
     case "participant_registered": {
-      return "Dziękujemy za rejestrację!";
+      return t("thankYouForRegistration");
     }
     case "participant_deleted": {
-      return "Usunięto Cię z listy uczestników";
+      return t("removedFromParticipants");
     }
     case "manual": {
-      return "Aktualizacja regulaminu wydarzenia";
+      return t("eventTermsUpdated");
     }
     case "form_filled": {
-      return "Dziękujemy za wypełnienie formularza!";
+      return t("formSubmissionThankYou");
     }
     // NOTE: Commented out because this trigger is not yet implemented on the backend.
     // Uncomment when the backend supports this feature.
@@ -59,7 +63,7 @@ function getTitlePlaceholder(trigger: string) {
     //   return "Otrzymaliśmy Twoją wpłatę";
     // }
     default: {
-      return "Nowa wiadomość od organizatorów";
+      return t("newOrganizerMessage");
     }
   }
 }
@@ -79,6 +83,8 @@ function MessageContentForm({
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const t = useTranslations("EventDetails");
+
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
   );
@@ -109,7 +115,7 @@ function MessageContentForm({
 
     if (result.success) {
       toast({
-        title: "Dodano nowy szablon",
+        title: t("templateAdded"),
       });
 
       // NOTE: The order of these resets is important
@@ -130,7 +136,7 @@ function MessageContentForm({
       }, 100);
     } else {
       toast({
-        title: "Nie udało się dodać szablonu!",
+        title: t("templateAddFailed"),
         description: result.error,
         variant: "destructive",
       });
@@ -140,7 +146,9 @@ function MessageContentForm({
   const attributeTags = eventAttributes.map((attribute): MessageTag => {
     return {
       title: attribute.name,
-      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      description: t("replacesWithParticipantAttributeValue", {
+        name: attribute.name,
+      }),
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
@@ -151,7 +159,9 @@ function MessageContentForm({
   const formTags = eventForms.map((eventForm): MessageTag => {
     return {
       title: eventForm.name,
-      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      description: t("replacesWithPersonalizedFormLink", {
+        name: eventForm.name,
+      }),
       value: `/form_${eventForm.slug}`,
       color: "green",
       category: FORM_CATEGORY,
@@ -160,10 +170,10 @@ function MessageContentForm({
 
   return (
     <FormContainer
-      description="Zawartość wiadomości"
+      description={t("messageContent")}
       icon={<TextIcon />}
       step="2/2"
-      title="Krok 2"
+      title={t("step", { number: 2 })}
     >
       <Form {...form}>
         <form
@@ -176,11 +186,14 @@ function MessageContentForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tytuł wiadomości</FormLabel>
+                <FormLabel>{t("messageSubject")}</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder={getTitlePlaceholder(newEmailTemplate.trigger)}
+                    placeholder={getTitlePlaceholder(
+                      newEmailTemplate.trigger,
+                      t,
+                    )}
                     {...field}
                   />
                 </FormControl>
@@ -194,10 +207,9 @@ function MessageContentForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Treść wiadomości
+                  {t("messageBody")}
                   <span className="text-muted-foreground ml-2 text-xs">
-                    Wskazówka: Użyj Shift+Enter aby dodać nową linię w tym samym
-                    akapicie.
+                    {t("useShiftEnterHint")}
                   </span>
                 </FormLabel>
                 <WysiwygEditor
@@ -206,6 +218,7 @@ function MessageContentForm({
                   extensions={setupSuggestions([...attributeTags, ...formTags])}
                   isEmailEditor
                   className="email-editor"
+                  placeholder={t("writeMessage")}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}
@@ -219,7 +232,7 @@ function MessageContentForm({
               onClick={goToPreviousStep}
               disabled={form.formState.isSubmitting}
             >
-              <ArrowLeft /> Wróć
+              <ArrowLeft /> {t("back")}
             </Button>
             <Button
               type="submit"
@@ -231,7 +244,7 @@ function MessageContentForm({
               ) : (
                 <SquarePlus />
               )}{" "}
-              Dodaj nowy szablon
+              {t("addTemplate")}
             </Button>
           </div>
         </form>

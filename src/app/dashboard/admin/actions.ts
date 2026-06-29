@@ -2,7 +2,7 @@
 
 import { API_URL } from "@/lib/api";
 
-async function activateEvent(
+export async function activateEvent(
   wasActive: boolean,
   eventId: number,
   bearerToken: string,
@@ -31,8 +31,19 @@ async function activateEvent(
     };
   }
   return {
-    success: "Wydarzenie zostało pomyślnie aktywowane",
+    success: true,
   };
 }
 
-export { activateEvent };
+export async function checkIfSuperAdmin(bearerToken: string) {
+  const response = await fetch(`${API_URL}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+  if (!response.ok) {
+    return false;
+  }
+  const data = (await response.json()) as { type: "organizer" | "superadmin" };
+  return data.type === "superadmin";
+}

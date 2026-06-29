@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
@@ -49,6 +50,7 @@ function EventFormEditForm({
     },
   });
   const { toast } = useToast();
+  const t = useTranslations("Dashboard");
 
   const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
     form.formState.isDirty,
@@ -64,12 +66,12 @@ function EventFormEditForm({
 
       if (result.success) {
         toast({
-          title: "Zapisano zmiany w formularzu",
+          title: t("formChangesSaved"),
         });
         form.reset(values);
       } else {
         toast({
-          title: "Nie udało się zapisać zmian w formularzu!",
+          title: t("failedToSaveFormChanges"),
           description: result.error,
           variant: "destructive",
         });
@@ -77,8 +79,8 @@ function EventFormEditForm({
     } catch (error) {
       console.error("Error updating event form:", error);
       toast({
-        title: "Nie udało się zapisać zmian w formularzu!",
-        description: "Wystąpił błąd podczas aktualizacji formularza.",
+        title: t("failedToSaveFormChanges"),
+        description: t("formUpdateError"),
         variant: "destructive",
       });
     }
@@ -106,7 +108,7 @@ function EventFormEditForm({
           ) : (
             <Save />
           )}{" "}
-          Zapisz
+          {t("save")}
         </Button>
       </form>
     </Form>

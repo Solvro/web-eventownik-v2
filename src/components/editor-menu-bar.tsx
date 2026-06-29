@@ -19,6 +19,7 @@ import {
   SlashSquare,
   Tag,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 
 import { useEditorActiveState } from "@/hooks/use-editor-active-state";
@@ -34,11 +35,12 @@ function EditorMenuBar({
   editor: Editor | null;
   isEmailEditor?: boolean;
 }) {
+  const t = useTranslations("Editor");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const activeState = useEditorActiveState(editor);
 
   if (editor === null) {
-    return <div className="h-8">Ładowanie menu...</div>;
+    return <div className="h-8">{t("loadingMenu")}</div>;
   }
 
   return (
@@ -55,7 +57,7 @@ function EditorMenuBar({
               <Bold />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Pogrubienie</TooltipContent>
+          <TooltipContent>{t("bold")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -68,7 +70,7 @@ function EditorMenuBar({
               <Italic />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Kursywa</TooltipContent>
+          <TooltipContent>{t("italic")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -81,7 +83,7 @@ function EditorMenuBar({
               <Code2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Kod (czcionka mono)</TooltipContent>
+          <TooltipContent>{t("code")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -100,7 +102,7 @@ function EditorMenuBar({
                 <AlignLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie do lewej</TooltipContent>
+            <TooltipContent>{t("alignLeft")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -121,7 +123,7 @@ function EditorMenuBar({
                 <AlignCenter />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie do środka</TooltipContent>
+            <TooltipContent>{t("alignCenter")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -140,7 +142,7 @@ function EditorMenuBar({
                 <AlignRight />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie w prawo</TooltipContent>
+            <TooltipContent>{t("alignRight")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -161,7 +163,7 @@ function EditorMenuBar({
                 <AlignJustify />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Justowanie</TooltipContent>
+            <TooltipContent>{t("justify")}</TooltipContent>
           </Tooltip>
         </div>
       ) : null}
@@ -178,7 +180,7 @@ function EditorMenuBar({
               <List />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Lista punktowa</TooltipContent>
+          <TooltipContent>{t("bulletList")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -191,7 +193,7 @@ function EditorMenuBar({
               <ListOrdered />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Lista numerowana</TooltipContent>
+          <TooltipContent>{t("numberedList")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -209,7 +211,7 @@ function EditorMenuBar({
               <Heading1 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia pierwszego</TooltipContent>
+          <TooltipContent>{t("heading1")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -224,7 +226,7 @@ function EditorMenuBar({
               <Heading2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia drugiego</TooltipContent>
+          <TooltipContent>{t("heading2")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -239,7 +241,7 @@ function EditorMenuBar({
               <Heading3 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia trzeciego</TooltipContent>
+          <TooltipContent>{t("heading3")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -268,7 +270,7 @@ function EditorMenuBar({
             <ImageIcon />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Wstaw zdjęcie</TooltipContent>
+        <TooltipContent>{t("insertImage")}</TooltipContent>
       </Tooltip>
       {isEmailEditor === undefined ? null : isEmailEditor ? (
         <div>
@@ -283,7 +285,7 @@ function EditorMenuBar({
                 <SlashSquare />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wstaw znacznik</TooltipContent>
+            <TooltipContent>{t("insertTag")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -298,7 +300,7 @@ function EditorMenuBar({
                 <FileSpreadsheet />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wstaw znacznik linku do formularza</TooltipContent>
+            <TooltipContent>{t("insertFormLinkTag")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -314,7 +316,7 @@ function EditorMenuBar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              Wstaw znacznik wartości atrybutu uczestnika
+              {t("insertParticipantAttributeTag")}
             </TooltipContent>
           </Tooltip>
         </div>

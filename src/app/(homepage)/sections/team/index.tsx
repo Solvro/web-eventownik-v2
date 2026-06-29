@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { FaGithub } from "react-icons/fa";
 
 import { HighlightedMembers } from "./highlighted-members";
@@ -281,8 +281,15 @@ const team: TeamMember[] = [
   },
 ];
 
-export function TeamView({ stargazersCount }: { stargazersCount: number }) {
-  const t = useTranslations("Homepage");
+export async function Team() {
+  const t = await getTranslations("Homepage");
+
+  const repositoryData = await fetch(
+    "https://api.github.com/repos/Solvro/web-eventownik-v2",
+  );
+  const { stargazers_count } = (await repositoryData.json()) as {
+    stargazers_count: number;
+  };
 
   return (
     <section
@@ -323,21 +330,10 @@ export function TeamView({ stargazersCount }: { stargazersCount: number }) {
           <p className="font-medium whitespace-nowrap">{t("giveUsAStar")}</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
-            <p className="font-medium">{stargazersCount}</p>
+            <p className="font-medium">{stargazers_count}</p>
           </div>
         </a>
       </div>
     </section>
   );
-}
-
-export async function Team() {
-  const repositoryData = await fetch(
-    "https://api.github.com/repos/Solvro/web-eventownik-v2",
-  );
-  const { stargazers_count } = (await repositoryData.json()) as {
-    stargazers_count: number;
-  };
-
-  return <TeamView stargazersCount={stargazers_count} />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -52,6 +53,7 @@ interface GeneralInfoFormProps {
 }
 
 export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
+  const t = useTranslations("EventDetails");
   const { control, formState, watch } =
     useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
@@ -62,11 +64,11 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nazwa formularza</FormLabel>
+            <FormLabel>{t("formName")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="Podaj nazwę formularza"
+                placeholder={t("enterFormName")}
                 disabled={formState.isSubmitting ? true : undefined}
                 {...field}
               />
@@ -205,15 +207,13 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Opis formularza</FormLabel>
-            <FormDescription>
-              W przypadku formularza rejestracyjnego, zamiast poniższej
-              zawartości wyświetli się opis wydarzenia
-            </FormDescription>
+            <FormLabel>{t("formDescr")}</FormLabel>
+            <FormDescription>{t("registrationFormDescr")}</FormDescription>
             <WysiwygEditor
               content={field.value}
               onChange={field.onChange}
               disabled={watch("isFirstForm")}
+              placeholder={t("enterFormDescr")}
             />
             <FormMessage>{formState.errors.description?.message}</FormMessage>
           </FormItem>
@@ -225,7 +225,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex w-fit flex-col">
-            <FormLabel>Formularz rejestracyjny?</FormLabel>
+            <FormLabel>{t("isRegistrationForm")}</FormLabel>
             <FormControl>
               <Switch
                 checked={field.value}
@@ -243,10 +243,8 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex w-fit flex-col">
-            <FormLabel>Włączony?</FormLabel>
-            <FormDescription>
-              Określa, czy formularz przyjmuje nowe zgłoszenia
-            </FormDescription>
+            <FormLabel>{t("isEnabled")}</FormLabel>
+            <FormDescription>{t("acceptingSubmissionsDescr")}</FormDescription>
             <FormControl>
               <Switch
                 checked={field.value}

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowRight, Lightbulb, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -63,6 +64,7 @@ const EventEmailTemplateTriggerTypeSchema = z
 
 function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EventDetails");
 
   if (target === undefined) {
     return null;
@@ -71,7 +73,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   return (
     <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
-        <Lightbulb className="size-4" /> Wyjaśnienie
+        <Lightbulb className="size-4" /> {t("explanation")}
       </div>
       <p className="text-sm">{target.description}</p>
     </div>
@@ -94,6 +96,7 @@ function TriggerConfigurationInputs({
   >;
 }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EventDetails");
 
   if (target === undefined) {
     return null;
@@ -105,7 +108,7 @@ function TriggerConfigurationInputs({
     case "manual": {
       return (
         <p className="text-muted-foreground my-2 text-sm">
-          Ten wyzwalacz nie wymaga dodatkowej konfiguracji
+          {t("triggerNoAdditionalConfiguration")}
         </p>
       );
     }
@@ -117,11 +120,11 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Formularz</FormLabel>
+                <FormLabel>{t("form")}</FormLabel>
                 <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wybierz formularz" />
+                      <SelectValue placeholder={t("selectForm")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -202,6 +205,7 @@ function TriggerTypeForm({
   eventForms: EventForm[];
   goToNextStep: () => void;
 }) {
+  const t = useTranslations("EventDetails");
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
   );
@@ -217,14 +221,14 @@ function TriggerTypeForm({
 
   return (
     <FormContainer
-      description="Wyzwalacz"
+      description={t("trigger")}
       icon={<Zap />}
       step={"1/2"}
-      title="Krok 1"
+      title={t("step", { number: 1 })}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
-          <h2 className="font-semibold">Wybierz rodzaj wyzwalacza</h2>
+          <h2 className="font-semibold">{t("chooseTriggerType")}</h2>
           <div className="flex justify-between">
             <FormField
               control={form.control}
@@ -265,10 +269,10 @@ function TriggerTypeForm({
           </div>
           <div className="bg-muted/25 h-[1px] w-full" />
           <div className="flex min-h-40 flex-col gap-4">
-            <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
+            <h2 className="font-semibold">{t("configureTrigger")}</h2>
             <FormMessage>
               {Object.keys(form.formState.errors).length > 0
-                ? "Wybrany wyzwalacz wymaga dodatkowej konfiguracji. Wypełnij wszystkie poniższe pola"
+                ? t("triggerRequiresConfiguration")
                 : ""}
             </FormMessage>
             <div className="flex flex-col gap-8">
@@ -286,7 +290,7 @@ function TriggerTypeForm({
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              <ArrowRight /> Przejdź dalej
+              {t("next")} <ArrowRight />
             </Button>
           </div>
         </form>

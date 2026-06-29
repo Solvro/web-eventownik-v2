@@ -1,36 +1,10 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import type { ButtonProps } from "@/components/ui/button";
 import { verifySession } from "@/lib/session";
 import { cn } from "@/lib/utils";
-
-function AuthButtonView({
-  isLoggedIn,
-  variant,
-  className,
-}: {
-  isLoggedIn: boolean;
-  variant?: ButtonProps["variant"];
-  className?: string;
-}) {
-  const t = useTranslations("Homepage");
-
-  return (
-    <Button
-      asChild
-      variant={variant}
-      className={cn("border-foreground", className)}
-    >
-      {isLoggedIn ? (
-        <Link href="/auth/login">{t("login")}</Link>
-      ) : (
-        <Link href="/dashboard/events">{t("organizerPanel")}</Link>
-      )}
-    </Button>
-  );
-}
 
 export async function AuthButton({
   variant = "outline",
@@ -40,12 +14,19 @@ export async function AuthButton({
   className?: string;
 }) {
   const session = await verifySession();
+  const t = await getTranslations("Homepage");
 
   return (
-    <AuthButtonView
-      isLoggedIn={session === null}
+    <Button
+      asChild
       variant={variant}
-      className={className}
-    />
+      className={cn("border-foreground", className)}
+    >
+      {session === null ? (
+        <Link href="/auth/login">{t("login")}</Link>
+      ) : (
+        <Link href="/dashboard/events">{t("organizerPanel")}</Link>
+      )}
+    </Button>
   );
 }

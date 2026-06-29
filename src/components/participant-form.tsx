@@ -80,7 +80,7 @@ export function ParticipantForm({
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const hCaptchaRef = useRef<HCaptcha>(null);
 
-  const submitText = editMode ? t("save") : t("signUp");
+  const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
@@ -283,7 +283,7 @@ export function ParticipantForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Email{" "}
+                  {t("email")}{" "}
                   <Tooltip>
                     <TooltipTrigger type="button">
                       <span className="text-red-500">*</span>

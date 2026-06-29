@@ -1,6 +1,7 @@
 "use client";
 
 import { SquarePlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
@@ -29,6 +30,7 @@ function CreateEmailTemplateForm({
   eventAttributes: EventAttribute[];
   eventForms: EventForm[];
 }) {
+  const t = useTranslations("EventDetails");
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
@@ -54,12 +56,12 @@ function CreateEmailTemplateForm({
     >
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full sm:w-fit">
-          <SquarePlus className="h-6 w-6" /> Stwórz szablon
+          <SquarePlus className="h-6 w-6" /> {t("createTemplate")}
         </Button>
       </DialogTrigger>
       <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:overflow-y-auto">
         <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz szablon</DialogTitle>
+          <DialogTitle>{t("createTemplate")}</DialogTitle>
         </DialogHeader>
         <UnsavedChangesAlert
           active={alertActive}

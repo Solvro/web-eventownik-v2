@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -39,6 +40,7 @@ import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
 
+import { getTitlePlaceholder } from "../(steps)/message-content";
 import { updateEventEmail } from "../actions";
 
 const EventEmailEditFormSchema = z
@@ -73,6 +75,7 @@ const EventEmailEditFormSchema = z
 
 function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EventDetails");
 
   if (target === undefined) {
     return null;
@@ -81,7 +84,7 @@ function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   return (
     <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
       <div className="flex items-center gap-2">
-        <Lightbulb className="size-4" /> Wyjaśnienie
+        <Lightbulb className="size-4" /> {t("explanation")}
       </div>
       <p className="text-sm">{target.description}</p>
     </div>
@@ -102,6 +105,7 @@ function TriggerConfigurationInputs({
   form: ReturnType<typeof useForm<z.infer<typeof EventEmailEditFormSchema>>>;
 }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EventDetails");
 
   if (target === undefined) {
     return null;
@@ -113,7 +117,7 @@ function TriggerConfigurationInputs({
     case "manual": {
       return (
         <p className="text-muted-foreground my-2 text-sm">
-          Ten wyzwalacz nie wymaga dodatkowej konfiguracji
+          {t("triggerNoAdditionalConfiguration")}
         </p>
       );
     }
@@ -125,14 +129,14 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Formularz</FormLabel>
+                <FormLabel>{t("form")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wybierz formularz" />
+                      <SelectValue placeholder={t("selectForm")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -218,6 +222,8 @@ function EventEmailEditForm({
   eventForms: EventForm[];
   emailToEdit: SingleEventEmail;
 }) {
+  const t = useTranslations("EventDetails");
+
   const form = useForm<z.infer<typeof EventEmailEditFormSchema>>({
     resolver: zodResolver(EventEmailEditFormSchema),
     defaultValues: {
@@ -250,12 +256,12 @@ function EventEmailEditForm({
 
     if (result.success) {
       toast({
-        title: "Zapisano zmiany w szablonie",
+        title: t("templateSaved"),
       });
       form.reset(values);
     } else {
       toast({
-        title: "Nie udało się zapisać zmian w szablonie!",
+        title: t("templateSaveFailed"),
         description: result.error,
         variant: "destructive",
       });
@@ -265,7 +271,9 @@ function EventEmailEditForm({
   const attributeTags = eventAttributes.map((attribute): MessageTag => {
     return {
       title: getAttributeLabel(attribute.name, "pl"),
-      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      description: t("replacesWithParticipantAttributeValue", {
+        name: attribute.name,
+      }),
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
@@ -276,7 +284,9 @@ function EventEmailEditForm({
   const formTags = eventForms.map((eventForm): MessageTag => {
     return {
       title: eventForm.name,
-      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      description: t("replacesWithPersonalizedFormLink", {
+        name: eventForm.name,
+      }),
       value: `/form_${eventForm.slug}`,
       color: "green",
       category: FORM_CATEGORY,
@@ -295,9 +305,9 @@ function EventEmailEditForm({
           <div className="border-foreground rounded-full border p-2">
             <Zap />
           </div>
-          <h2>Wyzwalacz</h2>
+          <h2>{t("trigger")}</h2>
         </div>
-        <h3 className="font-semibold">Wybierz rodzaj wyzwalacza</h3>
+        <h3 className="font-semibold">{t("chooseTriggerType")}</h3>
         <div className="flex justify-between">
           <FormField
             control={form.control}
@@ -337,10 +347,10 @@ function EventEmailEditForm({
         </div>
         <div className="bg-muted/25 h-[1px] w-full" />
         <div className="flex min-h-[216px] flex-col gap-4">
-          <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
+          <h2 className="font-semibold">{t("configureTrigger")}</h2>
           <FormMessage>
             {Object.keys(form.formState.errors).length > 0
-              ? "Wybrany wyzwalacz wymaga dodatkowej konfiguracji. Wypełnij wszystkie poniższe pola"
+              ? t("triggerRequiresConfiguration")
               : ""}
           </FormMessage>
           <div className="flex flex-col gap-8">
@@ -355,18 +365,21 @@ function EventEmailEditForm({
             <div className="border-foreground rounded-full border p-2">
               <Text />
             </div>
-            <h2>Zawartość wiadomości</h2>
+            <h2>{t("messageContent")}</h2>
           </div>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tytuł wiadomości</FormLabel>
+                <FormLabel>{t("messageSubject")}</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="Dziękujemy za rejestrację!"
+                    placeholder={getTitlePlaceholder(
+                      form.getValues("trigger"),
+                      t,
+                    )}
                     {...field}
                   />
                 </FormControl>
@@ -380,10 +393,9 @@ function EventEmailEditForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Treść wiadomości
+                  {t("messageBody")}
                   <span className="text-muted-foreground ml-2 text-xs">
-                    Wskazówka: Użyj Shift+Enter aby dodać nową linię w tym samym
-                    akapicie.
+                    {t("useShiftEnterHint")}
                   </span>
                 </FormLabel>
                 <WysiwygEditor
@@ -391,6 +403,7 @@ function EventEmailEditForm({
                   onChange={field.onChange}
                   extensions={setupSuggestions([...attributeTags, ...formTags])}
                   isEmailEditor
+                  placeholder={t("writeMessage")}
                 />
                 <FormMessage>
                   {form.formState.errors.content?.message}
@@ -409,7 +422,7 @@ function EventEmailEditForm({
           ) : (
             <Save />
           )}{" "}
-          Zapisz
+          {t("save")}
         </Button>
       </form>
     </Form>

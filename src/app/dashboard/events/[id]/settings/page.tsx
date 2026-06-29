@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { EventSettingsTabs } from "@/app/dashboard/events/[id]/settings/settings-tabs";
@@ -17,6 +18,7 @@ export default async function DashboardEventSettingsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("Dashboard");
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -60,7 +62,7 @@ export default async function DashboardEventSettingsPage({
 
   return (
     <>
-      <h1 className="mb-6 text-3xl font-bold">Edytuj wydarzenie</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t("editEvent")}</h1>
       <div className="flex flex-1 flex-col">
         <EventSettingsTabs
           unmodifiedEvent={event}

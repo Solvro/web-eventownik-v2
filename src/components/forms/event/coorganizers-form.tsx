@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import type { z } from "zod";
@@ -37,6 +38,8 @@ export function CoorganizersForm({
   onChange,
   className,
 }: CoorganizersFormProps = {}) {
+  const t = useTranslations("Dashboard");
+
   const { control, getValues } =
     useFormContext<z.infer<typeof EventCoorganizersFormSchema>>();
 
@@ -106,7 +109,7 @@ export function CoorganizersForm({
   return (
     <div className={cn("flex w-full flex-col flex-wrap gap-2", className)}>
       <p className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-        Współorganizatorzy
+        {t("coOrganizers")}
       </p>
       <div className="max-w-full space-y-2 pt-2">
         {fields.map((coOrganizer) => (
@@ -128,7 +131,7 @@ export function CoorganizersForm({
           onAdd={handleAddOrganizer}
         />
         <span className="text-muted-foreground text-sm leading-none font-medium text-wrap">
-          Możesz dodać tylko osoby, które mają konto w Eventowniku
+          {t("onlyRegisteredUsersAllowed")}
         </span>
       </div>
     </div>
