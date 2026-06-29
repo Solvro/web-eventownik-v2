@@ -318,7 +318,7 @@ export function AttributeItem({
             defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
               (option) => getOptionValue(option),
             )}
-             placeholder={t("selectAttributesToDisplay")}
+            placeholder={t("selectAttributesToDisplay")}
           />
           <p className="text-muted-foreground text-sm">
             {t("anonymousRegistrationsInfo")}
