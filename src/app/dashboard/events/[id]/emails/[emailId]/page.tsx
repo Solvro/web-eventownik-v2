@@ -2,7 +2,10 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import sanitize from "sanitize-html";
+
+import { EMAIL_ALLOWED_ATTRIBUTES, EMAIL_ALLOWED_TAGS } from "@/lib/editor";
 
 import {
   getEventAttributes,
@@ -18,7 +21,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const t = await getTranslations("Dashboard");
   const { id, emailId } = await params;
-
   const emailToEdit = await getSingleEventEmail(id, emailId);
 
   return {
@@ -34,29 +36,44 @@ export default async function EventMailEditPage({
   const t = await getTranslations("Dashboard");
   const { id, emailId } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailId);
-  const attributes = await getEventAttributes(id);
-  const forms = await getEventForms(id);
+  const fetchedEmail = await getSingleEventEmail(id, emailId);
 
-  if (emailToEdit == null) {
+  if (fetchedEmail == null) {
     notFound();
-  } else {
-    return (
-      <div className="flex flex-col gap-8">
-        <Link
-          href={`/dashboard/events/${id}/emails`}
-          className="flex items-center gap-2 underline"
-        >
-          <ArrowLeft className="h-4 w-4" /> {t("backToTemplates")}
-        </Link>
-        <h1 className="text-2xl font-bold">{t("editEmailTemplate")}</h1>
-        <EventEmailEditForm
-          eventId={id}
-          emailToEdit={emailToEdit}
-          eventAttributes={attributes}
-          eventForms={forms}
-        />
-      </div>
-    );
   }
+
+  if (fetchedEmail.schema !== null) {
+    redirect(`/dashboard/events/${id}/emails/editor/${emailId}`);
+  }
+
+  const emailToEdit = {
+    ...fetchedEmail,
+    content: sanitize(fetchedEmail.content, {
+      allowedTags: EMAIL_ALLOWED_TAGS,
+      allowedAttributes: EMAIL_ALLOWED_ATTRIBUTES,
+    }),
+  };
+
+  const [attributes, forms] = await Promise.all([
+    getEventAttributes(id),
+    getEventForms(id),
+  ]);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <Link
+        href={`/dashboard/events/${id}/emails`}
+        className="flex items-center gap-2 underline"
+      >
+        <ArrowLeft className="h-4 w-4" /> {t("backToTemplates")}
+      </Link>
+      <h1 className="text-2xl font-bold">{t("editEmailTemplate")}</h1>
+      <EventEmailEditForm
+        eventId={id}
+        emailToEdit={emailToEdit}
+        eventAttributes={attributes}
+        eventForms={forms}
+      />
+    </div>
+  );
 }
