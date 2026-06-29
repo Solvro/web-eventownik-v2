@@ -169,7 +169,8 @@
     "blockBased": "Block-based",
     "blockBasedDescription": "Advanced block-based editor for custom layouts",
     "disclaimer": "After creating a template of a given type, it will no longer be possible to change it",
-    "loadingEditor": "Loading editor..."
+    "loadingEditor": "Loading editor...",
+    "createTemplate": "Create template"
   },
   "EmailHistoryTable": {
     "searchPlaceholder": "Search in history",
@@ -330,7 +331,6 @@
     "triggerNoAdditionalConfiguration": "This trigger does not require additional configuration",
     "form": "Form",
     "selectForm": "Select a form",
-    "createTemplate": "Create template",
     "templateAdded": "Template added successfully",
     "templateAddFailed": "Failed to add template!",
     "addTemplate": "Add new template",

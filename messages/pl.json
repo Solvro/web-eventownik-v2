@@ -169,7 +169,8 @@
     "blockBased": "Blokowy",
     "blockBasedDescription": "Złożone układy",
     "disclaimer": "Po utworzeniu szablonu danego typu, nie będzie możliwości jego zmiany",
-    "loadingEditor": "Ładowanie edytora..."
+    "loadingEditor": "Ładowanie edytora...",
+    "createTemplate": "Stwórz szablon"
   },
   "EmailHistoryTable": {
     "searchPlaceholder": "Szukaj w historii",
@@ -330,7 +331,6 @@
     "triggerNoAdditionalConfiguration": "Ten wyzwalacz nie wymaga dodatkowej konfiguracji",
     "form": "Formularz",
     "selectForm": "Wybierz formularz",
-    "createTemplate": "Stwórz szablon",
     "templateAdded": "Dodano nowy szablon",
     "templateAddFailed": "Nie udało się dodać szablonu!",
     "addTemplate": "Dodaj nowy szablon",

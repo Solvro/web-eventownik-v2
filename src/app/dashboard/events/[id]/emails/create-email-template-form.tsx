@@ -32,8 +32,9 @@ function CreateEmailTemplateForm({
   eventAttributes: EventAttribute[];
   eventForms: EventForm[];
 }) {
-  const t = useTranslations("EventDetails");
+  const t = useTranslations("Email");
   const router = useRouter();
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [alertActive, setAlertActive] = useState(false);
@@ -41,8 +42,6 @@ function CreateEmailTemplateForm({
   const { isDirty, isGuardActive, onCancel, onConfirm } = useUnsavedAtom(
     newEventEmailTemplateAtom,
   );
-
-  const t = useTranslations("Email");
 
   const isSimpleDialogOpen = dialogMode === "simple";
 
