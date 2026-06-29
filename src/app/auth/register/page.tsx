@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { translateFormError } from "@/i18n/translate-form-error";
 import { registerFormSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
@@ -131,12 +132,10 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {typeof form.formState.errors.email?.message === "string"
-                  ? t(
-                      form.formState.errors.email
-                        .message as AuthSchemaErrorKeys,
-                    )
-                  : null}
+                {translateFormError(
+                  t,
+                  form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -156,12 +155,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {typeof form.formState.errors.password?.message === "string"
-                  ? t(
-                      form.formState.errors.password
-                        .message as AuthSchemaErrorKeys,
-                    )
-                  : null}
+                {translateFormError(
+                  t,
+                  form.formState.errors.password
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -180,12 +178,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {typeof form.formState.errors.firstName?.message === "string"
-                  ? t(
-                      form.formState.errors.firstName
-                        .message as AuthSchemaErrorKeys,
-                    )
-                  : null}
+                {translateFormError(
+                  t,
+                  form.formState.errors.firstName
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -204,12 +201,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {typeof form.formState.errors.lastName?.message === "string"
-                  ? t(
-                      form.formState.errors.lastName
-                        .message as AuthSchemaErrorKeys,
-                    )
-                  : null}
+                {translateFormError(
+                  t,
+                  form.formState.errors.lastName
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}

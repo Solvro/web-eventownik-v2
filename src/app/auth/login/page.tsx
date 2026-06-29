@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { LOGIN_ERRORS } from "@/types/auth";
+import { translateFormError } from "@/i18n/translate-form-error";
 import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
@@ -72,9 +72,7 @@ function LoginForm() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: LOGIN_ERRORS.includes(result.error as LoginError)
-            ? t(result.error as LoginError)
-            : result.error,
+          description: translateFormError(t, result.error as LoginError),
         });
       }
     } catch (error) {
@@ -146,12 +144,10 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {typeof form.formState.errors.email?.message === "string"
-                    ? t(
-                        form.formState.errors.email
-                          .message as AuthSchemaErrorKeys,
-                      )
-                    : null}
+                  {translateFormError(
+                    t,
+                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                  )}
                 </FormMessage>
               </FormItem>
             )}
@@ -171,12 +167,11 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {typeof form.formState.errors.password?.message === "string"
-                    ? t(
-                        form.formState.errors.password
-                          .message as AuthSchemaErrorKeys,
-                      )
-                    : null}
+                  {translateFormError(
+                    t,
+                    form.formState.errors.password
+                      ?.message as AuthSchemaErrorKeys,
+                  )}
                 </FormMessage>
                 <Link
                   href="/auth/forgot-password"

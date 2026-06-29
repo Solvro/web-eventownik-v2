@@ -307,6 +307,7 @@
     "blockCapacity": "Block capacity",
     "creatingBlock": "Creating block...",
     "save": "Save",
+    "saving": "Saving...",
     "editBlock": "Edit block",
     "failedToSaveBlockChanges": "Failed to save block changes!",
     "blockChangesSaved": "Block changes saved",
@@ -337,7 +338,9 @@
     "removedFromParticipants": "You have been removed from the participants list",
     "eventTermsUpdated": "Event terms have been updated",
     "formSubmissionThankYou": "Thank you for filling out the form!",
-    "newOrganizerMessage": "New message from organizers"
+    "newOrganizerMessage": "New message from organizers",
+    "blockNameRequired": "Block name is required",
+    "blockCapacityMustBeGreaterThanZero": "Block capacity must be greater than 0"
   },
   "Export": {
     "failed": "Export failed!",

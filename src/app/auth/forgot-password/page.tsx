@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { translateFormError } from "@/i18n/translate-form-error";
 import type { ResetPassTokenError } from "@/types/auth";
-import { RESET_PASS_TOKEN_ERRORS } from "@/types/auth";
 import { sendPasswordResetTokenSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
@@ -69,11 +69,10 @@ export default function ForgotPasswordPage() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: RESET_PASS_TOKEN_ERRORS.includes(
+          description: translateFormError(
+            t,
             result.error as ResetPassTokenError,
-          )
-            ? t(result.error as ResetPassTokenError)
-            : result.error,
+          ),
         });
       }
     } catch (error) {
@@ -162,12 +161,14 @@ export default function ForgotPasswordPage() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {typeof form.formState.errors.email?.message === "string"
-                    ? t(
-                        form.formState.errors.email
-                          .message as AuthSchemaErrorKeys,
-                      )
-                    : null}
+                  {/* {translateFormError(
+                    t,
+                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                  )} */}
+                  {translateFormError(
+                    t,
+                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                  )}
                 </FormMessage>
               </FormItem>
             )}

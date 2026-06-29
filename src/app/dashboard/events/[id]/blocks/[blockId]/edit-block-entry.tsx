@@ -1,12 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Loader, Save } from "lucide-react";
+import { Edit, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { updateBlock } from "@/app/dashboard/events/[id]/blocks/actions";
 import { Button } from "@/components/ui/button";
@@ -17,30 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
 
-const BlockSchema = z.object({
-  name: z.string().min(1, "Nazwa bloku jest wymagana"),
-  capacity: z
-    .union([
-      z.coerce.number().min(1, "Pojemność bloku musi być większa niż 0"),
-      z.literal(""),
-    ])
-    .optional(),
-});
+import { BlockForm, BlockSchema } from "./block-form";
+import type { BlockFormValues } from "./block-form";
 
 function EditBlockEntry({
   blockToEdit,
@@ -53,7 +35,7 @@ function EditBlockEntry({
   parentId: string;
 }) {
   const t = useTranslations("EventDetails");
-  const form = useForm<z.infer<typeof BlockSchema>>({
+  const form = useForm<BlockFormValues>({
     resolver: zodResolver(BlockSchema),
     defaultValues: {
       name: blockToEdit.name,
@@ -70,7 +52,7 @@ function EditBlockEntry({
     form.formState.isDirty,
   );
 
-  const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
+  const onSubmit = async (data: BlockFormValues) => {
     const result = await updateBlock(
       eventId,
       attributeId,
@@ -134,56 +116,13 @@ function EditBlockEntry({
             onConfirm();
           }}
         />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("name")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("blockName")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="capacity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("maxParticipants")}</FormLabel>
-                  <FormDescription>
-                    {t("leaveEmptyForUnlimited")}
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={t("blockCapacity")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              variant="eventDefault"
-              className="w-full"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <Save />
-              )}{" "}
-              {t("save")}
-            </Button>
-          </form>
-        </Form>
+        <BlockForm
+          form={form}
+          onSubmit={onSubmit}
+          loadingText={t("saving")}
+          submitText={t("save")}
+          idleIcon={Save}
+        />
       </DialogContent>
     </Dialog>
   );

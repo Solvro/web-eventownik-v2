@@ -307,6 +307,7 @@
     "blockCapacity": "Pojemność bloku",
     "creatingBlock": "Tworzenie bloku...",
     "save": "Zapisz",
+    "saving": "Zapisywanie...",
     "editBlock": "Edytuj blok",
     "failedToSaveBlockChanges": "Nie udało się zapisać zmian w bloku!",
     "blockChangesSaved": "Zapisano zmiany w bloku",
@@ -337,7 +338,9 @@
     "removedFromParticipants": "Usunięto Cię z listy uczestników",
     "eventTermsUpdated": "Aktualizacja regulaminu wydarzenia",
     "formSubmissionThankYou": "Dziękujemy za wypełnienie formularza!",
-    "newOrganizerMessage": "Nowa wiadomość od organizatorów"
+    "newOrganizerMessage": "Nowa wiadomość od organizatorów",
+    "blockNameRequired": "Nazwa bloku jest wymagana",
+    "blockCapacityMustBeGreaterThanZero": "Pojemność bloku musi być większa niż 0"
   },
   "Export": {
     "failed": "Eksport nie powiódł się!",

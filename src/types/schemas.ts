@@ -6,7 +6,8 @@ export type AuthSchemaErrorKeys =
   | "nameRequired"
   | "surnameRequired"
   | "tokenRequired"
-  | "passwordsMustMatch";
+  | "passwordsMustMatch"
+  | "confirmPassword";
 
 export const loginFormSchema = z.object({
   email: z.string().email("invalidEmail"),
