@@ -26,12 +26,12 @@ import { cn } from "@/lib/utils";
 
 export const EventGeneralInfoSchema = z
   .object({
-    name: z.string().nonempty("Nazwa nie może być pusta."),
+    name: z.string().nonempty("Nazwa nie może być pusta"),
     description: z.string().optional(),
     startDate: z.date(),
-    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
+    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta"),
     endDate: z.date(),
-    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
+    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta"),
     location: z.string().optional(),
     organizer: z.string().optional(),
     contactEmail: z
@@ -54,7 +54,7 @@ export const EventGeneralInfoSchema = z
     },
     {
       message:
-        "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.",
+        "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia",
       path: ["endDate"],
     },
   );

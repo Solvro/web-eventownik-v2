@@ -28,12 +28,12 @@
     "serverErrorTryLater": "A server error occurred. Please try again later.",
     "passwordResetEmailLink": "Please check your email and click the link to reset your password.",
     "email": "Email",
-    "invalidEmail": "Invalid email address.",
-    "passwordMinLength": "Password must be at least 8 characters.",
-    "nameRequired": "First name is required.",
-    "surnameRequired": "Last name is required.",
-    "tokenRequired": "Token is required.",
-    "passwordsMustMatch": "Passwords must match.",
+    "invalidEmail": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "nameRequired": "First name is required",
+    "surnameRequired": "Last name is required",
+    "tokenRequired": "Token is required",
+    "passwordsMustMatch": "Passwords must match",
     "tryRegisterAgain": "Try registering again.",
     "noServerConnection": "No connection to the server.",
     "checkInternetConnection": "Check your internet connection.",
@@ -249,7 +249,8 @@
     "dotted": "Dotted",
     "double": "Double",
     "color": "Color",
-    "borderRadius": "Border radius"
+    "borderRadius": "Border radius",
+    "clickToSelect": "Click to select"
   },
   "Email": {
     "chooseTemplateType": "Choose template type",
@@ -441,7 +442,7 @@
   },
   "Form": {
     "email": "Email",
-    "invalidEmail": "Invalid email address.",
+    "invalidEmail": "Invalid email address",
     "emailTaken": "This email is already registered for this event.",
     "emailTakenTitle": "Email address is already taken",
     "registrationSuccess": "Registration successful!",
@@ -479,7 +480,17 @@
     "none": "None",
     "selectAttribute": "Select {name}",
     "enterOwnValue": "Enter your own value",
-    "blockDataFetchFailed": "Failed to fetch data about this block or your attributes 😪"
+    "blockDataFetchFailed": "Failed to fetch data about this block or your attributes 😪",
+    "fileUploadRequired": "Please upload a file",
+    "drawingRequired": "Please draw something",
+    "fieldRequired": "Field {name} cannot be empty",
+    "fieldMinSelect": "Select at least one option for field {name}",
+    "fieldEmail": "Field {name} must be a valid email address",
+    "fieldColorRequired": "Select a color for field {name}",
+    "fieldNumber": "Field {name} must be a number",
+    "fieldDate": "Field {name} must be a date",
+    "fieldRequiredChecked": "Field {name} must be selected",
+    "fieldPhone": "Field {name} must be a valid phone number"
   },
   "Homepage": {
     "areYouPwrStudent": "Are you a student at Wrocław University of Science and Technology?",

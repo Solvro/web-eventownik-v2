@@ -28,11 +28,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { translateFormError } from "@/i18n/translate-form-error";
 import {
   cn,
   getAttributeLabel,
   getSchemaObjectForAttributes,
 } from "@/lib/utils";
+import type { FormValidationErrors } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -250,8 +252,8 @@ export function ParticipantForm({
         form.setError(attribute.id.toString(), {
           message:
             attribute.type === "file"
-              ? "To pole wymaga wgrania pliku."
-              : "To pole wymaga narysowania czegoś.",
+              ? t("fileUploadRequired")
+              : t("drawingRequired"),
         });
       }
     }
@@ -376,11 +378,13 @@ export function ParticipantForm({
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
-                    {
+                    {translateFormError(
+                      t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
                       (form.formState.errors as any)[attribute.id.toString()]
-                        ?.message
-                    }
+                        ?.message as FormValidationErrors,
+                      { name: getAttributeLabel(attribute.name, "pl") },
+                    )}
                   </FormMessage>
                 </FormItem>
               )}

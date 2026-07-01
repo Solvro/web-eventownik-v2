@@ -51,7 +51,7 @@ export function ColorPicker({
           />
         )}
         <p className="text-sm">
-          {value === defaultValue ? "Kliknij aby wybrać" : value}
+          {value === defaultValue ? t("clickToSelect") : value}
         </p>
       </label>
 

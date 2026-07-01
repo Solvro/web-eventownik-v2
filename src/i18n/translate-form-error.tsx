@@ -6,8 +6,9 @@ type TranslationKey = Parameters<TranslationFunction>[0];
 export function translateFormError(
   t: TranslationFunction,
   errorMessage?: TranslationKey,
+  values?: Record<string, string | number | Date>,
 ) {
   if (errorMessage !== undefined) {
-    return t(errorMessage);
+    return t(errorMessage, values);
   }
 }
