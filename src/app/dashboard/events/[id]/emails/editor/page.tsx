@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Editor } from "@/components/editor/index";
 import { rootDefaults } from "@/lib/editor";
 import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
@@ -10,9 +12,11 @@ import {
   getEventForms,
 } from "../data-access";
 
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await getTranslations("Editor");
+
   return {
-    title: `Nowy szablon`,
+    title: t("newTemplate"),
   };
 }
 
@@ -21,6 +25,7 @@ export default async function EventMailEditPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations();
   const { id } = await params;
 
   const attributes = await getEventAttributes(id);
@@ -30,7 +35,9 @@ export default async function EventMailEditPage({
   const attributeTags = attributes.map((attribute): MessageTag => {
     return {
       title: getAttributeLabel(attribute.name, "pl"),
-      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      description: t("EventDetails.replacesWithParticipantAttributeValue", {
+        name: attribute.name,
+      }),
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
@@ -41,7 +48,9 @@ export default async function EventMailEditPage({
   const formTags = forms.map((eventForm): MessageTag => {
     return {
       title: eventForm.name,
-      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      description: t("EventDetails.replacesWithPersonalizedFormLink", {
+        name: eventForm.name,
+      }),
       value: `/form_${eventForm.slug}`,
       color: "green",
       category: FORM_CATEGORY,
@@ -55,7 +64,7 @@ export default async function EventMailEditPage({
       attributes={attributes}
       initialData={{
         root: {
-          props: rootDefaults,
+          props: { ...rootDefaults, name: t("Editor.newMessage") },
         },
         content: [],
         zones: {},
@@ -66,7 +75,7 @@ export default async function EventMailEditPage({
         mode: "create",
       }}
       eventData={{
-        name: event?.name ?? "Wydarzenie",
+        name: event?.name ?? t("Editor.event"),
         photoUrl: event?.photoUrl ?? "",
       }}
     />

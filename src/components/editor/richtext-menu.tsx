@@ -12,6 +12,7 @@ import {
   Tag,
   Underline,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { useEditorActiveState } from "@/hooks/use-editor-active-state";
@@ -32,6 +33,8 @@ interface ButtonSetProps {
 }
 
 function TypographyButtons({ editor, activeState }: ButtonSetProps) {
+  const t = useTranslations("Editor");
+
   return (
     <>
       <Tooltip>
@@ -42,12 +45,12 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className="size-7"
-            aria-label="Pogrubienie"
+            aria-label={t("bold")}
           >
             <Bold className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Pogrubienie</TooltipContent>
+        <TooltipContent>{t("bold")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -57,12 +60,12 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             className="size-7"
-            aria-label="Kursywa"
+            aria-label={t("italic")}
           >
             <Italic className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Kursywa</TooltipContent>
+        <TooltipContent>{t("italic")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -72,12 +75,12 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
             className="size-7"
-            aria-label="Podkreślenie"
+            aria-label={t("underline")}
           >
             <Underline className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Podkreślenie</TooltipContent>
+        <TooltipContent>{t("underline")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -87,18 +90,20 @@ function TypographyButtons({ editor, activeState }: ButtonSetProps) {
             type="button"
             onClick={() => editor?.chain().focus().toggleCode().run()}
             className="size-7"
-            aria-label="Kod (czcionka mono)"
+            aria-label={t("code")}
           >
             <Code2 className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Kod (czcionka mono)</TooltipContent>
+        <TooltipContent>{t("code")}</TooltipContent>
       </Tooltip>
     </>
   );
 }
 
 function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
+  const t = useTranslations("Editor");
+
   return (
     <Tooltip>
       <DropdownMenu>
@@ -137,7 +142,7 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
             className={activeState.alignLeft ? "bg-accent" : ""}
           >
             <AlignLeft className="mr-2 size-4" />
-            <span>Wyrównanie do lewej</span>
+            <span>{t("alignLeft")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -150,7 +155,7 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
             className={activeState.alignCenter ? "bg-accent" : ""}
           >
             <AlignCenter className="mr-2 size-4" />
-            <span>Wyrównanie do środka</span>
+            <span>{t("alignCenter")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -163,7 +168,7 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
             className={activeState.alignRight ? "bg-accent" : ""}
           >
             <AlignRight className="mr-2 size-4" />
-            <span>Wyrównanie w prawo</span>
+            <span>{t("alignRight")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -176,16 +181,18 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
             className={activeState.alignJustify ? "bg-accent" : ""}
           >
             <AlignJustify className="mr-2 size-4" />
-            <span>Justowanie</span>
+            <span>{t("justify")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <TooltipContent side="bottom">Wyrównanie tekstu</TooltipContent>
+      <TooltipContent side="bottom">{t("textAlign")}</TooltipContent>
     </Tooltip>
   );
 }
 
 function TagButtons({ editor }: ButtonSetProps) {
+  const t = useTranslations("Editor");
+
   return (
     <>
       <Tooltip>
@@ -196,12 +203,12 @@ function TagButtons({ editor }: ButtonSetProps) {
             onClick={() => editor?.chain().focus().insertContent("/").run()}
             variant="eventGhost"
             className="size-7"
-            aria-label="Wstaw znacznik"
+            aria-label={t("insertTag")}
           >
             <SlashSquare className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">Wstaw znacznik</TooltipContent>
+        <TooltipContent side="bottom">{t("insertTag")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -213,14 +220,12 @@ function TagButtons({ editor }: ButtonSetProps) {
             }
             variant="eventGhost"
             className="size-7"
-            aria-label="Wstaw znacznik linku do formularza"
+            aria-label={t("insertFormLinkTag")}
           >
             <FileSpreadsheet className="size-4!" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
-          Wstaw znacznik linku do formularza
-        </TooltipContent>
+        <TooltipContent side="bottom">{t("insertFormLinkTag")}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -232,13 +237,13 @@ function TagButtons({ editor }: ButtonSetProps) {
             }
             variant="eventGhost"
             className="size-7"
-            aria-label="Wstaw znacznik wartości atrybutu uczestnika"
+            aria-label={t("insertParticipantAttributeTag")}
           >
             <Tag className="size-3.75!" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">
-          Wstaw znacznik wartości atrybutu uczestnika
+          {t("insertParticipantAttributeTag")}
         </TooltipContent>
       </Tooltip>
     </>

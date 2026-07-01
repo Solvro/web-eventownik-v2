@@ -2,10 +2,11 @@
 
 import { Puck } from "@puckeditor/core";
 import "@puckeditor/core/no-external.css";
+import { useLocale, useTranslations } from "next-intl";
 
 import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
-import { overrides } from "@/components/editor/overrides";
+import { createOverrides } from "@/components/editor/overrides";
 import type { MessageTag } from "@/lib/extensions/tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { PuckData, PuckEventData, PuckMutationData } from "@/types/editor";
@@ -29,14 +30,17 @@ function Editor({
   mutationData,
   eventData,
 }: BlockEditorProps) {
-  const config = getPuckConfig({ tags, forms, attributes, eventData });
+  const t = useTranslations("Editor");
+  const locale = useLocale();
+  const config = getPuckConfig({ tags, forms, attributes, eventData, t });
 
   return (
     <Puck
+      key={locale} // Force re-render when locale changes
       config={config}
       data={initialData}
       overrides={{
-        ...overrides,
+        ...createOverrides(t),
         iframe: ({ children, document }) => {
           if (document !== undefined) {
             document.body.style.backgroundColor = "white";

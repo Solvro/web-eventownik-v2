@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
+import { translateFormError } from "@/i18n/translate-form-error";
 import {
   ATTRIBUTE_CATEGORY,
   FORM_CATEGORY,
@@ -36,9 +37,13 @@ import type { EventForm } from "@/types/forms";
 import { createEventEmail } from "../actions";
 
 const EventEmailTemplateContentSchema = z.object({
-  name: z.string().nonempty({ message: "Tytuł nie może być pusty." }),
-  content: z.string().nonempty({ message: "Treść nie może być pusta." }),
+  name: z.string().nonempty({ message: "subjectRequired" }),
+  content: z.string().refine((value) => value.trim() !== "<p></p>", {
+    message: "bodyRequired",
+  }),
 });
+
+type EventEmailTemplateErrors = "subjectRequired" | "bodyRequired";
 
 export function getTitlePlaceholder(
   trigger: string,
@@ -202,7 +207,13 @@ function MessageContentForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>{form.formState.errors.name?.message}</FormMessage>
+                <FormMessage>
+                  {translateFormError(
+                    t,
+                    form.formState.errors.name
+                      ?.message as EventEmailTemplateErrors,
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -225,7 +236,11 @@ function MessageContentForm({
                   placeholder={t("writeMessage")}
                 />
                 <FormMessage>
-                  {form.formState.errors.content?.message}
+                  {translateFormError(
+                    t,
+                    form.formState.errors.content
+                      ?.message as EventEmailTemplateErrors,
+                  )}
                 </FormMessage>
               </FormItem>
             )}

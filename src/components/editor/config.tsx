@@ -18,6 +18,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import type { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRef } from "react";
 import type { CSSProperties } from "react";
@@ -112,20 +113,22 @@ export const getPuckConfig = ({
   forms,
   attributes,
   eventData,
+  t,
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
   attributes: Pick<EventAttribute, "id" | "name">[];
   eventData: PuckEventData;
+  t: ReturnType<typeof useTranslations>;
 }): PuckConfig => {
   return {
     components: {
       RichText: {
-        label: "Tekst",
+        label: t("text"),
         fields: {
           content: {
             type: "richtext",
-            label: "Zawartość",
+            label: t("content"),
             labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
             contentEditable: true,
             tiptap: {
@@ -142,7 +145,7 @@ export const getPuckConfig = ({
                     },
                   },
                 }),
-                Placeholder.configure({ placeholder: "Zacznij pisać..." }),
+                Placeholder.configure({ placeholder: t("startTyping") }),
                 ...setupSuggestions([...tags]),
               ],
             },
@@ -150,7 +153,7 @@ export const getPuckConfig = ({
             renderInlineMenu: () => <div className="[&+div]:hidden" />,
             renderMenu: ({ editor }) => <SidebarRichTextMenu editor={editor} />,
           },
-          ...withAppearance,
+          ...withAppearance(t),
         },
         defaultProps: {
           content: "<p></p>",
@@ -170,19 +173,19 @@ export const getPuckConfig = ({
         },
       },
       TwoByOne: {
-        label: "Siatka 2x1",
+        label: t("gridSize", { size: "2x1" }),
         fields: {
           left: {
-            label: "Lewa",
+            label: t("left"),
             type: "slot",
           },
           right: {
-            label: "Prawa",
+            label: t("right"),
             type: "slot",
           },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           left: [],
@@ -221,23 +224,23 @@ export const getPuckConfig = ({
         },
       },
       ThreeByOne: {
-        label: "Siatka 3x1",
+        label: t("gridSize", { size: "3x1" }),
         fields: {
           left: {
-            label: "Lewa",
+            label: t("left"),
             type: "slot",
           },
           center: {
-            label: "Środkowa",
+            label: t("middle"),
             type: "slot",
           },
           right: {
-            label: "Prawa",
+            label: t("right"),
             type: "slot",
           },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           left: [],
@@ -292,27 +295,27 @@ export const getPuckConfig = ({
         },
       },
       FourByOne: {
-        label: "Siatka 4x1",
+        label: t("gridSize", { size: "4x1" }),
         fields: {
           col1: {
-            label: "Kolumna 1",
+            label: t("column", { number: 1 }),
             type: "slot",
           },
           col2: {
-            label: "Kolumna 2",
+            label: t("column", { number: 2 }),
             type: "slot",
           },
           col3: {
-            label: "Kolumna 3",
+            label: t("column", { number: 3 }),
             type: "slot",
           },
           col4: {
-            label: "Kolumna 4",
+            label: t("column", { number: 4 }),
             type: "slot",
           },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           col1: [],
@@ -377,27 +380,27 @@ export const getPuckConfig = ({
         },
       },
       TwoByTwo: {
-        label: "Siatka 2x2",
+        label: t("gridSize", { size: "2x2" }),
         fields: {
           topLeft: {
-            label: "Górna lewa",
+            label: t("topLeft"),
             type: "slot",
           },
           topRight: {
-            label: "Górna prawa",
+            label: t("topRight"),
             type: "slot",
           },
           bottomLeft: {
-            label: "Dolna lewa",
+            label: t("bottomLeft"),
             type: "slot",
           },
           bottomRight: {
-            label: "Dolna prawa",
+            label: t("bottomRight"),
             type: "slot",
           },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           topLeft: [],
@@ -464,17 +467,17 @@ export const getPuckConfig = ({
         },
       },
       ThreeByTwo: {
-        label: "Siatka 3x2",
+        label: t("gridSize", { size: "3x2" }),
         fields: {
-          topLeft: { label: "Górna lewa", type: "slot" },
-          topCenter: { label: "Górna środkowa", type: "slot" },
-          topRight: { label: "Górna prawa", type: "slot" },
-          bottomLeft: { label: "Dolna lewa", type: "slot" },
-          bottomCenter: { label: "Dolna środkowa", type: "slot" },
-          bottomRight: { label: "Dolna prawa", type: "slot" },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          topLeft: { label: t("topLeft"), type: "slot" },
+          topCenter: { label: t("topCenter"), type: "slot" },
+          topRight: { label: t("topRight"), type: "slot" },
+          bottomLeft: { label: t("bottomLeft"), type: "slot" },
+          bottomCenter: { label: t("bottomCenter"), type: "slot" },
+          bottomRight: { label: t("bottomRight"), type: "slot" },
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           topLeft: [],
@@ -561,20 +564,20 @@ export const getPuckConfig = ({
         },
       },
       ThreeByThree: {
-        label: "Siatka 3x3",
+        label: t("gridSize", { size: "3x3" }),
         fields: {
-          topLeft: { label: "Górna lewa", type: "slot" },
-          topCenter: { label: "Górna środkowa", type: "slot" },
-          topRight: { label: "Górna prawa", type: "slot" },
-          middleLeft: { label: "Środkowa lewa", type: "slot" },
-          middleCenter: { label: "Centrum", type: "slot" },
-          middleRight: { label: "Środkowa prawa", type: "slot" },
-          bottomLeft: { label: "Dolna lewa", type: "slot" },
-          bottomCenter: { label: "Dolna środkowa", type: "slot" },
-          bottomRight: { label: "Dolna prawa", type: "slot" },
-          ...withContainer,
-          ...withLayout,
-          ...withAppearance,
+          topLeft: { label: t("topLeft"), type: "slot" },
+          topCenter: { label: t("topCenter"), type: "slot" },
+          topRight: { label: t("topRight"), type: "slot" },
+          middleLeft: { label: t("middleLeft"), type: "slot" },
+          middleCenter: { label: t("middleCenter"), type: "slot" },
+          middleRight: { label: t("middleRight"), type: "slot" },
+          bottomLeft: { label: t("bottomLeft"), type: "slot" },
+          bottomCenter: { label: t("bottomCenter"), type: "slot" },
+          bottomRight: { label: t("bottomRight"), type: "slot" },
+          ...withContainer(t),
+          ...withLayout(t),
+          ...withAppearance(t),
         },
         defaultProps: {
           topLeft: [],
@@ -693,14 +696,14 @@ export const getPuckConfig = ({
         },
       },
       Divider: {
-        label: "Odstęp",
+        label: t("gap"),
         fields: {
           height: {
             type: "number",
-            label: "Wysokość",
+            label: t("height"),
             labelIcon: <ChevronsUpDown className={PUCK_ICON_CLASSNAME} />,
           },
-          ...withAppearance,
+          ...withAppearance(t),
         },
         defaultProps: {
           height: "32",
@@ -729,11 +732,11 @@ export const getPuckConfig = ({
         },
       },
       Image: {
-        label: "Obraz",
+        label: t("image"),
         fields: {
           src: {
             type: "custom",
-            label: "Obraz",
+            label: t("image"),
             render: ({ value, onChange }) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
               const fileInputRef = useRef<HTMLInputElement>(null);
@@ -744,7 +747,7 @@ export const getPuckConfig = ({
                     type="file"
                     accept="image/*"
                     className="sr-only"
-                    aria-label="Wybierz obraz"
+                    aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
                       const input = event.target as HTMLInputElement;
@@ -762,7 +765,7 @@ export const getPuckConfig = ({
                     className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
                   >
                     <ImageIcon className={PUCK_ICON_CLASSNAME} />
-                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+                    {value ? t("changeImage") : t("selectImage")}
                   </button>
 
                   {value ? (
@@ -778,7 +781,7 @@ export const getPuckConfig = ({
             },
           },
           size: {
-            label: "Rozmiar",
+            label: t("size"),
             labelIcon: <Scaling className={PUCK_ICON_CLASSNAME} />,
             type: "custom",
             render: ({ name, onChange, value, field }) => (
@@ -795,13 +798,13 @@ export const getPuckConfig = ({
                   size="sm"
                   className="w-full"
                 >
-                  Automatycznie
+                  {t("automatically")}
                 </Button>
                 <NumberButtonInput value={value} onChange={onChange} />
               </div>
             ),
           },
-          ...withLayout,
+          ...withLayout(t),
         },
         defaultProps: {
           src: "",
@@ -840,22 +843,22 @@ export const getPuckConfig = ({
         },
       },
       Link: {
-        label: "Przycisk z linkiem",
+        label: t("linkButton"),
         fields: {
           title: {
             type: "text",
-            label: "Treść",
+            label: t("btnLabel"),
             labelIcon: <Type className={PUCK_ICON_CLASSNAME} />,
           },
           href: {
             type: "text",
-            label: "Odnośnik",
+            label: t("link"),
             labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
           },
-          ...withAppearance,
+          ...withAppearance(t),
         },
         defaultProps: {
-          title: "Kliknij tutaj",
+          title: t("clickHere"),
           href: "",
           appearance: {
             ...appearanceDefaults.appearance,
@@ -890,11 +893,11 @@ export const getPuckConfig = ({
         },
       },
       LinkImage: {
-        label: "Obraz z linkiem",
+        label: t("linkedImage"),
         fields: {
           src: {
             type: "custom",
-            label: "Obraz",
+            label: t("image"),
             render: ({ value, onChange }) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
               const fileInputRef = useRef<HTMLInputElement>(null);
@@ -905,7 +908,7 @@ export const getPuckConfig = ({
                     type="file"
                     accept="image/*"
                     className="sr-only"
-                    aria-label="Wybierz obraz"
+                    aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
                       const input = event.target as HTMLInputElement;
@@ -923,7 +926,7 @@ export const getPuckConfig = ({
                     className="flex items-center gap-2 rounded border border-dashed! border-gray-500! px-3 py-2 text-sm hover:border-gray-400!"
                   >
                     <ImageIcon className={PUCK_ICON_CLASSNAME} />
-                    {value ? "Zmień zdjęcie" : "Wybierz zdjęcie"}
+                    {value ? t("changeImage") : t("selectImage")}
                   </button>
 
                   {value ? (
@@ -939,7 +942,7 @@ export const getPuckConfig = ({
             },
           },
           size: {
-            label: "Rozmiar",
+            label: t("size"),
             labelIcon: <Scaling className={PUCK_ICON_CLASSNAME} />,
             type: "custom",
             render: ({ name, onChange, value, field }) => (
@@ -956,7 +959,7 @@ export const getPuckConfig = ({
                   size="sm"
                   className="w-full"
                 >
-                  Automatycznie
+                  {t("automatically")}
                 </Button>
                 <NumberButtonInput value={value} onChange={onChange} />
               </div>
@@ -964,10 +967,10 @@ export const getPuckConfig = ({
           },
           href: {
             type: "text",
-            label: "Odnośnik",
+            label: t("link"),
             labelIcon: <LinkIcon className={PUCK_ICON_CLASSNAME} />,
           },
-          ...withLayout,
+          ...withLayout(t),
         },
         defaultProps: {
           src: "",
@@ -1023,11 +1026,11 @@ export const getPuckConfig = ({
     },
     categories: {
       typography: {
-        title: "Tekst",
+        title: t("text"),
         components: ["RichText"],
       },
       layout: {
-        title: "Układ",
+        title: t("layout"),
         components: [
           "TwoByOne",
           "ThreeByOne",
@@ -1039,12 +1042,12 @@ export const getPuckConfig = ({
         ],
       },
       media: {
-        title: "Media",
+        title: t("media"),
         components: ["Image", "Link", "LinkImage"],
       },
     },
     root: {
-      label: "Szablon",
+      label: t("template"),
       resolveFields: (data) => {
         const defaultFields: Record<
           keyof Omit<RootSettings, "triggerValue" | "triggerValue2">,
@@ -1052,14 +1055,14 @@ export const getPuckConfig = ({
         > = {
           name: {
             type: "text",
-            label: "Tytuł wiadomości",
+            label: t("subject"),
             labelIcon: <Mail className={PUCK_ICON_CLASSNAME} />,
           },
           backgroundColor: {
             type: "custom",
             render: ({ name, onChange, value }) => (
               <FieldLabel
-                label="Kolor tła"
+                label={t("backgroundColor")}
                 icon={<Palette className={PUCK_ICON_CLASSNAME} />}
               >
                 <ColorPicker
@@ -1073,7 +1076,7 @@ export const getPuckConfig = ({
           },
           trigger: {
             type: "custom",
-            label: "Wyzwalacz",
+            label: t("trigger"),
             labelIcon: <Zap className={PUCK_ICON_CLASSNAME} />,
             render: ({ name, onChange, value, field }) => {
               return (
@@ -1089,7 +1092,7 @@ export const getPuckConfig = ({
                     defaultValue={value}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Wybierz opcję" />
+                      <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
                       {EMAIL_TRIGGERS.map((trigger) => (
@@ -1101,11 +1104,11 @@ export const getPuckConfig = ({
                   </Select>
                   <div className="text-muted-foreground! mt-4 flex grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
                     <div className="flex items-center gap-2 text-xs">
-                      <Lightbulb className="size-4" /> Wyjaśnienie
+                      <Lightbulb className="size-4" /> {t("explanation")}
                     </div>
                     <p className="text-xs">
-                      {EMAIL_TRIGGERS.find((t) => t.value === value)
-                        ?.description ?? "Wybierz wyzwalacz..."}
+                      {EMAIL_TRIGGERS.find((tr) => tr.value === value)
+                        ?.description ?? t("selectTrigger")}
                     </p>
                   </div>
                 </>
@@ -1119,7 +1122,7 @@ export const getPuckConfig = ({
             ...defaultFields,
             triggerValue: {
               type: "select",
-              label: "Formularz",
+              label: t("form"),
               options: forms.map((form) => {
                 return { label: form.name, value: form.id };
               }),
@@ -1133,7 +1136,7 @@ export const getPuckConfig = ({
             ...defaultFields,
             triggerValue: {
               type: "select",
-              label: "Atrybut",
+              label: t("attribute"),
               options: attributes.map((attribute) => {
                 return { label: attribute.name, value: attribute.id };
               }),
@@ -1141,7 +1144,7 @@ export const getPuckConfig = ({
             },
             triggerValue2: {
               type: "text",
-              label: "Wartość",
+              label: t("value"),
               labelIcon: <Zap className={PUCK_ICON_CLASSNAME} />,
             },
           };
@@ -1149,7 +1152,7 @@ export const getPuckConfig = ({
 
         return defaultFields;
       },
-      defaultProps: rootDefaults,
+      defaultProps: { ...rootDefaults, name: t("newMessage") },
       render: ({ children, name, backgroundColor }) => {
         const eventImageUrl =
           eventData.photoUrl === ""
@@ -1165,13 +1168,13 @@ export const getPuckConfig = ({
               <div className="pointer-events-none flex min-h-12 items-center gap-2 py-2 text-xl text-black">
                 <p className="max-w-lg truncate text-2xl">{name}</p>
                 <div className="flex items-center gap-2 rounded-md bg-slate-200 p-1 text-xs">
-                  Odebrane <X className="size-3 stroke-3 align-middle" />
+                  {t("received")} <X className="size-3 stroke-3 align-middle" />
                 </div>
               </div>
               <div className="pointer-events-none flex items-center gap-2">
                 <Image
                   src={eventImageUrl}
-                  alt="Zdjęcie wydarzenia"
+                  alt={t("eventImage")}
                   className="aspect-square rounded-full bg-slate-200"
                   width={32}
                   height={32}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
@@ -19,12 +20,14 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string; emailId: string }>;
 }): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
+
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
 
   return {
-    title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
+    title: t("editing", { name: emailToEdit?.name ?? t("unnamedEmail") }),
   };
 }
 
@@ -33,6 +36,8 @@ export default async function EventMailEditPage({
 }: {
   params: Promise<{ id: string; emailId: string }>;
 }) {
+  const t = await getTranslations();
+
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
@@ -48,7 +53,9 @@ export default async function EventMailEditPage({
   const attributeTags = attributes.map((attribute): MessageTag => {
     return {
       title: getAttributeLabel(attribute.name, "pl"),
-      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
+      description: t("EventDetails.replacesWithParticipantAttributeValue", {
+        name: attribute.name,
+      }),
       // NOTE: Why 'attribute.slug' can be null?
       value: `/participant_${attribute.slug ?? ""}`,
       color: "brown",
@@ -59,7 +66,9 @@ export default async function EventMailEditPage({
   const formTags = forms.map((eventForm): MessageTag => {
     return {
       title: eventForm.name,
-      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
+      description: t("EventDetails.replacesWithPersonalizedFormLink", {
+        name: eventForm.name,
+      }),
       value: `/form_${eventForm.slug}`,
       color: "green",
       category: FORM_CATEGORY,
@@ -78,7 +87,7 @@ export default async function EventMailEditPage({
         mode: "update",
       }}
       eventData={{
-        name: event?.name ?? "Wydarzenie",
+        name: event?.name ?? t("Editor.event"),
         photoUrl: event?.photoUrl ?? "",
       }}
     />

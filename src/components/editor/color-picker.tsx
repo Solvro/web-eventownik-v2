@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -13,6 +15,7 @@ export function ColorPicker({
   name: string;
   allowDefault?: boolean;
 }) {
+  const t = useTranslations("Editor");
   const defaultValue = "inherit";
 
   return (
@@ -28,12 +31,10 @@ export function ColorPicker({
               }}
               size="sm"
             >
-              Ustawiony odgórnie
+              {t("inheritFromParent")}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            Element przybierze kolor ustawiony w elemencie nadrzędnym
-          </TooltipContent>
+          <TooltipContent>{t("inheritsColorFromParent")}</TooltipContent>
         </Tooltip>
       ) : null}
 

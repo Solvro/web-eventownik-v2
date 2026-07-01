@@ -28,6 +28,7 @@ import {
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateFormError } from "@/i18n/translate-form-error";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import {
   ATTRIBUTE_CATEGORY,
@@ -50,8 +51,10 @@ const EventEmailEditFormSchema = z
     ),
     triggerValue: z.string().optional(),
     triggerValue2: z.string().optional(),
-    name: z.string().nonempty({ message: "Tytuł nie może być pusty." }),
-    content: z.string().nonempty({ message: "Treść nie może być pusta." }),
+    name: z.string().nonempty({ message: "subjectRequired" }),
+    content: z.string().refine((value) => value.trim() !== "<p></p>", {
+      message: "bodyRequired",
+    }),
   })
   .refine(
     (data) => {
@@ -69,9 +72,12 @@ const EventEmailEditFormSchema = z
       return true;
     },
     {
-      message: "Wybrany wyzwalacz potrzebuje dodatkowej konfiguracji",
+      message: "triggerRequiresConfiguration",
+      path: ["triggerValue"],
     },
   );
+
+type EventEmailEditFormErrors = "subjectRequired" | "bodyRequired";
 
 function TriggerTypeExplanation({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
@@ -150,7 +156,6 @@ function TriggerConfigurationInputs({
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -351,9 +356,9 @@ function EventEmailEditForm({
         <div className="flex min-h-54 flex-col gap-4">
           <h2 className="font-semibold">{t("configureTrigger")}</h2>
           <FormMessage>
-            {Object.keys(form.formState.errors).length > 0
-              ? t("triggerRequiresConfiguration")
-              : ""}
+            {form.formState.errors.triggerValue == null
+              ? ""
+              : t("triggerRequiresConfiguration")}
           </FormMessage>
           <div className="flex flex-col gap-8">
             <TriggerConfigurationInputs
@@ -385,7 +390,13 @@ function EventEmailEditForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>{form.formState.errors.name?.message}</FormMessage>
+                <FormMessage>
+                  {translateFormError(
+                    t,
+                    form.formState.errors.name
+                      ?.message as EventEmailEditFormErrors,
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -408,7 +419,11 @@ function EventEmailEditForm({
                   placeholder={t("writeMessage")}
                 />
                 <FormMessage>
-                  {form.formState.errors.content?.message}
+                  {translateFormError(
+                    t,
+                    form.formState.errors.content
+                      ?.message as EventEmailEditFormErrors,
+                  )}
                 </FormMessage>
               </FormItem>
             )}

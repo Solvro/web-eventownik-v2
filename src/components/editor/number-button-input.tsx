@@ -1,4 +1,5 @@
 import { Minus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef } from "react";
 
 import { Button } from "../ui/button";
@@ -18,6 +19,8 @@ const ACCELERATION_THRESHOLD = 2000;
 const FAST_INTERVAL = 30;
 
 function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
+  const t = useTranslations("Editor");
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdStartRef = useRef<number>(0);
@@ -109,7 +112,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         onClick={(event) => {
           event.preventDefault();
         }}
-        aria-label="Zmniejsz"
+        aria-label={t("decrease")}
       >
         <Minus className="size-2" />
       </Button>
@@ -133,7 +136,7 @@ function NumberButtonInput({ onChange, name, value }: NumberButtonInputProps) {
         onClick={(event) => {
           event.preventDefault();
         }}
-        aria-label="Zwiększ"
+        aria-label={t("increase")}
       >
         <Plus className="size-2" />
       </Button>
