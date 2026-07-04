@@ -114,12 +114,14 @@ export const getPuckConfig = ({
   attributes,
   eventData,
   t,
+  tEmailTriggers,
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
   attributes: Pick<EventAttribute, "id" | "name">[];
   eventData: PuckEventData;
   t: ReturnType<typeof useTranslations>;
+  tEmailTriggers: ReturnType<typeof useTranslations<"EmailTriggers">>;
 }): PuckConfig => {
   return {
     components: {
@@ -1079,6 +1081,10 @@ export const getPuckConfig = ({
             label: t("trigger"),
             labelIcon: <Zap className={PUCK_ICON_CLASSNAME} />,
             render: ({ name, onChange, value, field }) => {
+              const currentTrigger = EMAIL_TRIGGERS.find(
+                (tr) => tr.value === value,
+              );
+
               return (
                 <>
                   <FieldLabel
@@ -1097,7 +1103,7 @@ export const getPuckConfig = ({
                     <SelectContent>
                       {EMAIL_TRIGGERS.map((trigger) => (
                         <SelectItem key={trigger.value} value={trigger.value}>
-                          {trigger.name}
+                          {tEmailTriggers(trigger.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1107,8 +1113,9 @@ export const getPuckConfig = ({
                       <Lightbulb className="size-4" /> {t("explanation")}
                     </div>
                     <p className="text-xs">
-                      {EMAIL_TRIGGERS.find((tr) => tr.value === value)
-                        ?.description ?? t("selectTrigger")}
+                      {currentTrigger?.description
+                        ? tEmailTriggers(currentTrigger.description)
+                        : t("selectTrigger")}
                     </p>
                   </div>
                 </>

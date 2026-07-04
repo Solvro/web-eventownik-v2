@@ -31,8 +31,17 @@ function Editor({
   eventData,
 }: BlockEditorProps) {
   const t = useTranslations("Editor");
+  const tEmailTriggers = useTranslations("EmailTriggers");
+
   const locale = useLocale();
-  const config = getPuckConfig({ tags, forms, attributes, eventData, t });
+  const config = getPuckConfig({
+    tags,
+    forms,
+    attributes,
+    eventData,
+    t,
+    tEmailTriggers,
+  });
 
   return (
     <Puck

@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { ArrowRight, Lightbulb, Zap } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
 import { FormContainer } from "@/components/forms/form-container";
+import { TriggerTypeExplanation } from "@/components/trigger-type-explanation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -61,24 +62,6 @@ const EventEmailTemplateTriggerTypeSchema = z
       message: "triggerRequiresConfiguration",
     },
   );
-
-function TriggerTypeExplanation({ trigger }: { trigger: string }) {
-  const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
-  const t = useTranslations("EventDetails");
-
-  if (target === undefined) {
-    return null;
-  }
-
-  return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
-      <div className="flex items-center gap-2">
-        <Lightbulb className="size-4" /> {t("explanation")}
-      </div>
-      <p className="text-sm">{target.description}</p>
-    </div>
-  );
-}
 
 function TriggerConfigurationInputs({
   // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
@@ -206,6 +189,8 @@ function TriggerTypeForm({
   goToNextStep: () => void;
 }) {
   const t = useTranslations("EventDetails");
+  const tEmailTriggers = useTranslations("EmailTriggers");
+
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
   );
@@ -229,7 +214,7 @@ function TriggerTypeForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
           <h2 className="font-semibold">{t("chooseTriggerType")}</h2>
-          <div className="flex justify-between">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row">
             <FormField
               control={form.control}
               name="trigger"
@@ -239,7 +224,7 @@ function TriggerTypeForm({
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex w-50 max-w-full flex-col space-y-1"
                     >
                       {EMAIL_TRIGGERS.map((trigger) => (
                         <FormItem
@@ -254,7 +239,7 @@ function TriggerTypeForm({
                               }}
                             />
                           </FormControl>
-                          <FormLabel>{trigger.name}</FormLabel>
+                          <FormLabel>{tEmailTriggers(trigger.name)}</FormLabel>
                         </FormItem>
                       ))}
                     </RadioGroup>

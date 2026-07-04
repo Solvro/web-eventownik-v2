@@ -313,6 +313,18 @@
     "date": "Data",
     "time": "Godzina"
   },
+  "EmailTriggers": {
+    "participantRegistration": "Rejestracja uczestnika",
+    "participantRegistrationDesc": "Ten szablon zostanie automatycznie wysłany do uczestnika po jego rejestracji na wydarzenie.",
+    "participantRemoval": "Usunięcie uczestnika",
+    "participantRemovalDesc": "Ten szablon zostanie automatycznie wysłany do uczestnika po jego usunięciu z listy uczestników.",
+    "formSubmission": "Wypełnienie formularza",
+    "formSubmissionDesc": "Ten szablon zostanie automatycznie wysłany do uczestnika po wypełnieniu określonego formularza.",
+    "attributeChange": "Zmiana atrybutu",
+    "attributeChangeDesc": "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie na podaną wartość.",
+    "manual": "Manualny",
+    "manualDesc": "Ten szablon nie jest wysyłany automatycznie i służy do ręcznej wysyłki z poziomu listy uczestników. Szablony z pozostałymi wyzwalaczami również mogą zostać wysłane manualnie."
+  },
   "Event": {
     "notFound": "Nie znaleziono wydarzenia 😪",
     "formNotFound": "Nie znaleziono formularza 😪",

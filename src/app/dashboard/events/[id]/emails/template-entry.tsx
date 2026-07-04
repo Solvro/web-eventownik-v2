@@ -11,12 +11,13 @@ import { MailHistoryPopup } from "./mail-history-popup";
 
 function EmailTriggerLabel({ trigger }: { trigger: string }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EmailTriggers");
 
   if (target === undefined) {
     return null;
   }
 
-  return <p className="text-muted-foreground">{target.name}</p>;
+  return <p className="text-muted-foreground">{t(target.name)}</p>;
 }
 
 function EmailTemplateEntry({

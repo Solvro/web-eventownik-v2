@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightbulb, Loader, Save, Text, Zap } from "lucide-react";
+import { Loader, Save, Text, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { WysiwygEditor } from "@/components/editor";
+import { TriggerTypeExplanation } from "@/components/trigger-type-explanation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -78,24 +79,6 @@ const EventEmailEditFormSchema = z
   );
 
 type EventEmailEditFormErrors = "subjectRequired" | "bodyRequired";
-
-function TriggerTypeExplanation({ trigger }: { trigger: string }) {
-  const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
-  const t = useTranslations("EventDetails");
-
-  if (target === undefined) {
-    return null;
-  }
-
-  return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-(--event-primary-color)/25 p-4">
-      <div className="flex items-center gap-2">
-        <Lightbulb className="size-4" /> {t("explanation")}
-      </div>
-      <p className="text-sm">{target.description}</p>
-    </div>
-  );
-}
 
 function TriggerConfigurationInputs({
   // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
@@ -228,6 +211,7 @@ function EventEmailEditForm({
   emailToEdit: SingleEventEmail;
 }) {
   const t = useTranslations("EventDetails");
+  const tEmailTr = useTranslations("EmailTriggers");
 
   const form = useForm<z.infer<typeof EventEmailEditFormSchema>>({
     resolver: zodResolver(EventEmailEditFormSchema),
@@ -315,7 +299,7 @@ function EventEmailEditForm({
           <h2>{t("trigger")}</h2>
         </div>
         <h3 className="font-semibold">{t("chooseTriggerType")}</h3>
-        <div className="flex justify-between">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row">
           <FormField
             control={form.control}
             name="trigger"
@@ -325,7 +309,7 @@ function EventEmailEditForm({
                   <RadioGroup
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    className="flex flex-col space-y-1"
+                    className="flex w-50 max-w-full flex-col space-y-1"
                   >
                     {EMAIL_TRIGGERS.map((trigger) => (
                       <FormItem
@@ -340,7 +324,7 @@ function EventEmailEditForm({
                             }}
                           />
                         </FormControl>
-                        <FormLabel>{trigger.name}</FormLabel>
+                        <FormLabel>{tEmailTr(trigger.name)}</FormLabel>
                       </FormItem>
                     ))}
                   </RadioGroup>

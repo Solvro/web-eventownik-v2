@@ -313,6 +313,18 @@
     "date": "Date",
     "time": "Time"
   },
+  "EmailTriggers": {
+    "participantRegistration": "Participant registration",
+    "participantRegistrationDesc": "This template will be automatically sent to the participant after they register for the event.",
+    "participantRemoval": "Participant removal",
+    "participantRemovalDesc": "This template will be automatically sent to the participant after they are removed from the participant list.",
+    "formSubmission": "Form submission",
+    "formSubmissionDesc": "This template will be automatically sent to the participant after completing a specific form.",
+    "attributeChange": "Attribute change",
+    "attributeChangeDesc": "This template will be automatically sent to the participant when a specific attribute changes to the specified value.",
+    "manual": "Manual",
+    "manualDesc": "This template is not sent automatically and is used for manual sending from the participant list. Templates with other triggers can also be sent manually."
+  },
   "Event": {
     "notFound": "Event not found 😪",
     "formNotFound": "Form not found 😪",
