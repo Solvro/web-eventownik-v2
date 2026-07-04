@@ -9,9 +9,13 @@ import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
-export const metadata: Metadata = {
-  title: "Ustawienia",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Sidebar");
+
+  return {
+    title: t("settings"),
+  };
+}
 
 export default async function DashboardEventSettingsPage({
   params,

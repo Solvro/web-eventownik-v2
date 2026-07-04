@@ -432,7 +432,21 @@
     "blockNameRequired": "Nazwa bloku jest wymagana",
     "blockCapacityMustBeGreaterThanZero": "Pojemność bloku musi być większa niż 0",
     "subjectRequired": "Tytuł nie może być pusty",
-    "bodyRequired": "Treść nie może być pusta"
+    "bodyRequired": "Treść nie może być pusta",
+    "nameRequired": "Nazwa jest wymagana",
+    "descriptionRequired": "Opis jest wymagany",
+    "startTimeRequired": "Godzina rozpoczęcia nie może być pusta",
+    "endTimeRequired": "Godzina zakończenia nie może być pusta",
+    "attributeNameRequired": "Nazwa atrybutu nie może być pusta",
+    "attributeNameExists": "Atrybut o tej nazwie już istnieje",
+    "sensitiveDataReasonRequired": "Powód jest wymagany dla danych wrażliwych",
+    "termsUrlInvalid": "Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'",
+    "invalidUrl": "Nieprawidłowy URL",
+    "slugMinLength": "Slug musi mieć co najmniej 3 znaki",
+    "slugInvalid": "Tylko małe litery, cyfry i myślniki",
+    "eventSlugExample": "twoje-wydarzenie",
+    "invalidEmail": "Nieprawidłowy adres email",
+    "endDateBeforeStartDate": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
   },
   "Export": {
     "failed": "Eksport nie powiódł się!",

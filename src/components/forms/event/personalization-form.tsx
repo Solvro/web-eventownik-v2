@@ -16,30 +16,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { translateFormError } from "@/i18n/translate-form-error";
 import { cn } from "@/lib/utils";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
+export type EventPersonalizationFormErrors =
+  | "termsUrlInvalid"
+  | "invalidUrl"
+  | "slugMinLength"
+  | "slugInvalid";
+
 export const EventPersonalizationFormSchema = z.object({
   photoUrl: z.string().nullish(),
   primaryColor: z.string().nullable(),
   participantsNumber: z.coerce.number().min(1),
-  termsLink: z
-    .string()
-    .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
-    .optional()
-    .or(z.literal("")),
+  termsLink: z.string().url("termsUrlInvalid").optional().or(z.literal("")),
   socialMediaLinks: z.array(
     z.object({
       label: z.string().optional(),
-      link: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+      link: z.string().url("invalidUrl").or(z.literal("")),
     }),
   ),
   slug: z
     .string()
-    .min(3, "Slug musi mieć co najmniej 3 znaki")
-    .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
+    .min(3, "slugMinLength")
+    .regex(/^[a-z0-9-]+$/, "slugInvalid"),
 });
 
 export function PersonalizationForm({ className }: { className?: string }) {
@@ -193,7 +196,11 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {formState.errors.termsLink?.message}
+                  {translateFormError(
+                    t,
+                    formState.errors.termsLink
+                      ?.message as EventPersonalizationFormErrors,
+                  )}
                 </FormMessage>
               </FormItem>
             )}
@@ -290,10 +297,18 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 </span>
               </FormLabel>
               <FormControl>
-                <Input type="text" placeholder="twoje-wydarzenie" {...field} />
+                <Input
+                  type="text"
+                  placeholder={t("eventSlugExample")}
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {formState.errors.slug?.message}
+                {translateFormError(
+                  t,
+                  formState.errors.slug
+                    ?.message as EventPersonalizationFormErrors,
+                )}
               </FormMessage>
             </FormItem>
           )}

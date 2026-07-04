@@ -15,18 +15,35 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { translateFormError } from "@/i18n/translate-form-error";
 import { cn } from "@/lib/utils";
 
-export const EventFormGeneralInfoSchema = z.object({
-  name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
-  description: z.string().nonempty({ message: "Opis jest wymagany" }),
-  startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-  startDate: z.date(),
-  endDate: z.date(),
-  isFirstForm: z.boolean().default(false),
-  isOpen: z.boolean().default(true),
-}); /* 
+export type EventFormGeneralInfoErrors =
+  | "nameRequired"
+  | "descriptionRequired"
+  | "startTimeRequired"
+  | "endTimeRequired";
+
+export const EventFormGeneralInfoSchema = z
+  .object({
+    name: z.string().nonempty({ message: "nameRequired" }),
+    description: z.string(),
+    startTime: z.string().nonempty("startTimeRequired"),
+    endTime: z.string().nonempty("endTimeRequired"),
+    startDate: z.date(),
+    endDate: z.date(),
+    isFirstForm: z.boolean().default(false),
+    isOpen: z.boolean().default(true),
+  })
+  .refine(
+    ({ isFirstForm, description }) =>
+      isFirstForm || description.trim() !== "<p></p>",
+    {
+      path: ["description"],
+      message: "descriptionRequired",
+    },
+  );
+/* 
   .refine(
     (schema) => {
       const startDate = new Date(schema.startDate);
@@ -73,7 +90,12 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                 {...field}
               />
             </FormControl>
-            <FormMessage>{formState.errors.name?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateFormError(
+                t,
+                formState.errors.name?.message as EventFormGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />
@@ -215,7 +237,13 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               disabled={watch("isFirstForm")}
               placeholder={t("enterFormDescr")}
             />
-            <FormMessage>{formState.errors.description?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateFormError(
+                t,
+                formState.errors.description
+                  ?.message as EventFormGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />

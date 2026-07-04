@@ -6,9 +6,13 @@ import { CreateEventFormForm } from "./create-event-form-form";
 import { getEventAttributes, getEventForms } from "./data-access";
 import { SortableFormGrid } from "./sortable-form-grid";
 
-export const metadata: Metadata = {
-  title: "Formularze",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Sidebar");
+
+  return {
+    title: t("forms"),
+  };
+}
 
 export default async function DashboardEventFormsPage({
   params,

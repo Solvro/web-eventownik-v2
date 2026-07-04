@@ -207,7 +207,7 @@ function MessageContentForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>
+                <FormMessage className="text-sm text-red-500">
                   {translateFormError(
                     t,
                     form.formState.errors.name
@@ -235,7 +235,7 @@ function MessageContentForm({
                   isEmailEditor
                   placeholder={t("writeMessage")}
                 />
-                <FormMessage>
+                <FormMessage className="text-sm text-red-500">
                   {translateFormError(
                     t,
                     form.formState.errors.content

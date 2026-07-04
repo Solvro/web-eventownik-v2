@@ -432,7 +432,21 @@
     "blockNameRequired": "Block name is required",
     "blockCapacityMustBeGreaterThanZero": "Block capacity must be greater than 0",
     "subjectRequired": "Subject cannot be empty",
-    "bodyRequired": "Body cannot be empty"
+    "bodyRequired": "Body cannot be empty",
+    "nameRequired": "Name is required",
+    "descriptionRequired": "Description is required",
+    "startTimeRequired": "Start time is required",
+    "endTimeRequired": "End time is required",
+    "attributeNameRequired": "Attribute name is required",
+    "attributeNameExists": "An attribute with this name already exists",
+    "sensitiveDataReasonRequired": "A reason is required for sensitive data",
+    "termsUrlInvalid": "Enter a valid terms and conditions URL, including 'https://'",
+    "invalidUrl": "Invalid URL",
+    "slugMinLength": "Slug must be at least 3 characters long",
+    "slugInvalid": "Only lowercase letters, numbers, and hyphens are allowed",
+    "eventSlugExample": "your-event",
+    "invalidEmail": "Invalid email address",
+    "endDateBeforeStartDate": "End date cannot be earlier than the start date"
   },
   "Export": {
     "failed": "Export failed!",

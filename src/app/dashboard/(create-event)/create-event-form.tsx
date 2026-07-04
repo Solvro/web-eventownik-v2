@@ -271,7 +271,7 @@ export function CreateEventForm() {
 
             setTimeout(() => {
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              router.push(`/dashboard/event/${result.id}`);
+              router.push(`/dashboard/events/${result.id}`);
             }, 200);
           }
         } catch {

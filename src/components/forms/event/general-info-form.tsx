@@ -22,23 +22,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { translateFormError } from "@/i18n/translate-form-error";
 import { cn } from "@/lib/utils";
+
+export type EventGeneralInfoErrors =
+  | "nameRequired"
+  | "startTimeRequired"
+  | "endTimeRequired"
+  | "endDateBeforeStartDate"
+  | "invalidEmail";
 
 export const EventGeneralInfoSchema = z
   .object({
-    name: z.string().nonempty("Nazwa nie może być pusta"),
+    name: z.string().nonempty("nameRequired"),
     description: z.string().optional(),
     startDate: z.date(),
-    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta"),
+    startTime: z.string().nonempty("startTimeRequired"),
     endDate: z.date(),
-    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta"),
+    endTime: z.string().nonempty("endTimeRequired"),
     location: z.string().optional(),
     organizer: z.string().optional(),
-    contactEmail: z
-      .string()
-      .email("Nieprawidłowy adres email")
-      .or(z.literal(""))
-      .optional(),
+    contactEmail: z.string().email("invalidEmail").or(z.literal("")).optional(),
   })
   .refine(
     (data) => {
@@ -53,8 +57,7 @@ export const EventGeneralInfoSchema = z
       return startDateTime <= endDateTime;
     },
     {
-      message:
-        "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia",
+      message: "endDateBeforeStartDate",
       path: ["endDate"],
     },
   );
@@ -81,7 +84,10 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.name?.message}
+              {translateFormError(
+                t,
+                formState.errors.name?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -101,7 +107,10 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.location?.message}
+              {translateFormError(
+                t,
+                formState.errors.location?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -158,10 +167,16 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.startDate?.message}
+            {translateFormError(
+              t,
+              formState.errors.startDate?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.startTime?.message}
+            {translateFormError(
+              t,
+              formState.errors.startTime?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
         </div>
         <div className="space-y-2">
@@ -221,10 +236,16 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.endDate?.message}
+            {translateFormError(
+              t,
+              formState.errors.endDate?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.endTime?.message}
+            {translateFormError(
+              t,
+              formState.errors.endTime?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
         </div>
       </div>
@@ -243,7 +264,10 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.organizer?.message}
+              {translateFormError(
+                t,
+                formState.errors.organizer?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -264,7 +288,11 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.contactEmail?.message}
+              {translateFormError(
+                t,
+                formState.errors.contactEmail
+                  ?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -282,7 +310,12 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               editorClassName="min-h-[150px] h-full"
               placeholder={t("eventDescrPlaceholder")}
             />
-            <FormMessage>{formState.errors.description?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateFormError(
+                t,
+                formState.errors.description?.message as EventGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />

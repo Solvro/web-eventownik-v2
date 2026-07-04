@@ -32,10 +32,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { translateFormError } from "@/i18n/translate-form-error";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
-import type { EventAttributesFormSchema } from "./schema";
+import type {
+  EventAttributesFormErrors,
+  EventAttributesFormSchema,
+} from "./schema";
 import { SortableOption } from "./sortable-option";
 import type { AttributeItemProps, NewEventAttribute } from "./types";
 
@@ -133,8 +137,12 @@ export function AttributeItem({
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
           />
-          <FormMessage>
-            {formState.errors.attributes?.[index]?.name?.message}
+          <FormMessage className="text-sm text-red-500">
+            {translateFormError(
+              t,
+              formState.errors.attributes?.[index]?.name
+                ?.message as EventAttributesFormErrors,
+            )}
           </FormMessage>
         </div>
 
@@ -239,8 +247,12 @@ export function AttributeItem({
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
           />
-          <FormMessage>
-            {formState.errors.attributes?.[index]?.reason?.message}
+          <FormMessage className="text-sm text-red-500">
+            {translateFormError(
+              t,
+              formState.errors.attributes?.[index]?.reason
+                ?.message as EventAttributesFormErrors,
+            )}
           </FormMessage>
         </div>
       ) : null}
@@ -361,8 +373,12 @@ export function AttributeItem({
               type="number"
               className="[appearance:textfield]"
             />
-            <FormMessage>
-              {formState.errors.attributes?.[index]?.maxSelections?.message}
+            <FormMessage className="text-sm text-red-500">
+              {translateFormError(
+                t,
+                formState.errors.attributes?.[index]?.maxSelections
+                  ?.message as EventAttributesFormErrors,
+              )}
             </FormMessage>
           </div>
         )}

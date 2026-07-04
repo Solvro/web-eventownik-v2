@@ -355,7 +355,7 @@ function EventEmailEditForm({
         <div className="bg-muted/25 h-px w-full" />
         <div className="flex min-h-54 flex-col gap-4">
           <h2 className="font-semibold">{t("configureTrigger")}</h2>
-          <FormMessage>
+          <FormMessage className="text-sm text-red-500">
             {form.formState.errors.triggerValue == null
               ? ""
               : t("triggerRequiresConfiguration")}
@@ -390,7 +390,7 @@ function EventEmailEditForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>
+                <FormMessage className="text-sm text-red-500">
                   {translateFormError(
                     t,
                     form.formState.errors.name
@@ -418,7 +418,7 @@ function EventEmailEditForm({
                   isEmailEditor
                   placeholder={t("writeMessage")}
                 />
-                <FormMessage>
+                <FormMessage className="text-sm text-red-500">
                   {translateFormError(
                     t,
                     form.formState.errors.content
