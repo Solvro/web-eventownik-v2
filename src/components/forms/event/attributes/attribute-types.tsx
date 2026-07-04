@@ -20,14 +20,14 @@ import type { JSX } from "react";
 
 import type { AttributeType } from "@/types/attributes";
 
-export type AttributeTypesKeys = Parameters<
+type AttributeTypesKeys = Parameters<
   ReturnType<typeof useTranslations<"AttributeTypes">>
 >[0];
 
 export const ATTRIBUTE_TYPES: {
   value: AttributeType;
-  title: string;
-  description?: string;
+  title: AttributeTypesKeys;
+  description?: AttributeTypesKeys;
   icon: JSX.Element;
 }[] = [
   {

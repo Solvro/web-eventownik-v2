@@ -1,7 +1,6 @@
 import { useTranslations } from "next-intl";
 
 import { ATTRIBUTE_TYPES } from "@/components/forms/event/attributes/attribute-types";
-import type { AttributeTypesKeys } from "@/components/forms/event/attributes/attribute-types";
 import { SelectItem } from "@/components/ui/select";
 import {
   Tooltip,
@@ -19,13 +18,13 @@ export function AttributeTypeOptions() {
           <div className="flex items-center gap-2">
             {type.icon}
             <span className="overflow-x-hidden text-ellipsis">
-              {t(type.title as AttributeTypesKeys)}
+              {t(type.title)}
             </span>
           </div>
         </SelectItem>
       </TooltipTrigger>
       <TooltipContent side="left" className="pointer-coarse:hidden">
-        <p>{t((type.description ?? type.title) as AttributeTypesKeys)}</p>
+        <p>{t(type.description ?? type.title)}</p>
       </TooltipContent>
     </Tooltip>
   ));
