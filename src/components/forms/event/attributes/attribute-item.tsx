@@ -156,7 +156,7 @@ export function AttributeItem({
           <SelectTrigger className="w-45">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-62">
             <AttributeTypeOptions />
           </SelectContent>
         </Select>
