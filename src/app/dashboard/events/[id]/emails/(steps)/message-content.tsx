@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { ArrowLeft, Loader, SquarePlus, TextIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -87,6 +87,7 @@ function MessageContentForm({
 }) {
   const t = useTranslations("EventDetails");
   const tMessageTags = useTranslations("MessageTags");
+  const locale = useLocale();
 
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
@@ -202,6 +203,7 @@ function MessageContentForm({
                   </span>
                 </FormLabel>
                 <WysiwygEditor
+                  key={locale}
                   content={form.getValues("content")}
                   onChange={field.onChange}
                   extensions={setupSuggestions(

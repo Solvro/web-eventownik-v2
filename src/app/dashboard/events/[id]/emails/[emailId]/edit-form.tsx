@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Save, Text, Zap } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -221,6 +221,7 @@ function EventEmailEditForm({
     },
   });
   const { toast } = useToast();
+  const locale = useLocale();
 
   const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
     form.formState.isDirty,
@@ -368,6 +369,7 @@ function EventEmailEditForm({
                   </span>
                 </FormLabel>
                 <WysiwygEditor
+                  key={locale}
                   content={form.getValues("content")}
                   onChange={field.onChange}
                   extensions={setupSuggestions(

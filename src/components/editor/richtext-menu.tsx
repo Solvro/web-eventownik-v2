@@ -192,6 +192,7 @@ function AlignmentDropdown({ editor, activeState }: ButtonSetProps) {
 
 function TagButtons({ editor }: ButtonSetProps) {
   const t = useTranslations("Editor");
+  const tMessageTags = useTranslations("MessageTags");
 
   return (
     <>
@@ -216,7 +217,11 @@ function TagButtons({ editor }: ButtonSetProps) {
             size="icon"
             type="button"
             onClick={() =>
-              editor?.chain().focus().insertContent("/formularz").run()
+              editor
+                ?.chain()
+                .focus()
+                .insertContent(`/${tMessageTags("form").toLowerCase()}`)
+                .run()
             }
             variant="eventGhost"
             className="size-7"
@@ -233,7 +238,11 @@ function TagButtons({ editor }: ButtonSetProps) {
             size="icon"
             type="button"
             onClick={() =>
-              editor?.chain().focus().insertContent("/atrybut").run()
+              editor
+                ?.chain()
+                .focus()
+                .insertContent(`/${tMessageTags("attribute").toLowerCase()}`)
+                .run()
             }
             variant="eventGhost"
             className="size-7"

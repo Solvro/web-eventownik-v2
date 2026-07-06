@@ -648,6 +648,15 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
+  "MainMetadata": {
+    "title": "Eventownik - event organization",
+    "description": "Eventownik is a solution supporting event organization, with a particular focus on the activities of Wroclaw University of Science and Technology.",
+    "keywords": {
+      "events": "events",
+      "wust": "Wroclaw University of Science and Technology",
+      "eventOrganization": "event organization"
+    }
+  },
   "MessageTags": {
     "eventName": "Event name",
     "eventNameDesc": "Replaced with the actual event name",
@@ -664,7 +673,8 @@
     "attribute": "Attribute",
     "form": "Form",
     "attributeItemDesc": "Replaces with the participant attribute value ''{name}''",
-    "formItemDesc": "Replaces with a personalized link to the form ''{name}''"
+    "formItemDesc": "Replaces with a personalized link to the form ''{name}''",
+    "noResults": "No results"
   },
   "SendMail": {
     "selectTemplate": "Select a template",

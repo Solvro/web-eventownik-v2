@@ -648,6 +648,15 @@
     "openMenu": "Otwórz menu",
     "closeMenu": "Zamknij menu"
   },
+  "MainMetadata": {
+    "title": "Eventownik - organizacja wydarzeń",
+    "description": "Eventownik to rozwiązanie służące wspomaganiu organizacji wydarzeń, ze szczególnym uwzględnieniem działalności Politechniki Wrocławskiej.",
+    "keywords": {
+      "events": "wydarzenia",
+      "wust": "politechnika wrocławska",
+      "eventOrganization": "organizacja wydarzeń"
+    }
+  },
   "MessageTags": {
     "eventName": "Nazwa wydarzenia",
     "eventNameDesc": "Zamienia się w prawdziwą nazwę wydarzenia",
@@ -664,7 +673,8 @@
     "attribute": "Atrybut",
     "form": "Formularz",
     "attributeItemDesc": "Zamienia się w wartość atrybutu ''{name}'' uczestnika",
-    "formItemDesc": "Zamienia się w spersonalizowany link do formularza ''{name}''"
+    "formItemDesc": "Zamienia się w spersonalizowany link do formularza ''{name}''",
+    "noResults": "Brak wyników"
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",
