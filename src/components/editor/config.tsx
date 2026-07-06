@@ -31,8 +31,8 @@ import {
   rootDefaults,
 } from "@/lib/editor";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import { setupSuggestions } from "@/lib/extensions/tags";
-import type { MessageTag } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/message-tags";
+import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
@@ -115,13 +115,15 @@ export const getPuckConfig = ({
   eventData,
   t,
   tEmailTriggers,
+  tMessageTags,
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "id" | "name">[];
   attributes: Pick<EventAttribute, "id" | "name">[];
   eventData: PuckEventData;
-  t: ReturnType<typeof useTranslations>;
+  t: ReturnType<typeof useTranslations<"Editor">>;
   tEmailTriggers: ReturnType<typeof useTranslations<"EmailTriggers">>;
+  tMessageTags: ReturnType<typeof useTranslations<"MessageTags">>;
 }): PuckConfig => {
   return {
     components: {
@@ -148,7 +150,7 @@ export const getPuckConfig = ({
                   },
                 }),
                 Placeholder.configure({ placeholder: t("startTyping") }),
-                ...setupSuggestions([...tags]),
+                ...setupSuggestions([...tags], tMessageTags),
               ],
             },
             // NOTE: Hides the inline menu and the action bar separator

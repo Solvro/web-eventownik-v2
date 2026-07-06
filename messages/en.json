@@ -460,8 +460,6 @@
     "triggerRequiresConfiguration": "The selected trigger requires additional configuration. Please fill in all the fields below",
     "templateSaved": "Template changes have been saved",
     "templateSaveFailed": "Failed to save template changes!",
-    "replacesWithParticipantAttributeValue": "Replaces with the participant attribute value ''{name}''",
-    "replacesWithPersonalizedFormLink": "Replaces with a personalized link to the form ''{name}''",
     "explanation": "Explanation",
     "triggerNoAdditionalConfiguration": "This trigger does not require additional configuration",
     "form": "Form",
@@ -649,6 +647,24 @@
     "registrationManagementDescr": "Choose how registered participants are displayed\u00A0— anonymously, by full name, or using a custom attribute.",
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
+  },
+  "MessageTags": {
+    "eventName": "Event name",
+    "eventNameDesc": "Replaced with the actual event name",
+    "eventStartDate": "Start date",
+    "eventStartDateDesc": "Replaced with the event start date",
+    "eventEndDate": "End date",
+    "eventEndDateDesc": "Replaced with the event end date",
+    "participantEmail": "Participant email",
+    "participantEmailDesc": "Replaced with the participant's email address",
+    "registrationDate": "Registration date",
+    "registrationDateDesc": "Replaced with the date the participant registered for the event",
+    "event": "Event",
+    "participant": "Participant",
+    "attribute": "Attribute",
+    "form": "Form",
+    "attributeItemDesc": "Replaces with the participant attribute value ''{name}''",
+    "formItemDesc": "Replaces with a personalized link to the form ''{name}''"
   },
   "SendMail": {
     "selectTemplate": "Select a template",

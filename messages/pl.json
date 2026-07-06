@@ -460,8 +460,6 @@
     "triggerRequiresConfiguration": "Wybrany wyzwalacz wymaga dodatkowej konfiguracji. Wypełnij wszystkie poniższe pola",
     "templateSaved": "Zapisano zmiany w szablonie",
     "templateSaveFailed": "Nie udało się zapisać zmian w szablonie!",
-    "replacesWithParticipantAttributeValue": "Zamienia się w wartość atrybutu ''{name}'' uczestnika",
-    "replacesWithPersonalizedFormLink": "Zamienia się w spersonalizowany link do formularza ''{name}''",
     "explanation": "Wyjaśnienie",
     "triggerNoAdditionalConfiguration": "Ten wyzwalacz nie wymaga dodatkowej konfiguracji",
     "form": "Formularz",
@@ -649,6 +647,24 @@
     "registrationManagementDescr": "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca\u00A0— anonimowo, imię i nazwisko, a może nawet inny atrybut.",
     "openMenu": "Otwórz menu",
     "closeMenu": "Zamknij menu"
+  },
+  "MessageTags": {
+    "eventName": "Nazwa wydarzenia",
+    "eventNameDesc": "Zamienia się w prawdziwą nazwę wydarzenia",
+    "eventStartDate": "Data rozpoczęcia",
+    "eventStartDateDesc": "Zamienia się w datę rozpoczęcia wydarzenia",
+    "eventEndDate": "Data zakończenia",
+    "eventEndDateDesc": "Zamienia się w datę zakończenia wydarzenia",
+    "participantEmail": "Email uczestnika",
+    "participantEmailDesc": "Zamienia się w email uczestnika",
+    "registrationDate": "Data rejestracji",
+    "registrationDateDesc": "Zamienia się w datę zarejestrowania się uczestnika na wydarzenie",
+    "event": "Wydarzenie",
+    "participant": "Uczestnik",
+    "attribute": "Atrybut",
+    "form": "Formularz",
+    "attributeItemDesc": "Zamienia się w wartość atrybutu ''{name}'' uczestnika",
+    "formItemDesc": "Zamienia się w spersonalizowany link do formularza ''{name}''"
   },
   "SendMail": {
     "selectTemplate": "Wybierz szablon",

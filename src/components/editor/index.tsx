@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
 import { createOverrides } from "@/components/editor/overrides";
-import type { MessageTag } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/message-tags";
 import type { EventAttribute } from "@/types/attributes";
 import type { PuckData, PuckEventData, PuckMutationData } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
@@ -32,6 +32,7 @@ function Editor({
 }: BlockEditorProps) {
   const t = useTranslations("Editor");
   const tEmailTriggers = useTranslations("EmailTriggers");
+  const tMessageTags = useTranslations("MessageTags");
 
   const locale = useLocale();
   const config = getPuckConfig({
@@ -41,6 +42,7 @@ function Editor({
     eventData,
     t,
     tEmailTriggers,
+    tMessageTags,
   });
 
   return (

@@ -3,7 +3,7 @@
 import type { SuggestionProps } from "@tiptap/suggestion";
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
-import type { MessageTag } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/message-tags";
 import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "./ui/scroll-area";

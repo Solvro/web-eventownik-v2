@@ -9,102 +9,11 @@ import type {
   SuggestionOptions,
   SuggestionProps,
 } from "@tiptap/suggestion";
-import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
+import type { useTranslations } from "next-intl";
 
 import { TagsList } from "@/components/tags-list";
-import type { LooseAutocomplete } from "@/types/utils";
 
-type MessageTagColor = LooseAutocomplete<
-  | "red"
-  | "orange"
-  | "yellow"
-  | "green"
-  | "teal"
-  | "blue"
-  | "indigo"
-  | "purple"
-  | "pink"
-  | "brown"
->;
-
-interface MessageTagCategory {
-  title: string;
-  searchBy: string[];
-  icon: React.ReactNode;
-}
-
-export interface MessageTag {
-  title: string;
-  description: string;
-  value: string;
-  color: MessageTagColor;
-  category?: MessageTagCategory;
-}
-
-const CATEGORY_ICON_CLASSNAME = "size-4";
-
-const EVENT_CATEGORY: MessageTagCategory = {
-  title: "Wydarzenie",
-  searchBy: ["wydarzenie"],
-  icon: <Calendar className={CATEGORY_ICON_CLASSNAME} />,
-};
-
-const PARTICIPANT_CATEGORY: MessageTagCategory = {
-  title: "Uczestnik",
-  searchBy: ["uczestnik"],
-  icon: <User className={CATEGORY_ICON_CLASSNAME} />,
-};
-
-export const ATTRIBUTE_CATEGORY: MessageTagCategory = {
-  title: "Atrybut",
-  searchBy: ["atrybut"],
-  icon: <Tag className={CATEGORY_ICON_CLASSNAME} />,
-};
-
-export const FORM_CATEGORY: MessageTagCategory = {
-  title: "Formularz",
-  searchBy: ["formularz"],
-  icon: <FileSpreadsheet className={CATEGORY_ICON_CLASSNAME} />,
-};
-
-const MESSAGE_TAGS: MessageTag[] = [
-  {
-    title: "Nazwa wydarzenia",
-    description: "Zamienia się w prawdziwą nazwę wydarzenia",
-    value: "/event_name",
-    color: "red",
-    category: EVENT_CATEGORY,
-  },
-  {
-    title: "Data rozpoczęcia",
-    description: "Zamienia się w datę rozpoczęcia wydarzenia",
-    value: "/event_start_date",
-    color: "orange",
-    category: EVENT_CATEGORY,
-  },
-  {
-    title: "Data zakończenia",
-    description: "Zamienia się w datę zakończenia wydarzenia",
-    value: "/event_end_date",
-    color: "yellow",
-    category: EVENT_CATEGORY,
-  },
-  {
-    title: "Email uczestnika",
-    description: "Zamienia się w email uczestnika",
-    value: "/participant_email",
-    color: "blue",
-    category: PARTICIPANT_CATEGORY,
-  },
-  {
-    title: "Data rejestracji",
-    description:
-      "Zamienia się w datę zarejestrowania się uczestnika na wydarzenie",
-    value: "/participant_created_at",
-    color: "pink",
-    category: PARTICIPANT_CATEGORY,
-  },
-];
+import { MessageTag, getMessageTags, getTagStyle } from ".";
 
 /**
  * NOTE: This function assumes that the TipTap editor with Tags extensions mounted is located in a Puck editor instance
@@ -203,6 +112,28 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
 
           popup = component.element;
 
+          const destroy = () => {
+            activePopupEditor = null;
+            popup?.remove();
+            component?.destroy();
+
+            props.editor.off("blur", handleBlur);
+            document.removeEventListener("mousedown", handleClickOutside);
+          };
+
+          const handleBlur = () => {
+            destroy();
+          };
+
+          const handleClickOutside = (e: MouseEvent) => {
+            if (!props.editor.view.dom.contains(e.target as Node)) {
+              destroy();
+            }
+          };
+
+          props.editor.on("blur", handleBlur);
+          document.addEventListener("mousedown", handleClickOutside);
+
           await updatePosition(props.editor, popup, props.clientRect);
           document.body.append(popup);
           await updatePosition(props.editor, popup, props.clientRect);
@@ -246,15 +177,12 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
   } satisfies Omit<SuggestionOptions, "editor">;
 };
 
-const getTagStyle = (allTags: MessageTag[], tagValue: string) => {
-  const color = allTags.find((tag) => tag.value === tagValue)?.color;
-  return color === undefined
-    ? "color: var(--accent-foreground); background-color: var(--accent)"
-    : `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
-};
+export const setupSuggestions = (
+  additionalTags: MessageTag[],
+  t: ReturnType<typeof useTranslations<"MessageTags">>,
+) => {
+  const allTags = [...getMessageTags(t), ...additionalTags];
 
-const setupSuggestions = (additionalTags: MessageTag[]) => {
-  const allTags = [...MESSAGE_TAGS, ...additionalTags];
   return [
     Mention.configure({
       suggestion: {
@@ -279,5 +207,3 @@ const setupSuggestions = (additionalTags: MessageTag[]) => {
     }),
   ];
 };
-
-export { setupSuggestions, MESSAGE_TAGS };

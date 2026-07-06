@@ -25,12 +25,9 @@ import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { translateFormError } from "@/i18n/translate-form-error";
-import {
-  ATTRIBUTE_CATEGORY,
-  FORM_CATEGORY,
-  setupSuggestions,
-} from "@/lib/extensions/tags";
-import type { MessageTag } from "@/lib/extensions/tags";
+import { getFormTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -89,6 +86,7 @@ function MessageContentForm({
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const t = useTranslations("EventDetails");
+  const tMessageTags = useTranslations("MessageTags");
 
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
@@ -153,31 +151,6 @@ function MessageContentForm({
     }
   }
 
-  const attributeTags = eventAttributes.map((attribute): MessageTag => {
-    return {
-      title: attribute.name,
-      description: t("replacesWithParticipantAttributeValue", {
-        name: attribute.name,
-      }),
-      // NOTE: Why 'attribute.slug' can be null?
-      value: `/participant_${attribute.slug ?? ""}`,
-      color: "brown",
-      category: ATTRIBUTE_CATEGORY,
-    };
-  }) satisfies MessageTag[];
-
-  const formTags = eventForms.map((eventForm): MessageTag => {
-    return {
-      title: eventForm.name,
-      description: t("replacesWithPersonalizedFormLink", {
-        name: eventForm.name,
-      }),
-      value: `/form_${eventForm.slug}`,
-      color: "green",
-      category: FORM_CATEGORY,
-    };
-  }) satisfies MessageTag[];
-
   return (
     <FormContainer
       description={t("messageContent")}
@@ -231,7 +204,13 @@ function MessageContentForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
-                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  extensions={setupSuggestions(
+                    [
+                      ...getAttributeTags(eventAttributes, tMessageTags),
+                      ...getFormTags(eventForms, tMessageTags),
+                    ],
+                    tMessageTags,
+                  )}
                   isEmailEditor
                   placeholder={t("writeMessage")}
                 />

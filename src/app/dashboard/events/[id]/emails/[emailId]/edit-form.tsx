@@ -31,13 +31,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateFormError } from "@/i18n/translate-form-error";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import {
-  ATTRIBUTE_CATEGORY,
-  FORM_CATEGORY,
-  setupSuggestions,
-} from "@/lib/extensions/tags";
-import type { MessageTag } from "@/lib/extensions/tags";
-import { getAttributeLabel } from "@/lib/utils";
+import { getFormTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
@@ -212,6 +208,7 @@ function EventEmailEditForm({
 }) {
   const t = useTranslations("EventDetails");
   const tEmailTr = useTranslations("EmailTriggers");
+  const tMessageTags = useTranslations("MessageTags");
 
   const form = useForm<z.infer<typeof EventEmailEditFormSchema>>({
     resolver: zodResolver(EventEmailEditFormSchema),
@@ -258,31 +255,6 @@ function EventEmailEditForm({
       });
     }
   }
-
-  const attributeTags = eventAttributes.map((attribute): MessageTag => {
-    return {
-      title: getAttributeLabel(attribute.name, "pl"),
-      description: t("replacesWithParticipantAttributeValue", {
-        name: attribute.name,
-      }),
-      // NOTE: Why 'attribute.slug' can be null?
-      value: `/participant_${attribute.slug ?? ""}`,
-      color: "brown",
-      category: ATTRIBUTE_CATEGORY,
-    };
-  }) satisfies MessageTag[];
-
-  const formTags = eventForms.map((eventForm): MessageTag => {
-    return {
-      title: eventForm.name,
-      description: t("replacesWithPersonalizedFormLink", {
-        name: eventForm.name,
-      }),
-      value: `/form_${eventForm.slug}`,
-      color: "green",
-      category: FORM_CATEGORY,
-    };
-  }) satisfies MessageTag[];
 
   return (
     <Form {...form}>
@@ -398,7 +370,13 @@ function EventEmailEditForm({
                 <WysiwygEditor
                   content={form.getValues("content")}
                   onChange={field.onChange}
-                  extensions={setupSuggestions([...attributeTags, ...formTags])}
+                  extensions={setupSuggestions(
+                    [
+                      ...getAttributeTags(eventAttributes, tMessageTags),
+                      ...getFormTags(eventForms, tMessageTags),
+                    ],
+                    tMessageTags,
+                  )}
                   isEmailEditor
                   placeholder={t("writeMessage")}
                 />
