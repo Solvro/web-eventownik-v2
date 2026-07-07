@@ -26,6 +26,8 @@ export const CoOrganizerItem = memo(
     onRemove,
   }: CoOrganizerItemProps) => {
     const t = useTranslations("Dashboard");
+    const tEventPermissions = useTranslations("EventPermissions");
+
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
     const permissionIdsSet = new Set<number>(
       permissions.map((p: Permission) => p.id),
@@ -83,7 +85,7 @@ export const CoOrganizerItem = memo(
                     htmlFor={`permission-${permission.id.toString()}`}
                     className="cursor-pointer"
                   >
-                    {label}
+                    {tEventPermissions(label)}
                   </Label>
                 </div>
               ))}

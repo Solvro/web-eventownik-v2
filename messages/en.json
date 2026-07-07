@@ -173,7 +173,10 @@
     "editTemplate": "Edit template",
     "unnamedEmail": "email",
     "backToTemplates": "Back to templates",
-    "editEmailTemplate": "Edit email template"
+    "editEmailTemplate": "Edit email template",
+    "resourceDeleted": "{resourceType} has been deleted",
+    "resourceDeletedWithName": "{resourceType} ''{resourceName}'' has been deleted",
+    "resourceDeleteFailed": "Failed to delete {resourceType}!"
   },
   "Editor": {
     "loadingMenu": "Loading menu...",
@@ -488,7 +491,15 @@
     "slugInvalid": "Only lowercase letters, numbers, and hyphens are allowed",
     "eventSlugExample": "your-event",
     "invalidEmail": "Invalid email address",
-    "endDateBeforeStartDate": "End date cannot be earlier than the start date"
+    "endDateBeforeStartDate": "End date cannot be earlier than the start date",
+    "allowedFileTypes": "Allowed file types: {extensions}",
+    "maxFileSize": "Maximum file size: {maxSize} MB"
+  },
+  "EventPermissions": {
+    "forms": "Forms",
+    "settings": "Settings",
+    "participants": "Participants",
+    "emails": "Emails"
   },
   "Export": {
     "failed": "Export failed!",

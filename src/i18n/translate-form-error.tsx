@@ -5,10 +5,11 @@ type TranslationKey = Parameters<TranslationFunction>[0];
 
 export function translateFormError(
   t: TranslationFunction,
-  errorMessage?: TranslationKey,
+  errorMessage?: string,
   values?: Record<string, string | number | Date>,
 ) {
   if (errorMessage !== undefined) {
-    return t(errorMessage, values);
+    const key = errorMessage as TranslationKey;
+    return t.has(key) ? t(key, values) : errorMessage;
   }
 }

@@ -25,11 +25,13 @@ export function AddCoOrganizerInput({
   existingEmails,
   onAdd,
 }: AddCoOrganizerInputProps) {
+  const t = useTranslations("Dashboard");
+  const tEventPermissions = useTranslations("EventPermissions");
+
   const [newEmail, setNewEmail] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<
     PermissionType[]
   >([]);
-  const t = useTranslations("Dashboard");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const isEmailValid = isValidEmail(newEmail);
@@ -92,7 +94,7 @@ export function AddCoOrganizerInput({
                   htmlFor={`permission-${permission.id.toString()}-new`}
                   className="cursor-pointer"
                 >
-                  {label}
+                  {tEventPermissions(label)}
                 </Label>
               </div>
             ))}

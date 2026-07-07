@@ -14,7 +14,6 @@ import type { EventCoorganizersFormSchema } from "./coorganizers/schema";
 import { PERMISSIONS_CONFIG } from "./coorganizers/types";
 
 export { EventCoorganizersFormSchema } from "./coorganizers/schema";
-export { PERMISSIONS_CONFIG } from "./coorganizers/types";
 
 interface CoorganizersFormProps {
   onAdd?: (coorganizer: {

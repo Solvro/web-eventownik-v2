@@ -56,15 +56,18 @@ function AttributeItem({
       >
         <GripHorizontal />
       </button>
-      <Checkbox
-        className="mr-2"
-        checked={isIncluded}
-        onCheckedChange={() => {
-          handleIncludeToggle(attribute);
-        }}
-      />
-      <div className="flex-1">
-        <h3 className="font-semibold">{attribute.name}</h3>
+      <div className="flex flex-1 flex-row items-center">
+        <Checkbox
+          id={`attribute-${attribute.id.toString()}`}
+          className="mr-2"
+          checked={isIncluded}
+          onCheckedChange={() => {
+            handleIncludeToggle(attribute);
+          }}
+        />
+        <Label htmlFor={`attribute-${attribute.id.toString()}`}>
+          <h3 className="font-semibold">{attribute.name}</h3>
+        </Label>
       </div>
       <span className="bg-popover flex items-center rounded-full px-3 py-1 text-sm">
         <Label htmlFor={`required-${attribute.id.toString()}`}>
@@ -211,15 +214,16 @@ function AttributesReorder({
               className="bg-accent/50 mb-2 flex items-center rounded-lg p-4 shadow-sm"
             >
               <Checkbox
+                id={`attribute-${attribute.id.toString()}`}
                 className="mr-2"
                 checked={false}
                 onCheckedChange={() => {
                   handleIncludeToggle(attribute);
                 }}
               />
-              <div className="flex-1">
+              <Label htmlFor={`attribute-${attribute.id.toString()}`}>
                 <h3 className="font-semibold">{attribute.name}</h3>
-              </div>
+              </Label>
             </div>
           ))}
           {nonIncludedAttributes.length === 0 && (

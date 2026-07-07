@@ -173,7 +173,10 @@
     "editTemplate": "Edytuj szablon",
     "unnamedEmail": "maila",
     "backToTemplates": "Wróć do szablonów",
-    "editEmailTemplate": "Edytuj szablon maila"
+    "editEmailTemplate": "Edytuj szablon maila",
+    "resourceDeleted": "{resourceType} został usunięty",
+    "resourceDeletedWithName": "{resourceType} ''{resourceName}'' został usunięty",
+    "resourceDeleteFailed": "Nie udało się usunąć {resourceType}!"
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -488,7 +491,15 @@
     "slugInvalid": "Tylko małe litery, cyfry i myślniki",
     "eventSlugExample": "twoje-wydarzenie",
     "invalidEmail": "Nieprawidłowy adres email",
-    "endDateBeforeStartDate": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
+    "endDateBeforeStartDate": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia",
+    "allowedFileTypes": "Dozwolone typy plików to: {extensions}",
+    "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB"
+  },
+  "EventPermissions": {
+    "forms": "Formularze",
+    "settings": "Ustawienia",
+    "participants": "Uczestnicy",
+    "emails": "Maile"
   },
   "Export": {
     "failed": "Eksport nie powiódł się!",

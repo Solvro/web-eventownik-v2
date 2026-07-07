@@ -42,15 +42,22 @@ function DeleteResourcePopup({
     if (result.success) {
       setShouldDisableButtons(true);
       toast({
-        title: `${resourceType} został usunięty`,
-        description: `Usunięto ${resourceType.toLowerCase()} ${resourceName}`,
+        title: t("resourceDeleted", {
+          resourceType,
+        }),
+        description: t("resourceDeletedWithName", {
+          resourceType,
+          resourceName,
+        }),
       });
       if (onSuccess !== undefined) {
         onSuccess();
       }
     } else {
       toast({
-        title: `Nie udało się usunąć ${resourceType.toLowerCase()}!`,
+        title: t("resourceDeleteFailed", {
+          resourceType: resourceType.toLowerCase(),
+        }),
         variant: "destructive",
         description: result.error,
       });
