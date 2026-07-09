@@ -115,7 +115,7 @@ function RegisterForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full space-y-4"
       >
         <FormField
           control={form.control}

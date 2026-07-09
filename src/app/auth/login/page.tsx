@@ -119,7 +119,7 @@ function LoginForm() {
       {redirectTo !== null && redirectTo !== "/dashboard/events" && (
         <Alert variant="destructive">
           <AlertCircleIcon className="!text-red-500" />
-          <AlertTitle>
+          <AlertTitle className="line-clamp-none">
             <p className="font-black text-red-500">{t("loginDisclaimer")}</p>
           </AlertTitle>
         </Alert>
@@ -127,7 +127,7 @@ function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="w-full max-w-sm space-y-4"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}

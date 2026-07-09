@@ -68,7 +68,7 @@ function ResetPasswordForm() {
           <p className="text-3xl font-black">{t("invalidLink")}</p>
           <p className="text-neutral-600">{t("resetLinkInvalidOrExpired")} </p>
         </div>
-        <div className="w-full max-w-sm space-y-4">
+        <div className="w-full space-y-4">
           <Link
             href="/auth/forgot-password"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
@@ -95,7 +95,7 @@ function ResetPasswordForm() {
           <p className="text-3xl font-black">{t("passwordResetSuccess")}</p>
           <p className="text-muted-foreground">{t("loginWithNewPassword")}</p>
         </div>
-        <div className="w-full max-w-sm space-y-4">
+        <div className="w-full space-y-4">
           <Link
             href="/auth/login"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
@@ -116,7 +116,7 @@ function ResetPasswordForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full max-w-sm space-y-4"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}

@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
           <p className="text-3xl font-black">{t("emailSent")}</p>
           <p className="text-muted-foreground">{t("passwordResetEmailLink")}</p>
         </div>
-        <div className="w-full max-w-sm space-y-4">
+        <div className="w-full space-y-4">
           <Link
             href="/auth/login"
             className={`w-full ${buttonVariants({ variant: "default" })}`}
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="w-full max-w-sm space-y-4"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}
@@ -161,10 +161,6 @@ export default function ForgotPasswordPage() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {/* {translateFormError(
-                    t,
-                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
-                  )} */}
                   {translateOrFallback(
                     t,
                     form.formState.errors.email?.message as AuthSchemaErrorKeys,
