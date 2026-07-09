@@ -195,7 +195,8 @@
     "coOrganizerAddWarning": "Failed to add co-organizer {email}. You can add them later in settings",
     "coOrganizerAddError": "Error adding co-organizer {email}. You can add them later in settings",
     "attributeAddWarning": "Failed to add attribute {name}. You can add it later in settings",
-    "attributeAddError": "Error adding attribute {name}. You can add it later in settings"
+    "attributeAddError": "Error adding attribute {name}. You can add it later in settings",
+    "selectColor": "Select color"
   },
   "Editor": {
     "loadingMenu": "Loading menu...",
@@ -527,7 +528,15 @@
     "failed": "Export failed!",
     "unknownError": "An unknown error occurred",
     "tryAgain": "Try again",
-    "exportToExcel": "Export to Excel"
+    "exportToExcel": "Export to Excel",
+    "drawingDownloadFailed": "Failed to download drawing!",
+    "downloadFailed": "Download failed!",
+    "downloadForUser": "Download {name} for {email}",
+    "download": "Download",
+    "drawingPreview": "Drawing preview",
+    "loading": "Loading...",
+    "previewLoadFailed": "Failed to load preview",
+    "fileDownloadFailed": "Failed to download file!"
   },
   "Form": {
     "email": "Email",
@@ -535,7 +544,7 @@
     "emailTaken": "This email is already registered for this event.",
     "emailTakenTitle": "Email address is already taken",
     "registrationSuccess": "Registration successful!",
-    "registrationFailed": "Registration failed.\\nTry again later",
+    "registrationFailed": "Registration failed. Try again later",
     "registrationFailedTitle": "Registration failed",
     "registrationDisabled": "The organizer has disabled registration on Eventownik",
     "tryAgainLater": "Try again later",
@@ -547,7 +556,7 @@
     "saving": "Saving...",
     "saved": "Your response has been saved!",
     "register": "Register",
-    "editSaveFailed": "Saving form data failed.\\nTry again later",
+    "editSaveFailed": "Saving form data failed. Try again later",
     "editSaveFailedTitle": "Saving form data failed",
     "editYourResponse": "Edit your response",
     "captchaInProgress": "CAPTCHA verification...",
@@ -583,7 +592,7 @@
   },
   "Homepage": {
     "HighlightedEvents": {
-      "event1Name": "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
+      "event1Name": "RAJD \"SHREKSPEDYCJA: WELCOME TO BAGNO\"",
       "event1Description": "Organizers from WRSS (Faculty Council of the Student Government) W6, W8, and W12 were given pilot access to Eventownik to test its functionality and evaluate how effectively it can improve the management of a large-scale event.",
       "event2Name": "Rejs \"W8 na Fali\"",
       "event2Description": "After the success of Eventownik during the Raid, WuZetka decided to once again use the application to organize their next event — the W8 River Trip 2025.",
@@ -683,7 +692,9 @@
     "registrationManagement": "Registration management",
     "registrationManagementDescr": "Choose how registered participants are displayed\u00A0— anonymously, by full name, or using a custom attribute.",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "alertLink": "Alert link",
+    "dismissAlert": "Dismiss alert"
   },
   "MainMetadata": {
     "title": "Eventownik - event organization",
@@ -793,7 +804,23 @@
     "bulkEditError": "Could not update {count, plural, =1 {1 participant} other {# participants}}",
     "columnOrderLoadError": "An error occurred while loading the column order",
     "editParticipantSuccess": "Participant changes saved",
-    "editParticipantError": "Failed to save participant changes"
+    "editParticipantError": "Failed to save participant changes",
+    "none": "None",
+    "uploaded": "Uploaded",
+    "openFiltersMenu": "Open filters menu",
+    "true": "True",
+    "false": "False",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edytuj",
+    "search": "Search...",
+    "noResults": "No results found",
+    "all": "(All)",
+    "clear": "Clear",
+    "close": "Close",
+    "delete": "Delete",
+    "clearAllOptions": "Clear all options",
+    "removeAdditionalOptions": "Remove additional options"
   },
   "Themes": {
     "light": "Light",

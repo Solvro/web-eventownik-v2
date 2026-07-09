@@ -127,7 +127,7 @@ export function EditParticipantButton({
           onClick={() => {
             void saveChanges();
           }}
-          aria-label="save"
+          aria-label={t("save")}
           size="sm"
         >
           {isSaving ? (
@@ -148,7 +148,7 @@ export function EditParticipantButton({
 
             cancelEdit();
           }}
-          aria-label="cancel"
+          aria-label={t("cancel")}
           size="sm"
         >
           <X size={16} />
@@ -172,7 +172,7 @@ export function EditParticipantButton({
         variant="default"
         className="bg-background text-foreground p-3 hover:bg-(--event-primary-color) hover:text-(--event-primary-foreground-color)"
         type="button"
-        aria-label={"edit"}
+        aria-label={t("edit")}
         onClick={enterEditMode}
       >
         <Pencil />

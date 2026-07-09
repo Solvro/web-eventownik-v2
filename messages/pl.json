@@ -195,7 +195,8 @@
     "coOrganizerAddWarning": "Nie udało się dodać współorganizatora {email}. Możesz dodać go później w ustawieniach",
     "coOrganizerAddError": "Wystąpił błąd podczas dodawania współorganizatora {email}. Możesz dodać go później w ustawieniach",
     "attributeAddWarning": "Nie udało się dodać atrybutu {name}. Możesz dodać go później w ustawieniach",
-    "attributeAddError": "Wystąpił błąd podczas dodawania atrybutu {name}. Możesz dodać go później w ustawieniach"
+    "attributeAddError": "Wystąpił błąd podczas dodawania atrybutu {name}. Możesz dodać go później w ustawieniach",
+    "selectColor": "Wybór koloru"
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -527,7 +528,15 @@
     "failed": "Eksport nie powiódł się!",
     "unknownError": "Wystąpił nieznany błąd",
     "tryAgain": "Spróbuj ponownie",
-    "exportToExcel": "Eksportuj do Excela"
+    "exportToExcel": "Eksportuj do Excela",
+    "drawingDownloadFailed": "Pobieranie rysunku nie powiodło się!",
+    "downloadFailed": "Pobieranie nie powiodło się!",
+    "downloadForUser": "Pobierz {name} dla {email}",
+    "download": "Pobierz",
+    "drawingPreview": "Podgląd rysunku",
+    "loading": "Ładowanie...",
+    "previewLoadFailed": "Nie udało się załadować podglądu",
+    "fileDownloadFailed": "Pobieranie pliku nie powiodło się!"
   },
   "Form": {
     "email": "E-mail",
@@ -535,7 +544,7 @@
     "emailTaken": "Ten adres e-mail jest już zarejestrowany na to wydarzenie.",
     "emailTakenTitle": "Adres e-mail jest już zajęty",
     "registrationSuccess": "Twoja rejestracja przebiegła pomyślnie!",
-    "registrationFailed": "Rejestracja na wydarzenie nie powiodła się.\\nSpróbuj ponownie później",
+    "registrationFailed": "Rejestracja na wydarzenie nie powiodła się. Spróbuj ponownie później",
     "registrationFailedTitle": "Rejestracja na wydarzenie nie powiodła się",
     "registrationDisabled": "Organizator wyłączył zapisy na Eventowniku",
     "tryAgainLater": "Spróbuj ponownie później",
@@ -547,7 +556,7 @@
     "saving": "Zapisywanie...",
     "saved": "Twoja odpowiedź została zapisana!",
     "register": "Zapisz się",
-    "editSaveFailed": "Zapisanie danych formularza nie powiodło się.\\nSpróbuj ponownie później",
+    "editSaveFailed": "Zapisanie danych formularza nie powiodło się. Spróbuj ponownie później",
     "editSaveFailedTitle": "Zapisanie danych formularza nie powiodło się",
     "editYourResponse": "Edytuj swoją odpowiedź",
     "captchaInProgress": "Weryfikacja CAPTCHA...",
@@ -683,7 +692,9 @@
     "registrationManagement": "Zarządzanie zapisami",
     "registrationManagementDescr": "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca\u00A0— anonimowo, imię i nazwisko, a może nawet inny atrybut.",
     "openMenu": "Otwórz menu",
-    "closeMenu": "Zamknij menu"
+    "closeMenu": "Zamknij menu",
+    "alertLink": "Link w alercie",
+    "dismissAlert": "Zamknij alert"
   },
   "MainMetadata": {
     "title": "Eventownik - organizacja wydarzeń",
@@ -793,7 +804,23 @@
     "bulkEditError": "Nie udało się zaktualizować {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
     "columnOrderLoadError": "Wystąpił błąd podczas wczytywania kolejności kolumn",
     "editParticipantSuccess": "Zapisano zmiany w uczestniku",
-    "editParticipantError": "Nie udało się zapisać zmian w uczestniku!"
+    "editParticipantError": "Nie udało się zapisać zmian w uczestniku!",
+    "none": "Brak",
+    "uploaded": "Przesłany",
+    "openFiltersMenu": "Otwórz menu filtrów",
+    "true": "Tak",
+    "false": "Nie",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "edit": "Edytuj",
+    "search": "Szukaj...",
+    "noResults": "Nie znaleziono wyników",
+    "all": "(Wszystkie)",
+    "clear": "Wyczyść",
+    "close": "Zamknij",
+    "delete": "Usuń",
+    "clearAllOptions": "Wyczyść wszystkie opcje",
+    "removeAdditionalOptions": "Usuń dodatkowe opcje"
   },
   "Themes": {
     "light": "Jasny",

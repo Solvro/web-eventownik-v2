@@ -152,7 +152,7 @@ export function AttributeInputDrawing({
                   setStrokeColor(event_.target.value);
                 }}
                 className="pointer-events-none h-0 w-0 p-4 opacity-0"
-                aria-label="Wybór koloru"
+                aria-label={t("selectColor")}
               />
             </label>
           </Button>

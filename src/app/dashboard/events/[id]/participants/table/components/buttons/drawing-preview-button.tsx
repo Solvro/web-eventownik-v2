@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -25,6 +26,8 @@ export function DrawingPreviewButton({
   eventId: string;
   participant: FlattenedParticipant;
 }) {
+  const t = useTranslations("Export");
+
   const { toast } = useToast();
   const [isQuerying, setIsQuerying] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -75,8 +78,8 @@ export function DrawingPreviewButton({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Pobieranie rysunku nie powiodło się!",
-          description: error ?? "Wystąpił nieznany błąd.",
+          title: t("drawingDownloadFailed"),
+          description: error ?? t("unknownError"),
         });
         return;
       }
@@ -93,8 +96,8 @@ export function DrawingPreviewButton({
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Pobieranie nie powiodło się!",
-        description: "Spróbuj ponownie",
+        title: t("downloadFailed"),
+        description: t("tryAgain"),
       });
     }
   }
@@ -108,30 +111,33 @@ export function DrawingPreviewButton({
             size="sm"
             onClick={downloadDrawing}
             disabled={isQuerying}
-            title={`Pobierz ${attribute.name} dla ${participant.email}`}
+            title={t("downloadForUser", {
+              name: attribute.name,
+              email: participant.email,
+            })}
           >
-            Pobierz
+            {t("download")}
           </Button>
         </HoverCardTrigger>
         <HoverCardContent className="w-80 pointer-coarse:hidden" side="top">
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold">Podgląd rysunku</h4>
+            <h4 className="text-sm font-semibold">{t("drawingPreview")}</h4>
             <div className="overflow-hidden rounded-lg border bg-white">
               {isLoadingPreview ? (
                 <div className="text-muted-foreground flex aspect-video h-full w-full items-center justify-center text-sm">
-                  Ładowanie...
+                  {t("loading")}
                 </div>
               ) : previewUrl !== null && previewUrl !== "" ? (
                 <Image
                   src={previewUrl}
-                  alt="Podgląd rysunku"
+                  alt={t("drawingPreview")}
                   width={320}
                   height={180}
                   className="aspect-video"
                 />
               ) : (
                 <div className="flex h-32 items-center justify-center text-sm text-gray-500">
-                  Nie udało się załadować podglądu
+                  {t("previewLoadFailed")}
                 </div>
               )}
             </div>

@@ -86,7 +86,7 @@ export default async function EventListPage() {
           </AlertTitle>
           <AlertDescription className="text-foreground inline">
             {t("pilotVersionNotice")}{" "}
-            <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl.</a>
+            <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl</a>
           </AlertDescription>
         </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
