@@ -76,7 +76,7 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-[600px] min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
+      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-150 min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
       onClick={() => {
         onClick(index);
       }}
@@ -125,37 +125,37 @@ export function HighlightedEvents() {
 
   const events: HighlightedEvent[] = [
     {
-      name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
-      description: t("pilotAccessWRSSDescr"),
+      name: t("HighlightedEvents.event1Name"),
+      description: t("HighlightedEvents.event1Description"),
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
-        alt: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
+        alt: t("HighlightedEvents.event1Name"),
       },
     },
     {
-      name: 'Rejs "W8 na Fali"',
-      description: t("rejsW8Descr"),
+      name: t("HighlightedEvents.event2Name"),
+      description: t("HighlightedEvents.event2Description"),
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/rejs-w8.jpg",
-        alt: 'Rejs "W8 na Fali"',
+        alt: t("HighlightedEvents.event2Name"),
       },
     },
     {
-      name: t("grazUniteTrip"),
-      description: t("grazUniteTripDescr"),
+      name: t("HighlightedEvents.event3Name"),
+      description: t("HighlightedEvents.event3Description"),
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
-        alt: t("grazUniteTrip"),
+        alt: t("HighlightedEvents.event3Name"),
       },
     },
   ];
 
   return (
     <div className="-mt-16 flex w-full flex-col items-start gap-8 overflow-x-hidden pt-16 lg:gap-16">
-      <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-[520px] w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
+      <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-130 w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
         <CarouselImage
           src={events[1].image.src}
           alt={events[1].image.alt}

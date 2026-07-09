@@ -582,6 +582,14 @@
     "fieldPhone": "Field {name} must be a valid phone number"
   },
   "Homepage": {
+    "HighlightedEvents": {
+      "event1Name": "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
+      "event1Description": "Organizers from WRSS (Faculty Council of the Student Government) W6, W8, and W12 were given pilot access to Eventownik to test its functionality and evaluate how effectively it can improve the management of a large-scale event.",
+      "event2Name": "Rejs \"W8 na Fali\"",
+      "event2Description": "After the success of Eventownik during the Raid, WuZetka decided to once again use the application to organize their next event — the W8 River Trip 2025.",
+      "event3Name": "Trip to Graz within the Unite! program",
+      "event3Description": "Students from our KN Solvro participated in an exchange trip to Graz as part of the Unite! program. During the organization of the trip, they used Eventownik, which improved the entire planning and execution process."
+    },
     "areYouPwrStudent": "Are you a student at Wrocław University of Science and Technology?",
     "installApp": "Don’t forget to install the app",
     "topwrLogo": "ToPWR logo",
@@ -648,10 +656,6 @@
     "continueWithoutAccount": "Continue without an account",
     "previousImage": "Previous image",
     "nextImage": "Next image",
-    "pilotAccessWRSSDescr": "Organizers from WRSS (Faculty Council of the Student Government) W6, W8, and W12 were given pilot access to Eventownik to test its functionality and evaluate how effectively it can improve the management of a large-scale event.",
-    "rejsW8Descr": "After the success of Eventownik during the Raid, WuZetka decided to once again use the application to organize their next event — the W8 River Trip 2025.",
-    "grazUniteTrip": "Trip to Graz within the Unite! program",
-    "grazUniteTripDescr": "Students from our KN Solvro participated in an exchange trip to Graz as part of the Unite! program. During the organization of the trip, they used Eventownik, which improved the entire planning and execution process.",
     "step": "Step",
     "featuresScopeDescr": "Available organizer actions",
     "featuresExplore": "Check what you can do and how to use the available features!",

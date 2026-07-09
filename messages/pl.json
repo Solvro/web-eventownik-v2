@@ -190,7 +190,12 @@
     "failedToAddAttribute": "Nie udało się dodać atrybutu {name}: {errorData}",
     "failedToUpdateAttribute": "Nie udało się zaktualizować atrybutu {name}: {errorData}",
     "failedToDeleteAttribute": "Nie udało się usunąć atrybutu {name}: {errorData}",
-    "failedToProcessAttribute": "Wystąpił błąd podczas przetwarzania atrybutu {name}: {errorData}"
+    "failedToProcessAttribute": "Wystąpił błąd podczas przetwarzania atrybutu {name}: {errorData}",
+    "failedToCreateEvent": "Nie udało się utworzyć wydarzenia",
+    "coOrganizerAddWarning": "Nie udało się dodać współorganizatora {email}. Możesz dodać go później w ustawieniach",
+    "coOrganizerAddError": "Wystąpił błąd podczas dodawania współorganizatora {email}. Możesz dodać go później w ustawieniach",
+    "attributeAddWarning": "Nie udało się dodać atrybutu {name}. Możesz dodać go później w ustawieniach",
+    "attributeAddError": "Wystąpił błąd podczas dodawania atrybutu {name}. Możesz dodać go później w ustawieniach"
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -577,6 +582,14 @@
     "fieldPhone": "Pole {name} musi być numerem telefonu"
   },
   "Homepage": {
+    "HighlightedEvents": {
+      "event1Name": "RAJD \"SHREKSPEDYCJA: WELCOME TO BAGNO\"",
+      "event1Description": "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalność i sprawdzili jak skutecznie może usprawnić zarządzanie dużym wydarzeniem.",
+      "event2Name": "Rejs \"W8 na Fali\"",
+      "event2Description": "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia — Rejsu 2025.",
+      "event3Name": "Wyjazd do Graz w ramach Unite!",
+      "event3Description": "Studenci z naszego Koła Solvro wzięli udział w wymianie do Graz w ramach programu Unite!  Podczas organizacji wyjazdu korzystali z Eventownika, który usprawnił jego planowanie oraz realizację od początku do końca."
+    },
     "areYouPwrStudent": "Jesteś studentem Politechniki Wrocławskiej?",
     "installApp": "Koniecznie zainstaluj aplikację",
     "topwrLogo": "Logo ToPWR",
@@ -643,10 +656,6 @@
     "continueWithoutAccount": "Kontynuuj bez konta",
     "previousImage": "Poprzednie zdjęcie",
     "nextImage": "Następne zdjęcie",
-    "pilotAccessWRSSDescr": "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalność i sprawdzili jak skutecznie może usprawnić zarządzanie dużym wydarzeniem.",
-    "rejsW8Descr": "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia — Rejsu 2025.",
-    "grazUniteTrip": "Wyjazd do Graz w ramach Unite!",
-    "grazUniteTripDescr": "Studenci z naszego Koła Solvro wzięli udział w wymianie do Graz w ramach programu Unite!  Podczas organizacji wyjazdu korzystali z Eventownika, który usprawnił jego planowanie oraz realizację od początku do końca.",
     "step": "Krok",
     "featuresScopeDescr": "Zakres dostępnych działań dla organizatora",
     "featuresExplore": "Sprawdź, co możesz zrobić i jak skorzystać z dostępnych możliwości!",
