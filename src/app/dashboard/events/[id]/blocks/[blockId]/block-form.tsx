@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 
 export const BlockSchema = z.object({
   name: z.string().min(1, "blockNameRequired"),
@@ -63,7 +63,7 @@ export function BlockForm({
                 <Input placeholder={t("blockName")} {...field} />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.name?.message as BlockFormError,
                 )}
@@ -86,7 +86,7 @@ export function BlockForm({
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.capacity?.message as BlockFormError,
                 )}

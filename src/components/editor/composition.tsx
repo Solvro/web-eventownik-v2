@@ -71,6 +71,7 @@ const usePuck = createUsePuck<PuckConfig>();
 
 function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
   const t = useTranslations("Editor");
+  const tEventDetails = useTranslations("EventDetails");
 
   const appState = usePuck((s) => s.appState);
   const config = usePuck((s) => s.config);
@@ -87,8 +88,11 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       const payload = { eventId: mutationData.eventId, emailTemplate: values };
 
       return mutationData.mode === "create"
-        ? createEventEmail(payload)
-        : updateEventEmail({ ...payload, mailId: mutationData.emailId });
+        ? createEventEmail(payload, tEventDetails)
+        : updateEventEmail(
+            { ...payload, mailId: mutationData.emailId },
+            tEventDetails,
+          );
     },
     onSuccess: (result) => {
       if (!result.success) {

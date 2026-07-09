@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { ResetError } from "@/types/auth";
 import { resetPasswordSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
@@ -56,7 +56,7 @@ function ResetPasswordForm() {
       toast({
         variant: "destructive",
         title: t("somethingWentWrong"),
-        description: translateFormError(t, result.error as ResetError),
+        description: translateOrFallback(t, result.error as ResetError),
       });
     }
   }
@@ -133,7 +133,7 @@ function ResetPasswordForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.newPassword
                       ?.message as AuthSchemaErrorKeys,
@@ -159,7 +159,7 @@ function ResetPasswordForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.confirmPassword
                       ?.message as AuthSchemaErrorKeys,

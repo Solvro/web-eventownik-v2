@@ -28,7 +28,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import {
   cn,
   getAttributeLabel,
@@ -378,7 +378,7 @@ export function ParticipantForm({
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
-                    {translateFormError(
+                    {translateOrFallback(
                       t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
                       (form.formState.errors as any)[attribute.id.toString()]

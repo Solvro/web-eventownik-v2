@@ -1,6 +1,7 @@
 "use server";
 
 import { formatISO } from "date-fns";
+import type { useTranslations } from "next-intl";
 
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
@@ -19,7 +20,10 @@ interface SaveEventResult {
   warnings?: string[];
 }
 
-export async function saveEvent(event: Event): Promise<SaveEventResult> {
+export async function saveEvent(
+  event: Event,
+  t: ReturnType<typeof useTranslations<"Dashboard">>,
+): Promise<SaveEventResult> {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {
     throw new Error("Invalid session");
@@ -57,7 +61,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);
       return {
-        errors: [{ message: "Failed to process event photo" }],
+        errors: [{ message: t("failedToProcessEventPhoto") }],
       };
     }
   }
@@ -82,7 +86,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (!("id" in data)) {
     console.error("[saveEvent] No event ID returned from server");
-    return { errors: [{ message: "Failed to create event" }] };
+    return { errors: [{ message: t("failedToCreateEvent") }] };
   }
 
   const eventId = data.id;
@@ -119,7 +123,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           errorData,
         );
         coOrganizerErrors.push(
-          `Failed to add co-organizer ${coorganizer.email}. You can add them later in settings.`,
+          t("coOrganizerAddWarning", {
+            email: coorganizer.email,
+          }),
         );
       }
     } catch (error) {
@@ -129,7 +135,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         error,
       );
       coOrganizerErrors.push(
-        `Error adding co-organizer ${coorganizer.email}. You can add them later in settings.`,
+        t("coOrganizerAddError", {
+          email: coorganizer.email,
+        }),
       );
     }
   }
@@ -182,7 +190,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           errorData,
         );
         attributeErrors.push(
-          `Failed to add attribute ${attribute.name}. You can add it later in settings.`,
+          t("attributeAddWarning", { name: attribute.name }),
         );
       }
     } catch (error) {
@@ -191,9 +199,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         attribute.name,
         error,
       );
-      attributeErrors.push(
-        `Error adding attribute ${attribute.name}. You can add it later in settings.`,
-      );
+      attributeErrors.push(t("attributeAddError", { name: attribute.name }));
     }
   }
 

@@ -31,6 +31,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -247,6 +248,7 @@ export function EventSettingsTabs({
         },
         coOrganizersChanges,
         attributesChanges,
+        t,
       );
       if ("errors" in eventResult) {
         const eventErrors = eventResult.errors.filter(
@@ -322,7 +324,7 @@ export function EventSettingsTabs({
         variant: "destructive",
         title: t("failedToDeleteEvent"),
         description: `${t("tryAgain")}\n${result.errors
-          .map((error) => error.message)
+          .map((error) => translateOrFallback(t, error.message))
           .join("\n")}`,
       });
     } else {

@@ -1,5 +1,6 @@
 "use server";
 
+import type { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
 import { API_URL } from "@/lib/api";
@@ -30,6 +31,7 @@ export async function updateEvent(
   event: Event,
   coOrganizersChanges: CoOrganizerChange[],
   attributesChanges: AttributeChange[],
+  t: ReturnType<typeof useTranslations<"Dashboard">>,
 ): Promise<Event | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
@@ -90,7 +92,7 @@ export async function updateEvent(
       } catch (error) {
         console.error("[updateEvent] Error processing photo:", error);
         result.errors.push({
-          message: "Failed to process event photo",
+          message: t("failedToProcessEventPhoto"),
           section: "event",
         });
         return { errors: result.errors };
@@ -110,7 +112,7 @@ export async function updateEvent(
         error: errorData,
       });
       result.errors.push({
-        message: errorData.errors[0]?.message ?? "Failed to update event",
+        message: errorData.errors[0]?.message ?? t("failedToUpdateEvent"),
         section: "event",
       });
       return { errors: result.errors };
@@ -120,7 +122,7 @@ export async function updateEvent(
   } catch (error) {
     console.error("[updateEvent] Network error updating event:", error);
     result.errors.push({
-      message: "Network error occurred while updating event",
+      message: t("networkErrorWhileUpdatingEvent"),
       section: "event",
     });
     return { errors: result.errors };
@@ -152,7 +154,10 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Upewnij się że ta osoba ma konto w Eventowniku. Failed to add co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: t("failedToAddCoOrganizer", {
+                email: change.data.email,
+                errorData: JSON.stringify(errorData),
+              }),
               section: "coOrganizers",
             });
             continue;
@@ -186,7 +191,10 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to update co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: t("failedToUpdateCoOrganizer", {
+                email: change.data.email,
+                errorData: JSON.stringify(errorData),
+              }),
               section: "coOrganizers",
             });
             continue;
@@ -214,7 +222,10 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to delete co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: t("failedToDeleteCoOrganizer", {
+                email: change.data.email,
+                errorData: JSON.stringify(errorData),
+              }),
               section: "coOrganizers",
             });
             continue;
@@ -229,7 +240,10 @@ export async function updateEvent(
         error,
       );
       result.errors.push({
-        message: `Error processing co-organizer ${change.data.email}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        message: t("failedToProcessCoOrganizer", {
+          email: change.data.email,
+          errorData: error instanceof Error ? error.message : t("unknownError"),
+        }),
         section: "coOrganizers",
       });
     }
@@ -279,12 +293,17 @@ export async function updateEvent(
               (change.data.reason == null || change.data.reason.trim() === "")
             ) {
               result.errors.push({
-                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                message: t("sensitiveAttributeMissingPurpose", {
+                  name: change.data.name,
+                }),
                 section: "attributes",
               });
             } else {
               result.errors.push({
-                message: `Failed to add attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                message: t("failedToAddAttribute", {
+                  name: change.data.name,
+                  errorData: JSON.stringify(errorData),
+                }),
                 section: "attributes",
               });
             }
@@ -338,12 +357,17 @@ export async function updateEvent(
               (change.data.reason == null || change.data.reason.trim() === "")
             ) {
               result.errors.push({
-                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                message: t("sensitiveAttributeMissingPurpose", {
+                  name: change.data.name,
+                }),
                 section: "attributes",
               });
             } else {
               result.errors.push({
-                message: `Failed to update attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                message: t("failedToUpdateAttribute", {
+                  name: change.data.name,
+                  errorData: JSON.stringify(errorData),
+                }),
                 section: "attributes",
               });
             }
@@ -372,7 +396,10 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to delete attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+              message: t("failedToDeleteAttribute", {
+                name: change.data.name,
+                errorData: JSON.stringify(errorData),
+              }),
               section: "attributes",
             });
             continue;
@@ -384,7 +411,10 @@ export async function updateEvent(
     } catch (error) {
       console.error("[updateEvent] Error processing attribute change:", error);
       result.errors.push({
-        message: `Error processing attribute ${change.data.name}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        message: t("failedToDeleteAttribute", {
+          name: change.data.name,
+          errorData: error instanceof Error ? error.message : t("unknownError"),
+        }),
         section: "attributes",
       });
     }
@@ -425,7 +455,7 @@ export async function deleteEvent(
     }
   } catch (error) {
     console.error("[deleteEvent] Network Error:", error);
-    return { errors: [{ message: "Network error occurred" }] };
+    return { errors: [{ message: "networkError" }] };
   }
   revalidatePath("/dashboard/events");
   return {}; // Return an empty object on success

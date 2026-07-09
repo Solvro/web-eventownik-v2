@@ -1,6 +1,7 @@
 "use server";
 
 import { formatISO9075 } from "date-fns";
+import type { useTranslations } from "next-intl";
 
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
@@ -14,13 +15,17 @@ type Payload = Omit<
   attributes: FormAttributeBase[];
 };
 
-export async function createEventForm(eventId: string, form: Payload) {
+export async function createEventForm(
+  eventId: string,
+  form: Payload,
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: t("unauthorized"),
     };
   }
 
@@ -61,7 +66,10 @@ export async function createEventForm(eventId: string, form: Payload) {
       success: false,
       error:
         errorMessages ||
-        `Błąd ${response.status.toString()} ${response.statusText}`,
+        t("httpError", {
+          status: response.status,
+          statusText: response.statusText,
+        }),
     };
   }
 
@@ -72,13 +80,14 @@ export async function updateEventForm(
   eventId: string,
   formId: string,
   form: Payload,
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
 ) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: t("unauthorized"),
     };
   }
 
@@ -124,18 +133,25 @@ export async function updateEventForm(
       success: false,
       error:
         errorMessages ||
-        `Błąd ${response.status.toString()} ${response.statusText}`,
+        t("httpError", {
+          status: response.status,
+          statusText: response.statusText,
+        }),
     };
   }
 
   return { success: true };
 }
 
-export async function reorderForms(eventId: string, orderedIds: number[]) {
+export async function reorderForms(
+  eventId: string,
+  orderedIds: number[],
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: "Brak autoryzacji" };
+    return { success: false, error: t("unauthorized") };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -159,20 +175,27 @@ export async function reorderForms(eventId: string, orderedIds: number[]) {
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: t("httpError", {
+        status: failed.status,
+        statusText: failed.statusText,
+      }),
     };
   }
 
   return { success: true };
 }
 
-export async function deleteEventForm(eventId: string, formId: string) {
+export async function deleteEventForm(
+  eventId: string,
+  formId: string,
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: t("unauthorized"),
     };
   }
 
@@ -191,7 +214,10 @@ export async function deleteEventForm(eventId: string, formId: string) {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: t("httpError", {
+        status: response.status,
+        statusText: response.statusText,
+      }),
     };
   }
 

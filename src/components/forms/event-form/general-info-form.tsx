@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
 export type EventFormGeneralInfoErrors =
@@ -91,7 +91,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.name?.message as EventFormGeneralInfoErrors,
               )}
@@ -238,7 +238,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               placeholder={t("enterFormDescr")}
             />
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.description
                   ?.message as EventFormGeneralInfoErrors,

@@ -38,7 +38,7 @@
     "creatingAccount": "Tworzenie konta...",
     "loginExisting": "Posiadasz już konto? Zaloguj się",
     "loginTitle": "Logowanie organizatora",
-    "loginDescription": "Podaj swój e-mail by się zalogować.",
+    "loginDescription": "Podaj swój e-mail by się zalogować",
     "loginDisclaimer": "Żeby zarządzać wydarzeniami najpierw musisz się zalogować!",
     "loggingIn": "Logowanie...",
     "loginSuccessful": "Logowanie zakończone sukcesem!",
@@ -176,7 +176,21 @@
     "editEmailTemplate": "Edytuj szablon maila",
     "resourceDeleted": "{resourceType} został usunięty",
     "resourceDeletedWithName": "{resourceType} ''{resourceName}'' został usunięty",
-    "resourceDeleteFailed": "Nie udało się usunąć {resourceType}!"
+    "resourceDeleteFailed": "Nie udało się usunąć {resourceType}!",
+    "networkError": "Wystąpił błąd sieci",
+    "failedToProcessEventPhoto": "Nie udało się przetworzyć zdjęcia wydarzenia",
+    "failedToUpdateEvent": "Nie udało się zaktualizować wydarzenia",
+    "networkErrorWhileUpdatingEvent": "Wystąpił błąd sieci podczas aktualizacji wydarzenia",
+    "failedToAddCoOrganizer": "Upewnij się, że ta osoba ma konto w Eventowniku. Nie udało się dodać współorganizatora {email}: {errorData}",
+    "failedToUpdateCoOrganizer": "Nie udało się zaktualizować współorganizatora {email}: {errorData}",
+    "failedToDeleteCoOrganizer": "Nie udało się usunąć współorganizatora {email}: {errorData}",
+    "unknownError": "Nieznany błąd",
+    "failedToProcessCoOrganizer": "Wystąpił błąd podczas przetwarzania współorganizatora {email}: {errorData}",
+    "sensitiveAttributeMissingPurpose": "Atrybut {name} jest oznaczony jako wrażliwy, ale nie podano celu zbierania tych danych.",
+    "failedToAddAttribute": "Nie udało się dodać atrybutu {name}: {errorData}",
+    "failedToUpdateAttribute": "Nie udało się zaktualizować atrybutu {name}: {errorData}",
+    "failedToDeleteAttribute": "Nie udało się usunąć atrybutu {name}: {errorData}",
+    "failedToProcessAttribute": "Wystąpił błąd podczas przetwarzania atrybutu {name}: {errorData}"
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -493,7 +507,10 @@
     "invalidEmail": "Nieprawidłowy adres email",
     "endDateBeforeStartDate": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia",
     "allowedFileTypes": "Dozwolone typy plików to: {extensions}",
-    "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB"
+    "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB",
+    "unauthorized": "Brak autoryzacji",
+    "httpError": "Błąd {status} {statusText}",
+    "invalidEmailId": "Nieprawidłowy identyfikator maila"
   },
   "EventPermissions": {
     "forms": "Formularze",
@@ -618,7 +635,7 @@
     "coorganizerSettingsInOrganizerPanel": "Ustawienia współorganizatorów w panelu organizatora",
     "eventLogin": "Logowanie na wydarzenie",
     "loginTitle": "Logowanie organizatora",
-    "loginDescription": "Podaj swój e-mail by się zalogować.",
+    "loginDescription": "Podaj swój e-mail by się zalogować",
     "passwordLabel": "Hasło",
     "emailLabel": "E-mail",
     "continue": "Kontynuuj",

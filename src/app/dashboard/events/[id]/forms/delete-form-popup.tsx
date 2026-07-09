@@ -17,13 +17,14 @@ function DeleteFormPopup({
   formName: string;
 }) {
   const t = useTranslations("Dashboard");
+  const tEventDetails = useTranslations("EventDetails");
   const router = useRouter();
 
   return (
     <DeleteResourcePopup
       resourceName={formName}
       resourceType={t("form")}
-      onDelete={async () => deleteEventForm(eventId, formId)}
+      onDelete={async () => deleteEventForm(eventId, formId, tEventDetails)}
       onSuccess={() => {
         router.refresh();
       }}

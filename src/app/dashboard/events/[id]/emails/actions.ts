@@ -1,5 +1,6 @@
 "use server";
 
+import type { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
@@ -15,10 +16,13 @@ export async function getSingleEventEmailAction(
   return await getSingleEventEmail(eventId, emailId);
 }
 
-export async function createEventEmail(data: {
-  eventId: string;
-  emailTemplate: UpdateEventEmailPayload;
-}) {
+export async function createEventEmail(
+  data: {
+    eventId: string;
+    emailTemplate: UpdateEventEmailPayload;
+  },
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -41,7 +45,10 @@ export async function createEventEmail(data: {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: t("httpError", {
+        status: response.status,
+        statusText: response.statusText,
+      }),
     };
   }
 
@@ -51,13 +58,16 @@ export async function createEventEmail(data: {
   };
 }
 
-export async function updateEventEmail(data: {
-  eventId: string;
-  mailId: string | null;
-  emailTemplate: UpdateEventEmailPayload;
-}) {
+export async function updateEventEmail(
+  data: {
+    eventId: string;
+    mailId: string | null;
+    emailTemplate: UpdateEventEmailPayload;
+  },
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   if (data.mailId == null) {
-    return { success: false, error: "Nieprawidłowy identyfikator maila" };
+    return { success: false, error: t("invalidEmailId") };
   }
 
   const session = await verifySession();
@@ -86,18 +96,25 @@ export async function updateEventEmail(data: {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: t("httpError", {
+        status: response.status,
+        statusText: response.statusText,
+      }),
     };
   }
 
   return { error: null, success: true };
 }
 
-export async function reorderEmails(eventId: string, orderedIds: number[]) {
+export async function reorderEmails(
+  eventId: string,
+  orderedIds: number[],
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: "Brak autoryzacji" };
+    return { success: false, error: t("unauthorized") };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -121,14 +138,21 @@ export async function reorderEmails(eventId: string, orderedIds: number[]) {
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: t("httpError", {
+        status: failed.status,
+        statusText: failed.statusText,
+      }),
     };
   }
 
   return { success: true };
 }
 
-export async function deleteEventMail(eventId: string, mailId: string) {
+export async function deleteEventMail(
+  eventId: string,
+  mailId: string,
+  t: ReturnType<typeof useTranslations<"EventDetails">>,
+) {
   const session = await verifySession();
 
   if (session == null) {
@@ -153,7 +177,10 @@ export async function deleteEventMail(eventId: string, mailId: string) {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: t("httpError", {
+        status: response.status,
+        statusText: response.statusText,
+      }),
     };
   }
 

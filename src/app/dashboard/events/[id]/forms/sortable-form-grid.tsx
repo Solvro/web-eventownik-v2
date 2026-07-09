@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { SortableTileGrid } from "@/components/sortable-tile-grid";
 import type { EventForm } from "@/types/forms";
 
@@ -13,10 +15,12 @@ function SortableFormGrid({
   forms: EventForm[];
   eventId: string;
 }) {
+  const t = useTranslations("EventDetails");
+
   return (
     <SortableTileGrid
       items={forms}
-      onReorder={async (orderedIds) => reorderForms(eventId, orderedIds)}
+      onReorder={async (orderedIds) => reorderForms(eventId, orderedIds, t)}
       renderItem={(form) => <FormEntry form={form} eventId={eventId} />}
     />
   );

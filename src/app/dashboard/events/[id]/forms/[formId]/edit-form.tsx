@@ -51,6 +51,7 @@ function EventFormEditForm({
   });
   const { toast } = useToast();
   const t = useTranslations("Dashboard");
+  const tEventDetails = useTranslations("EventDetails");
 
   const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
     form.formState.isDirty,
@@ -58,11 +59,16 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
-      const result = await updateEventForm(eventId, formToEdit.id.toString(), {
-        ...formToEdit,
-        ...values,
-        attributes: includedAttributes,
-      });
+      const result = await updateEventForm(
+        eventId,
+        formToEdit.id.toString(),
+        {
+          ...formToEdit,
+          ...values,
+          attributes: includedAttributes,
+        },
+        tEventDetails,
+      );
 
       if (result.success) {
         toast({

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { registerFormSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
@@ -132,7 +132,7 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.email?.message as AuthSchemaErrorKeys,
                 )}
@@ -155,7 +155,7 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.password
                     ?.message as AuthSchemaErrorKeys,
@@ -178,7 +178,7 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.firstName
                     ?.message as AuthSchemaErrorKeys,
@@ -201,7 +201,7 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   form.formState.errors.lastName
                     ?.message as AuthSchemaErrorKeys,

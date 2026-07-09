@@ -29,10 +29,9 @@ import {
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import { getFormTags } from "@/lib/message-tags/tag-builders";
-import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
@@ -237,11 +236,14 @@ function EventEmailEditForm({
       // NOTE: Simple emails have no schema
       schema: null,
     };
-    const result = await updateEventEmail({
-      eventId,
-      mailId: emailToEdit.id.toString(),
-      emailTemplate: updatedMail,
-    });
+    const result = await updateEventEmail(
+      {
+        eventId,
+        mailId: emailToEdit.id.toString(),
+        emailTemplate: updatedMail,
+      },
+      t,
+    );
 
     if (result.success) {
       toast({
@@ -348,7 +350,7 @@ function EventEmailEditForm({
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.name
                       ?.message as EventEmailEditFormErrors,
@@ -383,7 +385,7 @@ function EventEmailEditForm({
                   placeholder={t("writeMessage")}
                 />
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.content
                       ?.message as EventEmailEditFormErrors,

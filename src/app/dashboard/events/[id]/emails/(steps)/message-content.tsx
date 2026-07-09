@@ -24,9 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
-import { translateFormError } from "@/i18n/translate-form-error";
-import { getFormTags } from "@/lib/message-tags/tag-builders";
-import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
@@ -112,15 +111,18 @@ function MessageContentForm({
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
   ) {
-    const result = await createEventEmail({
-      eventId,
-      emailTemplate: {
-        ...newEmailTemplate,
-        ...values,
-        // NOTE: Simple emails have no schema
-        schema: null,
+    const result = await createEventEmail(
+      {
+        eventId,
+        emailTemplate: {
+          ...newEmailTemplate,
+          ...values,
+          // NOTE: Simple emails have no schema
+          schema: null,
+        },
       },
-    });
+      t,
+    );
 
     if (result.success) {
       toast({
@@ -182,7 +184,7 @@ function MessageContentForm({
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.name
                       ?.message as EventEmailTemplateErrors,
@@ -217,7 +219,7 @@ function MessageContentForm({
                   placeholder={t("writeMessage")}
                 />
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.content
                       ?.message as EventEmailTemplateErrors,

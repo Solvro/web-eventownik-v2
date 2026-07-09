@@ -22,7 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
 export type EventGeneralInfoErrors =
@@ -84,7 +84,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.name?.message as EventGeneralInfoErrors,
               )}
@@ -107,7 +107,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.location?.message as EventGeneralInfoErrors,
               )}
@@ -167,13 +167,13 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.startDate?.message as EventGeneralInfoErrors,
             )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.startTime?.message as EventGeneralInfoErrors,
             )}
@@ -236,13 +236,13 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.endDate?.message as EventGeneralInfoErrors,
             )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.endTime?.message as EventGeneralInfoErrors,
             )}
@@ -264,7 +264,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.organizer?.message as EventGeneralInfoErrors,
               )}
@@ -288,7 +288,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.contactEmail
                   ?.message as EventGeneralInfoErrors,
@@ -311,7 +311,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               placeholder={t("eventDescrPlaceholder")}
             />
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.description?.message as EventGeneralInfoErrors,
               )}

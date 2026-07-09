@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";
@@ -72,7 +72,7 @@ function LoginForm() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: translateFormError(t, result.error as LoginError),
+          description: translateOrFallback(t, result.error as LoginError),
         });
       }
     } catch (error) {
@@ -144,7 +144,7 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.email?.message as AuthSchemaErrorKeys,
                   )}
@@ -167,7 +167,7 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     form.formState.errors.password
                       ?.message as AuthSchemaErrorKeys,

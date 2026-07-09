@@ -32,7 +32,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
@@ -138,7 +138,7 @@ export function AttributeItem({
             }}
           />
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.attributes?.[index]?.name
                 ?.message as EventAttributesFormErrors,
@@ -248,7 +248,7 @@ export function AttributeItem({
             }}
           />
           <FormMessage className="text-sm text-red-500">
-            {translateFormError(
+            {translateOrFallback(
               t,
               formState.errors.attributes?.[index]?.reason
                 ?.message as EventAttributesFormErrors,
@@ -374,7 +374,7 @@ export function AttributeItem({
               className="[appearance:textfield]"
             />
             <FormMessage className="text-sm text-red-500">
-              {translateFormError(
+              {translateOrFallback(
                 t,
                 formState.errors.attributes?.[index]?.maxSelections
                   ?.message as EventAttributesFormErrors,

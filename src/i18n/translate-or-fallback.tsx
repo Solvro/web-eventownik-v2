@@ -3,13 +3,13 @@ import type { useTranslations } from "next-intl";
 type TranslationFunction = ReturnType<typeof useTranslations>;
 type TranslationKey = Parameters<TranslationFunction>[0];
 
-export function translateFormError(
+export function translateOrFallback(
   t: TranslationFunction,
-  errorMessage?: string,
+  message?: string,
   values?: Record<string, string | number | Date>,
 ) {
-  if (errorMessage !== undefined) {
-    const key = errorMessage as TranslationKey;
-    return t.has(key) ? t(key, values) : errorMessage;
+  if (message !== undefined) {
+    const key = message as TranslationKey;
+    return t.has(key) ? t(key, values) : message;
   }
 }

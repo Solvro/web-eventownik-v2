@@ -215,7 +215,7 @@ export function CreateEventForm() {
               : event.attributes,
         };
         try {
-          const result = await saveEvent(newEventObject);
+          const result = await saveEvent(newEventObject, t);
           if ("errors" in result) {
             toast({
               variant: "destructive",

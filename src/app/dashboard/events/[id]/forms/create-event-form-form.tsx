@@ -117,7 +117,7 @@ function CreateEventFormForm({
             attributes: includedAttributes,
           };
 
-          const result = await createEventForm(eventId, newForm);
+          const result = await createEventForm(eventId, newForm, t);
 
           if (result.success) {
             toast({

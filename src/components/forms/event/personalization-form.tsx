@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { translateFormError } from "@/i18n/translate-form-error";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
 // Required for usage of useFieldArray hook
@@ -196,7 +196,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateFormError(
+                  {translateOrFallback(
                     t,
                     formState.errors.termsLink
                       ?.message as EventPersonalizationFormErrors,
@@ -304,7 +304,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateFormError(
+                {translateOrFallback(
                   t,
                   formState.errors.slug
                     ?.message as EventPersonalizationFormErrors,
