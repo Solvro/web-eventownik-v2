@@ -292,7 +292,7 @@ export async function Team() {
       id="team"
       className="border-input container mb-16 flex flex-col items-center gap-8 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 sm:gap-24 sm:pb-20"
     >
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-8 overflow-hidden">
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
         </p>
