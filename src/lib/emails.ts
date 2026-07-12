@@ -10,7 +10,7 @@ export interface EmailTrigger {
   value: string;
 }
 
-export const EMAIL_TRIGGERS: EmailTrigger[] = [
+export const EMAIL_TRIGGERS: readonly EmailTrigger[] = [
   {
     name: "participantRegistration",
     description: "participantRegistrationDesc",
@@ -37,7 +37,7 @@ export const EMAIL_TRIGGERS: EmailTrigger[] = [
     description: "manualDesc",
     value: "manual",
   },
-] as const;
+];
 
 /** Values used for pivot_status in email send history filters (API + UI). */
 export const EMAIL_HISTORY_STATUS_FILTER_VALUES = [

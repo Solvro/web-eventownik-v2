@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import sanitize from "sanitize-html";
@@ -34,6 +34,8 @@ export default async function EventMailEditPage({
   params: Promise<{ id: string; emailId: string }>;
 }) {
   const t = await getTranslations("Dashboard");
+  const locale = await getLocale();
+
   const { id, emailId } = await params;
 
   const fetchedEmail = await getSingleEventEmail(id, emailId);
@@ -69,6 +71,7 @@ export default async function EventMailEditPage({
       </Link>
       <h1 className="text-2xl font-bold">{t("editEmailTemplate")}</h1>
       <EventEmailEditForm
+        key={locale} // Re-render on locale change to refresh email tag suggestion menu translations
         eventId={id}
         emailToEdit={emailToEdit}
         eventAttributes={attributes}

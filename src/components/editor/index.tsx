@@ -47,7 +47,7 @@ function Editor({
 
   return (
     <Puck
-      key={locale} // Force re-render when locale changes
+      key={locale} // Re-render on locale change to refresh email editor translations
       config={config}
       data={initialData}
       overrides={{
