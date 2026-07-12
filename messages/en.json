@@ -536,7 +536,10 @@
     "drawingPreview": "Drawing preview",
     "loading": "Loading...",
     "previewLoadFailed": "Failed to load preview",
-    "fileDownloadFailed": "Failed to download file!"
+    "fileDownloadFailed": "Failed to download file!",
+    "serverError": "The server is not working properly. Please try again later",
+    "fileNotFound": "File not found",
+    "eventNotFound": "Event not found or endpoint does not exist"
   },
   "Form": {
     "email": "Email",
@@ -736,7 +739,8 @@
     "refresh": "Refresh",
     "selectPlaceholder": "Select a template from the list",
     "confirmRecipients": "You are about to send this message to {count, plural, one {# participant} other {# participants}} with the following addresses:",
-    "send": "Send"
+    "send": "Send",
+    "httpError": "Error {status} {statusText}"
   },
   "Sidebar": {
     "general": "General",
@@ -820,7 +824,9 @@
     "close": "Close",
     "delete": "Delete",
     "clearAllOptions": "Clear all options",
-    "removeAdditionalOptions": "Remove additional options"
+    "removeAdditionalOptions": "Remove additional options",
+    "serverError": "The server is not working properly. Please try again later",
+    "unexpectedError": "An unexpected error occurred. Please try again"
   },
   "Themes": {
     "light": "Light",

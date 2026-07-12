@@ -33,6 +33,7 @@ import {
 } from "@/app/dashboard/events/[id]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { replaceEmptyParagraphs } from "@/lib/editor";
 import { cn } from "@/lib/utils";
 import type { PuckConfig, PuckMutationData } from "@/types/editor";
@@ -88,17 +89,19 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       const payload = { eventId: mutationData.eventId, emailTemplate: values };
 
       return mutationData.mode === "create"
-        ? createEventEmail(payload, tEventDetails)
-        : updateEventEmail(
-            { ...payload, mailId: mutationData.emailId },
-            tEventDetails,
-          );
+        ? createEventEmail(payload)
+        : updateEventEmail({ ...payload, mailId: mutationData.emailId });
     },
     onSuccess: (result) => {
       if (!result.success) {
         toast({
           title: t("error"),
-          description: result.error ?? t("unknownError"),
+          description:
+            translateOrFallback(
+              tEventDetails,
+              result.error?.key,
+              result.error?.values,
+            ) ?? t("unknownError"),
           variant: "destructive",
         });
         return;

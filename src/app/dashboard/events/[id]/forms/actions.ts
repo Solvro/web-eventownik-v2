@@ -1,8 +1,8 @@
 "use server";
 
 import { formatISO9075 } from "date-fns";
-import type { useTranslations } from "next-intl";
 
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
@@ -15,17 +15,13 @@ type Payload = Omit<
   attributes: FormAttributeBase[];
 };
 
-export async function createEventForm(
-  eventId: string,
-  form: Payload,
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function createEventForm(eventId: string, form: Payload) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: t("unauthorized"),
+      error: { key: "unauthorized" as EventDetailsKey },
     };
   }
 
@@ -64,12 +60,17 @@ export async function createEventForm(
 
     return {
       success: false,
-      error:
-        errorMessages ||
-        t("httpError", {
-          status: response.status,
-          statusText: response.statusText,
-        }),
+      error: errorMessages
+        ? {
+            message: errorMessages,
+          }
+        : {
+            key: "httpError" as EventDetailsKey,
+            values: {
+              status: response.status,
+              statusText: response.statusText,
+            },
+          },
     };
   }
 
@@ -80,14 +81,13 @@ export async function updateEventForm(
   eventId: string,
   formId: string,
   form: Payload,
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
 ) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: t("unauthorized"),
+      error: { key: "unauthorized" },
     };
   }
 
@@ -131,27 +131,28 @@ export async function updateEventForm(
 
     return {
       success: false,
-      error:
-        errorMessages ||
-        t("httpError", {
-          status: response.status,
-          statusText: response.statusText,
-        }),
+      error: errorMessages
+        ? {
+            message: errorMessages,
+          }
+        : {
+            key: "httpError" as EventDetailsKey,
+            values: {
+              status: response.status,
+              statusText: response.statusText,
+            },
+          },
     };
   }
 
   return { success: true };
 }
 
-export async function reorderForms(
-  eventId: string,
-  orderedIds: number[],
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function reorderForms(eventId: string, orderedIds: number[]) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: t("unauthorized") };
+    return { success: false, error: { key: "unauthorized" } };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -175,27 +176,26 @@ export async function reorderForms(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: failed.status,
-        statusText: failed.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
   return { success: true };
 }
 
-export async function deleteEventForm(
-  eventId: string,
-  formId: string,
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function deleteEventForm(eventId: string, formId: string) {
   const session = await verifySession();
 
   if (session == null) {
     return {
       success: false,
-      error: t("unauthorized"),
+      error: { key: "unauthorized" as EventDetailsKey },
     };
   }
 
@@ -214,10 +214,13 @@ export async function deleteEventForm(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: response.status,
-        statusText: response.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 

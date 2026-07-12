@@ -17,6 +17,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -59,16 +60,11 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
-      const result = await updateEventForm(
-        eventId,
-        formToEdit.id.toString(),
-        {
-          ...formToEdit,
-          ...values,
-          attributes: includedAttributes,
-        },
-        tEventDetails,
-      );
+      const result = await updateEventForm(eventId, formToEdit.id.toString(), {
+        ...formToEdit,
+        ...values,
+        attributes: includedAttributes,
+      });
 
       if (result.success) {
         toast({
@@ -78,7 +74,13 @@ function EventFormEditForm({
       } else {
         toast({
           title: t("failedToSaveFormChanges"),
-          description: result.error,
+          description:
+            result.error?.message ??
+            translateOrFallback(
+              tEventDetails,
+              result.error?.key,
+              result.error?.values,
+            ),
           variant: "destructive",
         });
       }

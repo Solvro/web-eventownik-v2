@@ -56,6 +56,8 @@ import { eventAtom } from "./state";
 
 export function CreateEventForm() {
   const t = useTranslations("EventDetails");
+  const tDashboard = useTranslations("Dashboard");
+
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -215,14 +217,19 @@ export function CreateEventForm() {
               : event.attributes,
         };
         try {
-          const result = await saveEvent(newEventObject, t);
+          const result = await saveEvent(newEventObject);
           if ("errors" in result) {
             toast({
               variant: "destructive",
               title: t("failedToCreateEvent"),
               description:
-                result.errors?.map((error_) => error_.message).join("\n") ??
-                t("tryCreatingEventAgain"),
+                result.errors
+                  ?.map((error_) =>
+                    typeof error_.message === "string"
+                      ? error_.message
+                      : tDashboard(error_.message.key, error_.message.values),
+                  )
+                  .join("\n") ?? t("tryCreatingEventAgain"),
             });
           } else if (result.id != null) {
             URL.revokeObjectURL(event.photoUrl);
@@ -234,6 +241,9 @@ export function CreateEventForm() {
                 description: t("eventCreatedWithIssues", {
                   problems: `${result.warnings
                     .slice(0, 3)
+                    .map((warning_) =>
+                      tDashboard(warning_.key, warning_.values),
+                    )
                     .join(
                       "\n",
                     )}${result.warnings.length > 3 ? `\n${t("andMoreWarnings", { count: result.warnings.length - 3 })}` : ""}`,

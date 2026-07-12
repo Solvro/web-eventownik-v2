@@ -235,14 +235,11 @@ function EventEmailEditForm({
       // NOTE: Simple emails have no schema
       schema: null,
     };
-    const result = await updateEventEmail(
-      {
-        eventId,
-        mailId: emailToEdit.id.toString(),
-        emailTemplate: updatedMail,
-      },
-      t,
-    );
+    const result = await updateEventEmail({
+      eventId,
+      mailId: emailToEdit.id.toString(),
+      emailTemplate: updatedMail,
+    });
 
     if (result.success) {
       toast({
@@ -252,7 +249,11 @@ function EventEmailEditForm({
     } else {
       toast({
         title: t("templateSaveFailed"),
-        description: result.error,
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }

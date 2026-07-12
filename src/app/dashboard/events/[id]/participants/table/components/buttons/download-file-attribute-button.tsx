@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { downloadFile } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -36,7 +37,7 @@ export function DownloadAttributeFileButton({
         toast({
           variant: "destructive",
           title: t("fileDownloadFailed"),
-          description: error ?? t("unknownError"),
+          description: translateOrFallback(t, error?.key) ?? t("unknownError"),
         });
         return;
       }

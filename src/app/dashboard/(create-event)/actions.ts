@@ -1,8 +1,8 @@
 "use server";
 
 import { formatISO } from "date-fns";
-import type { useTranslations } from "next-intl";
 
+import type { DashboardKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
@@ -14,23 +14,27 @@ export async function isSlugTaken(slug: string) {
   return response.ok;
 }
 
-interface SaveEventResult {
-  id?: string;
-  errors?: { message: string }[];
-  warnings?: string[];
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
 }
 
-export async function saveEvent(
-  event: Event,
-  t: ReturnType<typeof useTranslations<"Dashboard">>,
-): Promise<SaveEventResult> {
+interface SaveEventResult {
+  id?: string;
+  errors?: {
+    message: ErrorMessage | string;
+  }[];
+  warnings?: ErrorMessage[];
+}
+
+export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const session = await verifySession();
   if (session == null || typeof session.bearerToken !== "string") {
     throw new Error("Invalid session");
   }
   const { bearerToken } = session;
 
-  const warnings: string[] = [];
+  const warnings: ErrorMessage[] = [];
 
   const formData = new FormData();
 
@@ -61,7 +65,9 @@ export async function saveEvent(
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);
       return {
-        errors: [{ message: t("failedToProcessEventPhoto") }],
+        errors: [
+          { message: { key: "failedToProcessEventPhoto" as DashboardKey } },
+        ],
       };
     }
   }
@@ -86,12 +92,14 @@ export async function saveEvent(
 
   if (!("id" in data)) {
     console.error("[saveEvent] No event ID returned from server");
-    return { errors: [{ message: t("failedToCreateEvent") }] };
+    return {
+      errors: [{ message: { key: "failedToCreateEvent" as DashboardKey } }],
+    };
   }
 
   const eventId = data.id;
 
-  const coOrganizerErrors: string[] = [];
+  const coOrganizerErrors: ErrorMessage[] = [];
   let coOrganizersAdded = 0;
 
   for (const coorganizer of event.coorganizers) {
@@ -122,11 +130,12 @@ export async function saveEvent(
           coorganizer.email,
           errorData,
         );
-        coOrganizerErrors.push(
-          t("coOrganizerAddWarning", {
+        coOrganizerErrors.push({
+          key: "coOrganizerAddWarning",
+          values: {
             email: coorganizer.email,
-          }),
-        );
+          },
+        });
       }
     } catch (error) {
       console.error(
@@ -134,11 +143,12 @@ export async function saveEvent(
         coorganizer.email,
         error,
       );
-      coOrganizerErrors.push(
-        t("coOrganizerAddError", {
+      coOrganizerErrors.push({
+        key: "coOrganizerAddError",
+        values: {
           email: coorganizer.email,
-        }),
-      );
+        },
+      });
     }
   }
 
@@ -149,7 +159,7 @@ export async function saveEvent(
     warnings.push(...coOrganizerErrors);
   }
 
-  const attributeErrors: string[] = [];
+  const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
   for (const attribute of event.attributes) {
@@ -189,9 +199,10 @@ export async function saveEvent(
           attribute.name,
           errorData,
         );
-        attributeErrors.push(
-          t("attributeAddWarning", { name: attribute.name }),
-        );
+        attributeErrors.push({
+          key: "attributeAddWarning",
+          values: { name: attribute.name },
+        });
       }
     } catch (error) {
       console.error(
@@ -199,7 +210,10 @@ export async function saveEvent(
         attribute.name,
         error,
       );
-      attributeErrors.push(t("attributeAddError", { name: attribute.name }));
+      attributeErrors.push({
+        key: "attributeAddError",
+        values: { name: attribute.name },
+      });
     }
   }
 

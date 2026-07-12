@@ -19,6 +19,7 @@ import {
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 
 import { BlockForm, BlockSchema } from "./block-form";
 import type { BlockFormValues } from "./block-form";
@@ -72,7 +73,11 @@ function CreateBlockForm({
     } else {
       toast({
         title: t("failedToCreateBlock"),
-        description: result.error,
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }

@@ -1,8 +1,8 @@
 "use server";
 
-import type { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { UpdateEventEmailPayload } from "@/types/emails";
@@ -16,13 +16,10 @@ export async function getSingleEventEmailAction(
   return await getSingleEventEmail(eventId, emailId);
 }
 
-export async function createEventEmail(
-  data: {
-    eventId: string;
-    emailTemplate: UpdateEventEmailPayload;
-  },
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function createEventEmail(data: {
+  eventId: string;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -45,10 +42,13 @@ export async function createEventEmail(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: response.status,
-        statusText: response.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 
@@ -58,16 +58,16 @@ export async function createEventEmail(
   };
 }
 
-export async function updateEventEmail(
-  data: {
-    eventId: string;
-    mailId: string | null;
-    emailTemplate: UpdateEventEmailPayload;
-  },
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function updateEventEmail(data: {
+  eventId: string;
+  mailId: string | null;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
   if (data.mailId == null) {
-    return { success: false, error: t("invalidEmailId") };
+    return {
+      success: false,
+      error: { key: "invalidEmailId" as EventDetailsKey },
+    };
   }
 
   const session = await verifySession();
@@ -96,25 +96,27 @@ export async function updateEventEmail(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: response.status,
-        statusText: response.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 
   return { error: null, success: true };
 }
 
-export async function reorderEmails(
-  eventId: string,
-  orderedIds: number[],
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function reorderEmails(eventId: string, orderedIds: number[]) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: t("unauthorized") };
+    return {
+      success: false,
+      error: { key: "unauthorized" as EventDetailsKey },
+    };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -138,21 +140,20 @@ export async function reorderEmails(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: failed.status,
-        statusText: failed.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
   return { success: true };
 }
 
-export async function deleteEventMail(
-  eventId: string,
-  mailId: string,
-  t: ReturnType<typeof useTranslations<"EventDetails">>,
-) {
+export async function deleteEventMail(eventId: string, mailId: string) {
   const session = await verifySession();
 
   if (session == null) {
@@ -177,10 +178,13 @@ export async function deleteEventMail(
     );
     return {
       success: false,
-      error: t("httpError", {
-        status: response.status,
-        statusText: response.statusText,
-      }),
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 

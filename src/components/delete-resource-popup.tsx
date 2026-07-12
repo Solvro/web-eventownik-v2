@@ -14,11 +14,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 
 interface DeleteResourcePopupProps {
   resourceName: string;
   resourceType: string;
-  onDelete: () => Promise<{ success: boolean; error?: string }>;
+  onDelete: () => Promise<{
+    success: boolean;
+    error?: {
+      key: EventDetailsKey;
+      values?: Record<string, string | number | Date>;
+    };
+  }>;
   onSuccess?: () => void;
   triggerTitle?: string;
   triggerClassName?: string;
@@ -33,6 +41,8 @@ function DeleteResourcePopup({
   triggerClassName = "text-red-700",
 }: DeleteResourcePopupProps) {
   const t = useTranslations("Dashboard");
+  const tEventDetails = useTranslations("EventDetails");
+
   const form = useForm();
   const { toast } = useToast();
   const [shouldDisableButtons, setShouldDisableButtons] = useState(false);
@@ -59,7 +69,11 @@ function DeleteResourcePopup({
           resourceType: resourceType.toLowerCase(),
         }),
         variant: "destructive",
-        description: result.error,
+        description: translateOrFallback(
+          tEventDetails,
+          result.error?.key,
+          result.error?.values,
+        ),
       });
     }
   }

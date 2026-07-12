@@ -248,7 +248,6 @@ export function EventSettingsTabs({
         },
         coOrganizersChanges,
         attributesChanges,
-        t,
       );
       if ("errors" in eventResult) {
         const eventErrors = eventResult.errors.filter(
@@ -272,7 +271,22 @@ export function EventSettingsTabs({
               ...eventErrors,
               ...otherErrors,
             ]
-              .map((error) => error.message)
+              .map((error) =>
+                translateOrFallback(
+                  t,
+                  error.message.key,
+                  error.message.key === "failedToDeleteAttribute" &&
+                    error.message.values != null
+                    ? {
+                        ...error.message.values,
+                        errorData:
+                          error.message.values.errorData === "unknownError"
+                            ? t("unknownError")
+                            : error.message.values.errorData,
+                      }
+                    : error.message.values,
+                ),
+              )
               .join("\n")}`,
           });
         } else {
@@ -324,7 +338,7 @@ export function EventSettingsTabs({
         variant: "destructive",
         title: t("failedToDeleteEvent"),
         description: `${t("tryAgain")}\n${result.errors
-          .map((error) => translateOrFallback(t, error.message))
+          .map((error) => translateOrFallback(t, error.message.key))
           .join("\n")}`,
       });
     } else {

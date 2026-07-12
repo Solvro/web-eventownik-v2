@@ -11,6 +11,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { downloadFile } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -79,7 +80,7 @@ export function DrawingPreviewButton({
         toast({
           variant: "destructive",
           title: t("drawingDownloadFailed"),
-          description: error ?? t("unknownError"),
+          description: translateOrFallback(t, error?.key) ?? t("unknownError"),
         });
         return;
       }

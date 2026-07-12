@@ -110,18 +110,15 @@ function MessageContentForm({
   async function onSubmit(
     values: z.infer<typeof EventEmailTemplateContentSchema>,
   ) {
-    const result = await createEventEmail(
-      {
-        eventId,
-        emailTemplate: {
-          ...newEmailTemplate,
-          ...values,
-          // NOTE: Simple emails have no schema
-          schema: null,
-        },
+    const result = await createEventEmail({
+      eventId,
+      emailTemplate: {
+        ...newEmailTemplate,
+        ...values,
+        // NOTE: Simple emails have no schema
+        schema: null,
       },
-      t,
-    );
+    });
 
     if (result.success) {
       toast({
@@ -147,7 +144,11 @@ function MessageContentForm({
     } else {
       toast({
         title: t("templateAddFailed"),
-        description: result.error,
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }

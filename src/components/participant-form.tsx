@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
@@ -50,7 +51,11 @@ interface ParticipantFormProps {
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
-  ) => Promise<{ success: boolean; errors?: ErrorObject[]; error?: string }>;
+  ) => Promise<{
+    success: boolean;
+    errors?: ErrorObject[];
+    error?: SubmitFormError;
+  }>;
   includeEmail?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
@@ -66,6 +71,8 @@ export function ParticipantForm({
   editMode = false,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
+  const tEventDetails = useTranslations("EventDetails");
+
   const locale = useLocale();
   const router = useRouter();
 
@@ -167,7 +174,14 @@ export function ParticipantForm({
             title: editMode
               ? t("editSaveFailedTitle")
               : t("registrationFailedTitle"),
-            description: result.error ?? t("tryAgainLater"),
+            description:
+              result.error?.message ??
+              translateOrFallback(
+                tEventDetails,
+                result.error?.key,
+                result.error?.values,
+              ) ??
+              t("tryAgainLater"),
           });
         }
       }

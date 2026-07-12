@@ -37,6 +37,7 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 
@@ -117,7 +118,7 @@ function CreateEventFormForm({
             attributes: includedAttributes,
           };
 
-          const result = await createEventForm(eventId, newForm, t);
+          const result = await createEventForm(eventId, newForm);
 
           if (result.success) {
             toast({
@@ -148,7 +149,9 @@ function CreateEventFormForm({
           } else {
             toast({
               title: t("failedToCreateForm"),
-              description: result.error,
+              description:
+                result.error?.message ??
+                translateOrFallback(t, result.error?.key, result.error?.values),
               variant: "destructive",
             });
           }
