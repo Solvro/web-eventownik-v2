@@ -22,7 +22,7 @@ export default async function AuthLayout({
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="flex max-w-lg flex-col items-center gap-8">
+      <div className="flex w-full max-w-md flex-col items-center gap-8">
         {children}
       </div>
     </div>
