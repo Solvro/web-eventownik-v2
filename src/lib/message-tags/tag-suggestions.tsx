@@ -13,7 +13,8 @@ import type { useTranslations } from "next-intl";
 
 import { TagsList } from "@/components/tags-list";
 
-import { MessageTag, getMessageTags, getTagStyle } from ".";
+import { getMessageTags, getTagStyle } from ".";
+import type { MessageTag } from ".";
 
 /**
  * NOTE: This function assumes that the TipTap editor with Tags extensions mounted is located in a Puck editor instance
@@ -112,24 +113,23 @@ const getSuggestionOptions = (suggestionList: MessageTag[]) => {
 
           popup = component.element;
 
-          const destroy = () => {
-            activePopupEditor = null;
-            popup?.remove();
-            component?.destroy();
-
-            props.editor.off("blur", handleBlur);
-            document.removeEventListener("mousedown", handleClickOutside);
-          };
-
           const handleBlur = () => {
             destroy();
           };
-
-          const handleClickOutside = (e: MouseEvent) => {
-            if (!props.editor.view.dom.contains(e.target as Node)) {
+          const handleClickOutside = (event_: MouseEvent) => {
+            if (!props.editor.view.dom.contains(event_.target as Node)) {
               destroy();
             }
           };
+
+          function destroy() {
+            activePopupEditor = null;
+            popup.remove();
+            component.destroy();
+
+            props.editor.off("blur", handleBlur);
+            document.removeEventListener("mousedown", handleClickOutside);
+          }
 
           props.editor.on("blur", handleBlur);
           document.addEventListener("mousedown", handleClickOutside);
