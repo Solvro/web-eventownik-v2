@@ -21,14 +21,14 @@ export function Partners() {
           <div className="flex w-full flex-col items-center justify-evenly gap-16 px-16 py-8 lg:flex-row">
             <Image
               src={"/assets/logo/pwr.png"}
-              alt={t("wroclawUniversityOfScienceAndTechnology")}
+              alt={t("wust")}
               width={300}
               height={300}
               className="max-h-12 w-auto dark:invert"
             />
             <Image
               src={"/assets/logo/solvro_black.png"}
-              alt={t("knsolvro")}
+              alt={t("knSolvro")}
               width={300}
               height={300}
               className="max-h-12 w-auto dark:invert"

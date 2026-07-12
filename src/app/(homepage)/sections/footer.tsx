@@ -48,7 +48,7 @@ export function Footer() {
           </div>
           <div className="flex w-full flex-col items-center justify-between gap-8 sm:flex-row">
             <a
-              title={t("knsolvro")}
+              title={t("knSolvro")}
               href="https://solvro.pwr.edu.pl/"
               target="_blank"
               rel="noopener noreferrer"
