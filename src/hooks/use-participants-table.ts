@@ -46,6 +46,7 @@ export function useParticipantsTable({
   const [rowSnapshots, setRowSnapshots] = useState<
     Record<number, FlattenedParticipant>
   >({});
+  const [sorting, setSorting] = useState([{ id: "createdAt", desc: false }]);
 
   useLayoutEffect(() => {
     try {
@@ -77,8 +78,10 @@ export function useParticipantsTable({
     state: {
       globalFilter,
       columnOrder,
+      sorting,
     },
     onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
