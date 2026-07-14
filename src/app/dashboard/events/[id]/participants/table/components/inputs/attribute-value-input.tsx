@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ export function AttributeValueInput({
   onChange,
 }: AttributeValueInputProps) {
   type MultiOption = AttributeOption | Block;
+  const t = useTranslations("Table");
 
   function resolveMultiOption(option: MultiOption): {
     value: string;
@@ -211,7 +213,7 @@ export function AttributeValueInput({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=" ">Brak</SelectItem>
+            <SelectItem value=" ">{t("none")}</SelectItem>
             {attribute.options?.map((option) => (
               <SelectItem
                 key={typeof option === "string" ? option : option.value}
@@ -249,10 +251,10 @@ export function AttributeValueInput({
           }}
         >
           <SelectTrigger>
-            <SelectValue>{selectedBlock?.name ?? "Brak"}</SelectValue>
+            <SelectValue>{selectedBlock?.name ?? t("none")}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=" ">Brak</SelectItem>
+            <SelectItem value=" ">{t("none")}</SelectItem>
             {rootBlock?.children.map((block) => (
               <SelectItem key={block.id} value={block.id.toString()}>
                 {block.name}

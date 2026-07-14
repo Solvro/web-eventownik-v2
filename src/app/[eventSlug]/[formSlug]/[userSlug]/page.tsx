@@ -1,5 +1,6 @@
 import { User } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
@@ -80,12 +81,13 @@ async function getUserData(
 export async function generateMetadata({
   params,
 }: FormPageProps): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
   const { eventSlug, formSlug } = await params;
 
   const form = await getForm(eventSlug, formSlug);
 
   return {
-    title: form === null ? "Formularz" : form.name,
+    title: form === null ? t("form") : form.name,
   };
 }
 

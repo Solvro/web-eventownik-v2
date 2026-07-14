@@ -1,6 +1,7 @@
 import { compareAsc, isBefore, isSameDay } from "date-fns";
 import { format as formatDate } from "date-fns/format";
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -33,6 +34,8 @@ function Event({
       ? "/assets/event-photo-placeholder.png"
       : `${PHOTO_URL}/${photoUrl}`;
 
+  const t = useTranslations("Homepage");
+
   // Helper to render date range using date-fns
   function renderDate() {
     const sameDay = isSameDay(startDate, endDate);
@@ -46,9 +49,13 @@ function Event({
     ) : (
       // Multi-day event: show start date on top, end date on bottom
       <>
-        <span>Od {formatDate(startDate, "dd.MM.yyyy")}</span>
+        <span>
+          {t("from")} {formatDate(startDate, "dd.MM.yyyy")}
+        </span>
         <br />
-        <span>do {formatDate(endDate, "dd.MM.yyyy")}</span>
+        <span>
+          {t("to")} {formatDate(endDate, "dd.MM.yyyy")}
+        </span>
       </>
     );
   }
@@ -58,19 +65,19 @@ function Event({
     const now = new Date();
     if (now < startDate) {
       return {
-        status: "Nadchodzące",
+        status: t("upcoming"),
         style:
           "rounded-full bg-[#88FC61] px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#487115] dark:bg-[#88FC61]/20 dark:text-[#88FC61]",
       };
     } else if (now >= startDate && now <= endDate) {
       return {
-        status: "W trakcie",
+        status: t("ongoing"),
         style:
           "rounded-full bg-[#4473E1]/20 px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#4473E1] dark:text-[#84a9ff]",
       };
     } else {
       return {
-        status: "Zakończone",
+        status: t("finished"),
         style:
           "rounded-full bg-gray-300 px-5 py-2 text-center font-extrabold whitespace-nowrap text-gray-600 dark:bg-gray-700/80 dark:text-gray-300",
       };
@@ -127,7 +134,7 @@ function Event({
                 className="border-input/20 flex w-full items-center justify-center rounded-full border bg-[#d6d6d6] text-black group-hover:bg-[#4473E1] group-hover:text-white group-hover:hover:bg-[#3458ae] lg:w-min"
               >
                 <Link href={`/${slug}`}>
-                  Sprawdź
+                  {t("viewDetails")}
                   <ArrowUpRight />
                 </Link>
               </Button>
@@ -148,6 +155,8 @@ function Event({
 }
 
 export function EventList({ events }: { events: EventType[] | undefined }) {
+  const t = useTranslations("Homepage");
+
   return (
     <section id="events" className="flex flex-col">
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b bg-white dark:bg-[#101011]">
@@ -181,7 +190,7 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
             ))
         ) : (
           <div className="flex h-64 w-full items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-xl">Brak wydarzeń w wybranym miesiącu</p>
+            <p className="text-xl">{t("noEventsInSelectedMonth")}</p>
           </div>
         )}
       </div>

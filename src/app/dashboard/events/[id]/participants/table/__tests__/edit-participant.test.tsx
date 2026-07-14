@@ -42,7 +42,7 @@ describe("Editing participant", () => {
 
     const firstRow = getDataRow(rowIndexForEditing);
 
-    const editButton = getByRole(firstRow, "button", { name: /edit/i });
+    const editButton = getByRole(firstRow, "button", { name: /edytuj/i });
     expect(editButton).toBeVisible();
 
     await user.click(editButton);
@@ -69,7 +69,7 @@ describe("Editing participant", () => {
     await user.type(numberInput, newNumber);
 
     const saveButton = getByRole(firstRow, "button", {
-      name: /save/i,
+      name: /zapisz/i,
     });
     await user.click(saveButton);
     const toast = screen.getByRole("region");

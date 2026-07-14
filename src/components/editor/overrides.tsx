@@ -2,6 +2,7 @@
 
 import { FieldLabel } from "@puckeditor/core";
 import type { Overrides } from "@puckeditor/core";
+import type { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +16,9 @@ import type { PuckConfig } from "@/types/editor";
 
 import { NumberButtonInput } from "./number-button-input";
 
-export const overrides: Partial<Overrides<PuckConfig>> = {
+export const createOverrides = (
+  t: ReturnType<typeof useTranslations>,
+): Partial<Overrides<PuckConfig>> => ({
   fieldTypes: {
     text: ({ onChange, name, value, field }) => (
       <>
@@ -50,7 +53,7 @@ export const overrides: Partial<Overrides<PuckConfig>> = {
             defaultValue={value as string}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Wybierz opcję" />
+              <SelectValue placeholder={t("select")} />
             </SelectTrigger>
             <SelectContent>
               {field.options.map((option) => (
@@ -68,4 +71,4 @@ export const overrides: Partial<Overrides<PuckConfig>> = {
       );
     },
   },
-};
+});

@@ -49,7 +49,7 @@ export function TableToolbar({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <InputGroup className="bg-background! h-10 w-full md:w-64">
+      <InputGroup className="bg-background! h-10 w-full md:w-66">
         <InputGroupInput
           placeholder={t("searchPlaceholder", {
             count: participantsCount,

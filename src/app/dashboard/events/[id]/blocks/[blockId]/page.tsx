@@ -1,5 +1,6 @@
 import { Cuboid } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { CreateBlockForm } from "@/app/dashboard/events/[id]/blocks/[blockId]/create-block-form";
@@ -92,6 +93,7 @@ export default async function EventBlockEditPage({
 }: {
   params: Promise<{ id: string; blockId: string }>;
 }) {
+  const t = await getTranslations("Dashboard");
   const { id: eventId, blockId: rootBlockId } = await params;
   const session = await verifySession();
   if (session == null) {
@@ -115,10 +117,11 @@ export default async function EventBlockEditPage({
           <div className="md:space-y-2">
             <h1 className="text-3xl font-bold">{rootBlockName}</h1>
             <span className="text-muted-foreground text-lg">
-              Łączna liczba uczestników:{" "}
-              {rootBlock.children
-                .map((block) => block.meta.participantsInBlockCount ?? 0)
-                .reduce((a, b) => a + b, 0)}{" "}
+              {t("totalParticipants", {
+                count: rootBlock.children
+                  .map((block) => block.meta.participantsInBlockCount ?? 0)
+                  .reduce((a, b) => a + b, 0),
+              })}
             </span>
           </div>
           <ToggleParticipantsVisibilityButton />
@@ -139,7 +142,7 @@ export default async function EventBlockEditPage({
             <div className="flex w-full flex-col items-center justify-center py-12 text-center">
               <Cuboid className="text-muted-foreground mb-4 size-12" />
               <h3 className="text-muted-foreground text-lg">
-                Nie masz jeszcze żadnego bloku w bloku
+                {t("noBlocksInBlockYet")}
               </h3>
             </div>
           </div>

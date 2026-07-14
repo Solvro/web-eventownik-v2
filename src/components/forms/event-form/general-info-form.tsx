@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -14,18 +15,35 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
-export const EventFormGeneralInfoSchema = z.object({
-  name: z.string().nonempty({ message: "Nazwa jest wymagana" }),
-  description: z.string().nonempty({ message: "Opis jest wymagany" }),
-  startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
-  endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
-  startDate: z.date(),
-  endDate: z.date(),
-  isFirstForm: z.boolean().default(false),
-  isOpen: z.boolean().default(true),
-}); /* 
+export type EventFormGeneralInfoErrors =
+  | "nameRequired"
+  | "descriptionRequired"
+  | "startTimeRequired"
+  | "endTimeRequired";
+
+export const EventFormGeneralInfoSchema = z
+  .object({
+    name: z.string().nonempty({ message: "nameRequired" }),
+    description: z.string(),
+    startTime: z.string().nonempty("startTimeRequired"),
+    endTime: z.string().nonempty("endTimeRequired"),
+    startDate: z.date(),
+    endDate: z.date(),
+    isFirstForm: z.boolean().default(false),
+    isOpen: z.boolean().default(true),
+  })
+  .refine(
+    ({ isFirstForm, description }) =>
+      isFirstForm || description.trim() !== "<p></p>",
+    {
+      path: ["description"],
+      message: "descriptionRequired",
+    },
+  );
+/* 
   .refine(
     (schema) => {
       const startDate = new Date(schema.startDate);
@@ -52,6 +70,7 @@ interface GeneralInfoFormProps {
 }
 
 export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
+  const t = useTranslations("EventDetails");
   const { control, formState, watch } =
     useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
@@ -62,16 +81,21 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nazwa formularza</FormLabel>
+            <FormLabel>{t("formName")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="Podaj nazwę formularza"
+                placeholder={t("enterFormName")}
                 disabled={formState.isSubmitting ? true : undefined}
                 {...field}
               />
             </FormControl>
-            <FormMessage>{formState.errors.name?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateOrFallback(
+                t,
+                formState.errors.name?.message as EventFormGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />
@@ -205,17 +229,21 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Opis formularza</FormLabel>
-            <FormDescription>
-              W przypadku formularza rejestracyjnego, zamiast poniższej
-              zawartości wyświetli się opis wydarzenia
-            </FormDescription>
+            <FormLabel>{t("formDescr")}</FormLabel>
+            <FormDescription>{t("registrationFormDescr")}</FormDescription>
             <WysiwygEditor
               content={field.value}
               onChange={field.onChange}
               disabled={watch("isFirstForm")}
+              placeholder={t("enterFormDescr")}
             />
-            <FormMessage>{formState.errors.description?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateOrFallback(
+                t,
+                formState.errors.description
+                  ?.message as EventFormGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />
@@ -225,7 +253,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex w-fit flex-col">
-            <FormLabel>Formularz rejestracyjny?</FormLabel>
+            <FormLabel>{t("isRegistrationForm")}</FormLabel>
             <FormControl>
               <Switch
                 checked={field.value}
@@ -243,10 +271,8 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex w-fit flex-col">
-            <FormLabel>Włączony?</FormLabel>
-            <FormDescription>
-              Określa, czy formularz przyjmuje nowe zgłoszenia
-            </FormDescription>
+            <FormLabel>{t("isEnabled")}</FormLabel>
+            <FormDescription>{t("acceptingSubmissionsDescr")}</FormDescription>
             <FormControl>
               <Switch
                 checked={field.value}

@@ -36,6 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
@@ -81,7 +82,11 @@ function SendMailForm({
     } else {
       toast({
         title: t("errorTitle"),
-        description: result.error,
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }

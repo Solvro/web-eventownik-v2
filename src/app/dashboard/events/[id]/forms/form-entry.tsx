@@ -1,4 +1,5 @@
 import { SquarePen } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -7,13 +8,15 @@ import type { EventForm } from "@/types/forms";
 import { DeleteFormPopup } from "./delete-form-popup";
 
 function FormEntry({ form, eventId }: { form: EventForm; eventId: string }) {
+  const t = useTranslations("Dashboard");
+
   return (
     <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" asChild>
           <Link href={`forms/${form.id.toString()}`}>
             <SquarePen />
-            <span className="sr-only">Edytuj formularz</span>
+            <span className="sr-only">{t("editForm")}</span>
           </Link>
         </Button>
         {/* TODO: Implement form preview */}

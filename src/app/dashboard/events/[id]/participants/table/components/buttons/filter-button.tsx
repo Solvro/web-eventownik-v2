@@ -1,5 +1,6 @@
 import type { Column } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,8 @@ export function FilterButton({
   blocks: (Block | null)[] | null;
   attributeId: number;
 }) {
+  const t = useTranslations("Table");
+
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
@@ -48,8 +51,8 @@ export function FilterButton({
 
     if (attributeType === "checkbox" && options_ === null) {
       options = [
-        { label: "True", value: "true" },
-        { label: "False", value: "false" },
+        { label: t("true"), value: "true" },
+        { label: t("false"), value: "false" },
       ];
     }
 
@@ -67,7 +70,7 @@ export function FilterButton({
         | ParticipantAttributeValueType[]
         | undefined) ?? [];
 
-    options.push({ label: "Brak", value: null });
+    options.push({ label: t("none"), value: null });
 
     return (
       <DropdownMenu>
@@ -75,7 +78,7 @@ export function FilterButton({
           <Button
             variant={filterValues.length === 0 ? "eventGhost" : "outline"}
             size="icon"
-            aria-label="Otwórz menu filtrów"
+            aria-label={t("openFiltersMenu")}
           >
             <Filter strokeWidth={filterValues.length === 0 ? 2 : 3} />
           </Button>

@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,9 @@ export function AddCoOrganizerInput({
   existingEmails,
   onAdd,
 }: AddCoOrganizerInputProps) {
+  const t = useTranslations("Dashboard");
+  const tEventPermissions = useTranslations("EventPermissions");
+
   const [newEmail, setNewEmail] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<
     PermissionType[]
@@ -46,7 +50,7 @@ export function AddCoOrganizerInput({
         onChange={(event_) => {
           setNewEmail(event_.target.value);
         }}
-        placeholder="Wprowadź email współorganizatora"
+        placeholder={t("enterCoorganizerEmail")}
         className="h-12 rounded-xl text-lg sm:w-full md:text-sm"
       />
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -65,7 +69,7 @@ export function AddCoOrganizerInput({
         <PopoverContent className="w-min">
           <div className="flex flex-col gap-2">
             <span className="text-sm leading-none font-medium">
-              Tymczasowo nie można rozdzielać uprawnień
+              {t("permissionsTemporarilyUnavailable")}
             </span>
             {PERMISSIONS_CONFIG.map(({ permission, label }) => (
               <div key={permission.id} className="flex items-center space-x-2">
@@ -90,7 +94,7 @@ export function AddCoOrganizerInput({
                   htmlFor={`permission-${permission.id.toString()}-new`}
                   className="cursor-pointer"
                 >
-                  {label}
+                  {tEventPermissions(label)}
                 </Label>
               </div>
             ))}
@@ -101,10 +105,10 @@ export function AddCoOrganizerInput({
                   setIsPopoverOpen(false);
                 }}
               >
-                Anuluj
+                {t("cancel")}
               </Button>
               <Button variant="eventDefault" onClick={handleAdd}>
-                Dodaj
+                {t("add")}
               </Button>
             </div>
           </div>

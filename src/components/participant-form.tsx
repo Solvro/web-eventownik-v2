@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
@@ -28,11 +29,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import {
   cn,
   getAttributeLabel,
   getSchemaObjectForAttributes,
 } from "@/lib/utils";
+import type { FormValidationErrors } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -48,7 +51,11 @@ interface ParticipantFormProps {
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
-  ) => Promise<{ success: boolean; errors?: ErrorObject[]; error?: string }>;
+  ) => Promise<{
+    success: boolean;
+    errors?: ErrorObject[];
+    error?: SubmitFormError;
+  }>;
   includeEmail?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
@@ -64,6 +71,8 @@ export function ParticipantForm({
   editMode = false,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
+  const tEventDetails = useTranslations("EventDetails");
+
   const locale = useLocale();
   const router = useRouter();
 
@@ -80,7 +89,7 @@ export function ParticipantForm({
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const hCaptchaRef = useRef<HCaptcha>(null);
 
-  const submitText = editMode ? t("save") : t("signUp");
+  const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
@@ -165,7 +174,14 @@ export function ParticipantForm({
             title: editMode
               ? t("editSaveFailedTitle")
               : t("registrationFailedTitle"),
-            description: result.error ?? t("tryAgainLater"),
+            description:
+              result.error?.message ??
+              translateOrFallback(
+                tEventDetails,
+                result.error?.key,
+                result.error?.values,
+              ) ??
+              t("tryAgainLater"),
           });
         }
       }
@@ -250,8 +266,8 @@ export function ParticipantForm({
         form.setError(attribute.id.toString(), {
           message:
             attribute.type === "file"
-              ? "To pole wymaga wgrania pliku."
-              : "To pole wymaga narysowania czegoś.",
+              ? t("fileUploadRequired")
+              : t("drawingRequired"),
         });
       }
     }
@@ -283,7 +299,7 @@ export function ParticipantForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Email{" "}
+                  {t("email")}{" "}
                   <Tooltip>
                     <TooltipTrigger type="button">
                       <span className="text-red-500">*</span>
@@ -376,11 +392,13 @@ export function ParticipantForm({
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
-                    {
+                    {translateOrFallback(
+                      t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
                       (form.formState.errors as any)[attribute.id.toString()]
-                        ?.message
-                    }
+                        ?.message as FormValidationErrors,
+                      { name: getAttributeLabel(attribute.name, "pl") },
+                    )}
                   </FormMessage>
                 </FormItem>
               )}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import React from "react";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
@@ -15,6 +16,7 @@ interface EventPageProps {
 export async function generateMetadata({
   params,
 }: EventPageProps): Promise<Metadata> {
+  const t = await getTranslations("Event");
   const { eventSlug } = await params;
 
   const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
@@ -25,14 +27,14 @@ export async function generateMetadata({
     console.error(error);
     return {
       title: "Eventownik",
-      description: "Nie znaleziono wydarzenia 😪",
+      description: t("notFound"),
     };
   }
   const event = (await response.json()) as Event;
 
   return {
-    title: `Polityka prywatności - ${event.name}`,
-    description: `Polityka prywatności wydarzenia ${event.name}`,
+    title: t("privacyPolicyTitle", { name: event.name }),
+    description: t("eventPrivacyPolicy", { name: event.name }),
     openGraph: {
       images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },

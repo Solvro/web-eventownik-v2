@@ -2,6 +2,11 @@
 
 import { redirect } from "next/navigation";
 
+import type {
+  ExportKey,
+  SendMailKey,
+  TableKey,
+} from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
@@ -137,12 +142,12 @@ export async function deleteManyParticipants(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return {
       success: false,
-      error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+      error: { key: "unexpectedError" as TableKey },
     };
   }
   return { success: true };
@@ -170,7 +175,7 @@ export async function deleteParticipant(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return { success: false };
@@ -219,7 +224,7 @@ export async function updateParticipant(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return { success: false };
@@ -270,13 +275,13 @@ export async function exportData(eventId: string) {
     if (response.status === 404) {
       return {
         success: false,
-        error: "Nie znaleziono wydarzenia lub endpoint nie istnieje.",
+        error: { key: "eventNotFound" as ExportKey },
       };
     }
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+        error: { key: "serverError" as ExportKey },
       };
     }
     return { success: false };
@@ -318,7 +323,10 @@ export async function sendMail(
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as SendMailKey,
+        values: { status: response.status, statusText: response.statusText },
+      },
     };
   }
 
@@ -350,13 +358,13 @@ export async function downloadAttributeFile(
     if (response.status === 404) {
       return {
         success: false,
-        error: "Nie znaleziono pliku.",
+        error: { key: "fileNotFound" as ExportKey },
       };
     }
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+        error: { key: "serverError" as ExportKey },
       };
     }
     return { success: false };
