@@ -49,6 +49,7 @@ const nextConfig: NextConfig = {
     },
     viewTransition: true,
   },
+  output: "standalone",
 };
 
 const withNextIntl = createNextIntlPlugin();
