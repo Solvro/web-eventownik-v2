@@ -50,6 +50,13 @@ export function AttributeInputBlock({
             ? attribute.meta.pivot_value.includes(block.id.toString())
             : attribute.meta.pivot_value === block.id.toString(),
         );
+  const hasParticipants = block.meta.participants.length > 0;
+  const isAnonymousList =
+    hasParticipants &&
+    block.meta.participants.every(
+      (participant) =>
+        participant.name === "" || participant.name === undefined,
+    );
 
   const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
 
@@ -100,47 +107,53 @@ export function AttributeInputBlock({
         </p>
       ) : null}
       <div className="mt-auto">
-        <Popover>
-          <PopoverTrigger
-            className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
-            disabled={block.meta.participants.length === 0}
-          >
-            {t("participants")}
-            <ChevronRight className="size-4 transition-transform" />
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-(--radix-popover-trigger-width) p-2"
-            align="center"
-          >
-            {block.meta.participants.length === 0 ? (
-              <p className="text-muted-foreground text-sm">
-                {t("noParticipants")}
-              </p>
-            ) : (
-              <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
-                <ul className="divide-border/60 space-y-0.5 px-1">
-                  {block.meta.participants.map((occupant) => {
-                    const isAnonymous =
-                      occupant.name === "" || occupant.name === undefined;
-                    return (
-                      <li
-                        key={occupant.id}
-                        className={cn(
-                          "rounded-sm px-2 py-1.5 text-sm",
-                          isAnonymous && "text-muted-foreground italic",
-                        )}
-                      >
-                        {isAnonymous
-                          ? t("anonymousParticipant")
-                          : occupant.name}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </ScrollArea>
-            )}
-          </PopoverContent>
-        </Popover>
+        {isAnonymousList ? (
+          <p className="text-muted-foreground text-sm">
+            {t("anonymousParticipantsList")}
+          </p>
+        ) : (
+          <Popover>
+            <PopoverTrigger
+              className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
+              disabled={!hasParticipants}
+            >
+              {t("participants")}
+              <ChevronRight className="size-4 transition-transform" />
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-(--radix-popover-trigger-width) p-2"
+              align="center"
+            >
+              {hasParticipants ? (
+                <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
+                  <ul className="divide-border/60 space-y-0.5 px-1">
+                    {block.meta.participants.map((occupant) => {
+                      const isAnonymous =
+                        occupant.name === "" || occupant.name === undefined;
+                      return (
+                        <li
+                          key={occupant.id}
+                          className={cn(
+                            "rounded-sm px-2 py-1.5 text-sm",
+                            isAnonymous && "text-muted-foreground italic",
+                          )}
+                        >
+                          {isAnonymous
+                            ? t("anonymousParticipant")
+                            : occupant.name}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </ScrollArea>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  {t("noParticipants")}
+                </p>
+              )}
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </FormItem>
   );
