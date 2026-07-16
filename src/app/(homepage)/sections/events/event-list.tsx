@@ -120,7 +120,7 @@ function Event({
                 {getEventStatus().status}
               </p>
             </div>
-            <div className="flex w-full flex-col gap-12 xl:w-[calc(100%-40rem)] 2xl:w-[calc(100%-48rem)]">
+            <div className="flex w-full flex-col gap-12 xl:w-[calc(100%-42rem)] 2xl:w-[calc(100%-50rem)]">
               <div className="w-full space-y-6">
                 <p className="text-4xl font-semibold">{name}</p>
                 <p className="text-sm font-medium">{organizer}</p>
