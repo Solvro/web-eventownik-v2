@@ -112,7 +112,7 @@ function Event({
         <div className="relative flex h-full w-full flex-row items-center gap-16">
           <div className="flex w-full flex-row gap-16">
             {/* Desktop view only */}
-            <div className="hidden w-64 flex-col items-center gap-4 xl:flex">
+            <div className="hidden w-74 flex-col items-center gap-4 xl:flex">
               <p className="text-center text-4xl font-extrabold text-[#274276] dark:text-[#4473E1]">
                 {renderDate()}
               </p>
@@ -120,13 +120,18 @@ function Event({
                 {getEventStatus().status}
               </p>
             </div>
-            <div className="flex flex-col gap-12 xl:w-[calc(100%-40rem)] 2xl:w-[calc(100%-48rem)]">
+            <div className="flex w-full flex-col gap-12 xl:w-[calc(100%-40rem)] 2xl:w-[calc(100%-48rem)]">
               <div className="w-full space-y-6">
                 <p className="text-4xl font-semibold">{name}</p>
                 <p className="text-sm font-medium">{organizer}</p>
-                <ScrollArea className="h-38 pr-3 sm:text-justify">
-                  <SanitizedContent contentToSanitize={description ?? ""} />
-                </ScrollArea>
+                {description === null ||
+                /^<p>\s*<\/p>$/.test(description.trim()) ? (
+                  <div className="xl:h-38" />
+                ) : (
+                  <ScrollArea className="h-38 pr-3 sm:text-justify">
+                    <SanitizedContent contentToSanitize={description} />
+                  </ScrollArea>
+                )}
               </div>
               <Button
                 asChild
