@@ -128,7 +128,8 @@ export function AttributeInputBlock({
                 <ul className="divide-border/60 space-y-0.5 px-1">
                   {block.meta.participants.map((occupant) => {
                     const isAnonymous =
-                      occupant.name === "" || occupant.name === undefined;
+                      occupant.name?.trim() === "" ||
+                      occupant.name === undefined;
                     return (
                       <li
                         key={occupant.id}
