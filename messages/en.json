@@ -577,6 +577,7 @@
     "participants": "Participants",
     "noParticipants": "No participants",
     "anonymousParticipant": "Anonymous participant",
+    "anonymousParticipantsList": "This list is anonymous",
     "other": "Other",
     "none": "None",
     "selectAttribute": "Select {name}",
