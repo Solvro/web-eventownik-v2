@@ -55,7 +55,7 @@ export function AttributeInputBlock({
     hasParticipants &&
     block.meta.participants.every(
       (participant) =>
-        participant.name === "" || participant.name === undefined,
+        participant.name?.trim() === "" || participant.name === undefined,
     );
 
   const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
