@@ -2,12 +2,21 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { FileSpreadsheet } from "lucide-react";
+import { AnimatePresence } from "motion/react";
 import { useLocale } from "next-intl";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { importParticipants } from "@/app/dashboard/events/[id]/participants/actions";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
@@ -16,7 +25,6 @@ import type { Block } from "@/types/blocks";
 import { DragOverlay } from "./import-participants/drag-overlay";
 import { ImportStep } from "./import-participants/import-step";
 import type { CsvData, MappingTarget } from "./import-participants/types";
-import { SKIP_TARGET } from "./import-participants/types";
 import { UploadStep } from "./import-participants/upload-step";
 import {
   getValidationMessages,
@@ -91,9 +99,6 @@ export function ImportParticipantsDialog({
     preparedImport.duplicateTargets.length === 0 &&
     preparedImport.missingRequiredTargets.length === 0 &&
     !isImporting;
-  const mappedColumnsCount = Object.values(mappings).filter(
-    (target) => target !== SKIP_TARGET,
-  ).length;
   const validationMessages = getValidationMessages(preparedImport);
 
   function chooseFile() {
@@ -111,21 +116,24 @@ export function ImportParticipantsDialog({
     }
   }
 
-  async function handleFile(file: File) {
-    if (!file.name.toLowerCase().endsWith(".csv")) {
-      toast({
-        variant: "destructive",
-        title: "Nieobsługiwany plik",
-        description: "Wybierz plik CSV.",
-      });
-      return;
-    }
+  const handleFile = useCallback(
+    async (file: File) => {
+      if (!file.name.toLowerCase().endsWith(".csv")) {
+        toast({
+          variant: "destructive",
+          title: "Nieobsługiwany plik",
+          description: "Wybierz plik CSV.",
+        });
+        return;
+      }
 
-    const text = await file.text();
-    const parsed = parseCsv(text, file.name);
-    setCsvData(parsed);
-    setMappings(guessInitialMappings(parsed.headers, importableAttributes));
-  }
+      const text = await file.text();
+      const parsed = parseCsv(text, file.name);
+      setCsvData(parsed);
+      setMappings(guessInitialMappings(parsed.headers, importableAttributes));
+    },
+    [importableAttributes, toast],
+  );
 
   function handleMappingChange(columnIndex: number, target: MappingTarget) {
     setMappings((previous) => ({
@@ -134,50 +142,75 @@ export function ImportParticipantsDialog({
     }));
   }
 
-  function handleDialogDragEnter(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!event.dataTransfer.types.includes("Files")) {
+  useEffect(() => {
+    if (!open) {
       return;
     }
 
-    dragDepthRef.current += 1;
-    setDragActive(true);
-  }
+    function hasFiles(event: DragEvent) {
+      return event.dataTransfer?.types.includes("Files") === true;
+    }
 
-  function handleDialogDragOver(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.stopPropagation();
+    function handleDragEnter(event: DragEvent) {
+      if (!hasFiles(event)) {
+        return;
+      }
 
-    if (event.dataTransfer.types.includes("Files")) {
+      event.preventDefault();
+      dragDepthRef.current += 1;
+      setDragActive(true);
+    }
+
+    function handleDragOver(event: DragEvent) {
+      if (!hasFiles(event) || event.dataTransfer == null) {
+        return;
+      }
+
+      event.preventDefault();
       event.dataTransfer.dropEffect = "copy";
       setDragActive(true);
     }
-  }
 
-  function handleDialogDragLeave(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.stopPropagation();
+    function handleDragLeave(event: DragEvent) {
+      if (dragDepthRef.current === 0) {
+        return;
+      }
 
-    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
-    if (dragDepthRef.current === 0) {
+      event.preventDefault();
+      dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+      if (dragDepthRef.current === 0) {
+        setDragActive(false);
+      }
+    }
+
+    function handleDrop(event: DragEvent) {
+      if (!hasFiles(event) || event.dataTransfer == null) {
+        return;
+      }
+
+      event.preventDefault();
+      dragDepthRef.current = 0;
       setDragActive(false);
+
+      const file = event.dataTransfer.files.item(0);
+      if (file != null) {
+        void handleFile(file);
+      }
     }
-  }
 
-  function handleDialogDrop(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    event.stopPropagation();
+    window.addEventListener("dragenter", handleDragEnter);
+    window.addEventListener("dragover", handleDragOver);
+    window.addEventListener("dragleave", handleDragLeave);
+    window.addEventListener("drop", handleDrop);
 
-    dragDepthRef.current = 0;
-    setDragActive(false);
-
-    const file = event.dataTransfer.files.item(0);
-    if (file != null) {
-      void handleFile(file);
-    }
-  }
+    return () => {
+      window.removeEventListener("dragenter", handleDragEnter);
+      window.removeEventListener("dragover", handleDragOver);
+      window.removeEventListener("dragleave", handleDragLeave);
+      window.removeEventListener("drop", handleDrop);
+      dragDepthRef.current = 0;
+    };
+  }, [handleFile, open]);
 
   async function submitImport() {
     if (!canImport) {
@@ -245,30 +278,30 @@ export function ImportParticipantsDialog({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
-          className="h-9 gap-2 rounded-xl px-3"
+          className="h-10"
           aria-label="Importuj uczestników z CSV"
         >
-          <FileSpreadsheet className="size-4" />
+          <FileSpreadsheet />
           <span className="max-md:sr-only">Importuj uczestników</span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "bg-background text-foreground gap-0 overflow-hidden p-0 shadow-2xl",
+          "bg-background text-foreground overflow-hidden shadow-2xl",
           csvData == null
             ? "w-[min(21rem,calc(100vw-1rem))] rounded-2xl sm:w-100"
             : "h-[min(40rem,calc(100dvh-1rem))] w-[calc(100vw-1rem)] max-w-none rounded-2xl md:w-[min(64rem,calc(100vw-2rem))]",
         )}
-        onDragEnter={handleDialogDragEnter}
-        onDragOver={handleDialogDragOver}
-        onDragLeave={handleDialogDragLeave}
-        onDrop={handleDialogDrop}
       >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Importuj uczestników z pliku CSV</DialogTitle>
+          <DialogDescription>
+            Wybierz plik CSV i dopasuj jego kolumny do atrybutów uczestników.
+          </DialogDescription>
+        </DialogHeader>
         <div
           className={cn("relative", csvData == null ? "" : "h-full min-h-0")}
         >
-          {dragActive ? <DragOverlay hasCsvData={csvData != null} /> : null}
           {csvData == null ? (
             <UploadStep
               inputRef={inputRef}
@@ -282,7 +315,6 @@ export function ImportParticipantsDialog({
               attributes={importableAttributes}
               locale={locale}
               inputRef={inputRef}
-              mappedColumnsCount={mappedColumnsCount}
               canImport={canImport}
               isImporting={isImporting}
               blockingIssuesCount={blockingIssuesCount}
@@ -290,11 +322,22 @@ export function ImportParticipantsDialog({
               onChooseFile={chooseFile}
               onFile={handleFile}
               onMappingChange={handleMappingChange}
+              onBack={resetDialogState}
               onSubmit={() => void submitImport()}
             />
           )}
         </div>
       </DialogContent>
+      {open
+        ? createPortal(
+            <AnimatePresence>
+              {dragActive ? (
+                <DragOverlay key="drag-overlay" hasCsvData={csvData != null} />
+              ) : null}
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
     </Dialog>
   );
 }

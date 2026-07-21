@@ -1,4 +1,4 @@
-import { ArrowRight, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +7,7 @@ interface ImportFooterProps {
   isImporting: boolean;
   blockingIssuesCount: number;
   validationMessages: string[];
-  onChooseFile: () => void;
+  onBack: () => void;
   onSubmit: () => void;
 }
 
@@ -16,26 +16,25 @@ export function ImportFooter({
   isImporting,
   blockingIssuesCount,
   validationMessages,
-  onChooseFile,
+  onBack,
   onSubmit,
 }: ImportFooterProps) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
           type="button"
-          variant="outline"
-          size="sm"
-          className="h-9 rounded-xl px-4"
-          onClick={onChooseFile}
+          variant="ghost"
+          disabled={isImporting}
+          onClick={onBack}
         >
-          <Plus className="size-4" />
-          Zmień plik
+          <ArrowLeft />
+          Wróć
         </Button>
         <Button
           type="button"
           disabled={!canImport}
-          className="h-10 w-36 rounded-xl disabled:opacity-50"
+          className="w-36 disabled:opacity-50"
           onClick={onSubmit}
         >
           {isImporting ? (

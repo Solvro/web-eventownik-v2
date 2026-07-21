@@ -1,12 +1,8 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileSpreadsheet } from "lucide-react";
 import type { Ref } from "react";
 
+import { FormContainer } from "@/components/forms/form-container";
 import { Button } from "@/components/ui/button";
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 import { CsvFileInput } from "./csv-file-input";
 
@@ -22,24 +18,26 @@ export function UploadStep({
   onFile,
 }: UploadStepProps) {
   return (
-    <div className="space-y-6 p-6 sm:p-7">
-      <DialogHeader className="space-y-1.5 pr-8 text-left">
-        <DialogTitle className="text-2xl font-bold tracking-tight">
-          Wybierz plik CSV
-        </DialogTitle>
-        <DialogDescription className="text-sm">
-          wybierz plik, aby go importować
-        </DialogDescription>
-      </DialogHeader>
-      <Button
-        type="button"
-        className="h-11 w-full rounded-xl"
-        onClick={onChooseFile}
-      >
-        Importuj plik
-        <ArrowRight className="size-4" />
-      </Button>
-      <CsvFileInput ref={inputRef} onFile={onFile} />
-    </div>
+    <FormContainer
+      step="1/2"
+      title="Krok 1"
+      description="Wybierz plik CSV"
+      icon={<FileSpreadsheet />}
+    >
+      <div className="space-y-4">
+        <p className="text-muted-foreground text-center text-sm">
+          Wybierz plik z uczestnikami, aby przejść do dopasowania kolumn.
+        </p>
+        <Button
+          type="button"
+          className="h-11 w-full rounded-xl"
+          onClick={onChooseFile}
+        >
+          Importuj plik
+          <ArrowRight className="size-4" />
+        </Button>
+        <CsvFileInput ref={inputRef} onFile={onFile} />
+      </div>
+    </FormContainer>
   );
 }

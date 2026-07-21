@@ -26,7 +26,10 @@ export function CsvPreview({ csvData }: CsvPreviewProps) {
   const gridTemplateColumns = `2.5rem repeat(${sheetHeaders.length.toString()}, minmax(4.75rem, 1fr))`;
 
   return (
-    <section className="border-border bg-muted/20 min-h-0 border-b p-3 md:border-r md:border-b-0">
+    <section
+      aria-label="Podgląd pliku CSV"
+      className="border-border bg-muted/20 min-h-0 border-b p-3 select-none md:border-r md:border-b-0"
+    >
       <ScrollArea className="h-full">
         <div className="min-w-[34rem]">
           <div
@@ -58,7 +61,7 @@ export function CsvPreview({ csvData }: CsvPreviewProps) {
                 key={`sheet-row-${rowIndex.toString()}`}
                 className="contents"
               >
-                <div className="border-border bg-muted/60 text-muted-foreground border-r border-b px-2 py-1 text-right">
+                <div className="border-border bg-muted/60 text-muted-foreground h-6 border-r border-b px-2 py-1 text-right">
                   {(rowIndex + 2).toString()}
                 </div>
                 {sheetHeaders.map((header, columnIndex) => (

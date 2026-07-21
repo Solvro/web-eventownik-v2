@@ -38,7 +38,7 @@ export function ColumnMappingList({
         <h3 className="font-bold">Atrybuty</h3>
       </div>
       <ScrollArea className="h-full min-h-0 pr-3">
-        <div className="grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,1fr)] gap-x-2 gap-y-2 pb-1">
+        <div className="grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,1fr)] gap-x-2 gap-y-2 p-px pb-1">
           {headers.map((header, index) => {
             const target = mappings[index] ?? SKIP_TARGET;
             const mappedAttribute = getMappedAttribute(target, attributes);

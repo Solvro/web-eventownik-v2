@@ -1,10 +1,6 @@
+import { ListChecks } from "lucide-react";
 import type { Ref } from "react";
 
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import type { Attribute } from "@/types/attributes";
 
 import { ColumnMappingList } from "./column-mapping-list";
@@ -19,7 +15,6 @@ interface ImportStepProps {
   attributes: Attribute[];
   locale: string;
   inputRef: Ref<HTMLInputElement>;
-  mappedColumnsCount: number;
   canImport: boolean;
   isImporting: boolean;
   blockingIssuesCount: number;
@@ -27,6 +22,7 @@ interface ImportStepProps {
   onChooseFile: () => void;
   onFile: (file: File) => void | Promise<void>;
   onMappingChange: (columnIndex: number, target: MappingTarget) => void;
+  onBack: () => void;
   onSubmit: () => void;
 }
 
@@ -36,7 +32,6 @@ export function ImportStep({
   attributes,
   locale,
   inputRef,
-  mappedColumnsCount,
   canImport,
   isImporting,
   blockingIssuesCount,
@@ -44,25 +39,28 @@ export function ImportStep({
   onChooseFile,
   onFile,
   onMappingChange,
+  onBack,
   onSubmit,
 }: ImportStepProps) {
   return (
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)]">
-      <DialogHeader className="border-border border-b px-5 py-4 pr-12 text-left sm:px-7 sm:py-5">
-        <DialogTitle className="text-xl font-bold tracking-tight sm:text-2xl">
-          Importuj uczestników z pliku CSV
-        </DialogTitle>
-        <DialogDescription className="text-sm">
-          Wybierz niżej, aby przydzielić kolumny z pliku do atrybutów.
-        </DialogDescription>
-      </DialogHeader>
+    <div className="flex h-full min-h-0 w-full flex-col gap-6">
+      <p className="absolute -mt-0.5 text-sm">2/2</p>
+      <div className="flex w-full flex-col items-center gap-4">
+        <div className="flex rounded-full border border-neutral-300 p-3">
+          <ListChecks />
+        </div>
+        <div className="space-y-1 text-center">
+          <p className="text-neutral-500">Krok 2</p>
+          <p className="text-lg font-medium">Dopasuj kolumny do atrybutów</p>
+        </div>
+      </div>
 
-      <div className="grid min-h-0 grid-rows-[minmax(9rem,0.42fr)_minmax(0,1fr)] md:grid-cols-[minmax(23rem,0.95fr)_minmax(22rem,1fr)] md:grid-rows-1">
+      <div className="relative grid min-h-0 flex-1 grid-rows-[minmax(9rem,0.42fr)_minmax(0,1fr)] overflow-hidden p-px md:grid-cols-[minmax(23rem,0.95fr)_minmax(22rem,1fr)] md:grid-rows-1">
         <CsvPreview csvData={csvData} />
 
         <section className="min-h-0 overflow-hidden">
-          <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 p-4 sm:p-5">
-            <div className="flex min-w-0 items-center justify-between gap-3">
+          <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-4 sm:px-5">
+            <div className="min-w-0">
               <button
                 type="button"
                 className="text-primary min-w-0 truncate text-left text-sm underline underline-offset-4"
@@ -70,10 +68,6 @@ export function ImportStep({
               >
                 Wybrany plik: {csvData.fileName}
               </button>
-              <span className="text-muted-foreground shrink-0 text-xs">
-                {mappedColumnsCount.toString()} /{" "}
-                {csvData.headers.length.toString()}
-              </span>
             </div>
             <CsvFileInput ref={inputRef} onFile={onFile} />
 
@@ -90,15 +84,12 @@ export function ImportStep({
               isImporting={isImporting}
               blockingIssuesCount={blockingIssuesCount}
               validationMessages={validationMessages}
-              onChooseFile={onChooseFile}
+              onBack={onBack}
               onSubmit={onSubmit}
             />
           </div>
         </section>
       </div>
-      {isImporting ? (
-        <div className="bg-primary absolute bottom-0 left-0 h-1 w-2/3 animate-pulse" />
-      ) : null}
     </div>
   );
 }
