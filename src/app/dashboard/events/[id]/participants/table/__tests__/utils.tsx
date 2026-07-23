@@ -69,11 +69,7 @@ export function renderTable(
 
   render(
     <TableWrapper
-      // NOTE: We sort the participants by createdAt date like in table's actions file
-      participants={participants.toSorted(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      )}
+      participants={participants}
       attributes={attributes}
       emails={emails}
     />,
