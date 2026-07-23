@@ -170,5 +170,20 @@
     "clearFilters": "Clear filters",
     "clearSorting": "Clear sorting",
     "recipientsCount": "Recipients: {count}"
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "selectPlaceholder": "Select a statistic",
+    "attributesOption": "Attribute statistics",
+    "visitsOption": "Page visits",
+    "visitsComingSoon": "Page visit statistics are coming soon.",
+    "attributePlaceholder": "Select an attribute…",
+    "noAttributes": "This event has no attributes yet.",
+    "manageAttributes": "Manage attributes in event settings",
+    "loading": "Loading…",
+    "loadError": "Failed to load statistics. Please try again.",
+    "noData": "No data to display.",
+    "noAnswer": "No answer",
+    "participantsCount": "participants"
   }
 }

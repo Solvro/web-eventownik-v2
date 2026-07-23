@@ -170,5 +170,20 @@
     "clearFilters": "Wyczyść filtry",
     "clearSorting": "Wyczyść sortowanie",
     "recipientsCount": "Ilość odbiorców: {count}"
+  },
+  "Statistics": {
+    "title": "Statystyki",
+    "selectPlaceholder": "Wybierz statystykę",
+    "attributesOption": "Statystyki atrybutów",
+    "visitsOption": "Wejścia na stronę",
+    "visitsComingSoon": "Statystyki wejść na stronę już wkrótce.",
+    "attributePlaceholder": "Wybierz atrybut…",
+    "noAttributes": "To wydarzenie nie ma jeszcze żadnych atrybutów.",
+    "manageAttributes": "Zarządzaj atrybutami w ustawieniach wydarzenia",
+    "loading": "Ładowanie…",
+    "loadError": "Nie udało się załadować statystyk. Spróbuj ponownie.",
+    "noData": "Brak danych do wyświetlenia.",
+    "noAnswer": "Brak odpowiedzi",
+    "participantsCount": "uczestników"
   }
 }

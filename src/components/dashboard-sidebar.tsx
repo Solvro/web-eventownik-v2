@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChartPie,
   ClipboardPenLine,
   Cuboid,
   Mail,
@@ -75,6 +76,11 @@ export function DashboardSidebar({
           title: "Lista uczestników",
           icon: <Users />,
           route: "participants",
+        },
+        {
+          title: "Statystyki",
+          icon: <ChartPie />,
+          route: "statistics",
         },
       ],
     },
