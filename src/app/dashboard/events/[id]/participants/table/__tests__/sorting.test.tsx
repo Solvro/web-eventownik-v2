@@ -78,8 +78,14 @@ describe("Sorting", () => {
     "should correctly cycle through each sorting state when sorting by $attributeType type",
     async ({ participants, attributes, attributeType }) => {
       const typedAttributes = attributes as unknown as Attribute[];
+      // NOTE: Default view sorting is handled in the `getParticipants` server action - we enforce it here in the tests
+      const initialParticipants = participants.toSorted(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+
       const { user, getDisplayedValuesFromColumn } = renderTable(
-        participants,
+        initialParticipants,
         typedAttributes,
       );
 
@@ -104,7 +110,7 @@ describe("Sorting", () => {
       );
       expect(descendingOrder).not.toEqual(ascendingOrder);
       expect(finalOrder).toEqual(
-        participants.map((participant) => {
+        initialParticipants.map((participant) => {
           return getDisplayedAttributeValue(participant, attributeType);
         }),
       );
@@ -114,8 +120,12 @@ describe("Sorting", () => {
   it("should reset any sorting", async () => {
     const { participants, attributes, attributeType } = numberCaseData;
     const typedAttributes = attributes as unknown as Attribute[];
+    const initialParticipants = participants.toSorted(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
     const { user, getDisplayedValuesFromColumn, resetSortingButton } =
-      renderTable(participants, typedAttributes);
+      renderTable(initialParticipants, typedAttributes);
 
     const sortHeader = screen.getByRole("button", {
       name: typedAttributes[0].name,
@@ -137,12 +147,13 @@ describe("Sorting", () => {
     );
     expect(ascendingOrder).not.toEqual(initialOrder);
     expect(finalOrder).toEqual(
-      participants.map((participant) => {
+      initialParticipants.map((participant) => {
         return getDisplayedAttributeValue(participant, attributeType);
       }),
     );
   });
 
+  // TODO: This only checks if the headers indicate a sorting state rather than checking displayed data
   it("should properly apply multisort", async () => {
     const { participants, attributes } = textCaseData;
     const typedAttributes = attributes as unknown as Attribute[];
