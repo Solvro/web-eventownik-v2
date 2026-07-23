@@ -28,7 +28,9 @@ export async function getParticipants(eventId: string) {
     return null;
   }
   const participants = (await response.json()) as Participant[];
-  return participants;
+  return participants.toSorted(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
 }
 
 export async function getParticipant(eventId: string, participantId: string) {
