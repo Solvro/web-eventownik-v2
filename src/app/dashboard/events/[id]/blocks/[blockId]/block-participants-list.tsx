@@ -11,17 +11,27 @@ export function BlockParticipantsList({
   participants,
 }: BlockParticipantsListProps) {
   const t = useTranslations("Form");
+
+  const isAnonymousList =
+    participants.length > 0 &&
+    participants.every(
+      (participant) =>
+        participant.name?.trim() === "" || participant.name === undefined,
+    );
+
   return (
     <ScrollArea className="h-50 w-full rounded-md border p-4">
       {participants.length === 0 ? (
-        <div className="flex h-41 w-full items-center justify-center">
-          {t("noParticipants")}
-        </div>
+        <p className="text-muted-foreground text-sm">{t("noParticipants")}</p>
+      ) : isAnonymousList ? (
+        <p className="text-muted-foreground text-sm">
+          {t("anonymousParticipantsList")}
+        </p>
       ) : (
         <ul>
           {participants.map((participant) => (
             <li key={participant.id} className="py-1 text-sm">
-              {participant.name}
+              {participant.name ?? t("anonymousParticipant")}
             </li>
           ))}
         </ul>
