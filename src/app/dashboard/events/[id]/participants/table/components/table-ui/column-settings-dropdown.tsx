@@ -17,7 +17,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import type { Column, Table } from "@tanstack/react-table";
 import { Columns3Cog, GripVertical } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import { getAttributeLabel } from "@/lib/utils";
 import type { FlattenedParticipant } from "@/types/participant";
 
 interface ColumnVisibilityDropdownProps {
@@ -33,9 +34,10 @@ interface ColumnVisibilityDropdownProps {
 
 interface SortableColumnItemProps {
   column: Column<FlattenedParticipant>;
+  locale: string;
 }
 
-function SortableColumnItem({ column }: SortableColumnItemProps) {
+function SortableColumnItem({ column, locale }: SortableColumnItemProps) {
   const {
     attributes,
     listeners,
@@ -67,7 +69,7 @@ function SortableColumnItem({ column }: SortableColumnItemProps) {
           e.preventDefault();
         }}
       >
-        {column.columnDef.meta?.name ?? column.id}
+        {getAttributeLabel(column.columnDef.meta?.name ?? column.id, locale)}
       </DropdownMenuCheckboxItem>
       <GripVertical
         size={18}
@@ -83,6 +85,7 @@ export function ColumnSettingsDropdown({
   table,
 }: ColumnVisibilityDropdownProps) {
   const t = useTranslations("Table");
+  const locale = useLocale();
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -131,7 +134,11 @@ export function ColumnSettingsDropdown({
             strategy={verticalListSortingStrategy}
           >
             {orderedColumns.map((column) => (
-              <SortableColumnItem key={column.id} column={column} />
+              <SortableColumnItem
+                key={column.id}
+                column={column}
+                locale={locale}
+              />
             ))}
           </SortableContext>
         </DndContext>
