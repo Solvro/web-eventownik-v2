@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { useTranslations as UseTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { getAttributeLabel } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -89,6 +90,7 @@ export function createColumns(
   attributes: Attribute[],
   blocks: (Block | null)[],
   t: TableTranslator,
+  locale: string,
 ) {
   const attributeColumns = attributes
     .filter((attribute) => attribute.showInList)
@@ -143,7 +145,11 @@ export function createColumns(
               attributeId={attribute.id}
             />
             <div className="min-w-0 flex-1">
-              <SortHeader info={info} name={attribute.name} truncate />
+              <SortHeader
+                info={info}
+                name={getAttributeLabel(attribute.name, locale)}
+                truncate
+              />
             </div>
           </div>
         ),
