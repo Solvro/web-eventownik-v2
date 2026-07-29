@@ -101,7 +101,7 @@ export default async function AdminPage() {
           {events.length > 0 ? (
             events.map((event) => (
               <div
-                key={event.id}
+                key={event.uuid}
                 className={cn(
                   "bg-background flex h-full flex-col overflow-hidden rounded-xl border-2",
                   event.isActive ? "border-green-400" : "border-red-400",
@@ -140,7 +140,7 @@ export default async function AdminPage() {
                   </h3>
                   <div className="flex w-full flex-col gap-2">
                     <Button asChild variant="outline">
-                      <Link href={`/dashboard/events/${event.id.toString()}`}>
+                      <Link href={`/dashboard/events/${event.uuid}`}>
                         <LayoutDashboard className="mr-2 size-4" />
                         Dashboard
                       </Link>
@@ -156,7 +156,7 @@ export default async function AdminPage() {
                     </Button>
                     <ActivateEvent
                       bearerToken={bearerToken}
-                      eventId={event.id}
+                      eventUuid={event.uuid}
                       isActive={event.isActive}
                     />
                   </div>

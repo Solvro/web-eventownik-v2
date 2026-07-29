@@ -22,9 +22,12 @@ export async function generateMetadata({
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -47,9 +50,12 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug, locale } = await params;
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);

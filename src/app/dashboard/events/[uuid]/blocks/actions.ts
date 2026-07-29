@@ -1,0 +1,262 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
+import { verifySession } from "@/lib/session";
+
+export async function reorderBlockAttributes(
+  eventUuid: string,
+  orderedIds: string[],
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (!isValidUuid(eventUuid) || orderedIds.some((id) => !isValidUuid(id))) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
+  const { bearerToken } = session;
+
+  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
+  const results = await Promise.all(
+    orderedIds.map(async (id, index) =>
+      fetch(
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          body: JSON.stringify({ order: index }),
+        },
+      ),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderBlockAttributes action] Failed to reorder block attributes for event ${eventUuid}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
+
+export async function createBlock(
+  eventUuid: string,
+  attributeUuid: string,
+  parentUuid: string,
+  name: string,
+  description: string | null,
+  capacity: number | null,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    !isValidUuid(parentUuid)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
+  const { bearerToken } = session;
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        parentUuid,
+        name,
+        description: description ?? null,
+        capacity: capacity ?? null,
+      }),
+    },
+  );
+
+  if (response.ok) {
+    return {
+      success: true,
+    };
+  } else {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[createBlock action] Failed to create a block for event ${eventUuid}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+}
+
+export async function updateBlock(
+  eventUuid: string,
+  attributeUuid: string,
+  blockId: string,
+  name: string,
+  description: string | null,
+  capacity: number | null,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    !isValidUuid(blockId)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
+  const { bearerToken } = session;
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockId)}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        description: description ?? null,
+        capacity: capacity ?? null,
+      }),
+    },
+  );
+
+  if (response.ok) {
+    return {
+      success: true,
+    };
+  } else {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[updateBlock action] Failed to update block ${blockId} for event ${eventUuid}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+}
+
+export async function reorderBlocks(
+  eventUuid: string,
+  attributeUuid: string,
+  orderedIds: string[],
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    orderedIds.some((uuid) => !isValidUuid(uuid))
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
+  const { bearerToken } = session;
+
+  const results = await Promise.all(
+    orderedIds.map(async (uuid, index) =>
+      fetch(
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(uuid)}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          body: JSON.stringify({ order: index }),
+        },
+      ),
+    ),
+  );
+
+  const failed = results.find((r) => !r.ok);
+  if (failed !== undefined) {
+    console.error(
+      `[reorderBlocks action] Failed to reorder blocks for event ${eventUuid}`,
+    );
+    return {
+      success: false,
+      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
+
+export async function deleteBlock(
+  eventUuid: string,
+  blockUuid: string,
+  attributeUuid: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(blockUuid) ||
+    !isValidUuid(attributeUuid)
+  ) {
+    return { success: false, error: "Invalid identifier" };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[deleteBlock action] Failed to delete block ${blockUuid} for event ${eventUuid}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
