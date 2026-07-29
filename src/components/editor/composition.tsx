@@ -21,6 +21,7 @@ import {
   Type,
   Undo2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
@@ -32,6 +33,7 @@ import {
 } from "@/app/dashboard/events/[id]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { replaceEmptyParagraphs } from "@/lib/editor";
 import { cn } from "@/lib/utils";
 import type { PuckConfig, PuckMutationData } from "@/types/editor";
@@ -69,6 +71,9 @@ type EmailTemplateFormValues = z.infer<typeof emailTemplateSchema>;
 const usePuck = createUsePuck<PuckConfig>();
 
 function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
+  const t = useTranslations("Editor");
+  const tEventDetails = useTranslations("EventDetails");
+
   const appState = usePuck((s) => s.appState);
   const config = usePuck((s) => s.config);
   const setHistories = usePuck((s) => s.history.setHistories);
@@ -90,8 +95,13 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
     onSuccess: (result) => {
       if (!result.success) {
         toast({
-          title: "Błąd",
-          description: result.error ?? "Nieznany błąd",
+          title: t("error"),
+          description:
+            translateOrFallback(
+              tEventDetails,
+              result.error?.key,
+              result.error?.values,
+            ) ?? t("unknownError"),
           variant: "destructive",
         });
         return;
@@ -106,8 +116,8 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       toast({
         title:
           mutationData.mode === "create"
-            ? "Dodano nowy szablon"
-            : "Zapisano zmiany w szablonie",
+            ? t("templateCreated")
+            : t("templateSaved"),
       });
 
       if (mutationData.mode === "create") {
@@ -116,7 +126,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
     },
     onError: (error) => {
       toast({
-        title: "Błąd",
+        title: t("error"),
         description: error.message,
         variant: "destructive",
       });
@@ -141,7 +151,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
     if (!parsed.success) {
       const firstError = parsed.error.errors[0]?.message;
       toast({
-        title: "Błąd walidacji",
+        title: t("validationError"),
         description: firstError,
         variant: "destructive",
       });
@@ -160,7 +170,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       <form onSubmit={onSubmit}>
         <Button variant="outline" type="submit" disabled={isPending}>
           {isPending ? <Loader2 className="animate-spin" /> : <Save />}
-          Zapisz
+          {t("save")}
         </Button>
       </form>
 
@@ -172,6 +182,8 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
 }
 
 function Toolbar() {
+  const t = useTranslations("Editor");
+
   const history = usePuck((s) => s.history);
   const uiState = usePuck((s) => s.appState.ui);
   const dispatch = usePuck((s) => s.dispatch);
@@ -200,7 +212,7 @@ function Toolbar() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {leftVisible ? "Ukryj" : "Wyświetl"} lewy panel
+            {leftVisible ? t("hideLeftPanel") : t("showLeftPanel")}
           </TooltipContent>
         </Tooltip>
         <Tooltip>
@@ -220,7 +232,7 @@ function Toolbar() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {rightVisible ? "Ukryj" : "Wyświetl"} prawy panel
+            {rightVisible ? t("hideRightPanel") : t("showRightPanel")}
           </TooltipContent>
         </Tooltip>
       </div>
@@ -231,7 +243,7 @@ function Toolbar() {
               <Undo2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Cofnij</TooltipContent>
+          <TooltipContent>{t("undo")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -243,7 +255,7 @@ function Toolbar() {
               <Redo2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Ponów</TooltipContent>
+          <TooltipContent>{t("redo")}</TooltipContent>
         </Tooltip>
       </div>
     </div>
@@ -251,6 +263,8 @@ function Toolbar() {
 }
 
 function BlocksAndSchemaSidebar() {
+  const t = useTranslations("Editor");
+
   const isVisible = usePuck((s) => s.appState.ui.leftSideBarVisible);
   const { components, categories } = usePuck((s) => s.config);
 
@@ -263,7 +277,7 @@ function BlocksAndSchemaSidebar() {
     >
       <div className="space-y-4">
         <h2 className="border-b border-(--event-primary-color)/50 p-4 text-lg font-semibold">
-          Bloki
+          {t("blocks")}
         </h2>
         <Drawer>
           <Accordion
@@ -314,7 +328,7 @@ function BlocksAndSchemaSidebar() {
           </Accordion>
         </Drawer>
         <h2 className="border-y border-(--event-primary-color)/50 p-4 text-lg font-semibold">
-          Schemat
+          {t("schema")}
         </h2>
         <div id="outline" className="mb-2 max-h-72 [&>div>ul]:space-y-2">
           <Puck.Outline />
@@ -346,6 +360,8 @@ function FieldsPanel() {
  * This component must be rendered within `<Puck/>` component.
  */
 function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
+  const t = useTranslations("Editor");
+
   const hasChanged = usePuck((s) => s.history.hasPast);
   const { isGuardActive, onCancel, onConfirm } = useUnsavedEditor(hasChanged);
 
@@ -361,10 +377,10 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
           href={`/dashboard/events/${mutationData.eventId}/emails`}
           className="flex max-w-fit items-center gap-2 underline"
         >
-          <ArrowLeft className="h-4 w-4" /> Wróć do szablonów
+          <ArrowLeft className="h-4 w-4" /> {t("backToTemplates")}
         </Link>
         <div className="mb-2 flex justify-between">
-          <h1 className="mb-4 text-3xl font-bold">Edytor szablonu</h1>
+          <h1 className="mb-4 text-3xl font-bold">{t("templateEditor")}</h1>
           <SaveButton mutationData={mutationData} />
         </div>
       </div>

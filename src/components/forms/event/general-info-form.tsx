@@ -2,6 +2,7 @@
 
 import { format, subDays } from "date-fns";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -21,23 +22,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
+
+export type EventGeneralInfoErrors =
+  | "nameRequired"
+  | "startTimeRequired"
+  | "endTimeRequired"
+  | "endDateBeforeStartDate"
+  | "invalidEmail";
 
 export const EventGeneralInfoSchema = z
   .object({
-    name: z.string().nonempty("Nazwa nie może być pusta."),
+    name: z.string().nonempty("nameRequired"),
     description: z.string().optional(),
     startDate: z.date(),
-    startTime: z.string().nonempty("Godzina rozpoczęcia nie może być pusta."),
+    startTime: z.string().nonempty("startTimeRequired"),
     endDate: z.date(),
-    endTime: z.string().nonempty("Godzina zakończenia nie może być pusta."),
+    endTime: z.string().nonempty("endTimeRequired"),
     location: z.string().optional(),
     organizer: z.string().optional(),
-    contactEmail: z
-      .string()
-      .email("Nieprawidłowy adres email")
-      .or(z.literal(""))
-      .optional(),
+    contactEmail: z.string().email("invalidEmail").or(z.literal("")).optional(),
   })
   .refine(
     (data) => {
@@ -52,8 +57,7 @@ export const EventGeneralInfoSchema = z
       return startDateTime <= endDateTime;
     },
     {
-      message:
-        "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.",
+      message: "endDateBeforeStartDate",
       path: ["endDate"],
     },
   );
@@ -61,6 +65,7 @@ export const EventGeneralInfoSchema = z
 export function GeneralInfoForm({ className }: { className?: string }) {
   const { control, formState, getValues } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
+  const t = useTranslations("EventDetails");
 
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
@@ -69,17 +74,20 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Nazwa</FormLabel>
+            <FormLabel>{t("name")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj nazwę wydarzenia"
+                placeholder={t("enterEventName")}
                 {...field}
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.name?.message}
+              {translateOrFallback(
+                t,
+                formState.errors.name?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -89,17 +97,20 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Miejsce</FormLabel>
+            <FormLabel>{t("location")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj miejsce wydarzenia"
+                placeholder={t("enterEventLocation")}
                 {...field}
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.location?.message}
+              {translateOrFallback(
+                t,
+                formState.errors.location?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -112,7 +123,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>Data i godzina rozpoczęcia</FormLabel>
+                  <FormLabel>{t("startDateTime")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -156,10 +167,16 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.startDate?.message}
+            {translateOrFallback(
+              t,
+              formState.errors.startDate?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.startTime?.message}
+            {translateOrFallback(
+              t,
+              formState.errors.startTime?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
         </div>
         <div className="space-y-2">
@@ -169,7 +186,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>Data i godzina zakończenia</FormLabel>
+                  <FormLabel>{t("endDateTime")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -219,10 +236,16 @@ export function GeneralInfoForm({ className }: { className?: string }) {
             />
           </div>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.endDate?.message}
+            {translateOrFallback(
+              t,
+              formState.errors.endDate?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
           <FormMessage className="text-sm text-red-500">
-            {formState.errors.endTime?.message}
+            {translateOrFallback(
+              t,
+              formState.errors.endTime?.message as EventGeneralInfoErrors,
+            )}
           </FormMessage>
         </div>
       </div>
@@ -231,17 +254,20 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Organizator</FormLabel>
+            <FormLabel>{t("organizer")}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 disabled={formState.isSubmitting}
-                placeholder="Podaj organizatora wydarzenia"
+                placeholder={t("enterEventOrganizer")}
                 {...field}
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.organizer?.message}
+              {translateOrFallback(
+                t,
+                formState.errors.organizer?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -252,7 +278,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Email do kontaktu</FormLabel>
+            <FormLabel>{t("contactEmail")}</FormLabel>
             <FormControl>
               <Input
                 type="email"
@@ -262,7 +288,11 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.contactEmail?.message}
+              {translateOrFallback(
+                t,
+                formState.errors.contactEmail
+                  ?.message as EventGeneralInfoErrors,
+              )}
             </FormMessage>
           </FormItem>
         )}
@@ -273,13 +303,19 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         name="description"
         render={({ field }) => (
           <FormItem className="col-span-full flex flex-col">
-            <FormLabel>Opis</FormLabel>
+            <FormLabel>{t("description")}</FormLabel>
             <WysiwygEditor
               content={getValues("description") ?? ""}
               onChange={field.onChange}
               editorClassName="min-h-[150px] h-full"
+              placeholder={t("eventDescrPlaceholder")}
             />
-            <FormMessage>{formState.errors.description?.message}</FormMessage>
+            <FormMessage className="text-sm text-red-500">
+              {translateOrFallback(
+                t,
+                formState.errors.description?.message as EventGeneralInfoErrors,
+              )}
+            </FormMessage>
           </FormItem>
         )}
       />

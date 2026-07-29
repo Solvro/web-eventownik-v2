@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
-import { ATTRIBUTE_CATEGORY, FORM_CATEGORY } from "@/lib/extensions/tags";
-import type { MessageTag } from "@/lib/extensions/tags";
-import { getAttributeLabel } from "@/lib/utils";
+import { getFormTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags } from "@/lib/message-tags/tag-builders";
 import type { PuckData } from "@/types/editor";
 
 import {
@@ -19,12 +19,14 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string; emailId: string }>;
 }): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
+
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
 
   return {
-    title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
+    title: t("editing", { name: emailToEdit?.name ?? t("unnamedEmail") }),
   };
 }
 
@@ -33,6 +35,9 @@ export default async function EventMailEditPage({
 }: {
   params: Promise<{ id: string; emailId: string }>;
 }) {
+  const t = await getTranslations("Editor");
+  const tMessageTags = await getTranslations("MessageTags");
+
   const { id, emailId } = await params;
 
   const emailToEdit = await getSingleEventEmail(id, emailId);
@@ -45,30 +50,12 @@ export default async function EventMailEditPage({
   const forms = await getEventForms(id);
   const event = await getEmailEventInfo(id);
 
-  const attributeTags = attributes.map((attribute): MessageTag => {
-    return {
-      title: getAttributeLabel(attribute.name, "pl"),
-      description: `Zamienia się w wartość atrybutu '${attribute.name}' uczestnika`,
-      // NOTE: Why 'attribute.slug' can be null?
-      value: `/participant_${attribute.slug ?? ""}`,
-      color: "brown",
-      category: ATTRIBUTE_CATEGORY,
-    };
-  }) satisfies MessageTag[];
-
-  const formTags = forms.map((eventForm): MessageTag => {
-    return {
-      title: eventForm.name,
-      description: `Zamienia się w spersonalizowany link do formularza '${eventForm.name}'`,
-      value: `/form_${eventForm.slug}`,
-      color: "green",
-      category: FORM_CATEGORY,
-    };
-  }) satisfies MessageTag[];
-
   return (
     <Editor
-      tags={[...attributeTags, ...formTags]}
+      tags={[
+        ...getAttributeTags(attributes, tMessageTags),
+        ...getFormTags(forms, tMessageTags),
+      ]}
       forms={forms}
       attributes={attributes}
       initialData={JSON.parse(emailToEdit.schema) as PuckData}
@@ -78,7 +65,7 @@ export default async function EventMailEditPage({
         mode: "update",
       }}
       eventData={{
-        name: event?.name ?? "Wydarzenie",
+        name: event?.name ?? t("event"),
         photoUrl: event?.photoUrl ?? "",
       }}
     />

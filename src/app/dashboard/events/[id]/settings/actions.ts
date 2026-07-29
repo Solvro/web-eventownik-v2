@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import type { DashboardKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
@@ -9,14 +10,19 @@ import type { Event } from "@/types/event";
 
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
 
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
+}
+
 interface ErrorResponse {
-  errors: { message: string }[];
+  errors: { message: ErrorMessage }[];
 }
 
 interface UpdateResult {
   event?: Event;
   errors: {
-    message: string;
+    message: ErrorMessage;
     section: "event" | "coOrganizers" | "attributes";
   }[];
   processedChanges: {
@@ -90,7 +96,7 @@ export async function updateEvent(
       } catch (error) {
         console.error("[updateEvent] Error processing photo:", error);
         result.errors.push({
-          message: "Failed to process event photo",
+          message: { key: "failedToProcessEventPhoto" },
           section: "event",
         });
         return { errors: result.errors };
@@ -110,7 +116,7 @@ export async function updateEvent(
         error: errorData,
       });
       result.errors.push({
-        message: errorData.errors[0]?.message ?? "Failed to update event",
+        message: errorData.errors[0]?.message ?? "failedToUpdateEvent",
         section: "event",
       });
       return { errors: result.errors };
@@ -120,7 +126,7 @@ export async function updateEvent(
   } catch (error) {
     console.error("[updateEvent] Network error updating event:", error);
     result.errors.push({
-      message: "Network error occurred while updating event",
+      message: { key: "networkErrorWhileUpdatingEvent" },
       section: "event",
     });
     return { errors: result.errors };
@@ -152,7 +158,13 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Upewnij się że ta osoba ma konto w Eventowniku. Failed to add co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: {
+                key: "failedToAddCoOrganizer",
+                values: {
+                  email: change.data.email,
+                  errorData: JSON.stringify(errorData),
+                },
+              },
               section: "coOrganizers",
             });
             continue;
@@ -186,7 +198,13 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to update co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: {
+                key: "failedToUpdateCoOrganizer",
+                values: {
+                  email: change.data.email,
+                  errorData: JSON.stringify(errorData),
+                },
+              },
               section: "coOrganizers",
             });
             continue;
@@ -214,7 +232,13 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to delete co-organizer ${change.data.email}: ${JSON.stringify(errorData)}`,
+              message: {
+                key: "failedToDeleteCoOrganizer",
+                values: {
+                  email: change.data.email,
+                  errorData: JSON.stringify(errorData),
+                },
+              },
               section: "coOrganizers",
             });
             continue;
@@ -229,7 +253,13 @@ export async function updateEvent(
         error,
       );
       result.errors.push({
-        message: `Error processing co-organizer ${change.data.email}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        message: {
+          key: "failedToProcessCoOrganizer",
+          values: {
+            email: change.data.email,
+            errorData: error instanceof Error ? error.message : "unknownError",
+          },
+        },
         section: "coOrganizers",
       });
     }
@@ -279,12 +309,23 @@ export async function updateEvent(
               (change.data.reason == null || change.data.reason.trim() === "")
             ) {
               result.errors.push({
-                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                message: {
+                  key: "sensitiveAttributeMissingPurpose",
+                  values: {
+                    name: change.data.name,
+                  },
+                },
                 section: "attributes",
               });
             } else {
               result.errors.push({
-                message: `Failed to add attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                message: {
+                  key: "failedToAddAttribute",
+                  values: {
+                    name: change.data.name,
+                    errorData: JSON.stringify(errorData),
+                  },
+                },
                 section: "attributes",
               });
             }
@@ -338,12 +379,23 @@ export async function updateEvent(
               (change.data.reason == null || change.data.reason.trim() === "")
             ) {
               result.errors.push({
-                message: `Atrybut ${change.data.name} jest wrażliwy, ale nie podano powodu dla zbierania danych.`,
+                message: {
+                  key: "sensitiveAttributeMissingPurpose",
+                  values: {
+                    name: change.data.name,
+                  },
+                },
                 section: "attributes",
               });
             } else {
               result.errors.push({
-                message: `Failed to update attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+                message: {
+                  key: "failedToUpdateAttribute",
+                  values: {
+                    name: change.data.name,
+                    errorData: JSON.stringify(errorData),
+                  },
+                },
                 section: "attributes",
               });
             }
@@ -372,7 +424,13 @@ export async function updateEvent(
               change.data,
             );
             result.errors.push({
-              message: `Failed to delete attribute ${change.data.name}: ${JSON.stringify(errorData)}`,
+              message: {
+                key: "failedToDeleteAttribute",
+                values: {
+                  name: change.data.name,
+                  errorData: JSON.stringify(errorData),
+                },
+              },
               section: "attributes",
             });
             continue;
@@ -384,7 +442,13 @@ export async function updateEvent(
     } catch (error) {
       console.error("[updateEvent] Error processing attribute change:", error);
       result.errors.push({
-        message: `Error processing attribute ${change.data.name}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        message: {
+          key: "failedToProcessAttribute",
+          values: {
+            name: change.data.name,
+            errorData: error instanceof Error ? error.message : "unknownError",
+          },
+        },
         section: "attributes",
       });
     }
@@ -425,7 +489,7 @@ export async function deleteEvent(
     }
   } catch (error) {
     console.error("[deleteEvent] Network Error:", error);
-    return { errors: [{ message: "Network error occurred" }] };
+    return { errors: [{ message: { key: "networkError" } }] };
   }
   revalidatePath("/dashboard/events");
   return {}; // Return an empty object on success

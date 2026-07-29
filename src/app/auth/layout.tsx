@@ -1,10 +1,14 @@
-import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Uwierzytelnianie",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Auth");
+
+  return {
+    title: t("authentication"),
+  };
+}
 
 export default async function AuthLayout({
   children,
@@ -17,8 +21,8 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="flex max-w-lg flex-col items-center gap-8">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="flex w-full max-w-md flex-col items-center gap-8">
         {children}
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CircleEllipsis, FilePenLine, Mail, Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { JSX } from "react";
 import { useRef } from "react";
@@ -32,7 +33,12 @@ function FeatureTile({
 }
 
 function FeatureStep({ step }: { step: number }) {
-  return <p className="text-lg font-medium sm:text-2xl">Krok {step}</p>;
+  const t = useTranslations("Homepage");
+  return (
+    <p className="text-lg font-medium sm:text-2xl">
+      {t("step")} {step}
+    </p>
+  );
 }
 
 function FeatureTitle({ children }: { children: React.ReactNode }) {
@@ -48,6 +54,8 @@ function FeatureDescription({ children }: { children: React.ReactNode }) {
 }
 
 export function Functionalities() {
+  const t = useTranslations("Homepage");
+
   const targetRef = useRef<HTMLDivElement>(null);
 
   // Get scroll progress relative to target element
@@ -76,14 +84,14 @@ export function Functionalities() {
         >
           <div className="rounded-full bg-gradient-to-r from-[#6583C8] to-[#80B3FF] p-0.5">
             <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 text-sm font-medium sm:text-base dark:bg-[#192237]">
-              Funkcjonalności
+              {t("features")}
             </p>
           </div>
           <p className="text-5xl font-bold sm:text-7xl">
-            Zakres dostępnych działań dla organizatora
+            {t("featuresScopeDescr")}
           </p>
           <p className="text-xl text-[#191A1A] sm:text-3xl dark:text-[#D9E8FF]">
-            Sprawdź, co możesz zrobić i jak skorzystać z dostępnych możliwości!
+            {t("featuresExplore")}
           </p>
         </motion.div>
         {/* Functionalities */}
@@ -98,24 +106,22 @@ export function Functionalities() {
               <div className="flex w-full flex-col gap-8 px-4 pb-8 sm:gap-16 sm:px-16 lg:pt-16">
                 <div className="w-full space-y-4">
                   <FeatureStep step={1} />
-                  <FeatureTitle>Tworzenie i konfiguracja wydarzeń</FeatureTitle>
+                  <FeatureTitle>
+                    {t("eventCreationAndConfiguration")}
+                  </FeatureTitle>
                 </div>
                 <FeatureDescription>
-                  Zakładanie wydarzenia oraz uzupełnianie podstawowych
-                  informacji o nim, w tym ustawianie atrybutów uczestników i
-                  dodawanie współorganizatorów.
+                  {t("eventCreationAndConfigurationDescr")}
                 </FeatureDescription>
                 <FeatureTile
-                  name={"Personalizacja wydarzenia"}
-                  description={
-                    "Pozwala dostosować wygląd, formularze rejestracyjne i ustawienia do potrzeb uczestników i charakteru spotkania."
-                  }
+                  name={t("eventCustomization")}
+                  description={t("eventCustomizationDescr")}
                   icon={<Pencil />}
                 />
               </div>
               <Image
                 src="/assets/landing/functionalities/event-creation.png"
-                alt="Krok 1 - Tworzenie i konfiguracja wydarzeń"
+                alt={t("step1EventCreationAndConfiguration")}
                 className="image-fade order-first h-full rounded-3xl object-cover pt-8 sm:pt-16 lg:order-last lg:max-w-5xl lg:-translate-x-[20%]"
                 width={2000}
                 height={1000}
@@ -127,19 +133,14 @@ export function Functionalities() {
                 <div className="z-20 flex min-w-3xs flex-col gap-8 sm:gap-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
-                      Nowe
+                      {t("new")}
                     </Badge>
-                    <FeatureTitle>Maile</FeatureTitle>
+                    <FeatureTitle>{t("emails")}</FeatureTitle>
                   </div>
-                  <FeatureDescription>
-                    Tworzenie szablonów z dynamicznymi danymi, automatyczna i
-                    grupowa wysyłka maili w zależności od statusu uczestnika.
-                  </FeatureDescription>
+                  <FeatureDescription>{t("emailsDescr")}</FeatureDescription>
                   <FeatureTile
-                    name={"Powiadomienia e-mail"}
-                    description={
-                      "Automatyczne wysyłanie informacji przez organizatora do uczestników."
-                    }
+                    name={t("emailNotifications")}
+                    description={t("emailNotificationsDescr")}
                     icon={<Mail />}
                   />
                 </div>
@@ -155,21 +156,21 @@ export function Functionalities() {
                       >
                         <Image
                           src={"/assets/landing/gmail.png"}
-                          alt="Gmail logo"
+                          alt={t("gmailLogo")}
                           className="size-10"
                           width={40}
                           height={40}
                         />
                         <div className="flex h-min flex-col gap-1">
                           <p className="text-sm whitespace-nowrap">
-                            Eventownik - nowe wydarzenie &#x2022;
+                            {t("eventNewNotificationTitle")} &#x2022;
                             <span className="text-xs text-[#515151] dark:text-[#B4B4B4]">
                               {" "}
-                              2 minuty temu
+                              {t("eventNewNotificationTime")}
                             </span>
                           </p>
                           <p className="text-xs text-[#515151] dark:text-[#B4B4B4]">
-                            Dodano nowe wydarzenie, sprawdź je!
+                            {t("eventNewNotificationMessage")}
                           </p>
                         </div>
                       </div>
@@ -181,25 +182,20 @@ export function Functionalities() {
                 <div className="flex min-w-3xs flex-col gap-8 px-4 pt-4 pb-8 sm:max-w-[60%] sm:gap-16 sm:py-16 sm:pr-0 sm:pl-16">
                   <div className="w-full space-y-4">
                     <Badge variant="outline" className="text-sm uppercase">
-                      Nowe
+                      {t("new")}
                     </Badge>
-                    <FeatureTitle>Strona wydarzenia</FeatureTitle>
+                    <FeatureTitle>{t("eventPage")}</FeatureTitle>
                   </div>
-                  <FeatureDescription>
-                    Publiczna strona z harmonogramem i aktualnościami, gotowa do
-                    udostępnienia w mediach społecznościowych.
-                  </FeatureDescription>
+                  <FeatureDescription>{t("eventPageDescr")}</FeatureDescription>
                   <FeatureTile
-                    name={"Strona rejestracyjna"}
-                    description={
-                      "Generowana automatycznie, zawiera wszystkie kluczowe informacje: termin, miejsce, opis i formularz rejestracji."
-                    }
+                    name={t("registrationPage")}
+                    description={t("registrationPageDescr")}
                     icon={<CircleEllipsis />}
                   />
                 </div>
                 <Image
                   src="/assets/landing/functionalities/ipads-mockup.png"
-                  alt="Strona wydarzenia"
+                  alt={t("eventPage")}
                   className="overflow-hidden object-cover object-left pt-8 sm:w-md sm:pt-0"
                   width={2000}
                   height={1000}
@@ -210,7 +206,7 @@ export function Functionalities() {
             <div className="z-20 grid w-full grid-cols-1 items-center gap-8 bg-white px-4 pt-4 pb-8 sm:gap-16 sm:p-16 lg:grid-cols-2 dark:bg-[#101011]">
               <Image
                 src="/assets/landing/functionalities/iphones-mockup.png"
-                alt="Widok formularza"
+                alt={t("formView")}
                 className="h-auto w-full rounded-3xl p-2"
                 width={500}
                 height={1000}
@@ -218,19 +214,14 @@ export function Functionalities() {
               <div className="flex w-full flex-col gap-8 sm:gap-16">
                 <div className="w-full space-y-4">
                   <FeatureStep step={2} />
-                  <FeatureTitle>Formularze i zapisy na miejsca</FeatureTitle>
+                  <FeatureTitle>{t("formsAndReservations")}</FeatureTitle>
                 </div>
                 <FeatureDescription>
-                  Tworzenie formularzy z wybranymi atrybutami, generowanie
-                  linków rejestracyjnych i automatyczne udostępnianie formularzy
-                  II etapu - w tym zapisy na miejsca aktualizowane w czasie
-                  rzeczywistym.
+                  {t("formsAndReservationsDescr")}
                 </FeatureDescription>
                 <FeatureTile
-                  name={"Zarządzanie zapisami"}
-                  description={
-                    "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca - anonimowo, imię i nazwisko, a może nawet inny atrybut."
-                  }
+                  name={t("registrationManagement")}
+                  description={t("registrationManagementDescr")}
                   icon={<FilePenLine />}
                 />
               </div>

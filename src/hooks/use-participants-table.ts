@@ -6,7 +6,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import { createColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
@@ -38,6 +38,7 @@ export function useParticipantsTable({
 }: UseParticipantTableProps) {
   const storageKey = `column-order-${eventId}`;
   const t = useTranslations("Table");
+  const locale = useLocale();
   const { toast } = useToast();
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -62,8 +63,8 @@ export function useParticipantsTable({
   }, [storageKey, t, toast]);
 
   const columns = useMemo(
-    () => createColumns(attributes, blocks ?? [], t),
-    [attributes, blocks, t],
+    () => createColumns(attributes, blocks ?? [], t, locale),
+    [attributes, blocks, t, locale],
   );
 
   const table = useReactTable<FlattenedParticipant>({

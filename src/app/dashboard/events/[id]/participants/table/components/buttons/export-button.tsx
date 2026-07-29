@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { downloadFile } from "@/lib/utils";
 
 export function ExportButton({ eventId }: { eventId: string }) {
@@ -29,7 +30,8 @@ export function ExportButton({ eventId }: { eventId: string }) {
         toast({
           variant: "destructive",
           title: t("failed"),
-          description: result.error ?? t("unknownError"),
+          description:
+            translateOrFallback(t, result.error?.key) ?? t("unknownError"),
         });
         return;
       }

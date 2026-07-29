@@ -1,7 +1,9 @@
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { downloadFile } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -17,6 +19,8 @@ export function DownloadAttributeFileButton({
   eventId: string;
   participant: FlattenedParticipant;
 }) {
+  const t = useTranslations("Export");
+
   const { toast } = useToast();
   const [isQuerying, setIsQuerying] = useState(false);
 
@@ -32,8 +36,8 @@ export function DownloadAttributeFileButton({
       if (!success) {
         toast({
           variant: "destructive",
-          title: "Pobieranie pliku nie powiodło się!",
-          description: error ?? "Wystąpił nieznany błąd.",
+          title: t("fileDownloadFailed"),
+          description: translateOrFallback(t, error?.key) ?? t("unknownError"),
         });
         return;
       }
@@ -50,8 +54,8 @@ export function DownloadAttributeFileButton({
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Eksport nie powiódł się!",
-        description: "Spróbuj ponownie",
+        title: t("downloadFailed"),
+        description: t("tryAgain"),
       });
     }
   }
@@ -61,9 +65,12 @@ export function DownloadAttributeFileButton({
       variant="link"
       onClick={downloadAttributeFile}
       disabled={isQuerying}
-      title={`Pobierz ${attribute.name} dla ${participant.email}`}
+      title={t("downloadForUser", {
+        name: attribute.name,
+        email: participant.email,
+      })}
     >
-      Pobierz
+      {t("download")}
     </Button>
   );
 }

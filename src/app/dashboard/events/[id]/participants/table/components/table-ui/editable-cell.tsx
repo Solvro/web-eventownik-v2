@@ -2,6 +2,7 @@
 
 /* eslint-disable unicorn/prevent-abbreviations */
 import type { CellContext } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,8 @@ function EditableCellInput({
   attribute,
   blocks = [],
 }: EditableCellProps) {
+  const t = useTranslations("Table");
+
   const rawValue = info.getValue();
   const stringValue = rawValue == null ? "" : String(rawValue);
   const key = attribute == null ? info.column.id : attribute.id.toString();
@@ -73,7 +76,7 @@ function EditableCellInput({
   ) {
     return (
       <span className="text-muted-foreground text-sm italic">
-        {stringValue === "" ? "—" : "Uploaded"}
+        {stringValue === "" ? "—" : t("uploaded")}
       </span>
     );
   }

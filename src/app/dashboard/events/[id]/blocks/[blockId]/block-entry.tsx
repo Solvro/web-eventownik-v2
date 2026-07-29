@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { BlockParticipantsList } from "@/app/dashboard/events/[id]/blocks/[blockId]/block-participants-list";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
@@ -23,6 +24,7 @@ function BlockEntry({
   eventId: string;
   attributeId: string;
 }) {
+  const t = useTranslations("Dashboard");
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
   const percentOccupancy =
     block.capacity == null
@@ -36,7 +38,7 @@ function BlockEntry({
   return (
     <div
       key={block.id}
-      className="flex flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
+      className="flex h-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
       <div className="flex justify-end gap-2">
         <EditBlockEntry
@@ -69,7 +71,7 @@ function BlockEntry({
           <FieldLabel htmlFor="progress-upload">
             <span className="ml-auto">
               {block.capacity === null
-                ? "Bez limitu"
+                ? t("unlimited")
                 : `${percentOccupancy.toString()}%`}
             </span>
           </FieldLabel>

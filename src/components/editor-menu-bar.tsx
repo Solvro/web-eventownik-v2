@@ -20,6 +20,7 @@ import {
   Tag,
   Underline,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 
 import { useEditorActiveState } from "@/hooks/use-editor-active-state";
@@ -35,11 +36,14 @@ function EditorMenuBar({
   editor: Editor | null;
   isEmailEditor?: boolean;
 }) {
+  const t = useTranslations("Editor");
+  const tMessageTags = useTranslations("MessageTags");
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const activeState = useEditorActiveState(editor);
 
   if (editor === null) {
-    return <div className="h-8">Ładowanie menu...</div>;
+    return <div className="h-8">{t("loadingMenu")}</div>;
   }
 
   return (
@@ -52,12 +56,12 @@ function EditorMenuBar({
               variant={activeState.bold ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
-              aria-label="Pogrubienie"
+              aria-label={t("bold")}
             >
               <Bold />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Pogrubienie</TooltipContent>
+          <TooltipContent>{t("bold")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -66,12 +70,12 @@ function EditorMenuBar({
               variant={activeState.italic ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              aria-label="Kursywa"
+              aria-label={t("italic")}
             >
               <Italic />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Kursywa</TooltipContent>
+          <TooltipContent>{t("italic")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -80,12 +84,12 @@ function EditorMenuBar({
               variant={activeState.underline ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleUnderline().run()}
-              aria-label="Podkreślenie"
+              aria-label={t("underline")}
             >
               <Underline />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Podkreślenie</TooltipContent>
+          <TooltipContent>{t("underline")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -94,12 +98,12 @@ function EditorMenuBar({
               variant={activeState.code ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleCode().run()}
-              aria-label="Kod (czcionka mono)"
+              aria-label={t("code")}
             >
               <Code2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Kod (czcionka mono)</TooltipContent>
+          <TooltipContent>{t("code")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -118,7 +122,7 @@ function EditorMenuBar({
                 <AlignLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie do lewej</TooltipContent>
+            <TooltipContent>{t("alignLeft")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -139,7 +143,7 @@ function EditorMenuBar({
                 <AlignCenter />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie do środka</TooltipContent>
+            <TooltipContent>{t("alignCenter")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -158,7 +162,7 @@ function EditorMenuBar({
                 <AlignRight />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wyrównanie w prawo</TooltipContent>
+            <TooltipContent>{t("alignRight")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -179,7 +183,7 @@ function EditorMenuBar({
                 <AlignJustify />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Justowanie</TooltipContent>
+            <TooltipContent>{t("justify")}</TooltipContent>
           </Tooltip>
         </div>
       ) : null}
@@ -192,12 +196,12 @@ function EditorMenuBar({
               variant={activeState.bulletList ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              aria-label="Lista punktowa"
+              aria-label={t("bulletList")}
             >
               <List />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Lista punktowa</TooltipContent>
+          <TooltipContent>{t("bulletList")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -206,12 +210,12 @@ function EditorMenuBar({
               variant={activeState.orderedList ? "eventDefault" : "eventGhost"}
               type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              aria-label="Lista numerowana"
+              aria-label={t("numberedList")}
             >
               <ListOrdered />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Lista numerowana</TooltipContent>
+          <TooltipContent>{t("numberedList")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -225,12 +229,12 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
               }
-              aria-label="Nagłówek stopnia pierwszego"
+              aria-label={t("heading1")}
             >
               <Heading1 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia pierwszego</TooltipContent>
+          <TooltipContent>{t("heading1")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -241,12 +245,12 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               }
-              aria-label="Nagłówek stopnia drugiego"
+              aria-label={t("heading2")}
             >
               <Heading2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia drugiego</TooltipContent>
+          <TooltipContent>{t("heading2")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -257,19 +261,19 @@ function EditorMenuBar({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 3 }).run()
               }
-              aria-label="Nagłówek stopnia trzeciego"
+              aria-label={t("heading3")}
             >
               <Heading3 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Nagłówek stopnia trzeciego</TooltipContent>
+          <TooltipContent>{t("heading3")}</TooltipContent>
         </Tooltip>
       </div>
 
       <input
         type="file"
         className="sr-only"
-        aria-label="Wybierz obraz"
+        aria-label={t("insertImage")}
         ref={fileInputRef}
         onChangeCapture={async (event) => {
           const input = event.target as HTMLInputElement;
@@ -292,7 +296,7 @@ function EditorMenuBar({
             <ImageIcon />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Wstaw zdjęcie</TooltipContent>
+        <TooltipContent>{t("insertImage")}</TooltipContent>
       </Tooltip>
       {isEmailEditor === undefined ? null : isEmailEditor ? (
         <div>
@@ -307,7 +311,7 @@ function EditorMenuBar({
                 <SlashSquare />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wstaw znacznik</TooltipContent>
+            <TooltipContent>{t("insertTag")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -315,14 +319,18 @@ function EditorMenuBar({
                 size="icon"
                 type="button"
                 onClick={() =>
-                  editor.chain().focus().insertContent("/formularz").run()
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent(`/${tMessageTags("form").toLowerCase()}`)
+                    .run()
                 }
                 variant="ghost"
               >
                 <FileSpreadsheet />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Wstaw znacznik linku do formularza</TooltipContent>
+            <TooltipContent>{t("insertFormLinkTag")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -330,7 +338,13 @@ function EditorMenuBar({
                 size="icon"
                 type="button"
                 onClick={() =>
-                  editor.chain().focus().insertContent("/atrybut").run()
+                  editor
+                    .chain()
+                    .focus()
+                    .insertContent(
+                      `/${tMessageTags("attribute").toLowerCase()}`,
+                    )
+                    .run()
                 }
                 variant="ghost"
               >
@@ -338,7 +352,7 @@ function EditorMenuBar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              Wstaw znacznik wartości atrybutu uczestnika
+              {t("insertParticipantAttributeTag")}
             </TooltipContent>
           </Tooltip>
         </div>

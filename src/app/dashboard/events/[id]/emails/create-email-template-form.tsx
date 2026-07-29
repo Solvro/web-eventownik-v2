@@ -32,7 +32,9 @@ function CreateEmailTemplateForm({
   eventAttributes: EventAttribute[];
   eventForms: EventForm[];
 }) {
+  const t = useTranslations("Email");
   const router = useRouter();
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [alertActive, setAlertActive] = useState(false);
@@ -40,8 +42,6 @@ function CreateEmailTemplateForm({
   const { isDirty, isGuardActive, onCancel, onConfirm } = useUnsavedAtom(
     newEventEmailTemplateAtom,
   );
-
-  const t = useTranslations("Email");
 
   const isSimpleDialogOpen = dialogMode === "simple";
 
@@ -95,7 +95,7 @@ function CreateEmailTemplateForm({
             setDialogMode("chooser");
           }}
         >
-          <SquarePlus className="h-6 w-6" /> Stwórz szablon
+          <SquarePlus className="h-6 w-6" /> {t("createTemplate")}
         </Button>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -136,7 +136,7 @@ function CreateEmailTemplateForm({
       <Dialog open={isSimpleDialogOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:overflow-y-auto">
           <DialogHeader className="sr-only">
-            <DialogTitle>Stwórz szablon</DialogTitle>
+            <DialogTitle>{t("createTemplate")}</DialogTitle>
           </DialogHeader>
           <UnsavedChangesAlert
             active={alertActive}

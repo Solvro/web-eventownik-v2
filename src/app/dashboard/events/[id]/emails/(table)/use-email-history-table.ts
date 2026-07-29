@@ -7,14 +7,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type { Table } from "@tanstack/react-table";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 
 import type {
   EventEmailParticipantData,
   SingleEventEmail,
 } from "@/types/emails";
 
-import { columns } from "./columns";
+import { getColumns } from "./columns";
 
 interface UseEmailHistoryTableResult {
   table: Table<EventEmailParticipantData>;
@@ -25,6 +26,9 @@ function useEmailHistoryTable(
   email: SingleEventEmail,
 ): UseEmailHistoryTableResult {
   const [globalFilter, setGlobalFilter] = useState("");
+
+  const t = useTranslations("EmailHistoryTable");
+  const columns = useMemo(() => getColumns(t), [t]);
 
   const table = useReactTable({
     data: email.participants,
