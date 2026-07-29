@@ -33,8 +33,8 @@ export function UploadStep({
           className="h-11 w-full rounded-xl"
           onClick={onChooseFile}
         >
-          Importuj plik
           <ArrowRight className="size-4" />
+          Importuj plik
         </Button>
         <CsvFileInput ref={inputRef} onFile={onFile} />
       </div>

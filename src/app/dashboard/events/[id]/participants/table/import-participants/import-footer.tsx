@@ -38,11 +38,14 @@ export function ImportFooter({
           onClick={onSubmit}
         >
           {isImporting ? (
-            <Loader2 className="animate-spin" />
+            <>
+              <Loader2 className="size-5 animate-spin" />
+              Importuj
+            </>
           ) : (
             <>
-              Importuj
               <ArrowRight className="size-5" />
+              Importuj
             </>
           )}
         </Button>
