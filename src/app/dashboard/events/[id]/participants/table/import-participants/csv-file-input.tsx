@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { forwardRef } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -7,21 +8,25 @@ interface CsvFileInputProps {
 }
 
 export const CsvFileInput = forwardRef<HTMLInputElement, CsvFileInputProps>(
-  ({ onFile }, ref) => (
-    <Input
-      ref={ref}
-      className="hidden"
-      type="file"
-      accept=".csv,text/csv"
-      aria-label="Wybierz plik CSV z uczestnikami"
-      onChange={(event) => {
-        const file = event.target.files?.[0];
-        if (file != null) {
-          void onFile(file);
-        }
-      }}
-    />
-  ),
+  ({ onFile }, ref) => {
+    const t = useTranslations("ImportParticipants");
+
+    return (
+      <Input
+        ref={ref}
+        className="hidden"
+        type="file"
+        accept=".csv,text/csv"
+        aria-label={t("chooseFileInputLabel")}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file != null) {
+            void onFile(file);
+          }
+        }}
+      />
+    );
+  },
 );
 
 CsvFileInput.displayName = "CsvFileInput";

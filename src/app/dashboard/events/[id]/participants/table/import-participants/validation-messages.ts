@@ -1,33 +1,35 @@
-import type { PreparedImport } from "./types";
+import type {
+  ImportTranslator,
+  ImportValidationKey,
+  PreparedImport,
+} from "./types";
 
-function getRowWord(count: number) {
-  if (count === 1) {
-    return "wiersz";
-  }
-
-  if (count >= 2 && count <= 4) {
-    return "wiersze";
-  }
-
-  return "wierszy";
-}
-
-export function getValidationMessages(preparedImport: PreparedImport) {
+export function getValidationMessages(
+  preparedImport: PreparedImport,
+  t: ImportTranslator,
+) {
   const messages: string[] = [];
 
   for (const target of preparedImport.missingRequiredTargets) {
-    messages.push(`Przypisz kolumnę do wymaganego pola: ${target}.`);
+    messages.push(t("validation.missingRequired", { target }));
   }
 
   if (preparedImport.duplicateTargets.length > 0) {
     messages.push(
-      `To samo pole przypisano więcej niż raz: ${preparedImport.duplicateTargets.join(", ")}.`,
+      t("validation.duplicateTarget", {
+        targets: preparedImport.duplicateTargets.join(", "),
+      }),
     );
   }
 
   const groupedIssues = new Map<
     string,
-    { field: string; message: string; rowIndexes: number[] }
+    {
+      field: string;
+      message: ImportValidationKey;
+      values?: Record<string, string | number>;
+      rowIndexes: number[];
+    }
   >();
 
   for (const issue of preparedImport.issues) {
@@ -38,6 +40,7 @@ export function getValidationMessages(preparedImport: PreparedImport) {
       groupedIssues.set(key, {
         field: issue.field,
         message: issue.message,
+        values: issue.values,
         rowIndexes: [issue.rowIndex],
       });
       continue;
@@ -48,9 +51,14 @@ export function getValidationMessages(preparedImport: PreparedImport) {
 
   for (const group of groupedIssues.values()) {
     const rowNumbers = group.rowIndexes.map((rowIndex) => rowIndex + 2);
+    const translatedMessage = t(group.message, group.values);
     if (rowNumbers.length === 1) {
       messages.push(
-        `Wiersz ${rowNumbers[0]?.toString() ?? ""}, ${group.field}: ${group.message}.`,
+        t("validation.singleIssue", {
+          row: rowNumbers[0]?.toString() ?? "",
+          field: group.field,
+          message: translatedMessage,
+        }),
       );
       continue;
     }
@@ -61,10 +69,18 @@ export function getValidationMessages(preparedImport: PreparedImport) {
       .join(", ");
     const hiddenRowsCount = rowNumbers.length - 4;
     const rowsSuffix =
-      hiddenRowsCount > 0 ? ` i ${hiddenRowsCount.toString()} więcej` : "";
+      hiddenRowsCount > 0
+        ? t("validation.moreRows", { count: hiddenRowsCount })
+        : "";
 
     messages.push(
-      `${group.field}: ${rowNumbers.length.toString()} ${getRowWord(rowNumbers.length)} - ${group.message} (wiersze ${visibleRows}${rowsSuffix}).`,
+      t("validation.multipleIssues", {
+        field: group.field,
+        count: rowNumbers.length,
+        message: translatedMessage,
+        rows: visibleRows,
+        more: rowsSuffix,
+      }),
     );
   }
 

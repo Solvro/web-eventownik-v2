@@ -1,11 +1,14 @@
 import { FileUp } from "lucide-react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 interface DragOverlayProps {
   hasCsvData: boolean;
 }
 
 export function DragOverlay({ hasCsvData }: DragOverlayProps) {
+  const t = useTranslations("ImportParticipants");
+
   return (
     <motion.div
       role="status"
@@ -39,11 +42,11 @@ export function DragOverlay({ hasCsvData }: DragOverlayProps) {
           <FileUp className="size-6" aria-hidden="true" />
         </motion.div>
         <div>
-          <p className="font-semibold">Upuść plik CSV w dowolnym miejscu</p>
+          <p className="font-semibold">{t("dropTitle")}</p>
           <p className="text-muted-foreground text-sm">
             {hasCsvData
-              ? "Aktualny plik zostanie zastąpiony."
-              : "Plik zostanie wczytany do importu."}
+              ? t("dropReplaceDescription")
+              : t("dropUploadDescription")}
           </p>
         </div>
       </motion.div>

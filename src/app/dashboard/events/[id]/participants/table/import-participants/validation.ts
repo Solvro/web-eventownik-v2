@@ -6,6 +6,7 @@ import { getAttributeTarget } from "./mapping";
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
 import type {
   CsvData,
+  ImportValidationKey,
   MappingTarget,
   PreparedImport,
   ValidationIssue,
@@ -65,7 +66,7 @@ function getTargetLabel(
     return "Email";
   }
   if (target === SKIP_TARGET) {
-    return "Pomiń";
+    return target;
   }
 
   const attributeId = Number(target.replace("attr:", ""));
@@ -76,29 +77,44 @@ function getTargetLabel(
 function getSharedValidationError(
   value: unknown,
   attribute: Attribute,
-  locale: string,
-) {
+): ImportValidationKey | null {
   const result = getSchemaObjectForAttribute(attribute).safeParse(value);
   if (result.success) {
     return null;
   }
 
-  const fallbackMessage = "ma nieprawidłową wartość";
-  const message = result.error.issues[0]?.message ?? fallbackMessage;
-  const label = getAttributeLabel(attribute.name, locale);
-
-  return message
-    .replace(`Pole ${label} `, "")
-    .replace(`dla pola ${label}`, "")
-    .replace(/\.$/, "");
+  switch (result.error.issues[0]?.message) {
+    case "fieldEmail": {
+      return "validation.invalidEmail";
+    }
+    case "fieldNumber": {
+      return "validation.invalidNumber";
+    }
+    case "fieldDate": {
+      return "validation.invalidDate";
+    }
+    case "fieldPhone": {
+      return "validation.invalidPhone";
+    }
+    case "fieldRequiredChecked": {
+      return "validation.requiredChecked";
+    }
+    default: {
+      return "validation.invalidValue";
+    }
+  }
 }
 
 function validateAttributeValue(
   value: string,
   attribute: Attribute,
   blocks: Block[],
-  locale: string,
-): { value: string | null } | { error: string } {
+):
+  | { value: string | null }
+  | {
+      error: ImportValidationKey;
+      values?: Record<string, string | number>;
+    } {
   const trimmed = value.trim();
 
   if (trimmed === "") {
@@ -108,18 +124,14 @@ function validateAttributeValue(
   switch (attribute.type) {
     case "number": {
       const normalizedNumber = trimmed.replace(",", ".");
-      const sharedError = getSharedValidationError(
-        normalizedNumber,
-        attribute,
-        locale,
-      );
+      const sharedError = getSharedValidationError(normalizedNumber, attribute);
       if (sharedError != null) {
         return { error: sharedError };
       }
       return { value: Number(normalizedNumber).toString() };
     }
     case "email": {
-      const sharedError = getSharedValidationError(trimmed, attribute, locale);
+      const sharedError = getSharedValidationError(trimmed, attribute);
       if (sharedError != null) {
         return { error: sharedError };
       }
@@ -134,18 +146,19 @@ function validateAttributeValue(
       }
       if (falsy.includes(normalized)) {
         if (attribute.isRequired) {
-          return { error: "musi być zaznaczone" };
+          return { error: "validation.requiredChecked" };
         }
         return { value: "false" };
       }
-      return { error: "musi być wartością tak/nie" };
+      return { error: "validation.boolean" };
     }
     case "select": {
       const options = attribute.options ?? [];
       const option = findMatchingOption(trimmed, options);
       if (option == null) {
         return {
-          error: `musi być jedną z opcji: ${getOptionSummary(options)}`,
+          error: "validation.oneOfOptions",
+          values: { options: getOptionSummary(options) },
         };
       }
       return { value: resolveAttributeOption(option).value };
@@ -161,7 +174,8 @@ function validateAttributeValue(
       );
       if (matchedValues.some((item) => item == null)) {
         return {
-          error: `zawiera opcję spoza listy: ${getOptionSummary(options)}`,
+          error: "validation.optionNotInList",
+          values: { options: getOptionSummary(options) },
         };
       }
       if (
@@ -169,7 +183,8 @@ function validateAttributeValue(
         matchedValues.length > attribute.maxSelections
       ) {
         return {
-          error: `ma za dużo opcji, maksymalnie ${attribute.maxSelections.toString()}`,
+          error: "validation.tooManyOptions",
+          values: { max: attribute.maxSelections },
         };
       }
       return {
@@ -181,14 +196,14 @@ function validateAttributeValue(
     }
     case "date":
     case "datetime": {
-      const sharedError = getSharedValidationError(trimmed, attribute, locale);
+      const sharedError = getSharedValidationError(trimmed, attribute);
       if (sharedError != null) {
         return { error: sharedError };
       }
       return { value: trimmed };
     }
     case "color": {
-      const sharedError = getSharedValidationError(trimmed, attribute, locale);
+      const sharedError = getSharedValidationError(trimmed, attribute);
       if (sharedError != null) {
         return { error: sharedError };
       }
@@ -205,14 +220,15 @@ function validateAttributeValue(
         );
 
         if (matchedBlocks.some((item) => item == null)) {
-          return { error: "zawiera blok spoza listy" };
+          return { error: "validation.blockNotInList" };
         }
         if (
           attribute.maxSelections != null &&
           matchedBlocks.length > attribute.maxSelections
         ) {
           return {
-            error: `ma za dużo bloków, maksymalnie ${attribute.maxSelections.toString()}`,
+            error: "validation.tooManyBlocks",
+            values: { max: attribute.maxSelections },
           };
         }
 
@@ -226,7 +242,7 @@ function validateAttributeValue(
 
       const matchingBlock = findMatchingBlock(trimmed, attribute, blocks);
       if (matchingBlock == null) {
-        return { error: "musi pasować do nazwy lub ID bloku" };
+        return { error: "validation.blockMustMatch" };
       }
       return { value: matchingBlock.id.toString() };
     }
@@ -234,7 +250,7 @@ function validateAttributeValue(
     case "textarea":
     case "time":
     case "tel": {
-      const sharedError = getSharedValidationError(trimmed, attribute, locale);
+      const sharedError = getSharedValidationError(trimmed, attribute);
       if (sharedError != null) {
         return { error: sharedError };
       }
@@ -303,7 +319,7 @@ export function prepareImport({
       issues.push({
         rowIndex,
         field: "Email",
-        message: "nieprawidłowy adres email",
+        message: "validation.invalidEmail",
       });
     }
 
@@ -326,22 +342,18 @@ export function prepareImport({
         issues.push({
           rowIndex,
           field: getAttributeLabel(attribute.name, locale),
-          message: "jest wymagane",
+          message: "validation.required",
         });
         continue;
       }
 
-      const result = validateAttributeValue(
-        rawValue,
-        attribute,
-        blocks,
-        locale,
-      );
+      const result = validateAttributeValue(rawValue, attribute, blocks);
       if ("error" in result) {
         issues.push({
           rowIndex,
           field: getAttributeLabel(attribute.name, locale),
           message: result.error,
+          values: result.values,
         });
         continue;
       }

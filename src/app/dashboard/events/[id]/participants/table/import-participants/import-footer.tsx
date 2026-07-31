@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +20,8 @@ export function ImportFooter({
   onBack,
   onSubmit,
 }: ImportFooterProps) {
+  const t = useTranslations("ImportParticipants");
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -29,7 +32,7 @@ export function ImportFooter({
           onClick={onBack}
         >
           <ArrowLeft />
-          Wróć
+          {t("back")}
         </Button>
         <Button
           type="button"
@@ -40,12 +43,12 @@ export function ImportFooter({
           {isImporting ? (
             <>
               <Loader2 className="size-5 animate-spin" />
-              Importuj
+              {t("import")}
             </>
           ) : (
             <>
               <ArrowRight className="size-5" />
-              Importuj
+              {t("import")}
             </>
           )}
         </Button>
@@ -54,14 +57,14 @@ export function ImportFooter({
       {blockingIssuesCount > 0 ? (
         <div
           role="alert"
-          aria-label="Błędy importu CSV"
+          aria-label={t("errorsLabel")}
           className="border-destructive/40 bg-destructive/10 max-h-24 overflow-auto rounded-xl border p-2 text-xs leading-relaxed"
         >
           {validationMessages.slice(0, 5).map((message) => (
             <p key={message}>{message}</p>
           ))}
           {validationMessages.length > 5 ? (
-            <p>I {(validationMessages.length - 5).toString()} więcej.</p>
+            <p>{t("moreErrors", { count: validationMessages.length - 5 })}</p>
           ) : null}
         </div>
       ) : null}

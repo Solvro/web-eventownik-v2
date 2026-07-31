@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import type { CsvData } from "./types";
@@ -19,6 +21,7 @@ function getSpreadsheetColumnLabel(columnIndex: number) {
 }
 
 export function CsvPreview({ csvData }: CsvPreviewProps) {
+  const t = useTranslations("ImportParticipants");
   const sheetHeaders = csvData.headers;
   const sheetRows = Array.from({ length: 14 }, (_, index) => {
     return csvData.rows[index] ?? [];
@@ -27,7 +30,7 @@ export function CsvPreview({ csvData }: CsvPreviewProps) {
 
   return (
     <section
-      aria-label="Podgląd pliku CSV"
+      aria-label={t("previewLabel")}
       className="border-border bg-muted/20 min-h-0 border-b p-3 select-none md:border-r md:border-b-0"
     >
       <ScrollArea className="h-full">

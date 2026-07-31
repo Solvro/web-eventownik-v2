@@ -3,7 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { FileSpreadsheet } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -56,6 +56,7 @@ export function ImportParticipantsDialog({
   blocks,
 }: ImportParticipantsDialogProps) {
   const locale = useLocale();
+  const t = useTranslations("ImportParticipants");
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const dragDepthRef = useRef(0);
@@ -99,7 +100,10 @@ export function ImportParticipantsDialog({
     preparedImport.duplicateTargets.length === 0 &&
     preparedImport.missingRequiredTargets.length === 0 &&
     !isImporting;
-  const validationMessages = getValidationMessages(preparedImport);
+  const validationMessages = getValidationMessages(
+    preparedImport,
+    (key, values) => t(key, values),
+  );
 
   function chooseFile() {
     inputRef.current?.click();
@@ -121,8 +125,8 @@ export function ImportParticipantsDialog({
       if (!file.name.toLowerCase().endsWith(".csv")) {
         toast({
           variant: "destructive",
-          title: "Nieobsługiwany plik",
-          description: "Wybierz plik CSV.",
+          title: t("unsupportedFileTitle"),
+          description: t("unsupportedFileDescription"),
         });
         return;
       }
@@ -132,7 +136,7 @@ export function ImportParticipantsDialog({
       setCsvData(parsed);
       setMappings(guessInitialMappings(parsed.headers, importableAttributes));
     },
-    [importableAttributes, toast],
+    [importableAttributes, t, toast],
   );
 
   function handleMappingChange(columnIndex: number, target: MappingTarget) {
@@ -226,7 +230,7 @@ export function ImportParticipantsDialog({
       if (!result.success) {
         toast({
           variant: "destructive",
-          title: "Import nie powiódł się",
+          title: t("importFailedTitle"),
           description: result.error,
         });
         return;
@@ -239,26 +243,28 @@ export function ImportParticipantsDialog({
       resetDialogState();
       if (result.warning != null) {
         toast({
-          title: "Import częściowo zakończony",
+          title: t("partialImportTitle"),
           description:
             result.warning.details == null
-              ? `${result.warning.message}\nPominięto: ${result.warning.emails
-                  .slice(0, 5)
-                  .join(", ")}.`
+              ? `${result.warning.message}\n${t("skippedEmails", {
+                  emails: result.warning.emails.slice(0, 5).join(", "),
+                })}`
               : `${result.warning.message}\n${result.warning.details}`,
         });
         return;
       }
 
       toast({
-        title: "Zaimportowano uczestników",
-        description: `Dodano ${preparedImport.participants.length.toString()} wierszy.`,
+        title: t("importSuccessTitle"),
+        description: t("importSuccessDescription", {
+          count: preparedImport.participants.length,
+        }),
       });
     } catch {
       toast({
         variant: "destructive",
-        title: "Import nie powiódł się",
-        description: "Wystąpił nieoczekiwany błąd.",
+        title: t("importFailedTitle"),
+        description: t("unexpectedError"),
       });
     } finally {
       setIsImporting(false);
@@ -279,10 +285,10 @@ export function ImportParticipantsDialog({
         <Button
           variant="outline"
           className="h-10"
-          aria-label="Importuj uczestników z CSV"
+          aria-label={t("triggerLabel")}
         >
           <FileSpreadsheet />
-          <span className="max-md:sr-only">Importuj uczestników</span>
+          <span className="max-md:sr-only">{t("triggerText")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -294,10 +300,8 @@ export function ImportParticipantsDialog({
         )}
       >
         <DialogHeader className="sr-only">
-          <DialogTitle>Importuj uczestników z pliku CSV</DialogTitle>
-          <DialogDescription>
-            Wybierz plik CSV i dopasuj jego kolumny do atrybutów uczestników.
-          </DialogDescription>
+          <DialogTitle>{t("dialogTitle")}</DialogTitle>
+          <DialogDescription>{t("dialogDescription")}</DialogDescription>
         </DialogHeader>
         <div
           className={cn("relative", csvData == null ? "" : "h-full min-h-0")}

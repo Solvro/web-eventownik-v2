@@ -1,5 +1,6 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type {
@@ -37,23 +38,31 @@ interface ImportParticipantsResponse {
   }[];
 }
 
+interface SkippedParticipantMessages {
+  allAlreadyExist: string;
+  allDuplicatedInFile: string;
+  notImported: string;
+  more: (count: number) => string;
+}
+
 function formatSkippedParticipants(
   skippedParticipants: NonNullable<
     ImportParticipantsResponse["skippedParticipants"]
   >,
+  messages: SkippedParticipantMessages,
 ) {
   const allAlreadyExist = skippedParticipants.every(
     (participant) => participant.reason === "already_exists",
   );
   if (allAlreadyExist) {
-    return "Wszyscy uczestnicy z pliku już istnieją w tym wydarzeniu.";
+    return messages.allAlreadyExist;
   }
 
   const allDuplicatedInFile = skippedParticipants.every(
     (participant) => participant.reason === "duplicate_in_file",
   );
   if (allDuplicatedInFile) {
-    return "Wszystkie pominięte adresy email są duplikatami w tym pliku.";
+    return messages.allDuplicatedInFile;
   }
 
   const visibleSkippedParticipants = skippedParticipants.slice(0, 5);
@@ -62,14 +71,14 @@ function formatSkippedParticipants(
   const visibleDetails = visibleSkippedParticipants
     .map((participant) => {
       return `${participant.email}: ${
-        participant.message ?? "nie zaimportowano"
+        participant.message ?? messages.notImported
       }`;
     })
     .join("\n");
 
   return `${visibleDetails}${
     hiddenSkippedParticipantsCount > 0
-      ? `\nI ${hiddenSkippedParticipantsCount.toString()} więcej.`
+      ? `\n${messages.more(hiddenSkippedParticipantsCount)}`
       : ""
   }`;
 }
@@ -318,10 +327,18 @@ export async function importParticipants(
     redirect("/auth/login");
   }
 
+  const t = await getTranslations("ImportParticipants");
+  const skippedParticipantMessages: SkippedParticipantMessages = {
+    allAlreadyExist: t("allParticipantsExist"),
+    allDuplicatedInFile: t("allEmailsDuplicated"),
+    notImported: t("notImported"),
+    more: (count) => t("moreSkippedParticipants", { count }),
+  };
+
   if (participants.length === 0) {
     return {
       success: false,
-      error: "Brak uczestników do zaimportowania.",
+      error: t("noParticipants"),
     };
   }
 
@@ -332,13 +349,19 @@ export async function importParticipants(
   );
 
   if (!response.ok) {
-    let error = `Błąd ${response.status.toString()} ${response.statusText}`;
+    let error = t("httpError", {
+      status: response.status,
+      statusText: response.statusText,
+    });
     try {
       const parsed = (await response.json()) as ImportParticipantsResponse;
       const skippedDetails =
         parsed.skippedParticipants != null &&
         parsed.skippedParticipants.length > 0
-          ? formatSkippedParticipants(parsed.skippedParticipants)
+          ? formatSkippedParticipants(
+              parsed.skippedParticipants,
+              skippedParticipantMessages,
+            )
           : null;
       const validationErrors =
         parsed.errors
@@ -376,14 +399,15 @@ export async function importParticipants(
     warning:
       skippedEmails.length > 0
         ? {
-            message:
-              parsed.warning?.message ??
-              "Część uczestników nie została zaimportowana.",
+            message: parsed.warning?.message ?? t("someParticipantsSkipped"),
             emails: skippedEmails,
             details:
               parsed.skippedParticipants == null
                 ? null
-                : formatSkippedParticipants(parsed.skippedParticipants),
+                : formatSkippedParticipants(
+                    parsed.skippedParticipants,
+                    skippedParticipantMessages,
+                  ),
           }
         : null,
   };

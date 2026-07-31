@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -30,12 +31,14 @@ export function ColumnMappingList({
   locale,
   onMappingChange,
 }: ColumnMappingListProps) {
+  const t = useTranslations("ImportParticipants");
+
   return (
     <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
       <div className="grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,1fr)] gap-x-2 pb-2 text-sm">
-        <h3 className="font-bold">Kolumny w pliku</h3>
+        <h3 className="font-bold">{t("fileColumns")}</h3>
         <div />
-        <h3 className="font-bold">Atrybuty</h3>
+        <h3 className="font-bold">{t("attributes")}</h3>
       </div>
       <ScrollArea className="h-full min-h-0 pr-3">
         <div className="grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,1fr)] gap-x-2 gap-y-2 p-px pb-1">
@@ -65,7 +68,7 @@ export function ColumnMappingList({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={SKIP_TARGET}>Pomiń</SelectItem>
+                    <SelectItem value={SKIP_TARGET}>{t("skip")}</SelectItem>
                     <SelectItem value={EMAIL_TARGET}>Email</SelectItem>
                     {attributes.map((attribute) => (
                       <SelectItem
@@ -79,7 +82,7 @@ export function ColumnMappingList({
                 </Select>
                 {mappedAttribute?.isRequired === true ||
                 target === EMAIL_TARGET ? (
-                  <span className="sr-only">Wymagane</span>
+                  <span className="sr-only">{t("required")}</span>
                 ) : null}
               </div>
             );

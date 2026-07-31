@@ -1,4 +1,5 @@
 import { ListChecks } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { Ref } from "react";
 
 import type { Attribute } from "@/types/attributes";
@@ -42,6 +43,8 @@ export function ImportStep({
   onBack,
   onSubmit,
 }: ImportStepProps) {
+  const t = useTranslations("ImportParticipants");
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col gap-6">
       <p className="absolute -mt-0.5 text-sm">2/2</p>
@@ -50,8 +53,8 @@ export function ImportStep({
           <ListChecks />
         </div>
         <div className="space-y-1 text-center">
-          <p className="text-neutral-500">Krok 2</p>
-          <p className="text-lg font-medium">Dopasuj kolumny do atrybutów</p>
+          <p className="text-neutral-500">{t("step2")}</p>
+          <p className="text-lg font-medium">{t("mapColumnsTitle")}</p>
         </div>
       </div>
 
@@ -66,7 +69,7 @@ export function ImportStep({
                 className="text-primary min-w-0 truncate text-left text-sm underline underline-offset-4"
                 onClick={onChooseFile}
               >
-                Wybrany plik: {csvData.fileName}
+                {t("selectedFile", { fileName: csvData.fileName })}
               </button>
             </div>
             <CsvFileInput ref={inputRef} onFile={onFile} />

@@ -1,4 +1,5 @@
 import { ArrowRight, FileSpreadsheet } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { Ref } from "react";
 
 import { FormContainer } from "@/components/forms/form-container";
@@ -17,16 +18,18 @@ export function UploadStep({
   onChooseFile,
   onFile,
 }: UploadStepProps) {
+  const t = useTranslations("ImportParticipants");
+
   return (
     <FormContainer
       step="1/2"
-      title="Krok 1"
-      description="Wybierz plik CSV"
+      title={t("step1")}
+      description={t("chooseFileTitle")}
       icon={<FileSpreadsheet />}
     >
       <div className="space-y-4">
         <p className="text-muted-foreground text-center text-sm">
-          Wybierz plik z uczestnikami, aby przejść do dopasowania kolumn.
+          {t("chooseFileDescription")}
         </p>
         <Button
           type="button"
@@ -34,7 +37,7 @@ export function UploadStep({
           onClick={onChooseFile}
         >
           <ArrowRight className="size-4" />
-          Importuj plik
+          {t("importFile")}
         </Button>
         <CsvFileInput ref={inputRef} onFile={onFile} />
       </div>
