@@ -37,7 +37,7 @@ export function ImportFooter({
         <Button
           type="button"
           disabled={!canImport}
-          className="w-36 disabled:opacity-50"
+          className="disabled:opacity-50"
           onClick={onSubmit}
         >
           {isImporting ? (
