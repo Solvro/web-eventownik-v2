@@ -31,22 +31,33 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const formData = new FormData();
 
   formData.append("name", event.name);
-  formData.append("description", event.description ?? "");
-  formData.append("organizer", event.organizer ?? "");
-  formData.append("contactEmail", event.contactEmail ?? "");
-  formData.append("slug", event.slug);
-  formData.append("termsLink", event.termsLink ?? "");
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
-  formData.append("location", event.location ?? "");
+  formData.append("isPublic", "true"); // temporarily set to true
+  formData.append("participantsLimit", event.participantsNumber.toString());
+  formData.append("description", event.description ?? "");
   formData.append("primaryColor", event.primaryColor);
-  formData.append("participantsCount", event.participantsNumber.toString());
+  formData.append("organizerName", event.organizer ?? "");
+  formData.append("location", event.location ?? "");
+  formData.append("contactEmail", event.contactEmail ?? "");
+  formData.append("slug", event.slug);
 
+  let linkIndex = 0;
+  if (event.termsLink) {
+    formData.append(`links[${linkIndex}][url]`, event.termsLink);
+    formData.append(`links[${linkIndex}][type]`, "policy");
+    formData.append(`links[${linkIndex}][label]`, "Regulamin");
+    linkIndex++;
+  }
   for (const _link of event.socialMediaLinks) {
     if (_link.link) {
-      const value =
-        _link.label == null ? _link.link : `[${_link.label}](${_link.link})`;
-      formData.append("socialMediaLinks[]", value);
+      formData.append(`links[${linkIndex}][url]`, _link.link);
+      formData.append(`links[${linkIndex}][type]`, "general");
+      formData.append(
+        `links[${linkIndex}][label]`,
+        _link.label ?? "Social Media",
+      );
+      linkIndex++;
     }
   }
 
@@ -71,11 +82,19 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as { errors: { message: string }[] };
+    const error = (await response.json()) as {
+      message: string[] | string;
+      error: string;
+      statusCode: number;
+    };
+    const messages = Array.isArray(error.message)
+      ? error.message
+      : [error.message ?? "Unknown error"];
+
     console.error(
-      `[saveEvent] Failed to create event: ${error.errors[0]?.message ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
     );
-    return { errors: error.errors };
+    return { errors: messages.map((msg) => ({ message: msg })) };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;
