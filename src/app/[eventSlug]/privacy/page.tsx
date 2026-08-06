@@ -19,9 +19,12 @@ export async function generateMetadata({
   const t = await getTranslations("Event");
   const { eventSlug } = await params;
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -44,9 +47,12 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
 
-  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const eventResponse = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    {
+      method: "GET",
+    },
+  );
   if (!eventResponse.ok) {
     const error = (await eventResponse.json()) as unknown;
     console.error(error);
@@ -108,7 +114,7 @@ export default async function EventPage({ params }: EventPageProps) {
               </li>
               {event.attributes.map((attribute) => {
                 return (
-                  <li key={attribute.id}>
+                  <li key={attribute.uuid}>
                     {getAttributeLabel(attribute.name, "pl")}
                     {attribute.isSensitiveData
                       ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`

@@ -69,11 +69,68 @@ export default async function AdminPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
             events.map((event) => (
-              <EventCardForSuperadmin
-                key={event.id}
-                event={event}
-                bearerToken={bearerToken}
-              />
+              <div
+                key={event.uuid}
+                className={cn(
+                  "bg-background flex h-full flex-col overflow-hidden rounded-xl border-2",
+                  event.isActive ? "border-green-400" : "border-red-400",
+                )}
+              >
+                <div className="relative">
+                  <Image
+                    src={
+                      event.photoUrl == null
+                        ? EventPhotoPlaceholder
+                        : `${PHOTO_URL}/${event.photoUrl}`
+                    }
+                    width="500"
+                    height="500"
+                    className="aspect-square w-full object-cover"
+                    alt={`Zdjęcie wydarzenia ${event.name}`}
+                  />
+                  <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
+                    <div className="flex flex-row justify-between">
+                      <EventInfoBlock>
+                        <Calendar1 size={16} />
+                        <p className="text-sm">
+                          {format(event.startDate, "dd.MM.yyyy HH:mm")}
+                        </p>
+                      </EventInfoBlock>
+                      <EventInfoBlock>
+                        <p className="text-sm">{event.participantsCount}</p>
+                        <Users size={16} />
+                      </EventInfoBlock>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col justify-between p-4">
+                  <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
+                    {event.name}
+                  </h3>
+                  <div className="flex w-full flex-col gap-2">
+                    <Button asChild variant="outline">
+                      <Link href={`/dashboard/events/${event.uuid}`}>
+                        <LayoutDashboard className="mr-2 size-4" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link
+                        href={`https://eventownik.solvro.pl/${event.slug}`}
+                        target="_blank"
+                      >
+                        <Globe className="mr-2 size-4" />
+                        Strona
+                      </Link>
+                    </Button>
+                    <ActivateEvent
+                      bearerToken={bearerToken}
+                      eventUuid={event.uuid}
+                      isActive={event.isActive}
+                    />
+                  </div>
+                </div>
+              </div>
             ))
           ) : (
             <div className="col-span-full">

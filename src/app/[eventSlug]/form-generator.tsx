@@ -14,7 +14,7 @@ export function FormGenerator({
   attributes,
   userData,
   originalEventBlocks,
-  formId,
+  formUuid,
   eventSlug,
   userSlug,
   editMode,
@@ -22,7 +22,7 @@ export function FormGenerator({
   attributes: FormAttribute[];
   userData?: PublicParticipant;
   originalEventBlocks: PublicBlock[];
-  formId: string;
+  formUuid: string;
   eventSlug: string;
   userSlug?: string;
   editMode: boolean;
@@ -45,7 +45,7 @@ export function FormGenerator({
       try {
         const updatedBlocks = (await Promise.all(
           blockAttributes.map(async (attribute) =>
-            getEventBlockAttributeBlocks(eventSlug, attribute.id.toString()),
+            getEventBlockAttributeBlocks(eventSlug, attribute.uuid),
           ),
         )) as unknown as PublicBlock[];
 
@@ -77,8 +77,8 @@ export function FormGenerator({
       onSubmit={async (values, files) =>
         submitParticipantForm({
           values,
-          formId,
-          eventId: eventSlug,
+          formUuid,
+          eventUuid: eventSlug,
           participantSlug: userSlug,
           files,
         })

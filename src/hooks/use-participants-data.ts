@@ -5,13 +5,12 @@ import { useEffect, useState } from "react";
 import {
   deleteManyParticipants,
   getParticipants,
-} from "@/app/dashboard/events/[id]/participants/actions";
-import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/core/data";
-import { useToast } from "@/hooks/use-toast";
+} from "@/app/dashboard/events/[uuid]/participants/actions";
+import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/table/data";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
-  eventId: string,
+  eventUuid: string,
   initialParticipants: Participant[] = [],
 ) {
   const queryClient = useQueryClient();
@@ -19,8 +18,8 @@ export function useParticipantsData(
   const t = useTranslations("Table");
 
   const { data: participants, isFetching } = useQuery({
-    queryKey: ["participants", eventId],
-    queryFn: async () => getParticipants(eventId),
+    queryKey: ["participants", eventUuid],
+    queryFn: async () => getParticipants(eventUuid),
     initialData: initialParticipants,
   });
 
@@ -34,11 +33,11 @@ export function useParticipantsData(
     }
   }, [participants]);
 
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
-    onSuccess: async (_, variables) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (uuid: string) => deleteParticipant(eventUuid, uuid),
+    onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["participants", eventId],
+        queryKey: ["participants", eventUuid],
       });
       toast({
         title: t("deleteParticipantsSuccess"),
@@ -47,11 +46,13 @@ export function useParticipantsData(
         }),
       });
     },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: t("deleteParticipantsError"),
-        description: error.message || t("deleteParticipantsErrorDescription"),
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => deleteManyParticipants(eventUuid, ids),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["participants", eventUuid],
       });
     },
   });

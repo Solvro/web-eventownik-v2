@@ -2,6 +2,7 @@
 
 import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 import type { FormErrorObject } from "@/types/form";
 
 interface ErrorResponse {
@@ -14,8 +15,8 @@ interface SubmitFormOptions {
   /**
    * Legacy events have IDs, new events have slugs - this handles both
    */
-  eventId: string;
-  formId: string;
+  eventUuid: string;
+  formUuid: string;
   files: File[];
   participantSlug?: string;
 }
@@ -37,11 +38,15 @@ interface SubmitFormResult {
  */
 export async function submitParticipantForm({
   values,
-  eventId,
-  formId,
+  eventUuid,
+  formUuid,
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
+  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
+    return { success: false, error: "Invalid form identifier" };
+  }
+
   try {
     const formData = new FormData();
 
@@ -72,7 +77,7 @@ export async function submitParticipantForm({
     }
 
     const response = await fetch(
-      `${API_URL}/events/${eventId}/forms/${formId}/submit`,
+      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
         body: formData,

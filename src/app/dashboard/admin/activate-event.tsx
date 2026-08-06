@@ -8,12 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 
 import { activateEvent } from "./actions";
 
-export function ActivateEvent({
-  eventId,
+function ActivateEvent({
+  eventUuid,
   isActive,
   bearerToken,
 }: {
-  eventId: number;
+  eventUuid: string;
   isActive: boolean;
   bearerToken: string;
 }) {
@@ -22,7 +22,7 @@ export function ActivateEvent({
   const t = useTranslations("Dashboard");
 
   const handleClick = async () => {
-    const response = await activateEvent(isActive, eventId, bearerToken);
+    const response = await activateEvent(isActive, eventUuid, bearerToken);
     if ("error" in response) {
       toast({
         title: t("error"),

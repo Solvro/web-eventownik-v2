@@ -109,7 +109,7 @@ export function ParticipantForm({
             attribute.type !== "file" && attribute.type !== "drawing",
         )
         .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+          accumulator[attribute.uuid] = attribute.meta.pivot_value;
           return accumulator;
         }, {}),
     },
@@ -250,20 +250,18 @@ export function ParticipantForm({
     let hasValidationErrors = false;
 
     for (const attribute of requiredFileDrawingAttributes) {
-      const hasFile = files.some(
-        (file) => file.name === attribute.id.toString(),
-      );
+      const hasFile = files.some((file) => file.name === attribute.uuid);
       const hasExistingValue =
         userData?.attributes.some(
           (userAttribute) =>
-            userAttribute.id === attribute.id &&
+            userAttribute.uuid === attribute.uuid &&
             userAttribute.meta.pivot_value !== "" &&
             userAttribute.meta.pivot_value.length > 0,
         ) ?? false;
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
-        form.setError(attribute.id.toString(), {
+        form.setError(attribute.uuid, {
           message:
             attribute.type === "file"
               ? t("fileUploadRequired")
@@ -329,9 +327,9 @@ export function ParticipantForm({
         {sortedAttributes.map((attribute) => {
           return (
             <FormField
-              key={attribute.id}
+              key={attribute.uuid}
               control={form.control}
-              name={attribute.id.toString()}
+              name={attribute.uuid}
               render={({ field }) => (
                 <FormItem
                   className={cn(
@@ -339,7 +337,7 @@ export function ParticipantForm({
                       "flex flex-row-reverse items-start justify-end space-y-0",
                   )}
                 >
-                  <FormLabel htmlFor={attribute.id.toString()}>
+                  <FormLabel htmlFor={attribute.uuid}>
                     {getAttributeLabel(attribute.name, locale)}{" "}
                     {attribute.isRequired ? (
                       <Tooltip>
@@ -362,7 +360,7 @@ export function ParticipantForm({
                         setFiles={setFiles}
                         lastUpdate={
                           userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
+                            (attribute_) => attribute_.uuid === attribute.uuid,
                           )?.meta.pivot_updated_at ?? null
                         }
                       />
@@ -375,7 +373,7 @@ export function ParticipantForm({
                         setFiles={setFiles}
                         lastUpdate={
                           userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
+                            (attribute_) => attribute_.uuid === attribute.uuid,
                           )?.meta.pivot_updated_at ?? null
                         }
                       />
@@ -384,7 +382,7 @@ export function ParticipantForm({
                         attribute={attribute}
                         userData={userData}
                         eventBlocks={eventBlocks.filter(
-                          (block) => block.attributeId === attribute.id,
+                          (block) => block.attributeUuid === attribute.uuid,
                         )}
                         field={field}
                         shouldCheckUserData={editMode}
@@ -395,7 +393,7 @@ export function ParticipantForm({
                     {translateOrFallback(
                       t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                      (form.formState.errors as any)[attribute.id.toString()]
+                      (form.formState.errors as any)[attribute.uuid]
                         ?.message as FormValidationErrors,
                       { name: getAttributeLabel(attribute.name, "pl") },
                     )}

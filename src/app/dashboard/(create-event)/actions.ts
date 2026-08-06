@@ -88,16 +88,14 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     return { errors: error.errors };
   }
 
-  const data = (await response.json()) as Record<"id", string>;
+  const data = (await response.json()) as Record<"uuid", string>;
 
-  if (!("id" in data)) {
-    console.error("[saveEvent] No event ID returned from server");
-    return {
-      errors: [{ message: { key: "failedToCreateEvent" as DashboardKey } }],
-    };
+  if (!("uuid" in data)) {
+    console.error("[saveEvent] No event UUID returned from server");
+    return { errors: [{ message: "Failed to create event" }] };
   }
 
-  const eventId = data.id;
+  const eventUuid = data.uuid;
 
   const coOrganizerErrors: ErrorMessage[] = [];
   let coOrganizersAdded = 0;
@@ -105,7 +103,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   for (const coorganizer of event.coorganizers) {
     try {
       const coorganizerResponse = await fetch(
-        `${API_URL}/events/${eventId}/organizers`,
+        `${API_URL}/events/${eventUuid}/organizers`,
         {
           method: "POST",
           headers: {
@@ -165,7 +163,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   for (const attribute of event.attributes) {
     try {
       const attributeResponse = await fetch(
-        `${API_URL}/events/${eventId}/attributes`,
+        `${API_URL}/events/${eventUuid}/attributes`,
         {
           method: "POST",
           headers: {
@@ -226,12 +224,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (warnings.length > 0) {
     console.warn(
-      `[saveEvent] Event ${eventId} created with ${warnings.length.toString()} warnings`,
+      `[saveEvent] Event ${eventUuid} created with ${warnings.length.toString()} warnings`,
     );
   }
 
   return {
-    id: eventId,
+    id: eventUuid,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

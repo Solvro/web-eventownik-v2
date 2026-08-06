@@ -9,8 +9,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
-import { createColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
-import { useToast } from "@/hooks/use-toast";
+import { generateColumns } from "@/app/dashboard/events/[uuid]/participants/table/columns";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
@@ -25,7 +24,7 @@ interface UseParticipantTableProps {
   data: FlattenedParticipant[];
   attributes: Attribute[];
   blocks: (Block | null)[] | null;
-  eventId: string;
+  eventUuid: string;
   onUpdateData: (rowIndex: number, value: FlattenedParticipant) => void;
 }
 
@@ -33,8 +32,8 @@ export function useParticipantsTable({
   data,
   attributes,
   blocks,
-  eventId,
   onUpdateData,
+  eventUuid,
 }: UseParticipantTableProps) {
   const storageKey = `column-order-${eventId}`;
   const t = useTranslations("Table");
@@ -63,8 +62,8 @@ export function useParticipantsTable({
   }, [storageKey, t, toast]);
 
   const columns = useMemo(
-    () => createColumns(attributes, blocks ?? [], t, locale),
-    [attributes, blocks, t, locale],
+    () => generateColumns(attributes, blocks ?? [], eventUuid),
+    [attributes, blocks, eventUuid],
   );
 
   const table = useReactTable<FlattenedParticipant>({

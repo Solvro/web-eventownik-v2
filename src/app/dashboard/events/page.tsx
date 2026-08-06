@@ -40,7 +40,7 @@ export default async function EventListPage() {
     return <FetchErrorAlert />;
   }
 
-  const events = ((await response.json()) as Event[]).toSorted((a, b) => {
+  const events = ((await response.json()).data as Event[]).toSorted((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
@@ -91,7 +91,64 @@ export default async function EventListPage() {
         </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
-            events.map((event) => <EventCard key={event.id} event={event} />)
+            events.map((event) => (
+              <div
+                key={event.uuid}
+                className="border-muted bg-background flex h-full flex-col overflow-hidden rounded-xl border"
+              >
+                <Link
+                  className="relative"
+                  href={`/dashboard/events/${event.uuid}`}
+                >
+                  <Image
+                    src={
+                      event.photoUrl == null
+                        ? EventPhotoPlaceholder
+                        : `${PHOTO_URL}/${event.photoUrl}`
+                    }
+                    width="500"
+                    height="500"
+                    className="aspect-square w-full object-cover"
+                    alt={`Zdjęcie wydarzenia ${event.name}`}
+                  />
+                  <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
+                    <div className="flex flex-row justify-between">
+                      <EventInfoBlock>
+                        <Calendar1 size={16} />
+                        <p className="text-sm">
+                          <ClientFormattedDate date={event.startDate} />
+                        </p>
+                      </EventInfoBlock>
+                      <EventInfoBlock>
+                        <p className="text-sm">{event.participantsCount}</p>
+                        <Users size={16} />
+                      </EventInfoBlock>
+                    </div>
+                  </div>
+                </Link>
+                <div className="flex flex-1 flex-col justify-between p-4">
+                  <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
+                    <Link href={`/dashboard/events/${event.uuid}`}>
+                      {event.name}
+                    </Link>
+                  </h3>
+                  <div className="flex w-full items-center justify-between">
+                    <Button asChild variant="ghost">
+                      <Link href={`/dashboard/events/${event.uuid}`}>
+                        <CircleHelpIcon className="mr-2 size-4" />
+                        Wyświetl szczegóły
+                      </Link>
+                    </Button>
+                    <ShareButton
+                      path={event.slug}
+                      variant="icon"
+                      className="size-12"
+                      buttonVariant="ghost"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
               <CalendarDays className="text-muted-foreground mb-4 size-12" />

@@ -87,7 +87,7 @@ export function AttributeInputFile({
     if (file === undefined) {
       setFiles((previousFiles) =>
         previousFiles.filter(
-          (existingFile) => existingFile.name !== attribute.id.toString(),
+          (existingFile) => existingFile.name !== attribute.uuid,
         ),
       );
 
@@ -95,10 +95,7 @@ export function AttributeInputFile({
     }
 
     if (validateFile(file)) {
-      const fileWithAttributeIdAsName = new File(
-        [file],
-        attribute.id.toString(),
-      );
+      const fileWithAttributeIdAsName = new File([file], attribute.uuid);
       setFiles((previousFiles) => {
         const filtered = previousFiles.filter(
           (existingFile) =>
@@ -112,17 +109,11 @@ export function AttributeInputFile({
   function validateFile(file: File) {
     const result = fileSchema.safeParse(file);
     if (result.success) {
-      resetField(attribute.id.toString());
+      resetField(attribute.uuid);
       return true;
     } else {
-      const zodIssue = result.error.errors[0];
-      const parsedMessage = parseFileValidationErrorMessage(zodIssue.message);
-
-      setError(attribute.id.toString(), {
-        message:
-          parsedMessage === null
-            ? zodIssue.message
-            : t(parsedMessage.key, parsedMessage.values),
+      setError(attribute.uuid, {
+        message: result.error.errors[0].message,
       });
       return false;
     }
@@ -141,7 +132,7 @@ export function AttributeInputFile({
       )}
       <Input
         type="file"
-        id={attribute.id.toString()}
+        id={attribute.uuid}
         {...field}
         onChange={handleFileChange}
       />

@@ -48,9 +48,7 @@ export function AttributeInputDrawing({
 
         if (isEmpty) {
           setFiles((previousFiles) =>
-            previousFiles.filter(
-              (file) => file.name !== attribute.id.toString(),
-            ),
+            previousFiles.filter((file) => file.name !== attribute.uuid),
           );
           return;
         }
@@ -58,7 +56,7 @@ export function AttributeInputDrawing({
         const dataUrl = await canvasRef.current.exportImage("png");
         const response = await fetch(dataUrl);
         const blob = await response.blob();
-        const file = new File([blob], attribute.id.toString(), {
+        const file = new File([blob], attribute.uuid, {
           type: "image/png",
         });
 
@@ -69,11 +67,11 @@ export function AttributeInputDrawing({
           return [...filtered, file];
         });
 
-        resetField(attribute.id.toString());
+        resetField(attribute.uuid);
       } catch (error) {
         console.error("Failed to export drawing:", error);
-        setError(attribute.id.toString(), {
-          message: t("failedToSaveDrawing"),
+        setError(attribute.uuid, {
+          message: "Nie udało się zapisać rysunku",
         });
       }
     },
@@ -143,10 +141,10 @@ export function AttributeInputDrawing({
             style={{ backgroundColor: strokeColor }}
             asChild
           >
-            <label htmlFor={`stroke-color-${attribute.id.toString()}`}>
+            <label htmlFor={`stroke-color-${attribute.uuid}`}>
               <input
                 type="color"
-                id={`stroke-color-${attribute.id.toString()}`}
+                id={`stroke-color-${attribute.uuid}`}
                 value={strokeColor}
                 onChange={(event_) => {
                   setStrokeColor(event_.target.value);
@@ -208,7 +206,7 @@ export function AttributeInputDrawing({
           {t("clear")}
         </Button>
       </div>
-      <input type="hidden" id={attribute.id.toString()} {...field} />
+      <input type="hidden" id={attribute.uuid} {...field} />
     </div>
   );
 }

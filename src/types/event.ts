@@ -2,8 +2,8 @@ import type { EventAttribute } from "./attributes";
 import type { EventForm } from "./forms";
 
 export interface Event {
-  id: number;
-  organizerId: number;
+  uuid: string;
+  organizerUuid: string;
   name: string;
   description: string | null;
   slug: string;

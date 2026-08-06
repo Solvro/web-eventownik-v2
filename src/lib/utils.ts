@@ -111,7 +111,7 @@ export function getSchemaObjectForAttribute(attribute: FormAttribute) {
 export function getSchemaObjectForAttributes(attributes: FormAttribute[]) {
   return Object.fromEntries(
     attributes.map((attribute) => [
-      attribute.id.toString(),
+      attribute.uuid,
       getSchemaObjectForAttribute(attribute),
     ]),
   );
