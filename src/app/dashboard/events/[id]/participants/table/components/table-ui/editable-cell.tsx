@@ -14,6 +14,8 @@ import type {
 } from "@/types/participant";
 
 import { formatAttributeValue } from "../../core/utils";
+import { DownloadAttributeFileButton } from "../buttons/download-file-attribute-button";
+import { DrawingPreviewButton } from "../buttons/drawing-preview-button";
 import { AttributeValueInput } from "../inputs/attribute-value-input";
 
 const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiselect", "block"]);
@@ -30,9 +32,33 @@ export function EditableCell({
   blocks = [],
 }: EditableCellProps) {
   const isEditing = info.row.original.mode === "edit";
+  const rawValue = info.getValue();
 
   if (!isEditing) {
     if (attribute != null) {
+      const hasValue =
+        rawValue !== undefined && rawValue !== null && rawValue !== "";
+
+      if (hasValue && attribute.type === "file") {
+        return (
+          <DownloadAttributeFileButton
+            attribute={attribute}
+            eventId={info.table.options.meta?.eventId ?? ""}
+            participant={info.row.original}
+          />
+        );
+      }
+
+      if (hasValue && attribute.type === "drawing") {
+        return (
+          <DrawingPreviewButton
+            attribute={attribute}
+            eventId={info.table.options.meta?.eventId ?? ""}
+            participant={info.row.original}
+          />
+        );
+      }
+
       const formatted = formatAttributeValue(
         info.getValue(),
         attribute.type,
@@ -41,7 +67,7 @@ export function EditableCell({
       );
       return formatted instanceof Date ? formatted.toISOString() : formatted;
     }
-    const rawValue = info.getValue();
+
     return rawValue == null ? "" : String(rawValue);
   }
 
