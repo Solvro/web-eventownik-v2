@@ -40,12 +40,30 @@ function EventFormEditForm({
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      startTime: `${new Date(formToEdit.startDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.startDate).getMinutes().toString().padStart(2, "0")}`,
-      endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
-      startDate: new Date(formToEdit.startDate),
-      endDate: new Date(formToEdit.endDate),
+      openTime:
+        formToEdit.openDate === null
+          ? "12:00"
+          : `${new Date(formToEdit.openDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.openDate).getMinutes().toString().padStart(2, "0")}`,
+      closeTime:
+        formToEdit.closeDate === null
+          ? "12:00"
+          : `${new Date(formToEdit.closeDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.closeDate).getMinutes().toString().padStart(2, "0")}`,
+      openDate: new Date(
+        formToEdit.openDate ?? new Date().setHours(24, 0, 0, 0),
+      ),
+      closeDate:
+        formToEdit.closeDate === null
+          ? formToEdit.openDate === null
+            ? new Date(new Date().setHours(48, 0, 0, 0))
+            : new Date(
+                new Date(formToEdit.openDate).setDate(
+                  new Date(formToEdit.openDate).getDate() + 1,
+                ),
+              )
+          : new Date(formToEdit.closeDate),
       isFirstForm: formToEdit.isFirstForm,
       isOpen: formToEdit.isOpen,
+      openCondition: formToEdit.openCondition,
     },
   });
   const { toast } = useToast();

@@ -38,6 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { cn } from "@/lib/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import { OpenCondition } from "@/types/forms";
 
 import { createEventForm } from "./actions";
 
@@ -70,10 +71,11 @@ function CreateEventFormForm({
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
-      startTime: newEventForm.startTime,
-      endTime: newEventForm.endTime,
-      startDate: newEventForm.startDate,
-      endDate: newEventForm.endDate,
+      openTime: newEventForm.openTime,
+      closeTime: newEventForm.closeTime,
+      openDate: newEventForm.openDate,
+      closeDate: newEventForm.closeDate,
+      openCondition: newEventForm.openCondition,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -128,10 +130,11 @@ function CreateEventFormForm({
               description: "",
               name: "",
               slug: "",
-              startTime: "12:00",
-              endTime: "12:00",
-              startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-              endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              openTime: "12:00",
+              closeTime: "12:00",
+              openDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              closeDate: new Date(new Date().setHours(48, 0, 0, 0)),
+              openCondition: OpenCondition.MANUAL,
               attributes: [],
             });
 
