@@ -30,6 +30,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { ParseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -96,6 +97,8 @@ export function EventSettingsTabs({
     [],
   );
 
+  const { generalLinks, policyLink } = ParseLinks(unmodifiedEvent.links);
+
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
 
   const [isDeleteEventDialogOpen, setIsDeleteEventDialogOpen] = useState(false);
@@ -103,21 +106,6 @@ export function EventSettingsTabs({
   const router = useRouter();
 
   const [isSaving, setIsSaving] = useState(false);
-
-  const parseSocialMediaLinks = (
-    links: string[] | null,
-  ): { label?: string; link: string }[] => {
-    if (links === null) {
-      return [];
-    }
-    return links.map((link) => {
-      const markdownMatch = /\[(.*?)]\((.*?)\)/.exec(link);
-      if (markdownMatch !== null) {
-        return { label: markdownMatch[1], link: markdownMatch[2] };
-      }
-      return { label: undefined, link };
-    });
-  };
 
   const form = useForm<z.infer<typeof EventSettingsSchema>>({
     resolver: zodResolver(EventSettingsSchema),
@@ -131,12 +119,12 @@ export function EventSettingsTabs({
       endTime: `${getHours(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}`,
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizer ?? "",
-      termsLink: unmodifiedEvent.termsLink ?? "",
+      termsLink: policyLink?.url ?? "",
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
       participantsNumber: unmodifiedEvent.participantsCount ?? 100,
-      socialMediaLinks: parseSocialMediaLinks(unmodifiedEvent.socialMediaLinks),
+      socialMediaLinks: generalLinks,
       slug: unmodifiedEvent.slug,
       contactEmail: unmodifiedEvent.contactEmail ?? undefined,
       // Co-organizers fields
@@ -212,21 +200,15 @@ export function EventSettingsTabs({
       endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
-      termsLink: values.termsLink ?? "",
       photoUrl: values.photoUrl ?? null,
       primaryColor: values.primaryColor,
       participantsCount: values.participantsNumber,
-      socialMediaLinks: values.socialMediaLinks
-        .map((link: { label?: string; link: string }) => {
-          if (link.label != null && link.link) {
-            return `[${link.label}](${link.link})`;
-          } else if (link.link) {
-            return link.link;
-          } else {
-            return "";
-          }
-        })
-        .filter((link: string) => link !== ""),
+      links: [
+        ...(values.termsLink
+          ? [{ url: values.termsLink, type: "policy", label: "Policy" }]
+          : []),
+        ...values.socialMediaLinks.filter((link) => link.url !== ""),
+      ],
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
     };
