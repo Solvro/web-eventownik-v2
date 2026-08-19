@@ -1,14 +1,14 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
-import { combineDateAndTime } from "@/lib/date";
+import { combineDateAndTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
 import { OpenCondition } from "@/types/forms";
-import type { NonNullableEventForm } from "@/types/forms";
+import type { CompleteEventForm } from "@/types/forms";
 
 type Payload = Omit<
-  NonNullableEventForm,
+  CompleteEventForm,
   "eventUuid" | "uuid" | "slug" | "attributes" | "order"
 > & {
   attributes: FormAttributeBase[];

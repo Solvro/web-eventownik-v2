@@ -1,3 +1,6 @@
+import { OpenCondition } from "@/types/forms";
+import type { EventForm } from "@/types/forms";
+
 /**
  * Combines a date with a time and returns a new Date object.
  *
@@ -12,4 +15,19 @@ export function combineDateAndTime(date: Date, time: string) {
   result.setHours(hours, minutes, 0, 0);
 
   return result;
+}
+
+export function isFormOpen(form: EventForm): boolean {
+  if (form.openCondition === OpenCondition.MANUAL) {
+    return form.isOpen;
+  }
+
+  const now = new Date();
+
+  return (
+    form.openDate !== null &&
+    form.closeDate !== null &&
+    now >= new Date(form.openDate) &&
+    now <= new Date(form.closeDate)
+  );
 }

@@ -8,8 +8,6 @@ export interface EventForm {
   description: string;
   name: string;
   slug: string;
-  openTime: string;
-  closeTime: string;
   openDate: Date | null;
   closeDate: Date | null;
   openCondition: OpenCondition;
@@ -17,9 +15,11 @@ export interface EventForm {
   attributes: FormAttribute[];
 }
 
-export type NonNullableEventForm = Omit<EventForm, "openDate" | "closeDate"> & {
+export type CompleteEventForm = Omit<EventForm, "openDate" | "closeDate"> & {
   openDate: Date;
   closeDate: Date;
+  openTime: string;
+  closeTime: string;
 };
 
 export enum OpenCondition {

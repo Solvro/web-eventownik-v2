@@ -8,6 +8,7 @@ import sanitizeHtml from "sanitize-html";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import type { Event } from "@/types/event";
 
 import { EventNotFound } from "./event-not-found";
@@ -23,7 +24,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -51,7 +52,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug, locale } = await params;
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -66,7 +67,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
-      {(event.firstForm?.isOpen ?? false) ? (
+      {event.registerForm !== null && isFormOpen(event.registerForm) ? (
         <div className="flex w-full justify-center pt-4">
           <Link href={`/${event.slug}/register#form`}>
             <Button

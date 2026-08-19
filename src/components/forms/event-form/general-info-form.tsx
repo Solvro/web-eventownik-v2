@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { combineDateAndTime } from "@/lib/date";
+import { combineDateAndTime } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
 import { OpenCondition } from "@/types/forms";
 

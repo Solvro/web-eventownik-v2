@@ -4,10 +4,10 @@ import { atom } from "jotai";
 
 import type { FormAttributeBase } from "@/types/attributes";
 import { OpenCondition } from "@/types/forms";
-import type { NonNullableEventForm } from "@/types/forms";
+import type { CompleteEventForm } from "@/types/forms";
 
 export interface NewEventForm extends Omit<
-  NonNullableEventForm,
+  CompleteEventForm,
   "uuid" | "eventUuid" | "attributes" | "order"
 > {
   attributes: FormAttributeBase[];
