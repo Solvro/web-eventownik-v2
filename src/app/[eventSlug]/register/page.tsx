@@ -8,6 +8,7 @@ import sanitizeHtml from "sanitize-html";
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
@@ -25,7 +26,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -54,7 +55,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -68,7 +69,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const event = (await response.json()) as Event;
 
-  const form = event.firstForm;
+  const form = event.registerForm;
 
   if (form === null) {
     return <EventNotFound whatNotFound="form" />;
@@ -88,7 +89,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     return <EventNotFound whatNotFound="blocks" />;
   }
 
-  if (!form.isOpen) {
+  if (!isFormOpen(form)) {
     return (
       <EventPageLayout
         event={event}

@@ -9,7 +9,7 @@ import { verifySession } from "@/lib/session";
 import type { Event } from "./state";
 
 export async function isSlugTaken(slug: string) {
-  const response = await fetch(`${API_URL}/events/${slug}/public`);
+  const response = await fetch(`${API_URL}/public/events/${slug}`);
   return response.ok;
 }
 

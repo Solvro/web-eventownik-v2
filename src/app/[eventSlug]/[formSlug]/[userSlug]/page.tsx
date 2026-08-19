@@ -25,7 +25,7 @@ interface FormPageProps {
 
 async function getEvent(eventSlug: string) {
   const eventResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -41,7 +41,7 @@ async function getEvent(eventSlug: string) {
 
 async function getForm(eventSlug: string, formSlug: string) {
   const formResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
     {
       method: "GET",
     },
@@ -61,7 +61,7 @@ async function getUserData(
   userSlug: string,
 ) {
   const attributesUrl = new URL(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
   );
 
   for (const attribute of formAttributes) {

@@ -1,7 +1,9 @@
+import { formatDate } from "date-fns";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { OpenCondition } from "@/types/forms";
 import type { EventForm } from "@/types/forms";
 
 import { DeleteFormPopup } from "./delete-form-popup";
@@ -39,12 +41,25 @@ function FormEntry({
         <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
           {form.name}
         </p>
-        {/*
+
         <p className="text-muted-foreground">
-          {new Date(form.startDate).toLocaleDateString()} -{" "}
-          {new Date(form.endDate).toLocaleDateString()}
+          {form.openCondition === OpenCondition.ON_DATE &&
+            form.openDate !== null &&
+            form.closeDate !== null && (
+              <>
+                <span>Od {formatDate(form.openDate, "dd.MM.yyyy HH:mm")}</span>
+                <br />
+                <span>do {formatDate(form.closeDate, "dd.MM.yyyy HH:mm")}</span>
+              </>
+            )}
+
+          {form.openCondition === OpenCondition.MANUAL &&
+            (form.isOpen ? (
+              <span>Przyjmuje zgłoszenia</span>
+            ) : (
+              <span>Nie przyjmuje zgłoszeń</span>
+            ))}
         </p>
-        */}
       </div>
     </div>
   );
