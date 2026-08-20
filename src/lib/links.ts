@@ -1,14 +1,12 @@
 import type { EventLink } from "@/types/link";
 
-export function ParseLinks(links: EventLink[]) {
-  const res =
-    links && links.length > 0
+export function parseLinks(links: EventLink[]) {
+  const result =
+    links.length > 0
       ? {
-          generalLinks: links.filter(
-            (link) => link.type === "general" && link.label != undefined,
-          ),
+          generalLinks: links.filter((link) => link.type === "general"),
           policyLink: links.find((link) => link.type === "policy"),
         }
       : {};
-  return res;
+  return result;
 }

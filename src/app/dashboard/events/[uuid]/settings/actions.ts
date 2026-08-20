@@ -75,24 +75,24 @@ export async function updateEvent(
       url: string,
       type: string,
       label: string,
-      index: number,
+      index: string,
     ) => {
       formData.append(`links[${index}][url]`, url);
       formData.append(`links[${index}][type]`, type);
       formData.append(`links[${index}][label]`, label);
     };
-    const validLinks = (event.links ?? [])
-      .map((item) => ({ ...item, url: item.url?.trim() ?? "" }))
+    const validLinks = event.links
+      .map((item) => ({ ...item, url: item.url.trim() || "" }))
       .filter((item) => item.url !== "");
     if (validLinks.length > 0) {
-      validLinks.forEach((item, index) => {
+      for (const [index, item] of validLinks.entries()) {
         addLinkToFormData(
           item.url,
           item.type || "general",
           item.label || (item.type === "policy" ? "Policy" : ""),
-          index,
+          index.toString(),
         );
-      });
+      }
     }
 
     // Handle photo upload
@@ -130,7 +130,7 @@ export async function updateEvent(
         error: errorData,
       });
       result.errors.push({
-        message: errorData?.errors?.[0]?.message ?? "Failed to update event",
+        message: errorData.errors[0]?.message ?? "Failed to update event",
         section: "event",
       });
       return { errors: result.errors };

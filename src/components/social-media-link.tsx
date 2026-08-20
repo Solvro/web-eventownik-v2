@@ -17,7 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { EventLink } from "@/types/link";
+import type { EventLink } from "@/types/link";
 
 export function SocialMediaLink({
   link,

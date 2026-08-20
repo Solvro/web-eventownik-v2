@@ -45,7 +45,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     url: string,
     type: string,
     label: string,
-    index: number,
+    index: string,
   ) => {
     formData.append(`links[${index}][url]`, url);
     formData.append(`links[${index}][type]`, type);
@@ -53,9 +53,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   };
 
   const allLinks = [
-    ...(event.termsLink
-      ? [{ url: event.termsLink, type: "policy", label: "Policy" }]
-      : []),
+    ...(event.termsLink == null
+      ? []
+      : [{ url: event.termsLink, type: "policy", label: "Policy" }]),
     ...event.socialMediaLinks
       .filter((link) => link.url)
       .map((link) => ({
@@ -64,9 +64,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         label: link.label ?? "",
       })),
   ];
-  allLinks.forEach((link, index) => {
-    addLinkToFormData(link.url, link.type, link.label, index);
-  });
+  for (const [index, link] of allLinks.entries()) {
+    addLinkToFormData(link.url, link.type, link.label, index.toString());
+  }
 
   if (event.photoUrl) {
     try {
@@ -96,12 +96,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     };
     const messages = Array.isArray(error.message)
       ? error.message
-      : [error.message ?? "Unknown error"];
+      : [error.message || "Unknown error"];
 
     console.error(
       `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
     );
-    return { errors: messages.map((msg) => ({ message: msg })) };
+    return { errors: messages.map((message) => ({ message })) };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;

@@ -30,7 +30,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { ParseLinks } from "@/lib/links";
+import { parseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -97,7 +97,7 @@ export function EventSettingsTabs({
     [],
   );
 
-  const { generalLinks, policyLink } = ParseLinks(unmodifiedEvent.links);
+  const { generalLinks, policyLink } = parseLinks(unmodifiedEvent.links);
 
   const [activeTabValue, setActiveTabValue] = useState(TABS[0].value);
 
@@ -204,9 +204,9 @@ export function EventSettingsTabs({
       primaryColor: values.primaryColor,
       participantsCount: values.participantsNumber,
       links: [
-        ...(values.termsLink
-          ? [{ url: values.termsLink, type: "policy", label: "Policy" }]
-          : []),
+        ...(values.termsLink == null
+          ? []
+          : [{ url: values.termsLink, type: "policy", label: "Policy" }]),
         ...values.socialMediaLinks.filter((link) => link.url !== ""),
       ],
       slug: values.slug,

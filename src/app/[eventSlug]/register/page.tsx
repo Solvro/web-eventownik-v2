@@ -8,7 +8,7 @@ import sanitizeHtml from "sanitize-html";
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { API_URL, PHOTO_URL } from "@/lib/api";
-import { ParseLinks } from "@/lib/links";
+import { parseLinks } from "@/lib/links";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
@@ -68,7 +68,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   }
 
   const event = (await response.json()) as Event;
-  const { policyLink } = ParseLinks(event.links);
+  const { policyLink } = parseLinks(event.links);
 
   const form = event.firstForm;
 
@@ -144,7 +144,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         >
           polityce prywatności
         </Link>
-        {!policyLink ? (
+        {policyLink == null ? (
           <span> wydarzenia</span>
         ) : (
           <>
