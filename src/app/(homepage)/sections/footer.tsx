@@ -1,11 +1,11 @@
 import { ArrowRight, Heart } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 
 import { buttonVariants } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 
 export function Footer() {
   return (
@@ -13,22 +13,26 @@ export function Footer() {
       <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 pt-16 pb-8 sm:gap-32 sm:py-16 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
           <p>Zostań na bieżąco z Eventownikiem Solvro</p>
-          <Link
-            href="/newsletter-eventownik"
-            className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"
+          <p>i zapisz się do newslettera.</p>
+          <form
+            className="border-input focus-within:border-foreground mt-8 flex w-full max-w-xl flex-row items-end gap-4 border-b pb-1"
+            action="/newsletter-eventownik"
           >
-            <span className="text-[#6583C8]">i zapisz się do newslettera.</span>
-            <ArrowRight size={32} />
-          </Link>
-          {/*
-          <div className="border-input flex flex-row items-center gap-4 border-b focus-within:border-black dark:focus-within:border-white">
             <Input
-              className="rounded-none border-0 focus-visible:ring-0"
-              placeholder="Adres e-mail"
+              type="email"
+              name="email"
+              aria-label="Adres email"
+              className="h-auto min-h-0 rounded-none border-0 bg-transparent px-0 py-0 pb-2 text-xl font-normal shadow-none focus-visible:ring-0 sm:text-2xl md:text-2xl"
+              placeholder="Adres email"
             />
-            <ArrowRight />
-          </div>
-          */}
+            <button
+              type="submit"
+              aria-label="Zapisz się do newslettera"
+              className="text-foreground shrink-0 pb-2"
+            >
+              <ArrowRight className="size-8" />
+            </button>
+          </form>
         </div>
         <div className="flex w-full flex-col items-center gap-12 2xl:w-auto">
           <div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:flex-nowrap sm:justify-end sm:gap-12">

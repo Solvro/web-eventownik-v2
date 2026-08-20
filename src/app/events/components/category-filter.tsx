@@ -45,8 +45,8 @@ export function CategoryFilter({
   const showRightArrow = !rightSentinelInView;
 
   return (
-    <div className="flex justify-center">
-      <div className="group relative flex w-full max-w-fit items-center p-1">
+    <div className="flex w-full justify-start">
+      <div className="group relative flex w-full max-w-fit items-center">
         <AnimatePresence>
           {showLeftArrow ? (
             <motion.button
@@ -66,7 +66,7 @@ export function CategoryFilter({
 
         <div
           ref={scrollContainerRef}
-          className="scrollbar-hidden flex flex-row overflow-x-auto rounded-full p-1"
+          className="scrollbar-hidden flex flex-row overflow-x-auto rounded-full"
         >
           <div ref={leftSentinelRef} className="relative left-8 size-px" />
           <div className="flex flex-row items-center gap-2">
@@ -87,7 +87,7 @@ export function CategoryFilter({
                   {selectedCategory === category ? (
                     <motion.div
                       layoutId="category-pill-bg"
-                      className="absolute inset-0 rounded-full bg-[#1a294a]"
+                      className="absolute inset-0 rounded-full bg-[#3873FF]"
                       transition={{
                         type: "spring",
                         stiffness: 400,
