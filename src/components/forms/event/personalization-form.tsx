@@ -25,10 +25,7 @@ import { CATEGORY_LABELS, EVENT_CATEGORIES } from "@/types/categories";
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 export type EventPersonalizationFormErrors =
-  | "termsUrlInvalid"
-  | "invalidUrl"
-  | "slugMinLength"
-  | "slugInvalid";
+  "termsUrlInvalid" | "invalidUrl" | "slugMinLength" | "slugInvalid";
 
 export const EventPersonalizationFormSchema = z.object({
   photoUrl: z.string().nullish(),

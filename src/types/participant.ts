@@ -27,9 +27,4 @@ export interface FlattenedParticipant {
 }
 
 export type ParticipantAttributeValueType =
-  | string
-  | number
-  | boolean
-  | Date
-  | null
-  | undefined;
+  string | number | boolean | Date | null | undefined;
