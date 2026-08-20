@@ -4,6 +4,8 @@ import {
   ClipboardPenLine,
   Cuboid,
   Mail,
+  PanelLeftClose,
+  PanelLeftOpen,
   Play,
   SlidersHorizontal,
   Users,
@@ -12,8 +14,14 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
@@ -37,6 +45,8 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
+
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
 
   const blocks = attributes
     .filter(({ type }) => type === "block")
@@ -101,31 +111,80 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden w-64 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
+      <nav
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-6 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64 pr-8" : "w-[45px] min-w-[45px] pr-2"}`}
+      >
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={"ghost"}
+              size={isSideBarOpen ? "default" : "icon"}
+              onClick={() => {
+                setIsSideBarOpen(!isSideBarOpen);
+              }}
+              className={`overflow-hidden transition-all duration-400 ease-in-out ${isSideBarOpen ? "w-full justify-start" : "w-auto justify-start gap-0"}`}
+            >
+              <PanelLeftOpen
+                className={`transition-all duration-100 ${isSideBarOpen ? "absolute opacity-0" : "mx-2 opacity-100"}`}
+              />
+              <PanelLeftClose
+                className={`transition-all duration-100 ${isSideBarOpen ? "opacity-100" : "absolute mx-2 opacity-0"}`}
+              />
+              <span
+                className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 max-w-md -translate-x-[0px] opacity-100" : "ml-0 max-w-0 -translate-x-[5px] opacity-0"}`}
+              >
+                {t("closeSidebar")}
+              </span>
+            </Button>
+          </TooltipTrigger>
+          {!isSideBarOpen && (
+            <TooltipContent side={"right"}>{t("openSidebar")}</TooltipContent>
+          )}
+        </Tooltip>
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
-            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="space-y-2 pl-2">
+            <h2
+              className={`overflow-hidden text-3xl font-bold whitespace-nowrap transition-all duration-400 ease-in-out ${isSideBarOpen ? "mb-6 max-h-10 opacity-100" : "mb-0 max-h-0 max-w-0 opacity-0"} `}
+            >
+              {section.title}
+            </h2>
+            <ul
+              className={`space-y-2 transition-all duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
+            >
               {section.links.map((link) => (
-                <li key={link.title}>
-                  <Button
-                    className="w-full justify-start"
-                    variant={
-                      isActiveLink(link.route) ? "eventDefault" : "eventGhost"
-                    }
-                    asChild
-                  >
-                    <Link
-                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
-                    >
-                      {link.icon}
-                      <span className="truncate">{link.title}</span>
-                    </Link>
-                  </Button>
-                </li>
+                <Tooltip key={link.title}>
+                  <TooltipTrigger asChild>
+                    <li>
+                      <Button
+                        className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "w-full justify-start" : "justify-center"}`}
+                        variant={
+                          isActiveLink(link.route)
+                            ? "eventDefault"
+                            : "eventGhost"
+                        }
+                        size={isSideBarOpen ? "default" : "icon"}
+                        asChild
+                      >
+                        <Link
+                          href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                        >
+                          {link.icon}
+                          <span
+                            className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 hidden w-0 opacity-0"}`}
+                          >
+                            {link.title}
+                          </span>
+                        </Link>
+                      </Button>
+                    </li>
+                  </TooltipTrigger>
+                  {!isSideBarOpen && (
+                    <TooltipContent side={"right"}>{link.title}</TooltipContent>
+                  )}
+                </Tooltip>
               ))}
             </ul>
           </div>
