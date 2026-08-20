@@ -36,7 +36,7 @@ export interface Event {
   photoUrl: string;
   primaryColor: string;
   participantsNumber: number;
-  socialMediaLinks: { label?: string; link: string }[];
+  socialMediaLinks: { label?: string; url: string; type: string }[];
   slug: string;
   contactEmail: string | undefined;
   coorganizers: CoOrganizer[];

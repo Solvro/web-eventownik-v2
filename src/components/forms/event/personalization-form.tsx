@@ -31,8 +31,9 @@ export const EventPersonalizationFormSchema = z.object({
     .or(z.literal("")),
   socialMediaLinks: z.array(
     z.object({
-      label: z.string().optional(),
-      link: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+      label: z.string(),
+      type: z.string(),
+      url: z.string().url("Nieprawidłowy URL").or(z.literal("")),
     }),
   ),
   slug: z
@@ -230,7 +231,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                           type="url"
                           placeholder="https://fb.me/knsolvro"
                           {...register(
-                            `socialMediaLinks.${index}.link` as const,
+                            `socialMediaLinks.${index}.url` as const,
                           )}
                         />
                       </FormControl>
@@ -252,10 +253,10 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         {formState.errors.socialMediaLinks[index].label.message}
                       </p>
                     )}
-                    {formState.errors.socialMediaLinks?.[index]?.link
-                      ?.message != null && (
+                    {formState.errors.socialMediaLinks?.[index]?.url?.message !=
+                      null && (
                       <p className="text-sm text-[0.8rem] font-medium text-red-500">
-                        {formState.errors.socialMediaLinks[index].link.message}
+                        {formState.errors.socialMediaLinks[index].url.message}
                       </p>
                     )}
                   </div>
@@ -265,7 +266,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   variant="outline"
                   className="gap-2"
                   onClick={() => {
-                    append({ label: "", link: "" });
+                    append({ label: "", type: "general", url: "" });
                   }}
                 >
                   <PlusIcon className="h-4 w-4" />

@@ -69,18 +69,30 @@ export async function updateEvent(
       (event.participantsCount ?? 0).toString(),
     );
     formData.append("contactEmail", event.contactEmail ?? "");
-    formData.append("termsLink", event.termsLink ?? "");
-    for (const link of event.socialMediaLinks ?? []) {
-      if (link.trim() === "") {
-        continue;
+
+    // Links
+    const addLinkToFormData = (
+      url: string,
+      type: string,
+      label: string,
+      index: string,
+    ) => {
+      formData.append(`links[${index}][url]`, url);
+      formData.append(`links[${index}][type]`, type);
+      formData.append(`links[${index}][label]`, label);
+    };
+    const validLinks = event.links
+      .map((item) => ({ ...item, url: item.url.trim() || "" }))
+      .filter((item) => item.url !== "");
+    if (validLinks.length > 0) {
+      for (const [index, item] of validLinks.entries()) {
+        addLinkToFormData(
+          item.url,
+          item.type || "general",
+          item.label || (item.type === "policy" ? "Policy" : ""),
+          index.toString(),
+        );
       }
-      formData.append("socialMediaLinks[]", link);
-    }
-    if (
-      event.socialMediaLinks === null ||
-      event.socialMediaLinks.map((link) => link.trim()).length === 0
-    ) {
-      formData.append("socialMediaLinks", "");
     }
 
     // Handle photo upload
