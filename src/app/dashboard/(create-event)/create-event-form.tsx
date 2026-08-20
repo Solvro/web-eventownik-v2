@@ -12,6 +12,7 @@ import {
   TextIcon,
   Users,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Resolver, SubmitHandler } from "react-hook-form";
@@ -54,6 +55,9 @@ import { isSlugTaken, saveEvent } from "./actions";
 import { eventAtom } from "./state";
 
 export function CreateEventForm() {
+  const t = useTranslations("EventDetails");
+  const tDashboard = useTranslations("Dashboard");
+
   const router = useRouter();
   const [event, setEvent] = useAtom(eventAtom);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -123,8 +127,8 @@ export function CreateEventForm() {
     resolver?: Resolver<EventSchema>;
   }[] = [
     {
-      title: "Krok 1",
-      description: "Podaj podstawowe informacje o wydarzeniu",
+      title: t("step", { number: 1 }),
+      description: t("enterBasicEventInformation"),
       icon: <CalendarIcon />,
       content: <GeneralInfoForm />,
       onSubmit: (values: EventSchema) => {
@@ -140,8 +144,8 @@ export function CreateEventForm() {
       ) as unknown as Resolver<EventSchema>,
     },
     {
-      title: "Krok 2",
-      description: "Spersonalizuj wydarzenie",
+      title: t("step", { number: 2 }),
+      description: t("customizeEvent"),
       icon: <SettingsIcon />,
       content: <PersonalizationForm />,
       onSubmit: async (values: EventSchema) => {
@@ -152,7 +156,7 @@ export function CreateEventForm() {
         const slugTaken = await isSlugTaken(values.slug);
         if (slugTaken) {
           form.setError("slug", {
-            message: "Ten slug jest już zajęty.",
+            message: t("slugAlreadyTaken"),
           });
           return;
         }
@@ -163,8 +167,8 @@ export function CreateEventForm() {
       ) as unknown as Resolver<EventSchema>,
     },
     {
-      title: "Krok 3",
-      description: "Dodaj współorganizatorów",
+      title: t("step", { number: 3 }),
+      description: t("addCoOrganizers"),
       icon: <Users />,
       content: <CoorganizersForm />,
       onSubmit: () => {
@@ -175,8 +179,8 @@ export function CreateEventForm() {
       ) as unknown as Resolver<EventSchema>,
     },
     {
-      title: "Krok 4",
-      description: "Dodaj atrybuty",
+      title: t("step", { number: 4 }),
+      description: t("addAttributes"),
       icon: <TextIcon />,
       content: <AttributesForm />,
       onSubmit: async () => {
@@ -218,10 +222,15 @@ export function CreateEventForm() {
           if ("errors" in result) {
             toast({
               variant: "destructive",
-              title: "Nie udało się dodać wydarzenia!",
+              title: t("failedToCreateEvent"),
               description:
-                result.errors?.map((error_) => error_.message).join("\n") ??
-                "Spróbuj utworzyć wydarzenie ponownie",
+                result.errors
+                  ?.map((error_) =>
+                    typeof error_.message === "string"
+                      ? error_.message
+                      : tDashboard(error_.message.key, error_.message.values),
+                  )
+                  .join("\n") ?? t("tryCreatingEventAgain"),
             });
           } else if (result.id != null) {
             URL.revokeObjectURL(event.photoUrl);
@@ -229,12 +238,21 @@ export function CreateEventForm() {
             if (result.warnings != null && result.warnings.length > 0) {
               toast({
                 variant: "default",
-                title: "Dodano nowe wydarzenie",
-                description: `Wydarzenie zostało utworzone, ale wystąpiły problemy:\n${result.warnings.slice(0, 3).join("\n")}${result.warnings.length > 3 ? `\n...i ${(result.warnings.length - 3).toString()} więcej` : ""}\n\nMożesz naprawić to w ustawieniach wydarzenia.`,
+                title: t("newEventCreated"),
+                description: t("eventCreatedWithIssues", {
+                  problems: `${result.warnings
+                    .slice(0, 3)
+                    .map((warning_) =>
+                      tDashboard(warning_.key, warning_.values),
+                    )
+                    .join(
+                      "\n",
+                    )}${result.warnings.length > 3 ? `\n${t("andMoreWarnings", { count: result.warnings.length - 3 })}` : ""}`,
+                }),
               });
             } else {
               toast({
-                title: "Dodano nowe wydarzenie",
+                title: t("newEventCreated"),
               });
             }
 
@@ -271,8 +289,8 @@ export function CreateEventForm() {
         } catch {
           toast({
             variant: "destructive",
-            title: "Brak połączenia z serwerem",
-            description: "Sprawdź swoje połączenie z internetem",
+            title: t("serverConnectionError"),
+            description: t("checkInternetConnection"),
           });
         }
       },
@@ -312,12 +330,12 @@ export function CreateEventForm() {
       />
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          <SquarePlus /> Stwórz wydarzenie
+          <SquarePlus /> {t("createEvent")}
         </Button>
       </DialogTrigger>
       <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:overflow-y-auto">
         <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz formularz</DialogTitle>
+          <DialogTitle>{t("createForm")}</DialogTitle>
         </DialogHeader>
         <FormContainer
           step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
@@ -346,7 +364,7 @@ export function CreateEventForm() {
                     }}
                     disabled={form.formState.isSubmitting}
                   >
-                    <ArrowLeft /> Wróć
+                    <ArrowLeft /> {t("back")}
                   </Button>
                 )}
                 {currentStep === steps.length - 1 ? (
@@ -360,7 +378,7 @@ export function CreateEventForm() {
                     ) : (
                       <SquarePlus />
                     )}{" "}
-                    Dodaj wydarzenie
+                    {t("addEvent")}
                   </Button>
                 ) : (
                   <Button
@@ -371,12 +389,11 @@ export function CreateEventForm() {
                   >
                     {form.formState.isSubmitting ? (
                       <>
-                        Zapisywanie danych...{" "}
-                        <Loader2 className="animate-spin" />
+                        {t("savingData")} <Loader2 className="animate-spin" />
                       </>
                     ) : (
                       <>
-                        Dalej <ArrowRight />
+                        {t("next")} <ArrowRight />
                       </>
                     )}
                   </Button>

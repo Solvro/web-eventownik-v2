@@ -1,5 +1,8 @@
 import type { EventAttribute } from "@/types/attributes";
 
+/**
+ * TODO(refactor): Duplicate of `AttributeFormData` in `.../settings/tabs/attributes.tsx`
+ */
 export type NewEventAttribute = Pick<
   EventAttribute,
   | "name"
@@ -10,6 +13,8 @@ export type NewEventAttribute = Pick<
   | "order"
   | "isSensitiveData"
   | "reason"
+  | "isMultiple"
+  | "maxSelections"
 > & { id?: number };
 
 export interface AttributeItemProps {

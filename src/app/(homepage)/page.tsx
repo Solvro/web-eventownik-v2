@@ -8,6 +8,7 @@ import { Navbar } from "@/app/(homepage)/sections/navbar";
 import { Partners } from "@/app/(homepage)/sections/partners";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
+import { Alerts } from "@/components/alerts";
 import { HighlightedEventsCarousel } from "@/components/highlighted-events-carousel";
 
 export default function Home() {
@@ -15,7 +16,10 @@ export default function Home() {
     <div className="text-foreground min-h-screen">
       <div className="relative flex h-full w-full items-center bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
         <div className="z-10 flex w-full flex-col items-center gap-20 pt-4 lg:pt-12">
-          <Navbar />
+          <div className="flex w-full flex-col gap-4">
+            <Navbar />
+            <Alerts className="container mx-auto px-4 sm:px-0 xl:max-w-6xl" />
+          </div>
           <Hero />
           <HighlightedEventsCarousel className="overflow-x-hidden" />
           <Events />

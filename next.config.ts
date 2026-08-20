@@ -50,10 +50,11 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb",
+      bodySizeLimit: "20mb",
     },
     viewTransition: true,
   },
+  output: "standalone",
 };
 
 const withNextIntl = createNextIntlPlugin();

@@ -1,4 +1,5 @@
 import { Download, PlusIcon, Trash2, UploadIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useId } from "react";
@@ -16,35 +17,40 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 import { CATEGORY_LABELS, EVENT_CATEGORIES } from "@/types/categories";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
+export type EventPersonalizationFormErrors =
+  | "termsUrlInvalid"
+  | "invalidUrl"
+  | "slugMinLength"
+  | "slugInvalid";
+
 export const EventPersonalizationFormSchema = z.object({
   photoUrl: z.string().nullish(),
   primaryColor: z.string().nullable(),
   participantsNumber: z.coerce.number().min(1),
-  termsLink: z
-    .string()
-    .url("Wprowadź prawidłowy link do regulaminu, w tym fragment z 'https://'")
-    .optional()
-    .or(z.literal("")),
+  termsLink: z.string().url("termsUrlInvalid").optional().or(z.literal("")),
   socialMediaLinks: z.array(
     z.object({
       label: z.string().optional(),
-      link: z.string().url("Nieprawidłowy URL").or(z.literal("")),
+      link: z.string().url("invalidUrl").or(z.literal("")),
     }),
   ),
   slug: z
     .string()
-    .min(3, "Slug musi mieć co najmniej 3 znaki")
-    .regex(/^[a-z0-9-]+$/, "Tylko małe litery, cyfry i myślniki"),
+    .min(3, "slugMinLength")
+    .regex(/^[a-z0-9-]+$/, "slugInvalid"),
   categories: z.array(z.enum(EVENT_CATEGORIES)),
 });
 
 export function PersonalizationForm({ className }: { className?: string }) {
+  const t = useTranslations("EventDetails");
+
   const { control, formState, getValues, register, setValue, watch } =
     useFormContext<z.infer<typeof EventPersonalizationFormSchema>>();
   const fileInputId = useId();
@@ -70,7 +76,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           const processedField = { ...field, value: "" };
           return (
             <FormItem className="flex w-full flex-col">
-              <FormLabel>Zdjęcie</FormLabel>
+              <FormLabel>{t("image")}</FormLabel>
               <FormLabel
                 htmlFor={fileInputId}
                 className={cn(
@@ -84,10 +90,10 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 {imageValue == null || imageValue === "" ? (
                   <>
                     <div className="flex flex-row items-center gap-2">
-                      <UploadIcon /> Dodaj zdjęcie
+                      <UploadIcon /> {t("addImage")}
                     </div>
                     <p className="text-sm font-normal">
-                      Format 1:1, zalecane 1080x1080px
+                      {t("imageFormatHint")}
                     </p>
                   </>
                 ) : (
@@ -97,7 +103,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         ? imageValue
                         : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${imageValue}`
                     }
-                    alt="Podgląd zdjęcia wydarzenia"
+                    alt={t("eventImagePreview")}
                     width={1080}
                     height={1080}
                     className="h-full rounded-md object-cover"
@@ -134,7 +140,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           control={control}
           render={({ field }) => (
             <FormItem className="flex flex-col gap-2 space-y-0">
-              <FormLabel>Kolor wydarzenia</FormLabel>
+              <FormLabel>{t("eventColor")}</FormLabel>
               <FormLabel
                 className={cn(
                   buttonVariants({ variant: "outline" }),
@@ -190,7 +196,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           control={control}
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Liczba uczestników</FormLabel>
+              <FormLabel>{t("participantsCount")}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -208,17 +214,21 @@ export function PersonalizationForm({ className }: { className?: string }) {
             control={control}
             render={({ field }) => (
               <FormItem className="flex flex-col flex-wrap">
-                <FormLabel>Link do regulaminu</FormLabel>
+                <FormLabel>{t("termsLink")}</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
                     disabled={formState.isSubmitting}
-                    placeholder="Wklej publiczny link do regulaminu (np. na Google Drive)"
+                    placeholder={t("pastePublicTermsLink")}
                     {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {formState.errors.termsLink?.message}
+                  {translateOrFallback(
+                    t,
+                    formState.errors.termsLink
+                      ?.message as EventPersonalizationFormErrors,
+                  )}
                 </FormMessage>
               </FormItem>
             )}
@@ -231,7 +241,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
               className="whitespace-pre-wrap"
             >
               <Download className="size-3" />
-              Pobierz szablon współtworzony z Działem Prawnym PWr
+              {t("downloadLegalTemplate")}
             </Link>
           </Button>
         </div>
@@ -240,7 +250,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           control={control}
           render={() => (
             <FormItem>
-              <FormLabel>Linki</FormLabel>
+              <FormLabel>{t("links")}</FormLabel>
               <div className="space-y-3">
                 {fields.map((field, index) => (
                   <div className="flex flex-col gap-2" key={field.id}>
@@ -297,7 +307,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   }}
                 >
                   <PlusIcon className="h-4 w-4" />
-                  Dodaj link
+                  {t("addLink")}
                 </Button>
               </div>
             </FormItem>
@@ -309,16 +319,24 @@ export function PersonalizationForm({ className }: { className?: string }) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>
-                Slug{" "}
+                {t("slug")}{" "}
                 <span className="text-neutral-500">
                   (eventownik.solvro.pl/...)
                 </span>
               </FormLabel>
               <FormControl>
-                <Input type="text" placeholder="twoje-wydarzenie" {...field} />
+                <Input
+                  type="text"
+                  placeholder={t("eventSlugExample")}
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {formState.errors.slug?.message}
+                {translateOrFallback(
+                  t,
+                  formState.errors.slug
+                    ?.message as EventPersonalizationFormErrors,
+                )}
               </FormMessage>
             </FormItem>
           )}

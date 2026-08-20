@@ -2,6 +2,7 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -134,6 +135,8 @@ export const MultiSelect = React.forwardRef<
     },
     ref,
   ) => {
+    const t = useTranslations("Table");
+
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
@@ -235,7 +238,7 @@ export const MultiSelect = React.forwardRef<
                         <span
                           role="button"
                           tabIndex={0}
-                          aria-label={`Usuń ${option?.label}`}
+                          aria-label={`${t("delete")} ${option?.label}`}
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
@@ -267,7 +270,7 @@ export const MultiSelect = React.forwardRef<
                       <span
                         role="button"
                         tabIndex={0}
-                        aria-label="Usuń dodatkowe opcje"
+                        aria-label={t("removeAdditionalOptions")}
                         onClick={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
@@ -289,7 +292,7 @@ export const MultiSelect = React.forwardRef<
                 <div className="flex items-center justify-between">
                   <XIcon
                     className="text-muted-foreground mx-2 h-4 cursor-pointer"
-                    aria-label="Wyczyść wszystkie opcje"
+                    aria-label={t("clearAllOptions")}
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -329,12 +332,12 @@ export const MultiSelect = React.forwardRef<
         >
           <Command>
             <CommandInput
-              placeholder="Szukaj..."
+              placeholder={t("search")}
               onKeyDown={handleInputKeyDown}
               onValueChange={handleSearchChange}
             />
             <CommandList>
-              <CommandEmpty>Nie znaleziono wyników.</CommandEmpty>
+              <CommandEmpty>{t("noResults")}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
@@ -346,7 +349,7 @@ export const MultiSelect = React.forwardRef<
                     className="mr-2"
                     checked={selectedValues.length === options.length}
                   />
-                  <span>(Wszystkie)</span>
+                  <span>{t("all")}</span>
                 </CommandItem>
                 {filteredOptions.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
@@ -384,7 +387,7 @@ export const MultiSelect = React.forwardRef<
                         }}
                         className="flex-1 cursor-pointer justify-center"
                       >
-                        Wyczyść
+                        {t("clear")}
                       </CommandItem>
                       <Separator
                         orientation="vertical"
@@ -398,7 +401,7 @@ export const MultiSelect = React.forwardRef<
                     }}
                     className="max-w-full flex-1 cursor-pointer justify-center"
                   >
-                    zamknij
+                    {t("close")}
                   </CommandItem>
                 </div>
               </CommandGroup>

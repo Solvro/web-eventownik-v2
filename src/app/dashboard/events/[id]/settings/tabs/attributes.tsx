@@ -14,6 +14,8 @@ type AttributeFormData = Pick<
   | "order"
   | "isSensitiveData"
   | "reason"
+  | "isMultiple"
+  | "maxSelections"
 > & { id?: number };
 
 const toChangeData = (
@@ -32,6 +34,8 @@ const toChangeData = (
   reason: attribute.isSensitiveData
     ? (attribute.reason ?? original?.reason ?? null)
     : null,
+  isMultiple: attribute.isMultiple ?? original?.isMultiple ?? null,
+  maxSelections: attribute.maxSelections ?? original?.maxSelections ?? null,
 });
 
 export function Attributes({ attributes, setAttributesChanges }: TabProps) {

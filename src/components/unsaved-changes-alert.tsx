@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,24 +24,28 @@ export function UnsavedChangesAlert({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const t = useTranslations("Dashboard");
+
   return (
     <AlertDialog open={active} onOpenChange={setActive}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Czy jesteś pewien?</AlertDialogTitle>
+          <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Masz niezapisane zmiany. Kontynuacja spowoduje ich utratę.
+            {t("unsavedChangesWarning")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Anuluj</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>
+            {t("cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
               setDialogOpen?.(false);
               onConfirm();
             }}
           >
-            Tak, odrzucam zmiany
+            {t("discardChanges")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 
@@ -38,7 +39,13 @@ export async function reorderBlockAttributes(
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
@@ -88,7 +95,13 @@ export async function createBlock(
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 }
@@ -135,7 +148,16 @@ export async function updateBlock(
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        success: false,
+        error: {
+          key: "httpError" as EventDetailsKey,
+          values: {
+            status: response.status,
+            statusText: response.statusText,
+          },
+        },
+      },
     };
   }
 }
@@ -176,7 +198,13 @@ export async function reorderBlocks(
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
@@ -212,7 +240,13 @@ export async function deleteBlock(
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 

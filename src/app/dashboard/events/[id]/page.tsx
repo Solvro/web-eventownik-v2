@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import {
   Calendar1,
   CalendarX,
@@ -7,11 +6,13 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { SanitizedContent } from "@/components/sanitized-content";
 import { ShareButton } from "@/components/share-button";
 import { SocialMediaLink } from "@/components/social-media-link";
@@ -26,6 +27,8 @@ export default async function DashboardEventPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("Dashboard");
+
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -44,6 +47,7 @@ export default async function DashboardEventPage({
   }
 
   const event = (await response.json()) as Event;
+
   return (
     <div className="flex h-full flex-col-reverse gap-4 xl:max-h-[calc(100vh-12rem)] xl:flex-row xl:justify-between">
       <div className="flex min-h-0 flex-1 flex-col gap-6">
@@ -57,11 +61,15 @@ export default async function DashboardEventPage({
           ) : null}
           <div className="flex flex-row items-center gap-2">
             <Calendar1 size={24} />
-            <p>{format(event.startDate, "dd.MM.yyyy HH:mm")}</p>
+            <p>
+              <ClientFormattedDate date={event.startDate} />
+            </p>
           </div>
           <div className="flex flex-row items-center gap-2">
             <CalendarX size={24} />
-            <p>{format(event.endDate, "dd.MM.yyyy HH:mm")}</p>
+            <p>
+              <ClientFormattedDate date={event.endDate} />
+            </p>
           </div>
           {event.participantsCount != null && (
             <div className="flex flex-row items-center gap-2">
@@ -102,10 +110,14 @@ export default async function DashboardEventPage({
           <div className="flex flex-col gap-2 md:flex-row">
             <Button variant="eventDefault" asChild>
               <Link href={`/dashboard/events/${id}/settings`}>
-                <SquarePenIcon /> Edytuj wydarzenie
+                <SquarePenIcon /> {t("editEvent")}
               </Link>
             </Button>
-            <ShareButton path={event.slug} />
+            <ShareButton
+              path={event.slug}
+              label={t("share")}
+              tooltipText={t("copiedToClipboard")}
+            />
           </div>
         </div>
       </div>
@@ -118,7 +130,7 @@ export default async function DashboardEventPage({
         width={400}
         height={400}
         className="aspect-square max-h-96 w-full rounded-xl bg-(--event-primary-color)/5 object-contain xl:w-auto"
-        alt={`Zdjęcie wydarzenia ${event.name}`}
+        alt={`${t("eventImage")} ${event.name}`}
       />
     </div>
   );

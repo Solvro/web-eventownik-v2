@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getAttributeLabel } from "@/lib/utils";
-import type { Attribute, FormAttribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
@@ -25,13 +25,16 @@ export function AttributeInput({
   userData,
   eventBlocks,
   field,
+  shouldCheckUserData = false,
 }: {
-  attribute: Attribute | FormAttribute;
+  attribute: FormAttribute;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
+  shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Form");
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
@@ -58,22 +61,30 @@ export function AttributeInput({
         >
           <SelectTrigger id={attribute.id.toString()}>
             <SelectValue
-              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+              placeholder={t("selectAttribute", {
+                name: getAttributeLabel(attribute.name, locale).toLowerCase(),
+              })}
             />
           </SelectTrigger>
           <SelectContent>
-            {attribute.options?.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
+            {attribute.options?.map((option) => {
+              const optionValue =
+                typeof option === "string" ? option : option.value;
+              const optionLabel =
+                typeof option === "string" ? option : option.label;
+              return (
+                <SelectItem key={optionValue} value={optionValue}>
+                  {optionLabel}
+                </SelectItem>
+              );
+            })}
             {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
             Feel free to propose better solution
             */}
             {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>Brak</SelectItem>
+              <SelectItem value={" "}>{t("none")}</SelectItem>
             )}
           </SelectContent>
         </Select>
@@ -82,32 +93,43 @@ export function AttributeInput({
     case "multiselect": {
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
-          {attribute.options?.map((option) => (
-            <div key={option} className="mb-2 flex items-center space-x-2">
-              <Checkbox
-                id={`${attribute.id.toString()}-${option}`}
-                disabled={field.disabled}
-                checked={((field.value ?? []) as string[]).includes(option)}
-                onCheckedChange={(checked) => {
-                  if (checked === true) {
-                    field.onChange([
-                      ...((field.value ?? []) as string[]),
-                      option,
-                    ]);
-                  } else {
-                    field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
-                    );
-                  }
-                }}
-              />
-              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
-                {option}
-              </Label>
-            </div>
-          ))}
+          {attribute.options?.map((option) => {
+            const optionValue =
+              typeof option === "string" ? option : option.value;
+            const optionLabel =
+              typeof option === "string" ? option : option.label;
+            return (
+              <div
+                key={optionValue}
+                className="mb-2 flex items-center space-x-2"
+              >
+                <Checkbox
+                  id={`${attribute.id.toString()}-${optionValue}`}
+                  disabled={field.disabled}
+                  checked={((field.value ?? []) as string[]).includes(
+                    optionValue,
+                  )}
+                  onCheckedChange={(checked) => {
+                    if (checked === true) {
+                      field.onChange([
+                        ...((field.value ?? []) as string[]),
+                        optionValue,
+                      ]);
+                    } else {
+                      field.onChange(
+                        ((field.value ?? []) as string[]).filter(
+                          (v: string) => v !== optionValue,
+                        ),
+                      );
+                    }
+                  }}
+                />
+                <Label htmlFor={`${attribute.id.toString()}-${optionValue}`}>
+                  {optionLabel}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       );
     }
@@ -187,12 +209,11 @@ export function AttributeInput({
       break;
     }
     case "block": {
-      if (eventBlocks === undefined || userData === undefined) {
-        return (
-          <div>
-            Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪
-          </div>
-        );
+      if (
+        eventBlocks === undefined ||
+        (shouldCheckUserData && userData === undefined)
+      ) {
+        return <div>{t("blockDataFetchFailed")} </div>;
       }
       return (
         <>
@@ -202,6 +223,8 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
+              isMultiple={attribute.isMultiple}
+              maxSelections={attribute.maxSelections}
             />
           ))}
         </>

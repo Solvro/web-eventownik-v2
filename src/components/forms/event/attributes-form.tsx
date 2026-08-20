@@ -5,6 +5,7 @@ import type { DragEndEvent } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import { PlusIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import type { z } from "zod";
@@ -33,6 +34,8 @@ export function AttributesForm({
   onUpdate,
   onRemove,
 }: AttributesFormProps = {}) {
+  const t = useTranslations("EventDetails");
+
   const { control, watch, getValues, setValue } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
 
@@ -59,6 +62,8 @@ export function AttributesForm({
       order: fields.length,
       isSensitiveData: false,
       reason: null,
+      isMultiple: false,
+      maxSelections: null,
     };
 
     append(newAttribute);
@@ -92,10 +97,9 @@ export function AttributesForm({
   return (
     <div className="mb-4 flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <p className="text-sm leading-none font-medium">Atrybuty</p>
+        <p className="text-sm leading-none font-medium">{t("attributes")}</p>
         <p className="text-muted-foreground text-sm leading-none font-medium">
-          Dodane atrybuty będzie można wykorzystać w np. formularzu
-          rejestracyjnym.
+          {t("attributesDescr")}
         </p>
       </div>
 
@@ -129,7 +133,7 @@ export function AttributesForm({
           onChange={(event_) => {
             setNewAttributeName(event_.target.value);
           }}
-          placeholder="Nazwa nowego atrybutu"
+          placeholder={t("newAttributeName")}
           className="flex-1"
           onKeyDown={(event_) => {
             if (event_.key === "Enter") {
@@ -146,7 +150,7 @@ export function AttributesForm({
           disabled={newAttributeName.trim().length === 0}
         >
           <PlusIcon className="h-4 w-4" />
-          Dodaj
+          {t("add")}
         </Button>
       </div>
     </div>

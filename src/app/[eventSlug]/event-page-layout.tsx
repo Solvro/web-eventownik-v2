@@ -1,10 +1,10 @@
-import { format } from "date-fns";
 import { Building2, Calendar1, CalendarX, MapPin } from "lucide-react";
 import Link from "next/link";
 import React, { ViewTransition } from "react";
 
 import { AddToCalendarButton } from "@/components/add-to-calendar-button";
 import { AppLogo } from "@/components/app-logo";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { LanguageSwitch } from "@/components/language-switch";
@@ -86,20 +86,32 @@ export function EventPageLayout({
                   <div className="flex gap-x-2">
                     <EventInfoDiv>
                       <Calendar1 size={20} />{" "}
-                      {format(event.startDate, "dd.MM.yyyy")}
+                      <ClientFormattedDate
+                        date={event.startDate}
+                        formatStr={"dd.MM.yyyy"}
+                      />
                     </EventInfoDiv>
                     <EventInfoDiv>
-                      {format(event.startDate, "HH:mm")}
+                      <ClientFormattedDate
+                        date={event.startDate}
+                        formatStr={"HH:mm"}
+                      />
                     </EventInfoDiv>
                     <AddToCalendarButton event={event} />
                   </div>
                   <div className="flex gap-x-2">
                     <EventInfoDiv>
                       <CalendarX size={20} />{" "}
-                      {format(event.endDate, "dd.MM.yyyy")}
+                      <ClientFormattedDate
+                        date={event.endDate}
+                        formatStr={"dd.MM.yyyy"}
+                      />
                     </EventInfoDiv>
                     <EventInfoDiv>
-                      {format(event.endDate, "HH:mm")}
+                      <ClientFormattedDate
+                        date={event.endDate}
+                        formatStr={"HH:mm"}
+                      />
                     </EventInfoDiv>
                   </div>
                   <div className="flex flex-wrap gap-2">

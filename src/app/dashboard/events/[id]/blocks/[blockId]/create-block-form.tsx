@@ -1,11 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader, SquarePlus } from "lucide-react";
+import { SquarePlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { createBlock } from "@/app/dashboard/events/[id]/blocks/actions";
 import { Button } from "@/components/ui/button";
@@ -16,29 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 
-const BlockSchema = z.object({
-  name: z.string().min(1, "Nazwa bloku jest wymagana"),
-  capacity: z
-    .union([
-      z.coerce.number().min(1, "Pojemność bloku musi być większa niż 0"),
-      z.literal(""),
-    ])
-    .optional(),
-});
+import { BlockForm, BlockSchema } from "./block-form";
+import type { BlockFormValues } from "./block-form";
 
 function CreateBlockForm({
   eventId,
@@ -49,7 +33,8 @@ function CreateBlockForm({
   attributeId: string;
   parentId: string;
 }) {
-  const form = useForm<z.infer<typeof BlockSchema>>({
+  const t = useTranslations("EventDetails");
+  const form = useForm<BlockFormValues>({
     resolver: zodResolver(BlockSchema),
     defaultValues: {
       name: "",
@@ -65,7 +50,7 @@ function CreateBlockForm({
     form.formState.isDirty,
   );
 
-  const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
+  const onSubmit = async (data: BlockFormValues) => {
     const result = await createBlock(
       eventId,
       attributeId,
@@ -78,7 +63,7 @@ function CreateBlockForm({
     );
     if (result.success) {
       toast({
-        title: "Dodano nowy blok",
+        title: t("newBlockCreated"),
       });
       form.reset();
       setDialogOpen(false);
@@ -87,8 +72,12 @@ function CreateBlockForm({
       }, 100);
     } else {
       toast({
-        title: "Nie udało się dodać bloku!",
-        description: result.error,
+        title: t("failedToCreateBlock"),
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }
@@ -110,13 +99,13 @@ function CreateBlockForm({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-fit">
-          <SquarePlus className="h-6 w-6" /> Stwórz blok
+        <Button variant="outline" className="w-full lg:w-fit">
+          <SquarePlus className="h-6 w-6" /> {t("createBlock")}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
         <DialogHeader>
-          <DialogTitle>Stwórz blok</DialogTitle>
+          <DialogTitle>{t("createBlock")}</DialogTitle>
         </DialogHeader>
         <UnsavedChangesAlert
           active={alertActive}
@@ -128,58 +117,12 @@ function CreateBlockForm({
             onConfirm();
           }}
         />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nazwa bloku" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="capacity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Maksymalna liczba osób</FormLabel>
-                  <FormDescription>
-                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
-                    miejsc
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Pojemność bloku"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              className="w-full"
-              variant="eventDefault"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <>
-                  <Loader className="animate-spin" /> Tworzenie bloku...
-                </>
-              ) : (
-                "Stwórz blok"
-              )}
-            </Button>
-          </form>
-        </Form>
+        <BlockForm
+          form={form}
+          onSubmit={onSubmit}
+          loadingText={t("creatingBlock")}
+          submitText={t("createBlock")}
+        />
       </DialogContent>
     </Dialog>
   );

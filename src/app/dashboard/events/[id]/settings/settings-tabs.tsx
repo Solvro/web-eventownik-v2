@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Tabs from "@radix-ui/react-tabs";
-import { formatISO9075, getHours, getMinutes } from "date-fns";
+import { formatISO, getHours, getMinutes } from "date-fns";
 import { Loader, Save, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 import { useState } from "react";
@@ -30,6 +31,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { getBase64FromUrl } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -53,29 +55,6 @@ const EventSettingsSchema = z.intersection(
 
 type TabComponent = (props: TabProps) => JSX.Element;
 
-const TABS: { name: string; value: string; component: TabComponent }[] = [
-  {
-    name: "Ogólne",
-    value: "general",
-    component: () => <General />,
-  },
-  {
-    name: "Personalizacja",
-    value: "personalization",
-    component: () => <Personalization />,
-  },
-  {
-    name: "Współorganizatorzy",
-    value: "co-organizers",
-    component: (props) => <CoOrganizers {...props} />,
-  },
-  {
-    name: "Atrybuty",
-    value: "attributes",
-    component: (props) => <Attributes {...props} />,
-  },
-];
-
 interface TabsProps {
   unmodifiedEvent: Event;
   unmodifiedCoOrganizers: CoOrganizer[];
@@ -87,6 +66,31 @@ export function EventSettingsTabs({
   unmodifiedCoOrganizers,
   unmodifiedAttributes,
 }: TabsProps) {
+  const t = useTranslations("Dashboard");
+
+  const TABS: { name: string; value: string; component: TabComponent }[] = [
+    {
+      name: t("general"),
+      value: "general",
+      component: () => <General />,
+    },
+    {
+      name: t("personalization"),
+      value: "personalization",
+      component: () => <Personalization />,
+    },
+    {
+      name: t("coOrganizers"),
+      value: "co-organizers",
+      component: (props) => <CoOrganizers {...props} />,
+    },
+    {
+      name: t("attributes"),
+      value: "attributes",
+      component: (props) => <Attributes {...props} />,
+    },
+  ];
+
   const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
   const [coOrganizersChanges, setCoOrganizersChanges] = useState<
     CoOrganizerChange[]
@@ -126,9 +130,9 @@ export function EventSettingsTabs({
       name: unmodifiedEvent.name,
       description: unmodifiedEvent.description ?? "",
       startDate: new Date(unmodifiedEvent.startDate),
-      startTime: `${getHours(unmodifiedEvent.startDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.startDate).toString().padStart(2, "0")}`,
+      startTime: `${getHours(new Date(unmodifiedEvent.startDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.startDate)).toString().padStart(2, "0")}`,
       endDate: new Date(unmodifiedEvent.endDate),
-      endTime: `${getHours(unmodifiedEvent.endDate).toString().padStart(2, "0")}:${getMinutes(unmodifiedEvent.endDate).toString().padStart(2, "0")}`,
+      endTime: `${getHours(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}`,
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizer ?? "",
       termsLink: unmodifiedEvent.termsLink ?? "",
@@ -156,6 +160,8 @@ export function EventSettingsTabs({
         isSensitiveData: attribute.isSensitiveData,
         reason: attribute.reason ?? "",
         order: attribute.order ?? 0,
+        isMultiple: attribute.isMultiple,
+        maxSelections: attribute.maxSelections,
       })),
       categories: unmodifiedEvent.categories,
     },
@@ -187,8 +193,8 @@ export function EventSettingsTabs({
       );
       toast({
         variant: "destructive",
-        title: "Nie udało się zapisać wydarzenia!",
-        description: "Popraw błędy w formularzu, aby kontynuować",
+        title: t("failedToSaveEvent"),
+        description: t("fixFormErrors"),
       });
       setIsSaving(false);
       return;
@@ -207,10 +213,8 @@ export function EventSettingsTabs({
       ...unmodifiedEvent,
       name: values.name,
       description: values.description ?? "",
-      startDate: formatISO9075(values.startDate, {
-        representation: "complete",
-      }),
-      endDate: formatISO9075(values.endDate, { representation: "complete" }),
+      startDate: formatISO(values.startDate, { representation: "complete" }),
+      endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizer: values.organizer ?? "",
       termsLink: values.termsLink ?? "",
@@ -264,28 +268,45 @@ export function EventSettingsTabs({
         if (eventErrors.length > 0 || otherErrors.length > 0) {
           toast({
             variant: "destructive",
-            title: "Nie udało się zapisać wydarzenia!",
-            description: `Spróbuj zapisać wydarzenie ponownie.\n${[
+            title: t("failedToSaveEvent"),
+            description: `${t("trySavingAgain")}.\n${[
               ...eventErrors,
               ...otherErrors,
             ]
-              .map((error) => error.message)
+              .map((error) =>
+                translateOrFallback(
+                  t,
+                  error.message.key,
+                  error.message.key === "failedToDeleteAttribute" &&
+                    error.message.values != null
+                    ? {
+                        ...error.message.values,
+                        errorData:
+                          error.message.values.errorData === "unknownError"
+                            ? t("unknownError")
+                            : error.message.values.errorData,
+                      }
+                    : error.message.values,
+                ),
+              )
               .join("\n")}`,
           });
         } else {
           // Event saved, but some co-organizers or attributes failed
           const errorSections = [];
           if (coOrganizerErrors.length > 0) {
-            errorSections.push("współorganizatorów");
+            errorSections.push(t("coOrganizersSection"));
           }
           if (attributeErrors.length > 0) {
-            errorSections.push("atrybutów");
+            errorSections.push(t("attributesSection"));
           }
 
           toast({
             variant: "destructive",
-            title: "Wydarzenie zapisane z błędami",
-            description: `Wydarzenie zostało zaktualizowane, ale wystąpiły problemy z: ${errorSections.join(", ")}. Odśwież stronę i spróbuj ponownie.`,
+            title: t("eventSavedWithErrors"),
+            description: t("eventUpdatedWithIssues", {
+              errorSections: errorSections.join(", "),
+            }),
           });
 
           setCoOrganizersChanges([]);
@@ -297,15 +318,15 @@ export function EventSettingsTabs({
         form.reset(values);
         toast({
           variant: "default",
-          title: "Zapisano zmiany w wydarzeniu",
+          title: t("eventChangesSaved"),
         });
       }
     } catch (error) {
       console.error("[EventSettingsTabs] Error saving event:", error);
       toast({
         variant: "destructive",
-        title: "Nie udało się zapisać wydarzenia!",
-        description: "Spróbuj zapisać wydarzenie ponownie",
+        title: t("failedToSaveEvent"),
+        description: t("trySavingAgain"),
       });
     } finally {
       setIsSaving(false);
@@ -317,15 +338,15 @@ export function EventSettingsTabs({
     if ("errors" in result) {
       toast({
         variant: "destructive",
-        title: "Nie udało się usunąć wydarzenia!",
-        description: `Spróbuj ponownie.\n${result.errors
-          .map((error) => error.message)
+        title: t("failedToDeleteEvent"),
+        description: `${t("tryAgain")}\n${result.errors
+          .map((error) => translateOrFallback(t, error.message.key))
           .join("\n")}`,
       });
     } else {
       toast({
         variant: "default",
-        title: "Usunięto wydarzenie",
+        title: t("eventDeleted"),
       });
       router.push("/dashboard/events");
     }
@@ -371,7 +392,8 @@ export function EventSettingsTabs({
         </Tabs.Root>
         <div className="flex w-full justify-between gap-2">
           <Button variant="eventDefault" onClick={saveForm} disabled={isSaving}>
-            {isSaving ? <Loader className="animate-spin" /> : <Save />} Zapisz
+            {isSaving ? <Loader className="animate-spin" /> : <Save />}{" "}
+            {t("save")}
           </Button>
           {activeTabValue === "general" && (
             <AlertDialog
@@ -384,7 +406,7 @@ export function EventSettingsTabs({
                   className="bg-background hover:bg-destructive/10 hidden border border-red-500 text-red-500 sm:inline-flex"
                 >
                   <Trash2 />
-                  Usuń wydarzenie
+                  {t("deleteEvent")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogTrigger asChild>
@@ -396,11 +418,9 @@ export function EventSettingsTabs({
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
-                <AlertDialogTitle>
-                  Czy na pewno chcesz usunąć to wydarzenie?
-                </AlertDialogTitle>
+                <AlertDialogTitle>{t("confirmDeleteEvent")}</AlertDialogTitle>
                 <AlertDialogDescription className="text-gray-900">
-                  Po usunięciu wydarzenia nie będzie można go przywrócić.
+                  {t("deleteEventWarning")}
                 </AlertDialogDescription>
                 <AlertDialogFooter className="flex gap-x-4">
                   <AlertDialogCancel
@@ -408,7 +428,7 @@ export function EventSettingsTabs({
                       variant: "outline",
                     })}
                   >
-                    Anuluj
+                    {t("cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDeleteEvent}
@@ -416,7 +436,7 @@ export function EventSettingsTabs({
                       variant: "destructive",
                     })}
                   >
-                    Usuń
+                    {t("delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

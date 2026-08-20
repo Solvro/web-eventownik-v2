@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { Space_Grotesk } from "next/font/google";
 import { cookies } from "next/headers";
 import Script from "next/script";
@@ -18,38 +18,41 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | Eventownik",
-    default: "Eventownik - organizacja wydarzeń",
-  },
-  icons: [
-    {
-      rel: "icon",
-      type: "image/x-icon",
-      url: "/favicon.ico",
-      media: "(prefers-color-scheme: light)",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("MainMetadata");
+
+  return {
+    title: {
+      template: "%s | Eventownik",
+      default: t("title"),
     },
-    {
-      rel: "icon",
-      type: "image/x-icon",
-      url: "/favicon-dark.ico",
-      media: "(prefers-color-scheme: dark)",
+    icons: [
+      {
+        rel: "icon",
+        type: "image/x-icon",
+        url: "/favicon.ico",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        rel: "icon",
+        type: "image/x-icon",
+        url: "/favicon-dark.ico",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    description: t("description"),
+    robots: "index, follow",
+    keywords: [
+      "eventownik",
+      t("keywords.events"),
+      t("keywords.wust"),
+      t("keywords.eventOrganization"),
+    ],
+    alternates: {
+      canonical: "./",
     },
-  ],
-  description:
-    "Eventownik to rozwiązanie służące wspomaganiu organizacji wydarzeń, ze szczególnym uwzględnieniem działalności Politechniki Wrocławskiej.",
-  robots: "index, follow",
-  keywords: [
-    "eventownik",
-    "wydarzenia",
-    "politechnika wrocławska",
-    "organizacja wydarzeń",
-  ],
-  alternates: {
-    canonical: "./",
-  },
-};
+  };
+}
 
 export default async function RootLayout({
   children,

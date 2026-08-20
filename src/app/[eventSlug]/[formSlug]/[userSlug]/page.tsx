@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 import type { Metadata } from "next";
-import React from "react";
+import { getTranslations } from "next-intl/server";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
@@ -13,7 +13,7 @@ import type { Form } from "@/types/form";
 import type { PublicParticipant } from "@/types/participant";
 
 import { EventNotFound } from "../../event-not-found";
-import { FormGenerator } from "./form-generator";
+import { FormGenerator } from "../../form-generator";
 
 interface FormPageProps {
   params: Promise<{
@@ -81,12 +81,13 @@ async function getUserData(
 export async function generateMetadata({
   params,
 }: FormPageProps): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
   const { eventSlug, formSlug } = await params;
 
   const form = await getForm(eventSlug, formSlug);
 
   return {
-    title: form === null ? "Formularz" : form.name,
+    title: form === null ? t("form") : form.name,
   };
 }
 
@@ -131,10 +132,12 @@ export default async function FormPage({ params }: FormPageProps) {
       <h2 className="text-center text-3xl font-bold md:text-4xl">
         {form.name}
       </h2>
+
       <EventInfoDiv className="bg-accent mt-2 font-medium shadow">
         <User className="size-4" strokeWidth={2.5} />
         {userData.email}
       </EventInfoDiv>
+
       <FormGenerator
         attributes={form.attributes}
         userData={userData}
@@ -142,6 +145,7 @@ export default async function FormPage({ params }: FormPageProps) {
         formId={form.id.toString()}
         eventSlug={eventSlug}
         userSlug={userSlug}
+        editMode={true}
       />
     </EventPageLayout>
   );

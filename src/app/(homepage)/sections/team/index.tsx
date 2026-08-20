@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { FaGithub } from "react-icons/fa";
 
 import { HighlightedMembers } from "./highlighted-members";
@@ -33,7 +34,7 @@ const team: TeamMember[] = [
     roles: ["Project Manager"],
     image:
       "https://cms.solvro.pl/assets/843908e0-50c3-4618-ad9e-cdba9cd288af?key=member",
-    url: "https://github.com/Vichka005",
+    url: "https://github.com/ViktoriyaKazak",
   },
   {
     name: "Maciej Talarczyk",
@@ -80,6 +81,27 @@ const team: TeamMember[] = [
     image:
       "https://cms.solvro.pl/assets/fd7080a2-801d-40a9-9c65-f7fdfcfcd711?key=member",
     url: "https://github.com/ibtyog",
+  },
+  {
+    name: "Hanna Bielecka",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/8f024268-4fd2-4e0c-811a-1ae8d83821f9?key=member",
+    url: "https://github.com/293421-spec",
+  },
+  {
+    name: "Iga Posturzyńska",
+    roles: ["Backend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/9bd527fd-18a3-4562-8651-e96376462089?key=member",
+    url: "https://github.com/ixgvah",
+  },
+  {
+    name: "Magdalena Charandziuk",
+    roles: ["UI/UX Designer"],
+    image:
+      "https://cms.solvro.pl/assets/226b3771-5780-44ac-a0a3-437601aa62db?key=member",
+    url: "https://github.com/mddchh",
   },
   {
     name: "Wincenty Wensker",
@@ -190,13 +212,40 @@ const team: TeamMember[] = [
     image: "https://avatars.githubusercontent.com/u/81564272?v=4",
     url: "https://github.com/Kuzdra24",
   },
-
+  {
+    name: "Stanisław Synowiec",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/ee3933b2-eccb-4585-bcc3-cd2f41708069?key=member",
+    url: "https://github.com/ssynowiec",
+  },
+  {
+    name: "Nadia Gill",
+    roles: ["Frontend Developer"],
+    image:
+      "https://cms.solvro.pl/assets/9c172769-611c-45e3-bc2e-08fb1c32d771?key=member",
+    url: "https://github.com/robuspospolitus",
+  },
+  {
+    name: "Marvin Ruciński",
+    roles: ["QA"],
+    image:
+      "https://cms.solvro.pl/assets/e2782462-f9b7-41a1-b10b-3c2eb6439e54?key=member",
+    url: "https://github.com/MarvinRucinski",
+  },
   {
     name: "Marcin Blicharski",
     roles: ["UI/UX Designer"],
     image:
       "https://cms.solvro.pl/assets/a1feda99-2541-40d9-9689-36ea06cf99c7?key=member",
     url: "https://github.com/MBlich",
+  },
+  {
+    name: "Hanna Kuczyńska",
+    roles: ["QA"],
+    image:
+      "https://cms.solvro.pl/assets/24f9abf8-9769-486e-b4f3-f73f0fea2182?key=member",
+    url: "https://github.com/hankucz",
   },
   {
     name: "Karol Koenig",
@@ -218,6 +267,13 @@ const team: TeamMember[] = [
     url: "https://github.com/JLizak",
   },
   {
+    name: "Paweł Łoćwin",
+    roles: ["Devops Engineer"],
+    image:
+      "https://cms.solvro.pl/assets/11379c05-405e-4256-af95-6c41288c17c7?key=member",
+    url: "https://github.com/baguetedev",
+  },
+  {
     name: "Daria Totoszko",
     roles: ["Marketing Coordinator"],
     image: "/assets/landing/team/daria-totoszko.jpg",
@@ -226,27 +282,30 @@ const team: TeamMember[] = [
 ];
 
 export async function Team() {
+  const t = await getTranslations("Homepage");
+
   const repositoryData = await fetch(
     "https://api.github.com/repos/Solvro/web-eventownik-v2",
   );
   const { stargazers_count } = (await repositoryData.json()) as {
     stargazers_count: number;
   };
+
   return (
     <section
       id="team"
-      className="border-input container mb-16 flex flex-col items-center gap-8 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 sm:gap-24 sm:pb-20"
+      className="border-input container mb-16 flex flex-col items-center gap-8 rounded-b-4xl border-x border-b border-dashed bg-radial from-[#366CC8]/50 to-transparent px-8 pt-20 pb-12 max-sm:overflow-hidden sm:gap-24 sm:pb-20"
     >
       <div className="flex flex-col items-center gap-8">
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
         </p>
         <p className="text-center text-3xl font-medium">
-          Eventownik powstał dzięki pracy{" "}
-          <span className="text-[#6583C8]">{team.length} osób</span> z naszego
-          zespołu.
-          <br />
-          Stworzyliśmy go, by ułatwić organizowanie wydarzeń i poznawanie ludzi.
+          {t.rich("teamIntroDescription", {
+            span: (chunks) => <span className="text-[#6583C8]">{chunks}</span>,
+            br: () => <br />,
+            count: team.length,
+          })}
         </p>
       </div>
       <div className="flex flex-col items-center gap-16 lg:gap-32">
@@ -259,8 +318,7 @@ export async function Team() {
       </div>
       <div className="flex flex-col items-center gap-12">
         <p className="text-center text-lg font-medium sm:text-2xl">
-          Jeśli doceniasz naszą pracę nad Eventownikiem, zostaw gwiazdkę na
-          GitHubie — to dla nas duża motywacja do dalszego rozwoju!
+          {t("githubStarMotivation")}
         </p>
         <a
           href="https://github.com/solvro/web-eventownik-v2"
@@ -269,7 +327,7 @@ export async function Team() {
           rel="noreferrer noopener"
         >
           <FaGithub size={20} />
-          <p className="font-medium whitespace-nowrap">Walnij nam gwiazdkę</p>
+          <p className="font-medium whitespace-nowrap">{t("giveUsAStar")}</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
             <p className="font-medium">{stargazers_count}</p>

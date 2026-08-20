@@ -1,9 +1,10 @@
 "use client";
 
 import type { SuggestionProps } from "@tiptap/suggestion";
+import { useTranslations } from "next-intl";
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
-import type { MessageTag } from "@/lib/extensions/tags";
+import type { MessageTag } from "@/lib/message-tags";
 import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "./ui/scroll-area";
@@ -13,6 +14,8 @@ interface TagsListProps extends SuggestionProps<MessageTag> {
 }
 
 export function TagsList({ items, command, ref }: TagsListProps) {
+  const t = useTranslations("MessageTags");
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedTagRef = useRef<HTMLButtonElement | null>(null);
 
@@ -69,7 +72,7 @@ export function TagsList({ items, command, ref }: TagsListProps) {
       onWheel={(event) => {
         event.stopPropagation();
       }}
-      className="bg-popover border-muted relative z-[9999] flex max-h-96 flex-col overflow-auto rounded-md border p-2 pr-4 shadow-md"
+      className="bg-popover border-muted relative z-9999 flex max-h-96 flex-col overflow-auto rounded-md border p-2 pr-4 shadow-md"
     >
       {items.length > 0 ? (
         Object.entries(
@@ -95,12 +98,13 @@ export function TagsList({ items, command, ref }: TagsListProps) {
                 return (
                   <button
                     className={cn(
-                      "flex w-full items-center gap-1 rounded-md bg-transparent px-8 py-[2px] text-left",
+                      "flex w-full items-center gap-1 rounded-md bg-transparent px-8 py-0.5 text-left",
                       "hover:bg-primary/10",
                       isSelected && "bg-primary/30 hover:bg-primary/10",
                     )}
                     key={tag.value}
-                    onClick={() => {
+                    onMouseDown={(event) => {
+                      event.stopPropagation();
                       selectItem(flatIndex);
                     }}
                     title={tag.description}
@@ -114,7 +118,7 @@ export function TagsList({ items, command, ref }: TagsListProps) {
           );
         })
       ) : (
-        <div>Brak wyników</div>
+        <div>{t("noResults")}</div>
       )}
     </ScrollArea>
   );

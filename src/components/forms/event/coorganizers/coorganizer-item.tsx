@@ -1,4 +1,5 @@
 import { EllipsisVertical, UserRoundMinus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { memo, useMemo } from "react";
 
@@ -24,10 +25,14 @@ export const CoOrganizerItem = memo(
     onPermissionToggle,
     onRemove,
   }: CoOrganizerItemProps) => {
+    const t = useTranslations("Dashboard");
+    const tEventPermissions = useTranslations("EventPermissions");
+
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
     const permissionIdsSet = new Set<number>(
       permissions.map((p: Permission) => p.id),
     );
+
     return (
       <div className="flex w-full items-center gap-2">
         <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 grow items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-1 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:w-full md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
@@ -58,7 +63,7 @@ export const CoOrganizerItem = memo(
           <PopoverContent side="right" align="start" className="w-min">
             <div className="flex flex-col gap-2">
               <span className="text-sm leading-none font-medium">
-                Tymczasowo nie można rozdzielać uprawnień
+                {t("permissionsTemporarilyUnavailable")}
               </span>
               {PERMISSIONS_CONFIG.map(({ permission, label }) => (
                 <div
@@ -80,7 +85,7 @@ export const CoOrganizerItem = memo(
                     htmlFor={`permission-${permission.id.toString()}`}
                     className="cursor-pointer"
                   >
-                    {label}
+                    {tEventPermissions(label)}
                   </Label>
                 </div>
               ))}
@@ -90,7 +95,7 @@ export const CoOrganizerItem = memo(
                 onClick={onRemove}
               >
                 <UserRoundMinus />
-                Usuń
+                {t("delete")}
               </Button>
             </div>
           </PopoverContent>

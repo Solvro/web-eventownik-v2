@@ -1,5 +1,7 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
+import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 import { AppLogo } from "../app-logo";
@@ -7,6 +9,8 @@ import { AuthButton } from "./auth-button";
 import { MobileNavbar } from "./mobile-navbar";
 
 export function Navbar() {
+  const t = useTranslations("Homepage");
+
   return (
     <div className="flex w-full flex-col items-center px-4">
       {/* Mobile Navbar */}
@@ -23,6 +27,7 @@ export function Navbar() {
           <Link href="/dashboard">Panel</Link>
         </div>
         <div className="flex items-center gap-4">
+          <LanguageSwitch />
           <ThemeSwitch />
           <AuthButton variant="default" />
         </div>
