@@ -40,7 +40,11 @@ describe("Filtering", () => {
     expect(getDataRows().length).toBe(participants.length);
 
     // Step 2: Enter value which is specific to only 1 row
-    await user.type(globalFilterInput, participants[0].attributes[0].value);
+    const attributeValue = participants[0].attributes[0]?.value;
+    const filterValue = Array.isArray(attributeValue)
+      ? attributeValue[0]
+      : attributeValue;
+    await user.type(globalFilterInput, filterValue);
     expect(getDataRows().length).toBe(1);
 
     //Step 3: Clear global filter input - all rows should be visible

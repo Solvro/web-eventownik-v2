@@ -10,6 +10,7 @@ import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 import { TableMenu } from "../components/buttons/table-menu";
 import { ParticipantTable } from "../core/participants-table";
+import { type TestAttribute, toAttributes } from "./mocks/test-attributes";
 import { Providers } from "./providers";
 
 function TableWrapper({
@@ -62,15 +63,16 @@ function TableWrapper({
 
 export function renderTable(
   participants: Participant[],
-  attributes: Attribute[],
+  attributes: TestAttribute[],
   emails: EventEmail[] = [],
 ) {
+  const normalizedAttributes = toAttributes(attributes);
   const user = userEvent.setup();
 
   render(
     <TableWrapper
       participants={participants}
-      attributes={attributes}
+      attributes={normalizedAttributes}
       emails={emails}
     />,
     { wrapper: Providers },
