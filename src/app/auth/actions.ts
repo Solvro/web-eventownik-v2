@@ -66,10 +66,10 @@ export async function login(
           return response.json() as Promise<AuthSuccessResponse>;
         }
         case 400: {
-          return { error: "Nieprawidłowe dane logowania" };
+          return { error: "invalidLoginCredentials" };
         }
         default: {
-          return { error: "Wystąpił błąd serwera. Spróbuj ponownie później" };
+          return { error: "serverErrorTryLater" };
         }
       }
     });
@@ -80,7 +80,7 @@ export async function login(
     //return user;
   } catch (error) {
     console.error("Error during logging in", error);
-    return { success: false, error: "Internal server error" };
+    return { success: false, error: "serverErrorTryLater" };
   }
   return { success: true };
 }
@@ -107,13 +107,13 @@ export async function sendPasswordResetToken(
     const error = (await response.json()) as { message?: string };
     return {
       success: false,
-      error: error.message ?? "Nie udało się wysłać emaila resetującego hasło",
+      error: error.message ?? "sendResetEmailFailed",
     };
   } catch (error) {
     console.error("Error sending password reset token", error);
     return {
       success: false,
-      error: "Wystąpił błąd serwera. Spróbuj ponownie później",
+      error: "serverErrorTryLater",
     };
   }
 }
@@ -140,20 +140,20 @@ export async function resetPassword(
     if (response.status === 401) {
       return {
         success: false,
-        error: "Token jest nieprawidłowy lub wygasł",
+        error: "tokenInvalidOrExpired",
       };
     }
 
     const error = (await response.json()) as { message?: string };
     return {
       success: false,
-      error: error.message ?? "Nie udało się zresetować hasła",
+      error: error.message ?? "passwordResetFailed",
     };
   } catch (error) {
     console.error("Error resetting password", error);
     return {
       success: false,
-      error: "Wystąpił błąd serwera. Spróbuj ponownie później",
+      error: "serverErrorTryLater",
     };
   }
 }

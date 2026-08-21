@@ -74,4 +74,24 @@ function useUnsavedAtom<T>(atom: PrimitiveAtom<T> & WithInitialValue<T>) {
   };
 }
 
-export { useUnsavedAtom, useUnsavedForm };
+/**
+ * This hook is used to prevent the user from navigating away from the page if there are unsaved changes
+ * detected within the email editor schema. Use the hook in a child component of `<Puck/>`.
+ */
+function useUnsavedEditor(hasChanged: boolean) {
+  const navGuard = useNavigationGuard({
+    enabled: hasChanged,
+  });
+
+  const onConfirm = useCallback(() => {
+    navGuard.accept();
+  }, [navGuard]);
+
+  return {
+    isGuardActive: navGuard.active,
+    onConfirm,
+    onCancel: navGuard.reject,
+  };
+}
+
+export { useUnsavedAtom, useUnsavedEditor, useUnsavedForm };

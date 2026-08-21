@@ -1,5 +1,6 @@
 "use server";
 
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import type { FormErrorObject } from "@/types/form";
@@ -20,10 +21,16 @@ interface SubmitFormOptions {
   participantSlug?: string;
 }
 
+export interface SubmitFormError {
+  message?: string;
+  key?: EventDetailsKey;
+  values?: Record<string, string | number | Date>;
+}
+
 interface SubmitFormResult {
   success: boolean;
   errors?: FormErrorObject[];
-  error?: string;
+  error?: SubmitFormError;
 }
 
 /**
@@ -97,9 +104,17 @@ export async function submitParticipantForm({
       return {
         success: false,
         errors: errorData.errors,
-        error:
-          errorMessages ||
-          `Błąd ${response.status.toString()} ${response.statusText}`,
+        error: errorMessages
+          ? {
+              message: errorMessages,
+            }
+          : {
+              key: "httpError" as EventDetailsKey,
+              values: {
+                status: response.status,
+                statusText: response.statusText,
+              },
+            },
       };
     }
   } catch (error) {

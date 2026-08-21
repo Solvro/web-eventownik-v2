@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -15,12 +16,12 @@ export async function generateMetadata({
 }: {
   params: Promise<{ uuid: string; emailUuid: string }>;
 }): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
   const { uuid, emailUuid } = await params;
-
   const emailToEdit = await getSingleEventEmail(uuid, emailUuid);
 
   return {
-    title: `Edytowanie ${emailToEdit?.name ?? "maila"}`,
+    title: t("editing", { name: emailToEdit?.name ?? t("unnamedEmail") }),
   };
 }
 
@@ -35,7 +36,7 @@ export default async function EventMailEditPage({
   const attributes = await getEventAttributes(uuid);
   const forms = await getEventForms(uuid);
 
-  if (emailToEdit == null) {
+  if (fetchedEmail == null) {
     notFound();
   } else {
     return (
@@ -48,7 +49,7 @@ export default async function EventMailEditPage({
         </Link>
         <h1 className="text-2xl font-bold">Edytuj szablon maila</h1>
         <EventEmailEditForm
-          eventUuid={uuid}
+          eventId={uuid}
           emailToEdit={emailToEdit}
           eventAttributes={attributes}
           eventForms={forms}

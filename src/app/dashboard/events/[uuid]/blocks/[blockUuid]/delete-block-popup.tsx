@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 import { DeleteResourcePopup } from "@/components/delete-resource-popup";
@@ -17,12 +18,13 @@ function DeleteBlockPopup({
   blockName: string;
   attributeUuid: string;
 }) {
+  const t = useTranslations("Dashboard");
   const router = useRouter();
 
   return (
     <DeleteResourcePopup
       resourceName={blockName}
-      resourceType="Blok"
+      resourceType={t("block")}
       onDelete={async () => deleteBlock(eventUuid, blockUuid, attributeUuid)}
       onSuccess={() => {
         router.refresh();

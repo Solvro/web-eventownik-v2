@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ChangeEvent } from "react";
 import type {
   ControllerRenderProps,
@@ -26,7 +27,12 @@ const fileSchema = z
       return Object.values(EXTENSION_TO_MIME_TYPE).includes(file.type);
     },
     {
-      message: `Dozwolone typy plików to: ${Object.keys(EXTENSION_TO_MIME_TYPE).join(", ")}`,
+      message: JSON.stringify({
+        key: "allowedFileTypes",
+        values: {
+          extensions: Object.keys(EXTENSION_TO_MIME_TYPE).join(", "),
+        },
+      }),
     },
   )
   .refine(
@@ -34,9 +40,29 @@ const fileSchema = z
       return file.size <= MAX_FILE_SIZE_MB;
     },
     {
-      message: `Maksymalny rozmiar pliku to ${(MAX_FILE_SIZE_MB / 1024 / 1024).toString()} MB`,
+      message: JSON.stringify({
+        key: "maxFileSize",
+        values: {
+          maxSize: MAX_FILE_SIZE_MB / 1024 / 1024,
+        },
+      }),
     },
   );
+
+interface FileValidationErrorMessage {
+  key: "allowedFileTypes" | "maxFileSize";
+  values: Record<string, string | number>;
+}
+
+function parseFileValidationErrorMessage(
+  message: string,
+): FileValidationErrorMessage | null {
+  try {
+    return JSON.parse(message) as FileValidationErrorMessage;
+  } catch {
+    return null;
+  }
+}
 
 export function AttributeInputFile({
   field,
@@ -53,6 +79,8 @@ export function AttributeInputFile({
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   lastUpdate: string | null;
 }) {
+  const t = useTranslations("EventDetails");
+
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
@@ -62,6 +90,7 @@ export function AttributeInputFile({
           (existingFile) => existingFile.name !== attribute.uuid,
         ),
       );
+
       return;
     }
 
@@ -83,8 +112,14 @@ export function AttributeInputFile({
       resetField(attribute.uuid);
       return true;
     } else {
+      const zodIssue = result.error.errors[0];
+      const parsedMessage = parseFileValidationErrorMessage(zodIssue.message);
+
       setError(attribute.uuid, {
-        message: result.error.errors[0].message,
+        message:
+          parsedMessage === null
+            ? zodIssue.message
+            : t(parsedMessage.key, parsedMessage.values),
       });
       return false;
     }
@@ -95,7 +130,9 @@ export function AttributeInputFile({
       {lastUpdate != null && (
         <div className="mb-2">
           <span className="text-sm text-gray-500">
-            Ostatnio wgrany plik: {new Date(lastUpdate).toLocaleString()}
+            {t("lastUploadedFile", {
+              date: new Date(lastUpdate).toLocaleString(),
+            })}
           </span>
         </div>
       )}

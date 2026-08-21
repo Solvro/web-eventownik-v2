@@ -1,5 +1,6 @@
 import { useDebouncedCallback } from "@tanstack/react-pacer";
 import { Eraser, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import type {
   ControllerRenderProps,
@@ -29,6 +30,7 @@ export function AttributeInputDrawing({
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   lastUpdate: string | null;
 }) {
+  const t = useTranslations("Dashboard");
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const [eraseMode, setEraseMode] = useState(false);
   const [strokeColor, setStrokeColor] = useState("#000000");
@@ -69,7 +71,7 @@ export function AttributeInputDrawing({
       } catch (error) {
         console.error("Failed to export drawing:", error);
         setError(attribute.uuid, {
-          message: "Nie udało się zapisać rysunku",
+          message: t("failedToSaveDrawing"),
         });
       }
     },
@@ -105,7 +107,9 @@ export function AttributeInputDrawing({
       {lastUpdate != null && (
         <div>
           <span className="text-muted-foreground text-sm">
-            Ostatnio zapisany rysunek: {new Date(lastUpdate).toLocaleString()}
+            {t("lastSavedDrawing", {
+              date: new Date(lastUpdate).toLocaleString(),
+            })}
           </span>
         </div>
       )}
@@ -146,7 +150,7 @@ export function AttributeInputDrawing({
                   setStrokeColor(event_.target.value);
                 }}
                 className="pointer-events-none h-0 w-0 p-4 opacity-0"
-                aria-label="Wybór koloru"
+                aria-label={t("selectColor")}
               />
             </label>
           </Button>
@@ -189,7 +193,7 @@ export function AttributeInputDrawing({
           className="flex-1"
         >
           <RotateCcw />
-          Cofnij
+          {t("undo")}
         </Button>
         <Button
           type="button"
@@ -199,7 +203,7 @@ export function AttributeInputDrawing({
           className="flex-1"
         >
           <Trash2 />
-          Wyczyść
+          {t("clear")}
         </Button>
       </div>
       <input type="hidden" id={attribute.uuid} {...field} />

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import type { NewEventEmailTemplate } from "@/atoms/new-email-template-atom";
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { UpdateEventEmailPayload } from "@/types/emails";
@@ -16,33 +16,39 @@ export async function getSingleEventEmailAction(
   return await getSingleEventEmail(eventUuid, emailId);
 }
 
-export async function createEventEmailTemplate(
-  eventUuid: string,
-  emailTemplate: NewEventEmailTemplate,
-) {
+export async function createEventEmailTemplate(data: {
+  eventUuid: string;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/emails`, {
+  const response = await fetch(`${API_URL}/events/${data.eventUuid}/emails`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${session.bearerToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(emailTemplate),
+    body: JSON.stringify(data.emailTemplate),
   });
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[createEventEmailTemplate action] Failed to create event email template for event ${eventUuid}:`,
+      `[createEventEmailTemplate action] Failed to create event email template for event ${data.eventUuid}:`,
       error,
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 
@@ -52,49 +58,60 @@ export async function createEventEmailTemplate(
   };
 }
 
-export async function updateEventEmail(
-  eventUuid: string,
-  mailId: string,
-  updatedEmail: UpdateEventEmailPayload,
-) {
+export async function updateEventEmail(data: {
+  eventUuid: string;
+  mailId: string | null;
+  emailTemplate: UpdateEventEmailPayload;
+}) {
   const session = await verifySession();
+
+  const { eventUuid, mailId, emailTemplate } = data;
 
   if (session == null) {
     redirect("/auth/login");
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${mailId}`,
+    `${API_URL}/events/${eventUuid}/emails/${mailId ?? ""}`,
     {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedEmail),
+      body: JSON.stringify(data.emailTemplate),
     },
   );
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateEventEmail action] Failed to update event email ${mailId} for event ${eventUuid}:`,
+      `[updateEventEmail action] Failed to update event email ${mailId ?? ""} for event ${eventUuid}:`,
       error,
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 
-  return { success: true };
+  return { error: null, success: true };
 }
 
 export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: "Brak autoryzacji" };
+    return {
+      success: false,
+      error: { key: "unauthorized" as EventDetailsKey },
+    };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -118,7 +135,13 @@ export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
@@ -150,7 +173,13 @@ export async function deleteEventMail(eventUuid: string, mailId: string) {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 

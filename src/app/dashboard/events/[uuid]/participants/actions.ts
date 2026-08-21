@@ -1,7 +1,13 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
+import type {
+  ExportKey,
+  SendMailKey,
+  TableKey,
+} from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
@@ -9,6 +15,74 @@ import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
+
+export interface ImportedParticipant {
+  email: string;
+  participantAttributes: {
+    attributeId: number;
+    value: string;
+  }[];
+}
+
+interface ImportParticipantsResponse {
+  message?: string;
+  error?: string;
+  errors?: { message?: string }[];
+  warning?: {
+    message?: string;
+    emails?: string[];
+  } | null;
+  skippedParticipants?: {
+    email: string;
+    reason?: "already_exists" | "duplicate_in_file" | "failed";
+    message?: string;
+  }[];
+}
+
+interface SkippedParticipantMessages {
+  allAlreadyExist: string;
+  allDuplicatedInFile: string;
+  notImported: string;
+  more: (count: number) => string;
+}
+
+function formatSkippedParticipants(
+  skippedParticipants: NonNullable<
+    ImportParticipantsResponse["skippedParticipants"]
+  >,
+  messages: SkippedParticipantMessages,
+) {
+  const allAlreadyExist = skippedParticipants.every(
+    (participant) => participant.reason === "already_exists",
+  );
+  if (allAlreadyExist) {
+    return messages.allAlreadyExist;
+  }
+
+  const allDuplicatedInFile = skippedParticipants.every(
+    (participant) => participant.reason === "duplicate_in_file",
+  );
+  if (allDuplicatedInFile) {
+    return messages.allDuplicatedInFile;
+  }
+
+  const visibleSkippedParticipants = skippedParticipants.slice(0, 5);
+  const hiddenSkippedParticipantsCount =
+    skippedParticipants.length - visibleSkippedParticipants.length;
+  const visibleDetails = visibleSkippedParticipants
+    .map((participant) => {
+      return `${participant.email}: ${
+        participant.message ?? messages.notImported
+      }`;
+    })
+    .join("\n");
+
+  return `${visibleDetails}${
+    hiddenSkippedParticipantsCount > 0
+      ? `\n${messages.more(hiddenSkippedParticipantsCount)}`
+      : ""
+  }`;
+}
 
 export async function getParticipants(eventUuid: string) {
   const session = await verifySession();
@@ -33,7 +107,9 @@ export async function getParticipants(eventUuid: string) {
     return null;
   }
   const participants = (await response.json()) as Participant[];
-  return participants;
+  return participants.toSorted(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
 }
 
 export async function getParticipant(
@@ -181,12 +257,12 @@ export async function deleteManyParticipants(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return {
       success: false,
-      error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+      error: { key: "unexpectedError" as TableKey },
     };
   }
   return { success: true };
@@ -221,7 +297,7 @@ export async function deleteParticipant(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return { success: false };
@@ -230,20 +306,16 @@ export async function deleteParticipant(
 }
 
 export async function updateParticipant(
-  values: Record<number, unknown>,
   eventUuid: string,
   participantId: string,
+  payload: {
+    participantAttributes?: Record<number, string>;
+    [key: string]: unknown;
+  },
 ) {
   const session = await verifySession();
   if (session === null) {
     redirect("/auth/login");
-  }
-
-  if (!isValidUuid(eventUuid) || !isValidUuid(participantId)) {
-    console.error(
-      `[updateParticipant] Invalid UUID: eventUuid=${eventUuid}, participantId=${participantId}`,
-    );
-    return { success: false };
   }
 
   const response = await fetch(
@@ -255,12 +327,14 @@ export async function updateParticipant(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        participantAttributes: Object.entries(values)
-          //multiselect case - unchecking all options in multiselect doesn't work because of this filter
-          //However, I suppose there won't be many cases when it's needed (if any)
-          .map(([key, value]) => {
-            return { attributeUuid: key, value: value === "" ? null : value };
-          }),
+        ...baseFields,
+        ...(participantAttributes != null && {
+          participantAttributes: Object.entries(participantAttributes).map(
+            ([key, value]) => {
+              return { attributeUuid: key, value: value === "" ? null : value };
+            },
+          ),
+        }),
       }),
     },
   );
@@ -270,12 +344,122 @@ export async function updateParticipant(
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później",
+        error: { key: "serverError" as TableKey },
       };
     }
     return { success: false };
   }
   return { success: true };
+}
+
+async function createImportedParticipants(
+  eventId: string,
+  participants: ImportedParticipant[],
+  bearerToken: string,
+) {
+  return await fetch(`${API_URL}/events/${eventId}/participants/import`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ participants }),
+  });
+}
+
+export async function importParticipants(
+  eventId: string,
+  participants: ImportedParticipant[],
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const t = await getTranslations("ImportParticipants");
+  const skippedParticipantMessages: SkippedParticipantMessages = {
+    allAlreadyExist: t("allParticipantsExist"),
+    allDuplicatedInFile: t("allEmailsDuplicated"),
+    notImported: t("notImported"),
+    more: (count) => t("moreSkippedParticipants", { count }),
+  };
+
+  if (participants.length === 0) {
+    return {
+      success: false,
+      error: t("noParticipants"),
+    };
+  }
+
+  const response = await createImportedParticipants(
+    eventId,
+    participants,
+    session.bearerToken,
+  );
+
+  if (!response.ok) {
+    let error = t("httpError", {
+      status: response.status,
+      statusText: response.statusText,
+    });
+    try {
+      const parsed = (await response.json()) as ImportParticipantsResponse;
+      const skippedDetails =
+        parsed.skippedParticipants != null &&
+        parsed.skippedParticipants.length > 0
+          ? formatSkippedParticipants(
+              parsed.skippedParticipants,
+              skippedParticipantMessages,
+            )
+          : null;
+      const validationErrors =
+        parsed.errors
+          ?.map((item) => item.message)
+          .filter((message) => message != null)
+          .join(", ") ?? "";
+      const baseError =
+        parsed.message ??
+        parsed.error ??
+        (validationErrors === "" ? error : validationErrors);
+
+      error =
+        skippedDetails == null ? baseError : `${baseError}\n${skippedDetails}`;
+    } catch {
+      // Keep the HTTP status as the fallback error.
+    }
+
+    console.error(
+      `[importParticipants] Failed to import participants for event ${eventId}:`,
+      response,
+      error,
+    );
+
+    return { success: false, error };
+  }
+
+  const parsed = (await response.json()) as ImportParticipantsResponse;
+  const skippedEmails =
+    parsed.warning?.emails ??
+    parsed.skippedParticipants?.map((participant) => participant.email) ??
+    [];
+
+  return {
+    success: true,
+    warning:
+      skippedEmails.length > 0
+        ? {
+            message: parsed.warning?.message ?? t("someParticipantsSkipped"),
+            emails: skippedEmails,
+            details:
+              parsed.skippedParticipants == null
+                ? null
+                : formatSkippedParticipants(
+                    parsed.skippedParticipants,
+                    skippedParticipantMessages,
+                  ),
+          }
+        : null,
+  };
 }
 
 export async function getEmails(eventUuid: string) {
@@ -337,13 +521,13 @@ export async function exportData(eventUuid: string) {
     if (response.status === 404) {
       return {
         success: false,
-        error: "Nie znaleziono wydarzenia lub endpoint nie istnieje.",
+        error: { key: "eventNotFound" as ExportKey },
       };
     }
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+        error: { key: "serverError" as ExportKey },
       };
     }
     return { success: false };
@@ -395,7 +579,10 @@ export async function sendMail(
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as SendMailKey,
+        values: { status: response.status, statusText: response.statusText },
+      },
     };
   }
 
@@ -438,13 +625,13 @@ export async function downloadAttributeFile(
     if (response.status === 404) {
       return {
         success: false,
-        error: "Nie znaleziono pliku.",
+        error: { key: "fileNotFound" as ExportKey },
       };
     }
     if (response.status === 500) {
       return {
         success: false,
-        error: "Serwer nie działa poprawnie. Spróbuj ponownie później.",
+        error: { key: "serverError" as ExportKey },
       };
     }
     return { success: false };

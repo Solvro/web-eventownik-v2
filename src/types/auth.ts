@@ -27,3 +27,14 @@ export interface Admin {
 export interface SessionPayload extends JWTPayload {
   bearerToken: string;
 }
+
+export type LoginError = "invalidLoginCredentials" | "serverErrorTryLater";
+
+export type ResetPassTokenError =
+  | "sendResetEmailFailed"
+  | "serverErrorTryLater";
+
+export type ResetError =
+  | "tokenInvalidOrExpired"
+  | "passwordResetFailed"
+  | "serverErrorTryLater";

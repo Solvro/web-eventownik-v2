@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { History } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ interface MailHistoryPopupProps {
 }
 
 function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
+  const t = useTranslations("EmailHistoryTable");
   const [isOpen, setIsOpen] = useState(false);
 
   const { data, isLoading } = useQuery<SingleEventEmail | null>({
@@ -33,9 +35,9 @@ function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="eventGhost" size="icon" title="Historia wiadomości">
+        <Button variant="eventGhost" size="icon" title={t("emailHistory")}>
           <History />
-          <span className="sr-only">Historia wiadomości</span>
+          <span className="sr-only">{t("emailHistory")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -47,7 +49,7 @@ function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
       >
         <div className="flex shrink-0 flex-col gap-1 border-b px-4 pt-4 pb-3 sm:border-0 sm:p-0">
           <DialogTitle className="text-left text-xl font-bold sm:text-2xl">
-            Historia wiadomości
+            {t("emailHistory")}
           </DialogTitle>
         </div>
 
@@ -55,7 +57,7 @@ function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
           {isLoading ? (
             <div className="flex min-h-[60dvh] items-center justify-center">
               <p className="text-muted-foreground animate-pulse text-sm">
-                Ładowanie historii…
+                {t("loadingHistory")}
               </p>
             </div>
           ) : data !== null && data !== undefined ? (
@@ -63,7 +65,7 @@ function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
           ) : (
             <div className="flex flex-1 items-start justify-center pt-12">
               <p className="text-center text-sm text-red-500">
-                Nie udało się załadować danych.
+                {t("failedToLoadData")}
               </p>
             </div>
           )}

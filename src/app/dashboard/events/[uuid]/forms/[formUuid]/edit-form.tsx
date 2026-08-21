@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
@@ -16,6 +17,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -49,6 +51,8 @@ function EventFormEditForm({
     },
   });
   const { toast } = useToast();
+  const t = useTranslations("Dashboard");
+  const tEventDetails = useTranslations("EventDetails");
 
   const { isGuardActive, onCancel, onConfirm } = useUnsavedForm(
     form.formState.isDirty,
@@ -64,21 +68,27 @@ function EventFormEditForm({
 
       if (result.success) {
         toast({
-          title: "Zapisano zmiany w formularzu",
+          title: t("formChangesSaved"),
         });
         form.reset(values);
       } else {
         toast({
-          title: "Nie udało się zapisać zmian w formularzu!",
-          description: result.error,
+          title: t("failedToSaveFormChanges"),
+          description:
+            result.error?.message ??
+            translateOrFallback(
+              tEventDetails,
+              result.error?.key,
+              result.error?.values,
+            ),
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error updating event form:", error);
       toast({
-        title: "Nie udało się zapisać zmian w formularzu!",
-        description: "Wystąpił błąd podczas aktualizacji formularza.",
+        title: t("failedToSaveFormChanges"),
+        description: t("formUpdateError"),
         variant: "destructive",
       });
     }
@@ -106,7 +116,7 @@ function EventFormEditForm({
           ) : (
             <Save />
           )}{" "}
-          Zapisz
+          {t("save")}
         </Button>
       </form>
     </Form>

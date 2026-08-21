@@ -1,3 +1,5 @@
+import type { useTranslations } from "next-intl";
+
 import type { Permission } from "@/types/co-organizer";
 
 export interface CoOrganizerItemProps {
@@ -8,14 +10,21 @@ export interface CoOrganizerItemProps {
   onRemove: () => void;
 }
 
-export const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
+type EventPermissionsKey = Parameters<
+  ReturnType<typeof useTranslations<"EventPermissions">>
+>[0];
+
+export const PERMISSIONS_CONFIG: {
+  permission: Permission;
+  label: EventPermissionsKey;
+}[] = [
   {
     permission: {
       id: 3,
       action: "manage",
       subject: "setting",
     },
-    label: "Ustawienia",
+    label: "settings",
   },
   {
     permission: {
@@ -23,7 +32,7 @@ export const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
       action: "manage",
       subject: "form",
     },
-    label: "Formularze",
+    label: "forms",
   },
   {
     permission: {
@@ -31,7 +40,7 @@ export const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
       action: "manage",
       subject: "participant",
     },
-    label: "Uczestnicy",
+    label: "participants",
   },
   {
     permission: {
@@ -39,6 +48,6 @@ export const PERMISSIONS_CONFIG: { permission: Permission; label: string }[] = [
       action: "manage",
       subject: "email",
     },
-    label: "Maile",
+    label: "emails",
   },
 ];

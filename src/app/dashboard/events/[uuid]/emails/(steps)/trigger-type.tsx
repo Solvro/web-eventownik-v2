@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { ArrowRight, Lightbulb, Zap } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { newEventEmailTemplateAtom } from "@/atoms/new-email-template-atom";
 import { FormContainer } from "@/components/forms/form-container";
+import { TriggerTypeExplanation } from "@/components/trigger-type-explanation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,26 +59,9 @@ const EventEmailTemplateTriggerTypeSchema = z
       return true;
     },
     {
-      message: "Wybrany wyzwalacz potrzebuje dodatkowej konfiguracji",
+      message: "triggerRequiresConfiguration",
     },
   );
-
-function TriggerTypeExplanation({ trigger }: { trigger: string }) {
-  const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
-
-  if (target === undefined) {
-    return null;
-  }
-
-  return (
-    <div className="flex max-w-lg grow flex-col gap-2 rounded-md border border-[var(--event-primary-color)]/25 p-4">
-      <div className="flex items-center gap-2">
-        <Lightbulb className="size-4" /> Wyjaśnienie
-      </div>
-      <p className="text-sm">{target.description}</p>
-    </div>
-  );
-}
 
 function TriggerConfigurationInputs({
   // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
@@ -94,6 +79,7 @@ function TriggerConfigurationInputs({
   >;
 }) {
   const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const t = useTranslations("EventDetails");
 
   if (target === undefined) {
     return null;
@@ -105,7 +91,7 @@ function TriggerConfigurationInputs({
     case "manual": {
       return (
         <p className="text-muted-foreground my-2 text-sm">
-          Ten wyzwalacz nie wymaga dodatkowej konfiguracji
+          {t("triggerNoAdditionalConfiguration")}
         </p>
       );
     }
@@ -117,11 +103,11 @@ function TriggerConfigurationInputs({
             name="triggerValue"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Formularz</FormLabel>
+                <FormLabel>{t("form")}</FormLabel>
                 <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Wybierz formularz" />
+                      <SelectValue placeholder={t("selectForm")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -199,6 +185,9 @@ function TriggerTypeForm({
   eventForms: EventForm[];
   goToNextStep: () => void;
 }) {
+  const t = useTranslations("EventDetails");
+  const tEmailTriggers = useTranslations("EmailTriggers");
+
   const [newEmailTemplate, setNewEmailTemplate] = useAtom(
     newEventEmailTemplateAtom,
   );
@@ -214,15 +203,15 @@ function TriggerTypeForm({
 
   return (
     <FormContainer
-      description="Wyzwalacz"
+      description={t("trigger")}
       icon={<Zap />}
       step={"1/2"}
-      title="Krok 1"
+      title={t("step", { number: 1 })}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(goToNextStep)} className="space-y-8">
-          <h2 className="font-semibold">Wybierz rodzaj wyzwalacza</h2>
-          <div className="flex justify-between">
+          <h2 className="font-semibold">{t("chooseTriggerType")}</h2>
+          <div className="flex flex-col justify-between gap-4 sm:flex-row">
             <FormField
               control={form.control}
               name="trigger"
@@ -232,7 +221,7 @@ function TriggerTypeForm({
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex w-50 max-w-full flex-col space-y-1"
                     >
                       {EMAIL_TRIGGERS.map((trigger) => (
                         <FormItem
@@ -247,7 +236,7 @@ function TriggerTypeForm({
                               }}
                             />
                           </FormControl>
-                          <FormLabel>{trigger.name}</FormLabel>
+                          <FormLabel>{tEmailTriggers(trigger.name)}</FormLabel>
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -260,12 +249,12 @@ function TriggerTypeForm({
               <TriggerTypeExplanation trigger={form.getValues("trigger")} />
             )}
           </div>
-          <div className="bg-muted/25 h-[1px] w-full" />
+          <div className="bg-muted/25 h-px w-full" />
           <div className="flex min-h-40 flex-col gap-4">
-            <h2 className="font-semibold">Skonfiguruj wyzwalacz</h2>
-            <FormMessage>
+            <h2 className="font-semibold">{t("configureTrigger")}</h2>
+            <FormMessage className="text-sm text-red-500">
               {Object.keys(form.formState.errors).length > 0
-                ? "Wybrany wyzwalacz wymaga dodatkowej konfiguracji. Wypełnij wszystkie poniższe pola"
+                ? t("triggerRequiresConfiguration")
                 : ""}
             </FormMessage>
             <div className="flex flex-col gap-8">
@@ -283,7 +272,7 @@ function TriggerTypeForm({
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              <ArrowRight /> Przejdź dalej
+              {t("next")} <ArrowRight />
             </Button>
           </div>
         </form>
