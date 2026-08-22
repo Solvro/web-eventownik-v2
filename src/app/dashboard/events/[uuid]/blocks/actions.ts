@@ -18,7 +18,10 @@ export async function reorderBlockAttributes(
   }
 
   if (!isValidUuid(eventUuid) || orderedIds.some((id) => !isValidUuid(id))) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -78,7 +81,10 @@ export async function createBlock(
     !isValidUuid(attributeUuid) ||
     !isValidUuid(parentUuid)
   ) {
-    return { success: false };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -141,7 +147,10 @@ export async function updateBlock(
     !isValidUuid(attributeUuid) ||
     !isValidUuid(blockId)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -204,7 +213,10 @@ export async function reorderBlocks(
     !isValidUuid(attributeUuid) ||
     orderedIds.some((uuid) => !isValidUuid(uuid))
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -261,7 +273,10 @@ export async function deleteBlock(
     !isValidUuid(blockUuid) ||
     !isValidUuid(attributeUuid)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const response = await fetch(
