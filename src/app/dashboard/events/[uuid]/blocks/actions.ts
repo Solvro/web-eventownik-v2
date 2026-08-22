@@ -184,13 +184,10 @@ export async function updateBlock(
     return {
       success: false,
       error: {
-        success: false,
-        error: {
-          key: "httpError" as EventDetailsKey,
-          values: {
-            status: response.status,
-            statusText: response.statusText,
-          },
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
         },
       },
     };
