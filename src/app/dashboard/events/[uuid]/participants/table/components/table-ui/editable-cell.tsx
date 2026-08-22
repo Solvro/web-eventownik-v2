@@ -42,7 +42,7 @@ export function EditableCell({
         return (
           <DownloadAttributeFileButton
             attribute={attribute}
-            eventId={info.table.options.meta?.eventId ?? ""}
+            eventUuid={info.table.options.meta?.eventUuid ?? ""}
             participant={info.row.original}
           />
         );
@@ -52,7 +52,7 @@ export function EditableCell({
         return (
           <DrawingPreviewButton
             attribute={attribute}
-            eventId={info.table.options.meta?.eventId ?? ""}
+            eventUuid={info.table.options.meta?.eventUuid ?? ""}
             participant={info.row.original}
           />
         );
@@ -61,7 +61,7 @@ export function EditableCell({
       const formatted = formatAttributeValue(
         value,
         attribute.type,
-        attribute.id,
+        attribute.uuid,
         blocks,
       );
       return formatted instanceof Date ? formatted.toISOString() : formatted;
@@ -83,7 +83,7 @@ function EditableCellInput({
 
   const rawValue = info.getValue();
   const stringValue = rawValue == null ? "" : String(rawValue);
-  const key = attribute == null ? info.column.id : attribute.id.toString();
+  const key = attribute == null ? info.column.id : attribute.uuid;
 
   const [localValue, setLocalValue] = useState(stringValue);
 

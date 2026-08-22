@@ -42,8 +42,8 @@ const ATTRIBUTE_ALIAS_GROUPS = [
   ["newsletter", "mailing", "zgoda marketingowa"],
 ].map((aliases) => aliases.map((alias) => getMatchKey(alias)));
 
-export function getAttributeTarget(attributeId: number): `attr:${number}` {
-  return `attr:${String(attributeId)}` as `attr:${number}`;
+export function getAttributeTarget(attributeUuid: string): `attr:${number}` {
+  return `attr:${attributeUuid}` as `attr:${number}`;
 }
 
 function getMatchKey(value: string) {
@@ -98,7 +98,7 @@ export function guessInitialMappings(
     );
 
     if (matchingAttribute != null) {
-      const target = getAttributeTarget(matchingAttribute.id);
+      const target = getAttributeTarget(matchingAttribute.uuid);
       mappings[index] = usedTargets.has(target) ? SKIP_TARGET : target;
       usedTargets.add(target);
       continue;
@@ -118,6 +118,8 @@ export function getMappedAttribute(
     return null;
   }
 
-  const attributeId = Number(target.replace("attr:", ""));
-  return attributes.find((attribute) => attribute.id === attributeId) ?? null;
+  const attributeUuid = target.replace("attr:", "");
+  return (
+    attributes.find((attribute) => attribute.uuid === attributeUuid) ?? null
+  );
 }

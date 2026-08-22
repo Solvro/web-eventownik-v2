@@ -17,6 +17,17 @@ interface EditParticipantButtonProps {
   table: Table<FlattenedParticipant>;
 }
 
+function areRowsEqual(
+  current: FlattenedParticipant,
+  previous: FlattenedParticipant,
+) {
+  const normalizedCurrent = { ...current, mode: "view" };
+  const normalizedPrevious = { ...previous, mode: "view" };
+  return (
+    JSON.stringify(normalizedCurrent) === JSON.stringify(normalizedPrevious)
+  );
+}
+
 export function EditParticipantButton({
   row,
   table,
@@ -27,17 +38,6 @@ export function EditParticipantButton({
   const [isSaving, setIsSaving] = useState(false);
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
   const { toast } = useToast();
-
-  function areRowsEqual(
-    current: FlattenedParticipant,
-    previous: FlattenedParticipant,
-  ) {
-    const normalizedCurrent = { ...current, mode: "view" };
-    const normalizedPrevious = { ...previous, mode: "view" };
-    return (
-      JSON.stringify(normalizedCurrent) === JSON.stringify(normalizedPrevious)
-    );
-  }
 
   function enterEditMode() {
     table.options.meta?.setRowSnapshot(row.index, participant);
@@ -66,19 +66,19 @@ export function EditParticipantButton({
   }
 
   async function saveChanges() {
-    const eventId = table.options.meta?.eventId;
-    if (eventId == null) {
+    const eventUuid = table.options.meta?.eventUuid;
+    if (eventUuid == null) {
       return;
     }
 
-    const attributeValues: Record<number, string> = {};
+    const attributeValues: Record<string, string> = {};
     const baseUpdates: Record<string, unknown> = {};
 
     for (const column of table.getAllColumns()) {
       const attribute = column.columnDef.meta?.attribute;
       if (attribute != null) {
-        const value = participant[attribute.id.toString()];
-        attributeValues[attribute.id] = value == null ? "" : String(value);
+        const value = participant[attribute.uuid];
+        attributeValues[attribute.uuid] = value == null ? "" : String(value);
       } else if (
         column.id !== "select" &&
         column.id !== "no" &&
@@ -90,14 +90,10 @@ export function EditParticipantButton({
     }
 
     setIsSaving(true);
-    const { success } = await updateParticipant(
-      eventId,
-      participant.id.toString(),
-      {
-        participantAttributes: attributeValues,
-        ...baseUpdates,
-      },
-    );
+    const { success } = await updateParticipant(eventUuid, participant.uuid, {
+      participantAttributes: attributeValues,
+      ...baseUpdates,
+    });
     setIsSaving(false);
 
     if (success) {

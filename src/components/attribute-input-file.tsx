@@ -95,13 +95,13 @@ export function AttributeInputFile({
     }
 
     if (validateFile(file)) {
-      const fileWithAttributeIdAsName = new File([file], attribute.uuid);
+      const fileWithattributeUuidAsName = new File([file], attribute.uuid);
       setFiles((previousFiles) => {
         const filtered = previousFiles.filter(
           (existingFile) =>
-            existingFile.name !== fileWithAttributeIdAsName.name,
+            existingFile.name !== fileWithattributeUuidAsName.name,
         );
-        return [...filtered, fileWithAttributeIdAsName];
+        return [...filtered, fileWithattributeUuidAsName];
       });
     }
   }

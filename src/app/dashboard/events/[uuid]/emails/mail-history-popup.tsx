@@ -19,16 +19,16 @@ import { getSingleEventEmailAction } from "./actions";
 
 interface MailHistoryPopupProps {
   eventUuid: string;
-  emailId: string;
+  emailUuid: string;
 }
 
-function MailHistoryPopup({ eventUuid, emailId }: MailHistoryPopupProps) {
+function MailHistoryPopup({ eventUuid, emailUuid }: MailHistoryPopupProps) {
   const t = useTranslations("EmailHistoryTable");
   const [isOpen, setIsOpen] = useState(false);
 
   const { data, isLoading } = useQuery<SingleEventEmail | null>({
-    queryKey: ["email-history", eventUuid, emailId],
-    queryFn: async () => await getSingleEventEmailAction(eventUuid, emailId),
+    queryKey: ["email-history", eventUuid, emailUuid],
+    queryFn: async () => await getSingleEventEmailAction(eventUuid, emailUuid),
     enabled: isOpen,
   });
 

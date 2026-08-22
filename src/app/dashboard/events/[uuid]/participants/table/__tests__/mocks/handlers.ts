@@ -49,8 +49,8 @@ export const handlers = [
       return HttpResponse.json();
     },
   ),
-  http.post<{ eventUuid: string; emailId: string }>(
-    `${API_URL}/events/:eventUuid/emails/send/:emailId`,
+  http.post<{ eventUuid: string; emailUuid: string }>(
+    `${API_URL}/events/:eventUuid/emails/send/:emailUuid`,
     () => {
       return HttpResponse.json();
     },

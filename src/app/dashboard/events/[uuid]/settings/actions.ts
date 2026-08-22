@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import type { DashboardKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
-import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -43,10 +42,6 @@ export async function updateEvent(
     throw new Error("Invalid session");
   }
   const { bearerToken } = session;
-
-  if (!isValidUuid(event.uuid)) {
-    return { errors: [{ message: "Invalid event identifier" }] };
-  }
 
   const result: UpdateResult = {
     errors: [],
@@ -108,14 +103,11 @@ export async function updateEvent(
       }
     }
 
-    const response = await fetch(
-      `${API_URL}/events/${encodeURIComponent(event.uuid)}`,
-      {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${bearerToken}` },
-        body: formData,
-      },
-    );
+    const response = await fetch(`${API_URL}/events/${event.uuid}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      body: formData,
+    });
 
     if (!response.ok) {
       const errorData = (await response.json()) as ErrorResponse;
@@ -145,7 +137,7 @@ export async function updateEvent(
       switch (change.type) {
         case "add": {
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/organizers`,
+            `${API_URL}/events/${event.uuid}/organizers`,
             {
               method: "POST",
               headers: {
@@ -185,16 +177,8 @@ export async function updateEvent(
             continue;
           }
 
-          if (!/^\d+$/.test(change.data.id)) {
-            result.errors.push({
-              message: "Invalid organizer identifier",
-              section: "coOrganizers",
-            });
-            continue;
-          }
-
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/organizers/${encodeURIComponent(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/organizers/${change.data.id}`,
             {
               method: "PATCH",
               headers: {
@@ -233,16 +217,8 @@ export async function updateEvent(
             continue;
           }
 
-          if (!/^\d+$/.test(change.data.id)) {
-            result.errors.push({
-              message: "Invalid organizer identifier",
-              section: "coOrganizers",
-            });
-            continue;
-          }
-
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/organizers/${encodeURIComponent(change.data.id)}`,
+            `${API_URL}/events/${event.uuid}/organizers/${change.data.id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${bearerToken}` },
@@ -294,7 +270,7 @@ export async function updateEvent(
       switch (change.type) {
         case "add": {
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/attributes`,
+            `${API_URL}/events/${event.uuid}/attributes`,
             {
               method: "POST",
               headers: {
@@ -363,16 +339,8 @@ export async function updateEvent(
             continue;
           }
 
-          if (!isValidUuid(change.data.uuid)) {
-            result.errors.push({
-              message: "Invalid attribute identifier",
-              section: "attributes",
-            });
-            continue;
-          }
-
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/attributes/${encodeURIComponent(change.data.uuid)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${change.data.uuid}`,
             {
               method: "PATCH",
               headers: {
@@ -441,16 +409,8 @@ export async function updateEvent(
             continue;
           }
 
-          if (!isValidUuid(change.data.uuid)) {
-            result.errors.push({
-              message: "Invalid attribute identifier",
-              section: "attributes",
-            });
-            continue;
-          }
-
           const response = await fetch(
-            `${API_URL}/events/${encodeURIComponent(event.uuid)}/attributes/${encodeURIComponent(change.data.uuid)}`,
+            `${API_URL}/events/${event.uuid}/attributes/${change.data.uuid}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${bearerToken}` },
@@ -513,18 +473,11 @@ export async function deleteEvent(
   }
   const { bearerToken } = session;
 
-  if (!isValidUuid(eventUuid)) {
-    return { errors: [{ message: "Invalid event identifier" }] };
-  }
-
   try {
-    const response = await fetch(
-      `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${bearerToken}` },
-      },
-    );
+    const response = await fetch(`${API_URL}/events/${eventUuid}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${bearerToken}` },
+    });
 
     if (!response.ok) {
       const errorData = (await response.json()) as ErrorResponse;

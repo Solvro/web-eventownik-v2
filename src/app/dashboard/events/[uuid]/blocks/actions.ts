@@ -132,7 +132,7 @@ export async function createBlock(
 export async function updateBlock(
   eventUuid: string,
   attributeUuid: string,
-  blockId: string,
+  blockUuid: string,
   name: string,
   description: string | null,
   capacity: number | null,
@@ -145,7 +145,7 @@ export async function updateBlock(
   if (
     !isValidUuid(eventUuid) ||
     !isValidUuid(attributeUuid) ||
-    !isValidUuid(blockId)
+    !isValidUuid(blockUuid)
   ) {
     return {
       success: false,
@@ -156,7 +156,7 @@ export async function updateBlock(
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockId)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
     {
       method: "PATCH",
       headers: {
@@ -178,7 +178,7 @@ export async function updateBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateBlock action] Failed to update block ${blockId} for event ${eventUuid}:`,
+      `[updateBlock action] Failed to update block ${blockUuid} for event ${eventUuid}:`,
       error,
     );
     return {

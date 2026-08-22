@@ -54,7 +54,8 @@ export function BulkEditDialog({
   const t = useTranslations("Table");
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [selectedAttributeId, setSelectedAttributeId] = useState<string>("");
+  const [selectedattributeUuid, setSelectedattributeUuid] =
+    useState<string>("");
   const [value, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -63,19 +64,19 @@ export function BulkEditDialog({
     (a) => a.type !== "file" && a.type !== "drawing",
   );
   const selectedAttribute = editableAttributes.find(
-    (a) => a.uuid === selectedAttributeId,
+    (a) => a.uuid === selectedattributeUuid,
   );
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
-      setSelectedAttributeId("");
+      setSelectedattributeUuid("");
       setValue("");
     }
   }
 
-  function handleAttributeChange(attributeId: string) {
-    setSelectedAttributeId(attributeId);
+  function handleAttributeChange(attributeUuid: string) {
+    setSelectedattributeUuid(attributeUuid);
     setValue("");
   }
 
@@ -112,7 +113,7 @@ export function BulkEditDialog({
         });
       }
       setOpen(false);
-      setSelectedAttributeId("");
+      setSelectedattributeUuid("");
       setValue("");
     } else {
       toast({
@@ -172,7 +173,7 @@ export function BulkEditDialog({
           <div className="flex flex-col gap-2">
             <Label>{t("bulkEditAttributeLabel")}</Label>
             <Select
-              value={selectedAttributeId}
+              value={selectedattributeUuid}
               onValueChange={handleAttributeChange}
             >
               <SelectTrigger>

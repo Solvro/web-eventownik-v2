@@ -42,8 +42,8 @@ export function AttributeValueInput({
       return { value: option, label: option };
     }
 
-    if ("id" in option) {
-      return { value: option.id.toString(), label: option.name };
+    if ("uuid" in option) {
+      return { value: option.uuid, label: option.name };
     }
 
     return { value: option.value, label: option.label };
@@ -233,14 +233,14 @@ export function AttributeValueInput({
 
     case "block": {
       const rootBlock =
-        blocks.find((b) => b?.attributeId === attribute.id) ?? null;
+        blocks.find((b) => b?.attributeUuid === attribute.uuid) ?? null;
 
       if (rootBlock?.attribute.isMultiple ?? false) {
         return renderMultiOptions(rootBlock?.children);
       }
 
       const selectedBlock = rootBlock?.children.find(
-        (block) => block.id.toString() === value,
+        (block) => block.uuid === value,
       );
 
       return (
@@ -256,7 +256,7 @@ export function AttributeValueInput({
           <SelectContent>
             <SelectItem value=" ">{t("none")}</SelectItem>
             {rootBlock?.children.map((block) => (
-              <SelectItem key={block.id} value={block.id.toString()}>
+              <SelectItem key={block.uuid} value={block.uuid}>
                 {block.name}
               </SelectItem>
             ))}

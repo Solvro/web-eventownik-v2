@@ -72,8 +72,8 @@ export function ColumnMappingList({
                     <SelectItem value={EMAIL_TARGET}>Email</SelectItem>
                     {attributes.map((attribute) => (
                       <SelectItem
-                        key={attribute.id}
-                        value={getAttributeTarget(attribute.id)}
+                        key={attribute.uuid}
+                        value={getAttributeTarget(attribute.uuid)}
                       >
                         {getAttributeLabel(attribute.name, locale)}
                       </SelectItem>

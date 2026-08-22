@@ -11,9 +11,9 @@ import { getSingleEventEmail } from "./data-access";
 
 export async function getSingleEventEmailAction(
   eventUuid: string,
-  emailId: string,
+  emailUuid: string,
 ) {
-  return await getSingleEventEmail(eventUuid, emailId);
+  return await getSingleEventEmail(eventUuid, emailUuid);
 }
 
 export async function createEventEmail(data: {
@@ -153,7 +153,7 @@ export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
   return { success: true };
 }
 
-export async function deleteEventMail(eventUuid: string, mailId: string) {
+export async function deleteEventMail(eventUuid: string, mailUuid: string) {
   const session = await verifySession();
 
   if (session == null) {
@@ -161,7 +161,7 @@ export async function deleteEventMail(eventUuid: string, mailId: string) {
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${mailId}`,
+    `${API_URL}/events/${eventUuid}/emails/${mailUuid}`,
     {
       method: "DELETE",
       headers: {
@@ -173,7 +173,7 @@ export async function deleteEventMail(eventUuid: string, mailId: string) {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteEventMail action] Failed to delete event mail ${mailId} for event ${eventUuid}:`,
+      `[deleteEventMail action] Failed to delete event mail ${mailUuid} for event ${eventUuid}:`,
       error,
     );
     return {

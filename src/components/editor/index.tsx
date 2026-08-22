@@ -15,8 +15,8 @@ import type { EventForm } from "@/types/forms";
 interface BlockEditorProps {
   initialData: Partial<PuckData>;
   tags: MessageTag[];
-  forms: Pick<EventForm, "id" | "name">[];
-  attributes: Pick<EventAttribute, "id" | "name">[];
+  forms: Pick<EventForm, "uuid" | "name">[];
+  attributes: Pick<EventAttribute, "uuid" | "name">[];
   mutationData: PuckMutationData;
   eventData: PuckEventData;
 }

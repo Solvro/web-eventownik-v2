@@ -8,11 +8,11 @@ import { deleteEventMail } from "./actions";
 
 function DeleteEmailPopup({
   eventUuid,
-  mailId,
+  mailUuid,
   mailName,
 }: {
   eventUuid: string;
-  mailId: string;
+  mailUuid: string;
   mailName: string;
 }) {
   const t = useTranslations("Dashboard");
@@ -21,7 +21,7 @@ function DeleteEmailPopup({
     <DeleteResourcePopup
       resourceName={mailName}
       resourceType={t("template")}
-      onDelete={async () => deleteEventMail(eventUuid, mailId)}
+      onDelete={async () => deleteEventMail(eventUuid, mailUuid)}
       onSuccess={() => {
         location.reload();
       }}

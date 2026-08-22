@@ -233,7 +233,7 @@ export async function deleteManyParticipants(
     console.error(`[deleteManyParticipants] Invalid event UUID: ${eventUuid}`);
     return {
       success: false,
-      error: "Nieprawidłowy identyfikator wydarzenia",
+      error: { key: "invalidUuid" as TableKey },
     };
   }
 
@@ -333,7 +333,7 @@ export async function updateParticipant(
         ...(participantAttributes != null && {
           participantAttributes: Object.entries(participantAttributes).map(
             ([key, value]) => {
-              return { attributeId: key, value: value === "" ? null : value };
+              return { attributeUuid: key, value: value === "" ? null : value };
             },
           ),
         }),
@@ -355,11 +355,11 @@ export async function updateParticipant(
 }
 
 async function createImportedParticipants(
-  eventId: string,
+  eventUuid: string,
   participants: ImportedParticipant[],
   bearerToken: string,
 ) {
-  return await fetch(`${API_URL}/events/${eventId}/participants/import`, {
+  return await fetch(`${API_URL}/events/${eventUuid}/participants/import`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
@@ -370,7 +370,7 @@ async function createImportedParticipants(
 }
 
 export async function importParticipants(
-  eventId: string,
+  eventUuid: string,
   participants: ImportedParticipant[],
 ) {
   const session = await verifySession();
@@ -394,7 +394,7 @@ export async function importParticipants(
   }
 
   const response = await createImportedParticipants(
-    eventId,
+    eventUuid,
     participants,
     session.bearerToken,
   );
@@ -431,7 +431,7 @@ export async function importParticipants(
     }
 
     console.error(
-      `[importParticipants] Failed to import participants for event ${eventId}:`,
+      `[importParticipants] Failed to import participants for event ${eventUuid}:`,
       response,
       error,
     );
@@ -503,7 +503,7 @@ export async function exportData(eventUuid: string) {
     console.error(`[exportData] Invalid event UUID: ${eventUuid}`);
     return {
       success: false,
-      error: "Nieprawidłowy identyfikator wydarzenia",
+      error: { key: "invalidUuid" as ExportKey },
     };
   }
 
@@ -541,7 +541,7 @@ export async function exportData(eventUuid: string) {
 
 export async function sendMail(
   eventUuid: string,
-  emailId: string,
+  emailUuid: string,
   participants: string[],
 ) {
   const session = await verifySession();
@@ -549,18 +549,18 @@ export async function sendMail(
     redirect("/auth/login");
   }
 
-  if (!isValidUuid(eventUuid) || !isValidUuid(emailId)) {
+  if (!isValidUuid(eventUuid) || !isValidUuid(emailUuid)) {
     console.error(
-      `[sendMail] Invalid UUID: eventUuid=${eventUuid}, emailId=${emailId}`,
+      `[sendMail] Invalid UUID: eventUuid=${eventUuid}, emailUuid=${emailUuid}`,
     );
     return {
       success: false,
-      error: "Nieprawidłowy identyfikator",
+      error: { key: "invalidUuid" as SendMailKey },
     };
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/send/${encodeURIComponent(emailId)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/send/${encodeURIComponent(emailUuid)}`,
     {
       method: "POST",
       headers: {

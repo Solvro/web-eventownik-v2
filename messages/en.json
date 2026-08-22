@@ -516,7 +516,7 @@
     "maxFileSize": "Maximum file size: {maxSize} MB",
     "unauthorized": "Unauthorized",
     "httpError": "Error {status} {statusText}",
-    "invalidEmailId": "Invalid email ID",
+    "invalidEmailUuid": "Invalid email ID",
     "invalidIdentifier": "Invalid resource UUID"
   },
   "EventPermissions": {
@@ -540,7 +540,8 @@
     "fileDownloadFailed": "Failed to download file!",
     "serverError": "The server is not working properly. Please try again later",
     "fileNotFound": "File not found",
-    "eventNotFound": "Event not found or endpoint does not exist"
+    "eventNotFound": "Event not found or endpoint does not exist",
+    "invalidUuid": "Invalid resource UUID"
   },
   "Form": {
     "email": "Email",
@@ -742,7 +743,8 @@
     "selectPlaceholder": "Select a template from the list",
     "confirmRecipients": "You are about to send this message to {count, plural, one {# participant} other {# participants}} with the following addresses:",
     "send": "Send",
-    "httpError": "Error {status} {statusText}"
+    "httpError": "Error {status} {statusText}",
+    "invalidUuid": "Invalid resource UUID"
   },
   "Sidebar": {
     "general": "General",
@@ -890,7 +892,8 @@
     "clearAllOptions": "Clear all options",
     "removeAdditionalOptions": "Remove additional options",
     "serverError": "The server is not working properly. Please try again later",
-    "unexpectedError": "An unexpected error occurred. Please try again"
+    "unexpectedError": "An unexpected error occurred. Please try again",
+    "invalidUuid": "Invalid resource UUID"
   },
   "Themes": {
     "light": "Light",

@@ -118,8 +118,8 @@ export const getPuckConfig = ({
   tMessageTags,
 }: {
   tags: MessageTag[];
-  forms: Pick<EventForm, "id" | "name">[];
-  attributes: Pick<EventAttribute, "id" | "name">[];
+  forms: Pick<EventForm, "uuid" | "name">[];
+  attributes: Pick<EventAttribute, "uuid" | "name">[];
   eventData: PuckEventData;
   t: ReturnType<typeof useTranslations<"Editor">>;
   tEmailTriggers: ReturnType<typeof useTranslations<"EmailTriggers">>;
@@ -1133,7 +1133,7 @@ export const getPuckConfig = ({
               type: "select",
               label: t("form"),
               options: forms.map((form) => {
-                return { label: form.name, value: form.id };
+                return { label: form.name, value: form.uuid };
               }),
               labelIcon: <FileSpreadsheet className={PUCK_ICON_CLASSNAME} />,
             },
@@ -1147,7 +1147,7 @@ export const getPuckConfig = ({
               type: "select",
               label: t("attribute"),
               options: attributes.map((attribute) => {
-                return { label: attribute.name, value: attribute.id };
+                return { label: attribute.name, value: attribute.uuid };
               }),
               labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
             },
