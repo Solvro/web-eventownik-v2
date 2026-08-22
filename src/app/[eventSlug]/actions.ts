@@ -44,7 +44,7 @@ export async function submitParticipantForm({
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
   if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
-    return { success: false, error: "Invalid form identifier" };
+    return { success: false, error: { message: "Invalid form identifier" } };
   }
 
   try {

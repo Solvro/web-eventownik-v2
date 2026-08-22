@@ -19,7 +19,7 @@ import type { Participant } from "@/types/participant";
 export interface ImportedParticipant {
   email: string;
   participantAttributes: {
-    attributeId: number;
+    attributeUuid: string;
     value: string;
   }[];
 }
@@ -307,9 +307,9 @@ export async function deleteParticipant(
 
 export async function updateParticipant(
   eventUuid: string,
-  participantId: string,
+  participantUuid: string,
   payload: {
-    participantAttributes?: Record<number, string>;
+    participantAttributes?: Record<string, string>;
     [key: string]: unknown;
   },
 ) {
@@ -318,8 +318,10 @@ export async function updateParticipant(
     redirect("/auth/login");
   }
 
+  const { participantAttributes, ...baseFields } = payload;
+
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}`,
+    `${API_URL}/events/${eventUuid}/participants/${participantUuid}`,
     {
       method: "PATCH",
       headers: {
@@ -331,7 +333,7 @@ export async function updateParticipant(
         ...(participantAttributes != null && {
           participantAttributes: Object.entries(participantAttributes).map(
             ([key, value]) => {
-              return { attributeUuid: key, value: value === "" ? null : value };
+              return { attributeId: key, value: value === "" ? null : value };
             },
           ),
         }),

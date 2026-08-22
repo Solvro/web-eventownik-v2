@@ -16,7 +16,7 @@ export async function getSingleEventEmailAction(
   return await getSingleEventEmail(eventUuid, emailId);
 }
 
-export async function createEventEmailTemplate(data: {
+export async function createEventEmail(data: {
   eventUuid: string;
   emailTemplate: UpdateEventEmailPayload;
 }) {
@@ -37,7 +37,7 @@ export async function createEventEmailTemplate(data: {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[createEventEmailTemplate action] Failed to create event email template for event ${data.eventUuid}:`,
+      `[createEventEmail action] Failed to create event email template for event ${data.eventUuid}:`,
       error,
     );
     return {
@@ -60,19 +60,24 @@ export async function createEventEmailTemplate(data: {
 
 export async function updateEventEmail(data: {
   eventUuid: string;
-  mailId: string | null;
+  mailUuid: string | null;
   emailTemplate: UpdateEventEmailPayload;
 }) {
-  const session = await verifySession();
+  if (data.mailUuid == null) {
+    return {
+      success: false,
+      error: { key: "invalidEmailUuid" as EventDetailsKey },
+    };
+  }
 
-  const { eventUuid, mailId, emailTemplate } = data;
+  const session = await verifySession();
 
   if (session == null) {
     redirect("/auth/login");
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${mailId ?? ""}`,
+    `${API_URL}/events/${data.eventUuid}/emails/${data.mailUuid}`,
     {
       method: "PATCH",
       headers: {
@@ -86,7 +91,7 @@ export async function updateEventEmail(data: {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateEventEmail action] Failed to update event email ${mailId ?? ""} for event ${eventUuid}:`,
+      `[updateEventEmail action] Failed to update event email ${data.mailUuid} for event ${data.eventUuid}:`,
       error,
     );
     return {

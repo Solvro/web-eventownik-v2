@@ -516,7 +516,8 @@
     "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB",
     "unauthorized": "Brak autoryzacji",
     "httpError": "Błąd {status} {statusText}",
-    "invalidEmailId": "Nieprawidłowy identyfikator maila"
+    "invalidEmailId": "Nieprawidłowy identyfikator maila",
+    "invalidIdentifier": "Nieprawidłowe UUID zasobu"
   },
   "EventPermissions": {
     "forms": "Formularze",

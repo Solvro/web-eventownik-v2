@@ -516,7 +516,8 @@
     "maxFileSize": "Maximum file size: {maxSize} MB",
     "unauthorized": "Unauthorized",
     "httpError": "Error {status} {statusText}",
-    "invalidEmailId": "Invalid email ID"
+    "invalidEmailId": "Invalid email ID",
+    "invalidIdentifier": "Invalid resource UUID"
   },
   "EventPermissions": {
     "forms": "Forms",
