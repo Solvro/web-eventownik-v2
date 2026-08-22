@@ -78,7 +78,7 @@ export async function createBlock(
     !isValidUuid(attributeUuid) ||
     !isValidUuid(parentUuid)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return { success: false };
   }
 
   const { bearerToken } = session;
