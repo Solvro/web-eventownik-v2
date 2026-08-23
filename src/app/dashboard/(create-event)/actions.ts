@@ -9,6 +9,12 @@ import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
 
+interface ApiErrorResponse {
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
+}
+
 export async function isSlugTaken(slug: string) {
   const response = await fetch(`${API_URL}/events/${slug}/public`);
   return response.ok;
@@ -21,10 +27,20 @@ interface ErrorMessage {
 
 interface SaveEventResult {
   id?: string;
-  errors?: {
-    message: ErrorMessage | string;
-  }[];
-  warnings?: ErrorMessage[];
+  errors?: { message: string }[];
+  warnings?: string[];
+}
+
+// TODO Ai generated slop - review and refactor
+function parseApiErrors(errorData: ApiErrorResponse): { message: string }[] {
+  if (Array.isArray(errorData.message)) {
+    // eslint-disable-next-line unicorn/prevent-abbreviations
+    return errorData.message.map((msg) => ({ message: msg }));
+  }
+  if (typeof errorData.message === "string") {
+    return [{ message: errorData.message }];
+  }
+  return [{ message: errorData.error ?? "Unknown error" }];
 }
 
 export async function saveEvent(event: Event): Promise<SaveEventResult> {
@@ -42,6 +58,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
   formData.append("contactEmail", event.contactEmail ?? "");
+  formData.append("isPublic", "true"); // TODO need to add this field to the form as API docs state that this defaults to false, but still throws error when not provided
   formData.append("slug", event.slug);
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
@@ -99,19 +116,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as {
-      message: string[] | string;
-      error: string;
-      statusCode: number;
-    };
-    const messages = Array.isArray(error.message)
-      ? error.message
-      : [error.message || "Unknown error"];
-
+    const errorData = (await response.json()) as ApiErrorResponse;
+    const errors = parseApiErrors(errorData);
     console.error(
-      `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${errors[0]?.message ?? "Unknown error"}`,
     );
-    return { errors: messages.map((message) => ({ message })) };
+    return { errors };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;
@@ -146,9 +156,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       if (coorganizerResponse.ok) {
         coOrganizersAdded++;
       } else {
-        const errorData = (await coorganizerResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData =
+          (await coorganizerResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add co-organizer %s:",
           coorganizer.email,
@@ -199,15 +208,20 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           body: JSON.stringify({
             name: attribute.name,
             type: attribute.type,
-            slug: attribute.slug,
             showInList: attribute.showInList,
-            options:
-              (attribute.options ?? []).length > 0
-                ? attribute.options
-                : undefined,
             order: attribute.order,
-            isSensitiveData: false,
-            reason: null,
+            config: {
+              options:
+                (attribute.config.options ?? []).length > 0
+                  ? attribute.config.options
+                  : null,
+              isSensitiveData: attribute.config.isSensitiveData,
+              reason: attribute.config.isSensitiveData
+                ? (attribute.config.reason ?? null)
+                : null,
+              isMultiple: attribute.config.isMultiple ?? false,
+              maxSelections: attribute.config.maxSelections ?? null,
+            },
           }),
         },
       );
@@ -215,9 +229,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       if (attributeResponse.ok) {
         attributesAdded++;
       } else {
-        const errorData = (await attributeResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData = (await attributeResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add attribute %s:",
           attribute.name,

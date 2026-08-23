@@ -3,7 +3,7 @@ import "server-only";
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
+import type { GetAttributesResponse } from "@/types/attributes";
 import type { EventEmail, SingleEventEmail } from "@/types/emails";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
@@ -68,7 +68,7 @@ export async function getSingleEventEmail(
 export async function getEventAttributes(eventUuid: string) {
   const session = await verifySession();
   if (session == null) {
-    return [];
+    return null;
   }
 
   const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
@@ -83,10 +83,10 @@ export async function getEventAttributes(eventUuid: string) {
       `[getEventAttributes] Failed to fetch available attributes when attempting to create a new email for event ${eventUuid}:`,
       response,
     );
-    return [];
+    return null;
   }
 
-  const attributes = (await response.json()) as EventAttribute[];
+  const attributes = (await response.json()) as GetAttributesResponse;
 
   return attributes;
 }

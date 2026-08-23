@@ -18,15 +18,17 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { Attribute } from "@/types/attributes";
+import type { EventForm, FormAttribute } from "@/types/forms";
 
 import { updateEventForm } from "../actions";
+
+/* eslint-disable unicorn/prevent-abbreviations */
 
 interface EventFormEditFormProps {
   eventUuid: string;
   formToEdit: EventForm;
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
 }
 
 function EventFormEditForm({
@@ -34,19 +36,20 @@ function EventFormEditForm({
   formToEdit,
   eventAttributes,
 }: EventFormEditFormProps) {
-  const [includedAttributes, setIncludedAttributes] = useState<
-    FormAttributeBase[]
-  >(formToEdit.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+  const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
+    formToEdit.formDefinitions
+      .toSorted((a, b) => a.order - b.order)
+      .map((def) => ({
+        attributeUuid: def.attribute.uuid,
+        isRequired: def.isRequired,
+        order: def.order,
+      })),
+  );
   const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({
     resolver: zodResolver(EventFormGeneralInfoSchema),
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      startTime: `${new Date(formToEdit.startDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.startDate).getMinutes().toString().padStart(2, "0")}`,
-      endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
-      startDate: new Date(formToEdit.startDate),
-      endDate: new Date(formToEdit.endDate),
-      isFirstForm: formToEdit.isFirstForm,
       isOpen: formToEdit.isOpen,
     },
   });
@@ -61,9 +64,12 @@ function EventFormEditForm({
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
       const result = await updateEventForm(eventUuid, formToEdit.uuid, {
-        ...formToEdit,
         ...values,
         attributes: includedAttributes,
+        openDate: formToEdit.openDate ?? undefined,
+        closeDate: formToEdit.closeDate ?? undefined,
+        isEditable: formToEdit.isEditable,
+        openCondition: formToEdit.openCondition,
       });
 
       if (result.success) {

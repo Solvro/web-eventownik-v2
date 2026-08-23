@@ -48,7 +48,7 @@ export default async function EventFormEditPage({
         <EventFormEditForm
           eventUuid={uuid}
           formToEdit={formToEdit}
-          eventAttributes={eventAttributes}
+          eventAttributes={eventAttributes?.data ?? []}
         />
       </div>
     );

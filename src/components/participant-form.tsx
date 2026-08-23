@@ -33,12 +33,14 @@ import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import {
   cn,
   getAttributeLabel,
-  getSchemaObjectForAttributes,
+  getSchemaObjectForPublicAttributes,
 } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
+import type { Block } from "@/types/blocks";
+import type { FormDefinition } from "@/types/forms";
+import type { Participant } from "@/types/participant";
+
+/* eslint-disable unicorn/prevent-abbreviations */
 
 interface ErrorObject {
   rule: string;
@@ -47,7 +49,7 @@ interface ErrorObject {
 }
 
 interface ParticipantFormProps {
-  attributes: FormAttribute[];
+  formDefinitions: FormDefinition[];
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
@@ -57,13 +59,13 @@ interface ParticipantFormProps {
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
-  userData?: PublicParticipant;
-  eventBlocks?: PublicBlock[];
+  userData?: Participant;
+  eventBlocks?: Block[];
   editMode?: boolean;
 }
 
 export function ParticipantForm({
-  attributes,
+  formDefinitions,
   onSubmit,
   includeEmail = false,
   userData,
@@ -81,9 +83,9 @@ export function ParticipantForm({
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const sortedAttributes = useMemo(
-    () => attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-    [attributes],
+  const sortedFormDefinitions = useMemo(
+    () => formDefinitions.toSorted((a, b) => a.order - b.order),
+    [formDefinitions],
   );
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
@@ -93,23 +95,21 @@ export function ParticipantForm({
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
-  // Generate schema for the form based on event attributes
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
-    ...getSchemaObjectForAttributes(attributes),
+    ...getSchemaObjectForPublicAttributes(formDefinitions),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...(includeEmail && { email: "" }),
-      ...userData?.attributes
+      ...formDefinitions
         .filter(
-          (attribute) =>
-            attribute.type !== "file" && attribute.type !== "drawing",
+          (def) =>
+            def.attribute.type !== "file" && def.attribute.type !== "drawing",
         )
-        .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.uuid] = attribute.meta.pivot_value;
+        .reduce<Record<string, string>>((accumulator) => {
           return accumulator;
         }, {}),
     },
@@ -241,29 +241,30 @@ export function ParticipantForm({
    */
   async function handleFormSubmit(values: z.infer<typeof formSchema>) {
     // Validate required file/drawing attributes
-    const requiredFileDrawingAttributes = sortedAttributes.filter(
+    const requiredFileDrawingFormDefinitions = sortedFormDefinitions.filter(
       (attribute) =>
         attribute.isRequired &&
-        (attribute.type === "file" || attribute.type === "drawing"),
+        (attribute.attribute.type === "file" ||
+          attribute.attribute.type === "drawing"),
     );
 
     let hasValidationErrors = false;
 
-    for (const attribute of requiredFileDrawingAttributes) {
-      const hasFile = files.some((file) => file.name === attribute.uuid);
+    for (const formDefinition of requiredFileDrawingFormDefinitions) {
+      const hasFile = files.some(
+        (file) => file.name === formDefinition.attribute.uuid,
+      );
       const hasExistingValue =
         userData?.attributes.some(
           (userAttribute) =>
-            userAttribute.uuid === attribute.uuid &&
-            userAttribute.meta.pivot_value !== "" &&
-            userAttribute.meta.pivot_value.length > 0,
+            userAttribute.uuid === formDefinition.attribute.uuid,
         ) ?? false;
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
-        form.setError(attribute.uuid, {
+        form.setError(formDefinition.attribute.uuid, {
           message:
-            attribute.type === "file"
+            formDefinition.attribute.type === "file"
               ? t("fileUploadRequired")
               : t("drawingRequired"),
         });
@@ -324,22 +325,22 @@ export function ParticipantForm({
           />
         ) : null}
 
-        {sortedAttributes.map((attribute) => {
+        {sortedFormDefinitions.map((formDefinition) => {
           return (
             <FormField
-              key={attribute.uuid}
+              key={formDefinition.attribute.uuid}
               control={form.control}
-              name={attribute.uuid}
+              name={formDefinition.attribute.uuid}
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    attribute.type === "checkbox" &&
+                    formDefinition.attribute.type === "checkbox" &&
                       "flex flex-row-reverse items-start justify-end space-y-0",
                   )}
                 >
-                  <FormLabel htmlFor={attribute.uuid}>
-                    {getAttributeLabel(attribute.name, locale)}{" "}
-                    {attribute.isRequired ? (
+                  <FormLabel htmlFor={formDefinition.attribute.uuid}>
+                    {getAttributeLabel(formDefinition.attribute.name, locale)}{" "}
+                    {formDefinition.isRequired ? (
                       <Tooltip>
                         <TooltipTrigger type="button">
                           <span className="text-red-500">*</span>
@@ -351,38 +352,32 @@ export function ParticipantForm({
                     ) : null}
                   </FormLabel>
                   <FormControl>
-                    {attribute.type === "file" ? (
+                    {formDefinition.attribute.type === "file" ? (
                       <AttributeInputFile
-                        attribute={attribute}
+                        attribute={formDefinition.attribute}
                         field={field}
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.uuid === attribute.uuid,
-                          )?.meta.pivot_updated_at ?? null
-                        }
+                        lastUpdate={formDefinition.attribute.updatedAt}
                       />
-                    ) : attribute.type === "drawing" ? (
+                    ) : formDefinition.attribute.type === "drawing" ? (
                       <AttributeInputDrawing
-                        attribute={attribute}
+                        attribute={formDefinition.attribute}
                         field={field}
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.uuid === attribute.uuid,
-                          )?.meta.pivot_updated_at ?? null
-                        }
+                        lastUpdate={formDefinition.attribute.updatedAt}
                       />
                     ) : (
                       <AttributeInput
-                        attribute={attribute}
+                        attribute={formDefinition.attribute}
                         userData={userData}
                         eventBlocks={eventBlocks.filter(
-                          (block) => block.attributeUuid === attribute.uuid,
+                          (block) =>
+                            block.attributeUuid ===
+                            formDefinition.attribute.uuid,
                         )}
                         field={field}
                         shouldCheckUserData={editMode}
@@ -392,10 +387,12 @@ export function ParticipantForm({
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                      (form.formState.errors as any)[attribute.uuid]
-                        ?.message as FormValidationErrors,
-                      { name: getAttributeLabel(attribute.name, "pl") },
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (form.formState.errors as any)[
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                        formDefinition.attribute.uuid
+                      ]?.message as FormValidationErrors,
+                      { name: getAttributeLabel(AttributeInput.name, "pl") },
                     )}
                   </FormMessage>
                 </FormItem>

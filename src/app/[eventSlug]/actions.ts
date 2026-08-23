@@ -3,7 +3,7 @@
 import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
-import type { FormErrorObject } from "@/types/form";
+import type { FormErrorObject } from "@/types/forms";
 
 interface ErrorResponse {
   errors: FormErrorObject[];
@@ -43,44 +43,59 @@ export async function submitParticipantForm({
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
-  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
-    return { success: false, error: { message: "Invalid form identifier" } };
+  if (!isValidUuid(formUuid)) {
+    return { success: false, error: "Invalid form identifier" };
   }
 
   try {
-    const formData = new FormData();
+    const { email, token, ...attributeValues } = values;
 
-    for (const file of files) {
-      // Filename of file is corresponding attribute id
-      formData.append(file.name, file);
-    }
+    const attributes = Object.entries(attributeValues).map(
+      ([attributeUuid, value]) => ({
+        attributeUuid,
+        value: value ?? null,
+      }),
+    );
+    const payload = {
+      email,
+      ...(participantSlug != null && { participantId: participantSlug }),
+      attributes,
+    };
 
-    if (participantSlug !== undefined) {
-      formData.append("participantSlug", participantSlug);
-    }
+    // for (const file of files) {
+    //   // Filename of file is corresponding attribute id
+    //   formData.append(file.name, file);
+    // }
 
-    for (const [key, value] of Object.entries(values)) {
-      if (Array.isArray(value)) {
-        // Handle opting out
-        if (value.length === 0) {
-          formData.append(key, "null");
-          continue;
-        }
+    // if (participantSlug !== undefined) {
+    //   formData.append("participantSlug", participantSlug);
+    // }
 
-        for (const item of value) {
-          formData.append(key, String(item));
-        }
-        continue;
-      }
+    // for (const [key, value] of Object.entries(values)) {
+    //   if (Array.isArray(value)) {
+    //     // Handle opting out
+    //     if (value.length === 0) {
+    //       formData.append(key, "null");
+    //       continue;
+    //     }
 
-      formData.append(key, String(value));
-    }
+    //     for (const item of value) {
+    //       formData.append(key, String(item));
+    //     }
+    //     continue;
+    //   }
+
+    //   formData.append(key, String(value));
+    // }
 
     const response = await fetch(
-      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
+      `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
     );
 

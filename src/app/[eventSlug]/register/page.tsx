@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import { format } from "date-fns";
 import { Info } from "lucide-react";
 import type { Metadata } from "next";
@@ -11,6 +12,7 @@ import { API_URL, PHOTO_URL } from "@/lib/api";
 import { parseLinks } from "@/lib/links";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
+import type { GetPublicFormResponse } from "@/types/forms";
 
 import { FormGenerator } from "../form-generator";
 import { getEventBlockAttributeBlocks } from "../utils";
@@ -26,7 +28,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -54,15 +56,15 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+  const eventRes = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
   );
 
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
+  if (!eventRes.ok) {
+    const error = (await eventRes.json()) as unknown;
     console.error(error);
     return <EventNotFound whatNotFound="event" />;
   }
@@ -70,25 +72,42 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const event = (await response.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
-  const form = event.firstForm;
+  const formRes = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(event.registerFormUuid)}`,
+    { method: "GET" },
+  );
 
-  if (form === null) {
+  if (!formRes.ok) {
+    const error = (await formRes.json()) as unknown;
+    console.error(error);
     return <EventNotFound whatNotFound="form" />;
   }
 
-  const blockAttributesInForm = form.attributes.filter(
+  const form = (await formRes.json()) as GetPublicFormResponse;
+
+  const attributes = form.formDefinitions.map((def) => ({
+    ...def.attribute,
+    config: {
+      ...def.attribute.config,
+      isRequired: def.isRequired,
+    },
+  }));
+
+  const blockAttributesInForm = attributes.filter(
     (attribute) => attribute.type === "block",
   );
 
-  const eventBlocks = await Promise.all(
+  const eventBlocksResponse = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
       getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
-  if (eventBlocks.includes(null)) {
+  if (eventBlocksResponse.includes(null)) {
     return <EventNotFound whatNotFound="blocks" />;
   }
+
+  const eventBlocks = eventBlocksResponse.filter((block) => block !== null);
 
   if (!form.isOpen) {
     return (
@@ -127,8 +146,8 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <p className="mb-8">{t("fillForm")}</p>
 
       <FormGenerator
-        attributes={form.attributes}
-        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        formDefinitions={form.formDefinitions}
+        originalEventBlocks={eventBlocks}
         formUuid={form.uuid}
         eventSlug={eventSlug}
         editMode={false}
@@ -161,7 +180,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
             {t("ofEvent")}
           </>
         )}
-      </p>
+      </p> */}
     </EventPageLayout>
   );
 }

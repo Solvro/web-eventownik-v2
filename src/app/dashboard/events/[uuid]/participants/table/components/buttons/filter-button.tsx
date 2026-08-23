@@ -28,13 +28,14 @@ export function FilterButton({
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
   blocks: (Block | null)[] | null;
   attributeUuid: string;
+  options_?: string[] | null;
 }) {
   const t = useTranslations("Table");
 
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiselect" && options_ !== null) ||
+    (attributeType === "multiSelect" && options_ !== null) ||
     attributeType === "block"
   ) {
     let options: {
@@ -59,7 +60,7 @@ export function FilterButton({
     if (attributeType === "block") {
       const rootBlock = blocks?.find((b) => b?.attributeUuid === attributeUuid);
       options =
-        rootBlock?.children.map((block) => ({
+        rootBlock?.children?.map((block) => ({
           label: block.name,
           value: block.uuid,
         })) ?? [];

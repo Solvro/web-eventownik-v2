@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
 import { MessageContentForm } from "./(steps)/message-content";
@@ -25,11 +25,11 @@ type DialogMode = "chooser" | "simple" | null;
 
 function CreateEmailTemplateForm({
   eventUuid,
-  eventAttributes,
+  attributes,
   eventForms,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
+  attributes: Attribute[];
   eventForms: EventForm[];
 }) {
   const t = useTranslations("Email");
@@ -151,7 +151,7 @@ function CreateEmailTemplateForm({
           <div className="flex flex-col gap-4">
             {currentStep === 0 && (
               <TriggerTypeForm
-                eventAttributes={eventAttributes}
+                eventAttributes={attributes}
                 eventForms={eventForms}
                 goToNextStep={() => {
                   setCurrentStep(1);
@@ -160,7 +160,7 @@ function CreateEmailTemplateForm({
             )}
             {currentStep === 1 && (
               <MessageContentForm
-                eventAttributes={eventAttributes}
+                eventAttributes={attributes}
                 eventForms={eventForms}
                 eventUuid={eventUuid}
                 goToPreviousStep={() => {

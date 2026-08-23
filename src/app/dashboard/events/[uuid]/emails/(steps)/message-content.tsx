@@ -27,7 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
 import { createEventEmail } from "../actions";
@@ -71,14 +71,14 @@ export function getTitlePlaceholder(
 
 function MessageContentForm({
   eventUuid,
-  eventAttributes,
+  attributes,
   eventForms,
   goToPreviousStep,
   setDialogOpen,
   setCurrentStep,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
+  attributes: Attribute[];
   eventForms: EventForm[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -209,7 +209,7 @@ function MessageContentForm({
                   onChange={field.onChange}
                   extensions={setupSuggestions(
                     [
-                      ...getAttributeTags(eventAttributes, tMessageTags),
+                      ...getAttributeTags(attributes, tMessageTags),
                       ...getFormTags(eventForms, tMessageTags),
                     ],
                     tMessageTags,

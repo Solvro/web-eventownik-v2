@@ -18,32 +18,14 @@ import { Switch } from "@/components/ui/switch";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
-export type EventFormGeneralInfoErrors =
-  | "nameRequired"
-  | "descriptionRequired"
-  | "startTimeRequired"
-  | "endTimeRequired";
+export type EventFormGeneralInfoErrors = "nameRequired" | "descriptionRequired";
 
-export const EventFormGeneralInfoSchema = z
-  .object({
-    name: z.string().nonempty({ message: "nameRequired" }),
-    description: z.string(),
-    startTime: z.string().nonempty("startTimeRequired"),
-    endTime: z.string().nonempty("endTimeRequired"),
-    startDate: z.date(),
-    endDate: z.date(),
-    isFirstForm: z.boolean().default(false),
-    isOpen: z.boolean().default(true),
-  })
-  .refine(
-    ({ isFirstForm, description }) =>
-      isFirstForm || description.trim() !== "<p></p>",
-    {
-      path: ["description"],
-      message: "descriptionRequired",
-    },
-  );
-/* 
+export const EventFormGeneralInfoSchema = z.object({
+  name: z.string().nonempty({ message: "nameRequired" }),
+  description: z.string().nonempty({ message: "descriptionRequired" }),
+  isFirstForm: z.boolean().default(false),
+  isOpen: z.boolean().default(true),
+}); /* 
   .refine(
     (schema) => {
       const startDate = new Date(schema.startDate);

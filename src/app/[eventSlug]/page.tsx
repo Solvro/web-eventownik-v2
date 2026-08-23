@@ -23,7 +23,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -51,7 +51,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug, locale } = await params;
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -66,7 +66,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
-      {(event.firstForm?.isOpen ?? false) ? (
+      {(event.registerForm?.isOpen ?? false) ? (
         <div className="flex w-full justify-center pt-4">
           <Link href={`/${event.slug}/register#form`}>
             <Button

@@ -33,7 +33,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import type { AttributeType } from "@/types/attributes";
+import type { Attribute, AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
 import type {
@@ -41,10 +41,15 @@ import type {
   EventAttributesFormSchema,
 } from "./schema";
 import { SortableOption } from "./sortable-option";
-import type { AttributeItemProps, NewEventAttribute } from "./types";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
+
+export interface AttributeItemProps {
+  attribute: Attribute;
+  index: number;
+  onUpdateItem?: (index: number, value: Attribute) => void;
+}
 
 const getOptionValue = (option: unknown): string => {
   if (typeof option === "string") {
@@ -87,12 +92,12 @@ export function AttributeItem({
       const newIndex = source.index;
 
       if (initialIndex !== newIndex) {
-        const oldOptions = getValues(`attributes.${index}.options`);
+        const oldOptions = getValues(`attributes.${index}.config.options`);
         if (oldOptions != null) {
           const newOptions = [...oldOptions];
           const [removed] = newOptions.splice(initialIndex, 1);
           newOptions.splice(newIndex, 0, removed);
-          setValue(`attributes.${index}.options`, newOptions);
+          setValue(`attributes.${index}.config.options`, newOptions);
           onUpdateItem?.(index, getValues(`attributes.${index}`));
         }
       }
@@ -101,12 +106,12 @@ export function AttributeItem({
 
   const addOption = () => {
     const trimmedValue = optionsInput.trim();
-    const oldOptions = getValues(`attributes.${index}.options`);
+    const oldOptions = getValues(`attributes.${index}.config.options`);
     if (trimmedValue) {
       const exists = oldOptions?.includes(trimmedValue) ?? false;
       if (!exists) {
         const newOptions = [...(oldOptions ?? []), trimmedValue];
-        setValue(`attributes.${index}.options`, newOptions);
+        setValue(`attributes.${index}.config.options`, newOptions);
         setOptionsInput("");
         onUpdateItem?.(index, getValues(`attributes.${index}`));
       }
@@ -115,8 +120,8 @@ export function AttributeItem({
 
   const handleRemoveOption = (optionToRemove: string) => {
     setValue(
-      `attributes.${index}.options`,
-      getValues(`attributes.${index}.options`)?.filter(
+      `attributes.${index}.config.options`,
+      getValues(`attributes.${index}.config.options`)?.filter(
         (o) => o !== optionToRemove,
       ) ?? [],
     );
@@ -180,12 +185,12 @@ export function AttributeItem({
               id={`isSensitiveData-${index.toString()}`}
               onCheckedChange={(checked) => {
                 setValue(
-                  `attributes.${index}.isSensitiveData`,
+                  `attributes.${index}.config.isSensitiveData`,
                   checked === true,
                 );
                 onUpdateItem?.(index, getValues(`attributes.${index}`));
               }}
-              defaultChecked={attribute.isSensitiveData}
+              defaultChecked={attribute.config.isSensitiveData}
             />
             <div className="flex items-center gap-2">
               <Label htmlFor={`isSensitiveData-${index.toString()}`}>
@@ -230,17 +235,20 @@ export function AttributeItem({
         </div>
       </div>
 
-      {watch(`attributes.${index}.isSensitiveData`) ? (
+      {watch(`attributes.${index}.config.isSensitiveData`) ? (
         <div className="my-2 flex flex-col gap-2">
           <Label htmlFor={`reason-${index.toString()}`}>
             {t("sensitiveDataReason")}
           </Label>
           <Input
             id={`reason-${index.toString()}`}
-            defaultValue={attribute.reason ?? ""}
-            required={attribute.isSensitiveData}
+            defaultValue={attribute.config.reason ?? ""}
+            required={attribute.config.isSensitiveData}
             onChange={(event_) => {
-              setValue(`attributes.${index}.reason`, event_.target.value);
+              setValue(
+                `attributes.${index}.config.reason`,
+                event_.target.value,
+              );
             }}
             placeholder={t("sensitiveDataReasonExamples")}
             onBlur={() => {
@@ -250,7 +258,7 @@ export function AttributeItem({
           <FormMessage className="text-sm text-red-500">
             {translateOrFallback(
               t,
-              formState.errors.attributes?.[index]?.reason
+              formState.errors.attributes?.[index]?.config?.reason
                 ?.message as EventAttributesFormErrors,
             )}
           </FormMessage>
@@ -258,7 +266,7 @@ export function AttributeItem({
       ) : null}
 
       {(watch(`attributes.${index}.type`) === "select" ||
-        watch(`attributes.${index}.type`) === "multiselect") && (
+        watch(`attributes.${index}.type`) === "multiSelect") && (
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input
@@ -281,7 +289,7 @@ export function AttributeItem({
               onDragEnd={handleDragEnd}
               modifiers={[RestrictToHorizontalAxis]}
             >
-              {watch(`attributes.${index}.options`)?.map(
+              {watch(`attributes.${index}.config.options`)?.map(
                 (option, optionIndex) => {
                   const optionValue = getOptionValue(option);
                   return (
@@ -310,26 +318,16 @@ export function AttributeItem({
               { label: "Email", value: "email" },
               ...(Array.isArray(allAttributes) ? allAttributes : [])
                 .map((a, index_) => ({ ...a, _index: index_ }))
-                .filter(
-                  (
-                    a,
-                  ): a is NewEventAttribute & {
-                    _index: number;
-                    slug: string;
-                  } =>
-                    a._index !== index &&
-                    typeof a.slug === "string" &&
-                    a.slug.length > 0,
-                )
-                .map((a) => ({ label: a.name, value: a.slug })),
+                .filter((a) => a._index !== index)
+                .map((a) => ({ label: a.name, value: a.uuid })),
             ]}
             onValueChange={(values) => {
-              setValue(`attributes.${index}.options`, values);
+              setValue(`attributes.${index}.config.options`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
-            defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
-              (option) => getOptionValue(option),
-            )}
+            defaultValue={(
+              getValues(`attributes.${index}.config.options`) ?? []
+            ).map((option) => getOptionValue(option))}
             placeholder={t("selectAttributesToDisplay")}
           />
           <p className="text-muted-foreground text-sm">
@@ -339,10 +337,13 @@ export function AttributeItem({
             <Checkbox
               id={`isMultiple-${index.toString()}`}
               onCheckedChange={(checked) => {
-                setValue(`attributes.${index}.isMultiple`, checked === true);
+                setValue(
+                  `attributes.${index}.config.isMultiple`,
+                  checked === true,
+                );
                 onUpdateItem?.(index, getValues(`attributes.${index}`));
               }}
-              defaultChecked={attribute.isMultiple}
+              defaultChecked={attribute.config.isMultiple}
             />
             <Label htmlFor={`isMultiple-${index.toString()}`}>
               {t("allowMultipleSelection")}
@@ -351,7 +352,7 @@ export function AttributeItem({
         </div>
       )}
 
-      {watch(`attributes.${index}.isMultiple`) &&
+      {watch(`attributes.${index}.config.isMultiple`) === true &&
         watch(`attributes.${index}.type`) === "block" && (
           <div className="space-y-2">
             <Label htmlFor={`maxSelections-${index.toString()}`}>
@@ -359,10 +360,10 @@ export function AttributeItem({
             </Label>
             <Input
               id={`maxSelections-${index.toString()}`}
-              defaultValue={attribute.maxSelections ?? ""}
+              defaultValue={attribute.config.maxSelections ?? ""}
               onChange={(event_) => {
                 setValue(
-                  `attributes.${index}.maxSelections`,
+                  `attributes.${index}.config.maxSelections`,
                   Number.parseInt(event_.target.value),
                 );
               }}
@@ -376,7 +377,8 @@ export function AttributeItem({
             <FormMessage className="text-sm text-red-500">
               {translateOrFallback(
                 t,
-                formState.errors.attributes?.[index]?.maxSelections
+
+                formState.errors.attributes?.[index]?.config?.maxSelections
                   ?.message as EventAttributesFormErrors,
               )}
             </FormMessage>
