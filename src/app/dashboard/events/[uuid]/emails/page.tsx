@@ -25,9 +25,12 @@ export default async function DashboardEventEmailTemplatesPage({
 }) {
   const t = await getTranslations("Dashboard");
   const { uuid } = await params;
-  const templates = await getEventEmails(uuid);
-  const attributes = await getEventAttributes(uuid);
-  const forms = await getEventForms(uuid);
+
+  const [templates, attributes, forms] = await Promise.all([
+    getEventEmails(uuid),
+    getEventAttributes(uuid),
+    getEventForms(uuid),
+  ]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -35,7 +38,7 @@ export default async function DashboardEventEmailTemplatesPage({
         <h1 className="text-3xl font-bold">{t("emailTemplates")}</h1>
         <CreateEmailTemplateForm
           eventUuid={uuid}
-          eventAttributes={attributes}
+          attributes={attributes?.data ?? []}
           eventForms={forms}
         />
       </div>

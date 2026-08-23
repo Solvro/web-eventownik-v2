@@ -2,9 +2,17 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { GripVertical, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import type { Attribute } from "@/types/attributes";
 
 import { AttributeItem } from "./attribute-item";
-import type { SortableAttributeItemProps } from "./types";
+
+export interface SortableAttributeItemProps {
+  attribute: Attribute;
+  index: number;
+  id: string;
+  onRemove: () => void;
+  onUpdateItem?: (index: number, value: Attribute) => void;
+}
 
 export function SortableAttributeItem({
   uuid,

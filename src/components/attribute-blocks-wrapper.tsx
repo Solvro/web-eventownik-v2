@@ -6,8 +6,8 @@ import { Activity, useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
+import type { Block } from "@/types/blocks";
+import type { Participant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Checkbox } from "./ui/checkbox";
@@ -17,7 +17,7 @@ import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 function includeBlock(
-  block: PublicBlock,
+  block: Block,
   searchText: string,
   hideFullBlocks: boolean,
 ): boolean {
@@ -27,7 +27,7 @@ function includeBlock(
   const isBlockNotFull =
     !hideFullBlocks ||
     block.capacity === null ||
-    (block.meta.participantsInBlockCount ?? 0) < block.capacity;
+    (block.blockParticipantCount ?? 0) < block.capacity;
   return doesBlockIncludeSearchText && isBlockNotFull;
 }
 
@@ -44,8 +44,8 @@ export function AttributeBlocksWrapper({
   maxSelections = null,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  userData: PublicParticipant | undefined;
-  eventBlocks: PublicBlock[];
+  userData?: Participant;
+  eventBlocks: Block[];
   isMultiple?: boolean;
   maxSelections?: number | null;
 }) {

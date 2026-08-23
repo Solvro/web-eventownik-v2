@@ -7,7 +7,7 @@ import type { ExportKey, SendMailKey, TableKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { Attribute, GetAttributesResponse } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
@@ -98,6 +98,7 @@ export async function getParticipants(eventUuid: string) {
       headers: { Authorization: `Bearer ${session.bearerToken}` },
     },
   );
+
   if (!response.ok) {
     console.error("Failed to fetch participants", response);
     return null;
@@ -161,7 +162,7 @@ export async function getAttributes(eventUuid: string) {
     console.error("Failed to fetch attributes", response);
     return null;
   }
-  const attributes = (await response.json()) as Attribute[];
+  const attributes = (await response.json()) as GetAttributesResponse;
   return attributes;
 }
 

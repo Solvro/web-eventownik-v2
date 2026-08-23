@@ -40,7 +40,8 @@ import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
 import { getDefaultFormDates } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/forms";
 
 import { createEventForm } from "./actions";
 
@@ -51,7 +52,7 @@ function CreateEventFormForm({
   attributes,
 }: {
   eventUuid: string;
-  attributes: EventAttribute[];
+  attributes: Attribute[];
 }) {
   const t = useTranslations("EventDetails");
   const router = useRouter();
@@ -60,10 +61,8 @@ function CreateEventFormForm({
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
-  const [includedAttributes, setIncludedAttributes] = useState<
-    FormAttributeBase[]
-  >(
-    newEventForm.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
+    newEventForm.attributes.toSorted((a, b) => a.order - b.order),
   );
 
   const { isDirty, isGuardActive, onCancel, onConfirm } =
@@ -74,11 +73,6 @@ function CreateEventFormForm({
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
-      openTime: newEventForm.openTime,
-      closeTime: newEventForm.closeTime,
-      openDate: newEventForm.openDate,
-      closeDate: newEventForm.closeDate,
-      openCondition: newEventForm.openCondition,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -117,6 +111,7 @@ function CreateEventFormForm({
         try {
           const newForm = {
             ...values,
+            isEditable: true,
             attributes: includedAttributes,
           };
 

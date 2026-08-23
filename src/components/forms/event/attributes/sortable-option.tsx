@@ -1,7 +1,11 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { GripVertical } from "lucide-react";
 
-import type { SortableOptionProps } from "./types";
+export interface SortableOptionProps {
+  option: string;
+  index: number;
+  onRemove: (option: string) => void;
+}
 
 export function SortableOption({
   option,

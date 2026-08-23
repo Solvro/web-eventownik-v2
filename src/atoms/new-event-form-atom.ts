@@ -22,4 +22,5 @@ export const newEventFormAtom = atom<NewEventForm>({
   ...getDefaultFormDates(),
   openCondition: "MANUAL",
   attributes: [],
+  isOpen: true,
 });

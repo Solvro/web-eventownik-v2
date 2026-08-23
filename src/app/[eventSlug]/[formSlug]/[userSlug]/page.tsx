@@ -8,11 +8,9 @@ import { EventInfoDiv } from "@/components/event-info-div";
 import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
-import type { PublicParticipant } from "@/types/participant";
+import type { Participant } from "@/types/participant";
 
 import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "../../form-generator";
@@ -49,6 +47,7 @@ async function getForm(eventSlug: string, formSlug: string) {
       method: "GET",
     },
   );
+
   if (!formResponse.ok) {
     const error = (await formResponse.json()) as unknown;
     console.error(error);
@@ -58,18 +57,10 @@ async function getForm(eventSlug: string, formSlug: string) {
   return form;
 }
 
-async function getUserData(
-  formAttributes: FormAttribute[],
-  eventSlug: string,
-  userSlug: string,
-) {
+async function getUserData(eventSlug: string, userSlug: string) {
   const attributesUrl = new URL(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
   );
-
-  for (const attribute of formAttributes) {
-    attributesUrl.searchParams.append("attributes[]", attribute.uuid);
-  }
 
   const userDataResponse = await fetch(attributesUrl, {
     method: "GET",
@@ -80,7 +71,7 @@ async function getUserData(
     console.error(error);
     return null;
   }
-  return (await userDataResponse.json()) as PublicParticipant;
+  return (await userDataResponse.json()) as Participant;
 }
 
 export async function generateMetadata({
@@ -113,24 +104,30 @@ export default async function FormPage({ params }: FormPageProps) {
     return <FormClosedView event={event} form={form} isRegistration={false} />;
   }
 
+  if (!isFormOpen(form)) {
+    return <FormClosedView event={event} form={form} isRegistration={false} />;
+  }
+
   const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
     return <EventNotFound whatNotFound="user" />;
   }
 
-  const blockAttributesInForm = form.attributes.filter(
-    (attribute) => attribute.type === "block",
-  );
+  const blockAttributesInForm = form.formDefinitions
+    .map((definition) => definition.attribute)
+    .filter((attribute) => attribute.type === "block");
 
-  const eventBlocks = await Promise.all(
+  const eventBlocksResponse = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
       getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
-  if (eventBlocks.includes(null)) {
+  if (eventBlocksResponse.includes(null)) {
     return <EventNotFound whatNotFound="blocks" />;
   }
+
+  const eventBlocks = eventBlocksResponse.filter((block) => block !== null);
 
   return (
     <EventPageLayout
@@ -148,9 +145,9 @@ export default async function FormPage({ params }: FormPageProps) {
       </EventInfoDiv>
 
       <FormGenerator
-        attributes={form.attributes}
+        formDefinitions={form.formDefinitions}
         userData={userData}
-        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        originalEventBlocks={eventBlocks}
         formUuid={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}

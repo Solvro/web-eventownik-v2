@@ -9,7 +9,7 @@ import type {
 import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
-import type { FormAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 
 const EXTENSION_TO_MIME_TYPE = {
   png: "image/png",
@@ -73,11 +73,11 @@ export function AttributeInputFile({
   lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  attribute: FormAttribute;
+  attribute: Attribute;
   setError: UseFormSetError<FieldValues>;
   resetField: UseFormResetField<FieldValues>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  lastUpdate: string | null;
+  lastUpdate?: string;
 }) {
   const t = useTranslations("EventDetails");
 

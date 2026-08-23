@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
 const EventEmailTemplateTriggerTypeSchema = z
@@ -71,7 +71,7 @@ function TriggerConfigurationInputs({
   trigger,
   form,
 }: {
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
   eventForms: EventForm[];
   trigger: string;
   form: ReturnType<
@@ -181,7 +181,7 @@ function TriggerTypeForm({
   eventForms,
   goToNextStep,
 }: {
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
   eventForms: EventForm[];
   goToNextStep: () => void;
 }) {

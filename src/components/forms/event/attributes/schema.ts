@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { NewEventAttribute } from "./types";
+import type { Attribute } from "@/types/attributes";
 
 export type EventAttributesFormErrors =
   | "attributeNameRequired"
@@ -9,13 +9,9 @@ export type EventAttributesFormErrors =
 
 export const EventAttributesFormSchema = z.object({
   attributes: z
-    .array(z.custom<NewEventAttribute>())
+    .array(z.custom<Attribute>())
     .transform((attributes) => {
-      if (
-        attributes.length === 1 &&
-        !attributes[0].name &&
-        attributes[0].slug === ""
-      ) {
+      if (attributes.length === 1 && !attributes[0].name) {
         return [];
       }
       return attributes;
@@ -41,8 +37,9 @@ export const EventAttributesFormSchema = z.object({
         nameSet.add(normalizedName);
 
         if (
-          attribute.isSensitiveData &&
-          (attribute.reason == null || attribute.reason.trim() === "")
+          attribute.config.isSensitiveData &&
+          (attribute.config.reason == null ||
+            attribute.config.reason.trim() === "")
         ) {
           context.addIssue({
             code: z.ZodIssueCode.custom,
