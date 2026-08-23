@@ -2,17 +2,17 @@
 
 import { atom } from "jotai";
 
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 
 export const AttributeTypes = [
   "text",
   "number",
-  "textarea",
+  "textArea",
   "file",
   "drawing",
   "select",
-  "multiselect",
+  "multiSelect",
   "block",
   "date",
   "time",
@@ -40,7 +40,7 @@ export interface Event {
   slug: string;
   contactEmail: string | undefined;
   coorganizers: CoOrganizer[];
-  attributes: EventAttribute[];
+  attributes: Attribute[];
   termsLink: string | undefined;
 }
 

@@ -1,56 +1,22 @@
 import { AttributesForm } from "@/components/forms/event/attributes-form";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 
 import type { AttributeChange } from "../change-types";
 import type { TabProps } from "./tab-props";
 
-type AttributeFormData = Pick<
-  EventAttribute,
-  | "name"
-  | "slug"
-  | "type"
-  | "options"
-  | "showInList"
-  | "order"
-  | "isSensitiveData"
-  | "reason"
-  | "isMultiple"
-  | "maxSelections"
-> & { uuid?: string };
-
-const toChangeData = (
-  attribute: AttributeFormData,
-  original?: EventAttribute,
-  fallbackId?: string,
-): AttributeChange["data"] => ({
-  uuid: attribute.uuid ?? original?.uuid ?? fallbackId,
+const toChangeData = (attribute: Attribute): AttributeChange["data"] => ({
+  uuid: attribute.uuid,
   name: attribute.name,
-  slug: attribute.slug ?? original?.slug ?? null,
   type: attribute.type,
-  options: attribute.options ?? original?.options ?? null,
   showInList: attribute.showInList,
-  order: attribute.order ?? original?.order ?? null,
-  isSensitiveData: attribute.isSensitiveData,
-  reason: attribute.isSensitiveData
-    ? (attribute.reason ?? original?.reason ?? null)
-    : null,
-  isMultiple: attribute.isMultiple ?? original?.isMultiple ?? null,
-  maxSelections: attribute.maxSelections ?? original?.maxSelections ?? null,
+  order: attribute.order,
+  config: attribute.config,
 });
 
-export function Attributes({ attributes, setAttributesChanges }: TabProps) {
-  // Track the original IDs to map form changes back to EventAttribute[]
-  const originalAttributesMap = new Map(
-    attributes.map((attribute, index) => [index, attribute]),
-  );
-
+export function Attributes({ setAttributesChanges }: TabProps) {
   // Track changes using form callbacks
-  const handleAdd = (attribute: AttributeFormData) => {
-    const newAttribute = toChangeData(
-      attribute,
-      undefined,
-      `-${crypto.randomUUID()}`,
-    );
+  const handleAdd = (attribute: Attribute) => {
+    const newAttribute = toChangeData(attribute);
 
     setAttributesChanges((previous: AttributeChange[]) => {
       const newChange: AttributeChange = {
@@ -62,13 +28,12 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
     });
   };
 
-  const handleUpdate = (index: number, attribute: AttributeFormData) => {
-    const original = originalAttributesMap.get(index);
-    const updatedAttribute = toChangeData(attribute, original);
+  const handleUpdate = (_index: number, attribute: Attribute) => {
+    const updatedAttribute = toChangeData(attribute);
 
     setAttributesChanges((previous: AttributeChange[]) => {
       const existing = previous.find(
-        (change) => change.data.slug === updatedAttribute.slug,
+        (change) => change.data.uuid === updatedAttribute.uuid,
       );
 
       if (existing?.type === "delete") {
@@ -76,7 +41,7 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
       }
 
       const filtered = previous.filter(
-        (change) => change.data.slug !== updatedAttribute.slug,
+        (change) => change.data.uuid !== updatedAttribute.uuid,
       );
 
       const newChange: AttributeChange = {
@@ -88,20 +53,14 @@ export function Attributes({ attributes, setAttributesChanges }: TabProps) {
     });
   };
 
-  const handleRemove = (index: number, attribute: AttributeFormData) => {
-    const original = originalAttributesMap.get(index);
-    const attributeToDelete = toChangeData(attribute, original);
+  const handleRemove = (_index: number, attribute: Attribute) => {
+    const attributeToDelete = toChangeData(attribute);
 
     setAttributesChanges((previous: AttributeChange[]) => {
       // Ignore changes for this attribute that were added before (e.g. an update followed by delete)
       const filtered = previous.filter(
-        (change) => change.data.slug !== attributeToDelete.slug,
+        (change) => change.data.uuid !== attributeToDelete.uuid,
       );
-
-      // If the attribute was newly added and then removed
-      if (attributeToDelete.uuid == null) {
-        return filtered;
-      }
 
       const newChange: AttributeChange = {
         type: "delete",

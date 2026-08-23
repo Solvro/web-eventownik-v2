@@ -3,7 +3,8 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import type { FormAttribute } from "@/types/attributes";
+import type { PublicFormAttribute } from "@/types/attributes";
+import type { FormDefinition } from "@/types/forms";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,11 +59,14 @@ const requiredString = z
     message: "fieldRequired",
   });
 
-const validationRules: Record<FormAttribute["type"], z.ZodType> = {
+const validationRules: Record<
+  PublicFormAttribute["type"],
+  (attribute: PublicFormAttribute) => z.ZodType
+> = {
   select: requiredString,
   text: requiredString,
   time: requiredString,
-  multiselect: z
+  multiSelect: z
     .array(z.string(), {
       required_error: "fieldMinSelect",
     })
@@ -75,7 +79,7 @@ const validationRules: Record<FormAttribute["type"], z.ZodType> = {
   color: z.string({
     required_error: "fieldColorRequired",
   }),
-  textarea: requiredString,
+  textArea: requiredString,
   number: z.coerce.number({
     required_error: "fieldRequired",
     invalid_type_error: "fieldNumber",
@@ -103,16 +107,22 @@ const validationRules: Record<FormAttribute["type"], z.ZodType> = {
   block: z.any(),
 };
 
-export function getSchemaObjectForAttribute(attribute: FormAttribute) {
-  const baseRule = validationRules[attribute.type];
-  return attribute.isRequired ? baseRule : baseRule.optional();
+export function getSchemaObjectForFormDefinition(
+  formDefinition: FormDefinition,
+) {
+  const baseRule = validationRules[formDefinition.attribute.type](
+    formDefinition.attribute,
+  );
+  return formDefinition.isRequired ? baseRule : baseRule.optional();
 }
 
-export function getSchemaObjectForAttributes(attributes: FormAttribute[]) {
+export function getSchemaObjectForPublicAttributes(
+  formDefinitions: FormDefinition[],
+) {
   return Object.fromEntries(
-    attributes.map((attribute) => [
-      attribute.uuid,
-      getSchemaObjectForAttribute(attribute),
+    formDefinitions.map((formDefinition) => [
+      formDefinition.attribute.uuid,
+      getSchemaObjectForFormDefinition(formDefinition),
     ]),
   );
 }

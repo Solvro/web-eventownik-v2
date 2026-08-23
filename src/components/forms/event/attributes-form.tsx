@@ -12,21 +12,20 @@ import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { Attribute } from "@/types/attributes";
 
 import type { EventAttributesFormSchema } from "./attributes/schema";
 import { SortableAttributeItem } from "./attributes/sortable-attribute-item";
-import type { NewEventAttribute } from "./attributes/types";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 export { EventAttributesFormSchema } from "./attributes/schema";
-export type { NewEventAttribute } from "./attributes/types";
 
 interface AttributesFormProps {
-  onAdd?: (attribute: NewEventAttribute) => void;
-  onUpdate?: (index: number, attribute: NewEventAttribute) => void;
-  onRemove?: (index: number, attribute: NewEventAttribute) => void;
+  onAdd?: (attribute: Attribute) => void;
+  onUpdate?: (index: number, attribute: Attribute) => void;
+  onRemove?: (index: number, attribute: Attribute) => void;
 }
 
 export function AttributesForm({
@@ -53,17 +52,17 @@ export function AttributesForm({
       return;
     }
 
-    const newAttribute: NewEventAttribute = {
+    const newAttribute: Attribute = {
+      uuid: crypto.randomUUID(),
       name: label,
       type: "text",
-      slug: crypto.randomUUID(),
-      options: [],
       showInList: true,
       order: fields.length,
-      isSensitiveData: false,
-      reason: null,
-      isMultiple: false,
-      maxSelections: null,
+      config: {
+        options: [],
+        isSensitiveData: false,
+        isMultiple: false,
+      },
     };
 
     append(newAttribute);
@@ -111,7 +110,7 @@ export function AttributesForm({
           {fields.map((attribute, index) => (
             <SortableAttributeItem
               key={attribute.uuid}
-              uuid={attribute.uuid ?? ""}
+              uuid={attribute.uuid}
               attribute={attribute}
               index={index}
               onUpdateItem={(index_, value) => {

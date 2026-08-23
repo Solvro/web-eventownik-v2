@@ -1,37 +1,20 @@
-import type { FormAttribute } from "./attributes";
-
-// TODO(refactor): Make this interface extend an attribute type from `./attributes.ts`
 export interface Block {
   uuid: string;
-  name: string;
-  description: string | null;
-  capacity: number | null;
-  parentUuid: string | null;
-  attributeUuid: string;
-  attribute: FormAttribute;
-  order: number;
   createdAt: string;
   updatedAt: string;
+  capacity: number | null;
+  order: number;
+  name: string;
+  description: string | null;
+  parentUuid: string | null;
+  attributeUuid: string | null;
   isRootBlock: boolean;
-  children: Block[];
-  isMultiple: boolean;
-  maxSelections: number | null;
-  meta: {
-    participants: BlockParticipant[];
-    participantsInBlockCount: number | undefined;
-  };
+  blockParticipantCount?: number;
+  children?: Block[];
 }
 
 export interface BlockParticipant {
   uuid: string;
   email: string;
   name?: string;
-}
-
-export interface PublicBlock extends Block {
-  children: PublicBlock[];
-  meta: {
-    participantsInBlockCount: number | undefined;
-    participants: BlockParticipant[];
-  };
 }

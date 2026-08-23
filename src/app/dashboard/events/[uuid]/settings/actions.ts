@@ -288,23 +288,7 @@ export async function updateEvent(
                 Authorization: `Bearer ${bearerToken}`,
                 "Content-Type": "application/json",
               },
-              // NOTE: This payload should probably be inferred entirely from the `change.data` object,
-              // so that manual changes after adding new attribute field in `attribute-item` are not required here
-              body: JSON.stringify({
-                name: change.data.name,
-                type: change.data.type,
-                slug: change.data.slug,
-                showInList: change.data.showInList,
-                order: change.data.order,
-                options:
-                  (change.data.options ?? []).length > 0
-                    ? change.data.options
-                    : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
-                isMultiple: change.data.isMultiple,
-                maxSelections: change.data.maxSelections,
-              }),
+              body: JSON.stringify(change.data),
             },
           );
 
@@ -316,8 +300,9 @@ export async function updateEvent(
             );
 
             if (
-              change.data.isSensitiveData &&
-              (change.data.reason == null || change.data.reason.trim() === "")
+              change.data.config.isSensitiveData &&
+              (change.data.config.reason == null ||
+                change.data.config.reason.trim() === "")
             ) {
               result.errors.push({
                 message: {
@@ -346,7 +331,11 @@ export async function updateEvent(
           break;
         }
         case "update": {
-          if (change.data.uuid == null) {
+          if (!isValidUuid(change.data.uuid)) {
+            result.errors.push({
+              message: "Invalid attribute identifier",
+              section: "attributes",
+            });
             continue;
           }
 
@@ -358,22 +347,7 @@ export async function updateEvent(
                 Authorization: `Bearer ${bearerToken}`,
                 "Content-Type": "application/json",
               },
-              // NOTE: Duplicate of the note comment above
-              body: JSON.stringify({
-                name: change.data.name,
-                type: change.data.type,
-                slug: change.data.slug,
-                showInList: change.data.showInList,
-                order: change.data.order,
-                options:
-                  (change.data.options ?? []).length > 0
-                    ? change.data.options
-                    : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
-                isMultiple: change.data.isMultiple,
-                maxSelections: change.data.maxSelections,
-              }),
+              body: JSON.stringify(change.data),
             },
           );
 
@@ -386,8 +360,9 @@ export async function updateEvent(
             );
 
             if (
-              change.data.isSensitiveData &&
-              (change.data.reason == null || change.data.reason.trim() === "")
+              change.data.config.isSensitiveData &&
+              (change.data.config.reason == null ||
+                change.data.config.reason.trim() === "")
             ) {
               result.errors.push({
                 message: {
@@ -416,7 +391,11 @@ export async function updateEvent(
           break;
         }
         case "delete": {
-          if (change.data.uuid == null) {
+          if (!isValidUuid(change.data.uuid)) {
+            result.errors.push({
+              message: "Invalid attribute identifier",
+              section: "attributes",
+            });
             continue;
           }
 
