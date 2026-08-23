@@ -6,6 +6,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -27,6 +28,8 @@ export default async function DashboardEventPage({
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const t = await getTranslations("Dashboard");
+
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -110,10 +113,14 @@ export default async function DashboardEventPage({
           <div className="flex flex-col gap-2 md:flex-row">
             <Button variant="eventDefault" asChild>
               <Link href={`/dashboard/events/${uuid}/settings`}>
-                <SquarePenIcon /> Edytuj wydarzenie
+                <SquarePenIcon /> {t("editEvent")}
               </Link>
             </Button>
-            <ShareButton path={event.slug} />
+            <ShareButton
+              path={event.slug}
+              label={t("share")}
+              tooltipText={t("copiedToClipboard")}
+            />
           </div>
         </div>
       </div>
@@ -126,7 +133,7 @@ export default async function DashboardEventPage({
         width={400}
         height={400}
         className="aspect-square max-h-96 w-full rounded-xl bg-(--event-primary-color)/5 object-contain xl:w-auto"
-        alt={`Zdjęcie wydarzenia ${event.name}`}
+        alt={`${t("eventImage")} ${event.name}`}
       />
     </div>
   );

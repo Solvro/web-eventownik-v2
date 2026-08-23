@@ -22,7 +22,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
+import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { login } from "../actions";
 
@@ -60,7 +63,7 @@ function LoginForm() {
       const result = await login({ ...values, token });
       if (result.success) {
         toast({
-          title: "Logowanie zakończone sukcesem!",
+          title: t("loginSuccessful"),
           duration: 2000,
         });
         const redirectUrl = redirectTo ?? "/dashboard/events";
@@ -68,16 +71,16 @@ function LoginForm() {
       } else {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: result.error,
+          title: t("somethingWentWrong"),
+          description: translateOrFallback(t, result.error as LoginError),
         });
       }
     } catch (error) {
       console.error("Login failed", error);
       toast({
         variant: "destructive",
-        title: "O nie! Coś poszło nie tak.",
-        description: "Wystąpił błąd serwera. Spróbuj ponownie później.",
+        title: t("somethingWentWrong"),
+        description: t("serverErrorTryLater"),
       });
     } finally {
       hCaptchaRef.current?.resetCaptcha();
@@ -116,7 +119,7 @@ function LoginForm() {
       {redirectTo !== null && redirectTo !== "/dashboard/events" && (
         <Alert variant="destructive">
           <AlertCircleIcon className="!text-red-500" />
-          <AlertTitle>
+          <AlertTitle className="line-clamp-none">
             <p className="font-black text-red-500">{t("loginDisclaimer")}</p>
           </AlertTitle>
         </Alert>
@@ -124,24 +127,27 @@ function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="w-full max-w-sm space-y-4"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">E-mail</FormLabel>
+                <FormLabel className="sr-only">{t("email")}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-                    placeholder="E-mail"
+                    placeholder={t("email")}
                     {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.email?.message}
+                  {translateOrFallback(
+                    t,
+                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                  )}
                 </FormMessage>
               </FormItem>
             )}
@@ -161,7 +167,11 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.password?.message}
+                  {translateOrFallback(
+                    t,
+                    form.formState.errors.password
+                      ?.message as AuthSchemaErrorKeys,
+                  )}
                 </FormMessage>
                 <Link
                   href="/auth/forgot-password"

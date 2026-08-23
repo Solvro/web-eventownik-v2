@@ -63,15 +63,15 @@ export function AttributeBlocksWrapper({
 
   const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
 
-  const handleMultiChange = (blockId: string, checked: boolean) => {
+  const handleMultiChange = (blockUuid: string, checked: boolean) => {
     const current = (field.value ?? []) as string[];
     if (checked) {
       if (maxSelections !== null && current.length >= maxSelections) {
         return;
       }
-      field.onChange([...current, blockId]);
+      field.onChange([...current, blockUuid]);
     } else {
-      field.onChange(current.filter((v) => v !== blockId));
+      field.onChange(current.filter((v) => v !== blockUuid));
     }
   };
 

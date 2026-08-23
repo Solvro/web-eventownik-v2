@@ -1,6 +1,7 @@
 "use client";
 
 import { PackageOpenIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { SortableTileGrid } from "@/components/sortable-tile-grid";
@@ -16,6 +17,8 @@ function SortableBlockAttributeGrid({
   blocks: Attribute[];
   eventUuid: string;
 }) {
+  const t = useTranslations("Dashboard");
+
   return (
     <SortableTileGrid
       items={blocks}
@@ -29,7 +32,7 @@ function SortableBlockAttributeGrid({
             <Button variant="outline" className="w-full" asChild>
               <Link href={`blocks/${block.uuid}`}>
                 <PackageOpenIcon />
-                Otwórz
+                {t("open")}
               </Link>
             </Button>
           </div>

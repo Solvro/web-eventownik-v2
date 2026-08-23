@@ -2,11 +2,14 @@
 
 import { CalendarPlus } from "lucide-react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
+  const t = useTranslations("Homepage");
+
   return (
     <motion.div
       className="container flex w-full flex-col items-center gap-8 px-4 text-center"
@@ -38,7 +41,7 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.16, duration: 0.3, ease: "easeOut" }}
       >
-        Zróbmy razem wydarzenie!
+        {t("letsCreateAnEventTogether")}
       </motion.p>
       <motion.div
         className="flex flex-row flex-wrap items-center justify-center gap-4"
@@ -52,7 +55,7 @@ export function Hero() {
         >
           <Link href="/dashboard/events">
             <CalendarPlus />
-            Organizuj wydarzenia
+            {t("organizeEvents")}
           </Link>
         </Button>
         <Button
@@ -60,7 +63,7 @@ export function Hero() {
           variant={"outline"}
           asChild
         >
-          <Link href="#events">Przeglądaj wydarzenia</Link>
+          <Link href="#events">{t("browseEvents")}</Link>
         </Button>
       </motion.div>
     </motion.div>

@@ -3,7 +3,7 @@ import type { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { Participant } from "./participant";
 
 /**
- * Data about a single email when fetching the entire list
+ * Data about a single email when fetching the entire list. Does not have `content` and `schema` fields.
  */
 export interface EventEmail {
   uuid: string;
@@ -28,23 +28,26 @@ export interface EventEmailParticipantData extends Omit<
 > {
   meta: {
     pivot_status: string;
-    pivot_email_id: number;
-    pivot_participant_id: number;
+    pivot_email_id: string;
+    pivot_participant_id: string;
     pivot_send_at: Date;
     pivot_send_by: string;
   };
 }
 
 /**
- * Data about a single email when fetching a single email
+ * Data about a single email when fetching a single email. Does not have the `meta` field but has `content` and `schema`
  */
 export interface SingleEventEmail extends Omit<EventEmail, "meta"> {
   content: string;
+  schema: string | null;
   participants: EventEmailParticipantData[];
 }
 
 export interface UpdateEventEmailPayload {
   name: string;
+  content: string;
+  schema: string | null;
   trigger: string;
   triggerValue: string | null;
   triggerValue2?: string | null;

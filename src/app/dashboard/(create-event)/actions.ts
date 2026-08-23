@@ -2,6 +2,7 @@
 
 import { formatISO } from "date-fns";
 
+import type { DashboardKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
@@ -13,10 +14,17 @@ export async function isSlugTaken(slug: string) {
   return response.ok;
 }
 
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
+}
+
 interface SaveEventResult {
   id?: string;
-  errors?: { message: string }[];
-  warnings?: string[];
+  errors?: {
+    message: ErrorMessage | string;
+  }[];
+  warnings?: ErrorMessage[];
 }
 
 export async function saveEvent(event: Event): Promise<SaveEventResult> {
@@ -26,7 +34,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   }
   const { bearerToken } = session;
 
-  const warnings: string[] = [];
+  const warnings: ErrorMessage[] = [];
 
   const formData = new FormData();
 
@@ -75,7 +83,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);
       return {
-        errors: [{ message: "Failed to process event photo" }],
+        errors: [
+          { message: { key: "failedToProcessEventPhoto" as DashboardKey } },
+        ],
       };
     }
   }
@@ -113,7 +123,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   const eventUuid = data.uuid;
 
-  const coOrganizerErrors: string[] = [];
+  const coOrganizerErrors: ErrorMessage[] = [];
   let coOrganizersAdded = 0;
 
   for (const coorganizer of event.coorganizers) {
@@ -144,9 +154,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           coorganizer.email,
           errorData,
         );
-        coOrganizerErrors.push(
-          `Failed to add co-organizer ${coorganizer.email}. You can add them later in settings.`,
-        );
+        coOrganizerErrors.push({
+          key: "coOrganizerAddWarning",
+          values: {
+            email: coorganizer.email,
+          },
+        });
       }
     } catch (error) {
       console.error(
@@ -154,9 +167,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         coorganizer.email,
         error,
       );
-      coOrganizerErrors.push(
-        `Error adding co-organizer ${coorganizer.email}. You can add them later in settings.`,
-      );
+      coOrganizerErrors.push({
+        key: "coOrganizerAddError",
+        values: {
+          email: coorganizer.email,
+        },
+      });
     }
   }
 
@@ -167,7 +183,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     warnings.push(...coOrganizerErrors);
   }
 
-  const attributeErrors: string[] = [];
+  const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
   for (const attribute of event.attributes) {
@@ -207,9 +223,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           attribute.name,
           errorData,
         );
-        attributeErrors.push(
-          `Failed to add attribute ${attribute.name}. You can add it later in settings.`,
-        );
+        attributeErrors.push({
+          key: "attributeAddWarning",
+          values: { name: attribute.name },
+        });
       }
     } catch (error) {
       console.error(
@@ -217,9 +234,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         attribute.name,
         error,
       );
-      attributeErrors.push(
-        `Error adding attribute ${attribute.name}. You can add it later in settings.`,
-      );
+      attributeErrors.push({
+        key: "attributeAddError",
+        values: { name: attribute.name },
+      });
     }
   }
 

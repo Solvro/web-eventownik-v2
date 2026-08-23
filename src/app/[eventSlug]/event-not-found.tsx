@@ -1,5 +1,5 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-import React from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -8,24 +8,23 @@ interface NotFoundProps {
 }
 
 export function EventNotFound({ whatNotFound }: NotFoundProps) {
+  const t = useTranslations("Event");
+
   const messages = {
-    event: "Nie znaleziono wydarzenia 😪",
-    form: "Nie znaleziono formularza 😪",
-    user: "Nie udało się pobrać twoich danych 😪",
-    blocks:
-      "Nie udało się pobrać informacji dla przynajmniej jednego z bloków w tym formularzu 😪",
+    event: t("notFound"),
+    form: t("formNotFound"),
+    user: t("failedToFetchUserData"),
+    blocks: t("failedToFetchFormBlocks"),
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">{messages[whatNotFound]}</h1>
-        <p className="text-lg">
-          Sprawdź, czy link jest poprawny lub skontaktuj się z organizatorem.
-        </p>
+        <p className="text-lg">{t("checkLinkOrContactOrganizer")}</p>
         <Link href="/">
           <Button variant="default" className="mt-6">
-            Wróć na stronę główną
+            {t("backToHome")}
           </Button>
         </Link>
       </div>

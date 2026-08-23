@@ -1,8 +1,11 @@
+import "server-only";
+
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventEmail, SingleEventEmail } from "@/types/emails";
+import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 
 export async function getEventEmails(eventUuid: string) {
@@ -31,14 +34,17 @@ export async function getEventEmails(eventUuid: string) {
   return emails;
 }
 
-export async function getSingleEventEmail(eventUuid: string, emailId: string) {
+export async function getSingleEventEmail(
+  eventUuid: string,
+  emailUuid: string,
+) {
   const session = await verifySession();
   if (session == null) {
     return null;
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${emailId}`,
+    `${API_URL}/events/${eventUuid}/emails/${emailUuid}`,
     {
       method: "GET",
       headers: {
@@ -49,7 +55,7 @@ export async function getSingleEventEmail(eventUuid: string, emailId: string) {
 
   if (!response.ok) {
     console.error(
-      `[getSingleEventEmail] Failed to fetch email ${emailId} for event ${eventUuid}:`,
+      `[getSingleEventEmail] Failed to fetch email ${emailUuid} for event ${eventUuid}:`,
       response,
     );
     return null;
@@ -108,4 +114,29 @@ export async function getEventForms(eventUuid: string) {
 
   const parsed = (await response.json()) as PaginatedResponse<EventForm>;
   return parsed.data;
+}
+
+export async function getEmailEventInfo(eventUuid: string) {
+  const session = await verifySession();
+  if (session == null) {
+    return null;
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventUuid}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(
+      `[getEmailEventInfo] Failed to fetch event info for event ${eventUuid}:`,
+      response,
+    );
+    return null;
+  }
+
+  const event = (await response.json()) as Event;
+  return event;
 }

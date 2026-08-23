@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 import { DeleteResourcePopup } from "@/components/delete-resource-popup";
@@ -8,20 +9,21 @@ import { deleteEventForm } from "./actions";
 
 function DeleteFormPopup({
   eventUuid,
-  formId,
+  formUuid,
   formName,
 }: {
   eventUuid: string;
-  formId: string;
+  formUuid: string;
   formName: string;
 }) {
+  const t = useTranslations("Dashboard");
   const router = useRouter();
 
   return (
     <DeleteResourcePopup
       resourceName={formName}
-      resourceType="Formularz"
-      onDelete={async () => deleteEventForm(eventUuid, formId)}
+      resourceType={t("form")}
+      onDelete={async () => deleteEventForm(eventUuid, formUuid)}
       onSuccess={() => {
         router.refresh();
       }}

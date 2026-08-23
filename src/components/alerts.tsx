@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, AlertTriangle, Info, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 
@@ -130,6 +131,8 @@ function AlertBanner({
   alert: AlertItem;
   onDismiss: (id: string) => void;
 }) {
+  const t = useTranslations("Homepage");
+
   const Icon = ICONS[alert.alert_type];
   const sanitized = sanitizeHtml(alert.content, SANITIZE_OPTIONS);
   const hasLink = alert.link !== "";
@@ -141,7 +144,7 @@ function AlertBanner({
           href={alert.link}
           target={alert.open_in_new_tab ? "_blank" : undefined}
           rel={alert.open_in_new_tab ? "noopener noreferrer" : undefined}
-          aria-label={alert.title === "" ? "Alert link" : alert.title}
+          aria-label={alert.title === "" ? t("alertLink") : alert.title}
           className="absolute inset-0 rounded-lg focus:ring-2 focus:ring-current focus:outline-none"
         />
       ) : null}
@@ -159,7 +162,7 @@ function AlertBanner({
           onClick={() => {
             onDismiss(alert.id);
           }}
-          aria-label="Dismiss alert"
+          aria-label={t("dismissAlert")}
           className="absolute top-2 right-2 rounded p-1 opacity-70 transition hover:bg-black/5 hover:opacity-100 focus:ring-2 focus:ring-current focus:outline-none dark:hover:bg-white/10"
         >
           <X className="size-4" aria-hidden="true" />

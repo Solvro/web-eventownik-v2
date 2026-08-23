@@ -15,104 +15,109 @@ import {
   Smartphone,
   SquareDashedMousePointer,
 } from "lucide-react";
+import type { useTranslations } from "next-intl";
 import type { JSX } from "react";
 
 import type { AttributeType } from "@/types/attributes";
 
+type AttributeTypesKeys = Parameters<
+  ReturnType<typeof useTranslations<"AttributeTypes">>
+>[0];
+
 export const ATTRIBUTE_TYPES: {
   value: AttributeType;
-  title: string;
-  description?: string;
+  title: AttributeTypesKeys;
+  description?: AttributeTypesKeys;
   icon: JSX.Element;
 }[] = [
   {
     value: "text",
-    title: "Tekst",
-    description: "Krótkie pole tekstowe",
+    title: "text",
+    description: "textHint",
     icon: <ALargeSmall />,
   },
   {
     value: "number",
-    title: "Liczba",
-    description: "Dozwolone jedynie liczby, nie litery",
+    title: "number",
+    description: "numberHint",
     icon: <Binary />,
   },
   {
     value: "textarea",
-    title: "Pole tekstowe",
-    description: "Dłuższe pole tekstowe",
+    title: "textarea",
+    description: "textareaHint",
     icon: <LetterText />,
   },
   {
     value: "file",
-    title: "Plik",
-    description: "Przesłanie pliku każdego typu",
+    title: "file",
+    description: "fileHint",
     icon: <CloudUpload />,
   },
   {
     value: "drawing",
-    title: "Rysunek",
-    description: "Szybki rysunek od ręki",
+    title: "drawing",
+    description: "drawingHint",
     icon: <Pencil />,
   },
   {
     value: "select",
-    title: "Wybór",
-    description: "Wybór 1 opcji spośród możliwych z listy rozwijanej",
+    title: "select",
+    description: "selectHint",
     icon: <SquareDashedMousePointer />,
   },
   {
     value: "multiselect",
-    title: "Wielokrotny wybór",
-    description: "Wybór kilku opcji spośród możliwych",
+    title: "multiselect",
+    description: "multiselectHint",
     icon: <ListTodo />,
   },
   {
     value: "block",
-    title: "Blok",
-    description: "Zapisy na miejsca",
+    title: "block",
+    description: "blockHint",
     icon: <Cuboid />,
   },
   {
     value: "date",
-    title: "Data",
-    description: "Dzień, miesiąc, rok",
+    title: "date",
+    description: "dateHint",
     icon: <Calendar />,
   },
   {
     value: "time",
-    title: "Czas",
-    description: "Godzina i minuta",
+    title: "time",
+    description: "timeHint",
     icon: <Clock />,
   },
   {
     value: "datetime",
-    title: "Data i czas",
-    description: "Dzień, miesiąc, rok, godzina, minuta",
+    title: "datetime",
+    description: "datetimeHint",
     icon: <CalendarClock />,
   },
   {
     value: "email",
-    title: "Email",
-    description: "Wymagany format email",
+    title: "email",
+    description: "emailHint",
     icon: <Mail />,
   },
   {
     value: "tel",
-    title: "Telefon",
-    description: "Wymagany format telefonu",
+    title: "phone",
+    description: "phoneHint",
     icon: <Smartphone />,
   },
   {
     value: "color",
-    title: "Kolor",
-    description: "Podanie koloru w kodzie RGB, HSL, HEX",
+    title: "color",
+    description: "colorHint",
     icon: <Palette />,
   },
   {
     value: "checkbox",
-    title: "Pole wyboru",
-    description: "Pole, które można zaznaczyć lub odznaczyć",
+    title: "checkbox",
+    description: "checkboxHint",
     icon: <Check />,
   },
 ];

@@ -1,53 +1,47 @@
-export const EMAIL_TRIGGERS = [
+import type { useTranslations } from "next-intl";
+
+type EmailTriggersKey = Parameters<
+  ReturnType<typeof useTranslations<"EmailTriggers">>
+>[0];
+
+export interface EmailTrigger {
+  name: EmailTriggersKey;
+  description: EmailTriggersKey;
+  value: string;
+}
+
+export const EMAIL_TRIGGERS: readonly EmailTrigger[] = [
   {
-    name: "Rejestracja uczestnika",
-    description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika po jego rejestracji na wydarzenie.",
+    name: "participantRegistration",
+    description: "participantRegistrationDesc",
     value: "participant_registered",
   },
   {
-    name: "Usunięcie uczestnika",
-    description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika po jego usunięciu z listy uczestników.",
+    name: "participantRemoval",
+    description: "participantRemovalDesc",
     value: "participant_deleted",
   },
   {
-    name: "Wypełnienie formularza",
-    description:
-      "Ten szablon zostanie automatycznie wysłany do uczestnika po wypełnieniu określonego formularza.",
+    name: "formSubmission",
+    description: "formSubmissionDesc",
     value: "form_filled",
   },
   // NOTE: Commented out because this trigger is not yet implemented on the backend.
-  // Uncomment when the backend supports this feature.
   // {
-  //   name: "Zmiana atrybutu",
-  //   description:
-  //     "Ten szablon zostanie automatycznie wysłany do uczestnika, gdy wartość określonego atrybutu ulegnie zmianie na daną wartość.",
+  //   name: "attributeChange",
+  //   description: "attributeChangeDesc",
   //   value: "attribute_changed",
   // },
   {
-    name: "Manualny",
-    description:
-      "Ten szablon nie jest wysyłany automatycznie i służy do ręcznej wysyłki z poziomu listy uczestników. Szablony z pozostałymi wyzwalaczami również mogą zostać wysłane manualnie.",
+    name: "manual",
+    description: "manualDesc",
     value: "manual",
   },
-] as const;
+];
 
 /** Values used for pivot_status in email send history filters (API + UI). */
 export const EMAIL_HISTORY_STATUS_FILTER_VALUES = [
   "sent",
   "pending",
   "failed",
-] as const;
-
-export const EMAIL_TAGS = [
-  { name: "Nazwa wydarzenia", value: "/event_name" },
-  { name: "Data rozpoczęcia wydarzenia", value: "/event_start_date" },
-  { name: "Data zakończenia wydarzenia", value: "/event_end_date" },
-  { name: "Slug wydarzenia", value: "/event_slug" },
-  { name: "Kolor wydarzenia", value: "/event_primary_color" },
-  { name: "Email uczestnika", value: "/participant_email" },
-  { name: "ID uczestnika", value: "/participant_id" },
-  { name: "Slug uczestnika", value: "/participant_slug" },
-  { name: "Data rejestracji uczestnika", value: "/participant_created_at" },
 ] as const;

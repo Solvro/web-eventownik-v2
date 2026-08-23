@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { deleteSession, verifySession } from "@/lib/session";
@@ -14,13 +15,15 @@ export async function AuthButton({
   className?: string;
 }) {
   const session = await verifySession();
+  const t = await getTranslations("Dashboard");
+
   return session === null ? (
     <Button
       asChild
       variant={variant}
       className={cn("border-foreground", className)}
     >
-      <Link href="/auth/login">Zaloguj się</Link>
+      <Link href="/auth/login">{t("login")}</Link>
     </Button>
   ) : (
     <form
@@ -35,7 +38,7 @@ export async function AuthButton({
         variant={variant}
         className={cn("border-foreground", className)}
       >
-        Wyloguj się
+        {t("logout")}
       </Button>
     </form>
   );
