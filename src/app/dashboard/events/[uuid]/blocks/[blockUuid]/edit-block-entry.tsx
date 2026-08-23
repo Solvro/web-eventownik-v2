@@ -78,8 +78,8 @@ function EditBlockEntry({
         title: t("failedToSaveBlockChanges"),
         description: translateOrFallback(
           t,
-          result.error?.error.key,
-          result.error?.error.values,
+          result.error?.key,
+          result.error?.values,
         ),
         variant: "destructive",
       });

@@ -43,10 +43,13 @@ function EmailTemplateEntry({
             <span className="sr-only">{t("editTemplate")}</span>
           </Link>
         </Button>
-        <MailHistoryPopup eventUuid={eventUuid} emailId={emailTemplate.uuid} />
+        <MailHistoryPopup
+          eventUuid={eventUuid}
+          emailUuid={emailTemplate.uuid}
+        />
         <DeleteEmailPopup
           eventUuid={eventUuid}
-          mailId={emailTemplate.uuid}
+          mailUuid={emailTemplate.uuid}
           mailName={emailTemplate.name}
         />
       </div>

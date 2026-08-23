@@ -15,7 +15,7 @@ export type NewEventAttribute = Pick<
   | "reason"
   | "isMultiple"
   | "maxSelections"
-> & { id?: number };
+> & { uuid?: string };
 
 export interface AttributeItemProps {
   attribute: NewEventAttribute;
@@ -24,7 +24,7 @@ export interface AttributeItemProps {
 }
 
 export interface SortableAttributeItemProps extends AttributeItemProps {
-  id: string;
+  uuid: string;
   onRemove: () => void;
 }
 

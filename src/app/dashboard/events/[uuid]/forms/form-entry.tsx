@@ -34,7 +34,7 @@ function FormEntry({
         {/*</Button>*/}
         <DeleteFormPopup
           eventUuid={eventUuid}
-          formId={form.uuid}
+          formUuid={form.uuid}
           formName={form.name}
         />
       </div>

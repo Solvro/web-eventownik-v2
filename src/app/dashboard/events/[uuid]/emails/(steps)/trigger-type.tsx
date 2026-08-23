@@ -145,8 +145,8 @@ function TriggerConfigurationInputs({
     //               <SelectContent>
     //                 {eventAttributes.map((attribute) => (
     //                   <SelectItem
-    //                     key={attribute.id}
-    //                     value={String(attribute.id)}
+    //                     key={attribute.uuid}
+    //                     value={String(attribute.uuid)}
     //                   >
     //                     {attribute.name}
     //                   </SelectItem>

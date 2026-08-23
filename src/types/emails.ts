@@ -28,8 +28,8 @@ export interface EventEmailParticipantData extends Omit<
 > {
   meta: {
     pivot_status: string;
-    pivot_email_id: number;
-    pivot_participant_id: number;
+    pivot_email_id: string;
+    pivot_participant_id: string;
     pivot_send_at: Date;
     pivot_send_by: string;
   };

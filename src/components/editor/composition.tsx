@@ -30,7 +30,7 @@ import type * as z from "zod";
 import {
   createEventEmail,
   updateEventEmail,
-} from "@/app/dashboard/events/[id]/emails/actions";
+} from "@/app/dashboard/events/[uuid]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
@@ -86,11 +86,14 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
 
   const { mutate: publish, isPending } = useMutation({
     mutationFn: async (values: EmailTemplateFormValues) => {
-      const payload = { eventId: mutationData.eventId, emailTemplate: values };
+      const payload = {
+        eventUuid: mutationData.eventUuid,
+        emailTemplate: values,
+      };
 
       return mutationData.mode === "create"
         ? createEventEmail(payload)
-        : updateEventEmail({ ...payload, mailId: mutationData.emailId });
+        : updateEventEmail({ ...payload, mailUuid: mutationData.emailUuid });
     },
     onSuccess: (result) => {
       if (!result.success) {
@@ -108,7 +111,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
       }
 
       void queryClient.invalidateQueries({
-        queryKey: ["eventEmails", mutationData.eventId],
+        queryKey: ["eventEmails", mutationData.eventUuid],
       });
 
       setHistories([{ id: "saved", state: appState }]);
@@ -162,7 +165,7 @@ function SaveButton({ mutationData }: { mutationData: PuckMutationData }) {
   };
 
   if (shouldExit) {
-    router.push(`/dashboard/events/${mutationData.eventId}/emails`);
+    router.push(`/dashboard/events/${mutationData.eventUuid}/emails`);
   }
 
   return (
@@ -374,7 +377,7 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
       />
       <div className="flex flex-col gap-4">
         <Link
-          href={`/dashboard/events/${mutationData.eventId}/emails`}
+          href={`/dashboard/events/${mutationData.eventUuid}/emails`}
           className="flex max-w-fit items-center gap-2 underline"
         >
           <ArrowLeft className="h-4 w-4" /> {t("backToTemplates")}

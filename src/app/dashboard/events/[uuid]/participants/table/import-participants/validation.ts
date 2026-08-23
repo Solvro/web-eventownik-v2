@@ -51,9 +51,8 @@ function findMatchingBlock(
 
   return selectableBlocks.find(
     (block) =>
-      block.attributeId === attribute.id &&
-      (block.id.toString() === trimmed ||
-        normalize(block.name) === normalize(trimmed)),
+      block.attributeUuid === attribute.uuid &&
+      (block.uuid === trimmed || normalize(block.name) === normalize(trimmed)),
   );
 }
 
@@ -69,8 +68,8 @@ function getTargetLabel(
     return target;
   }
 
-  const attributeId = Number(target.replace("attr:", ""));
-  const attribute = attributes.find((item) => item.id === attributeId);
+  const attributeUuid = target.replace("attr:", "");
+  const attribute = attributes.find((item) => item.uuid === attributeUuid);
   return attribute == null ? target : getAttributeLabel(attribute.name, locale);
 }
 
@@ -235,7 +234,7 @@ function validateAttributeValue(
         return {
           value: matchedBlocks
             .filter((item) => item != null)
-            .map((item) => item.id.toString())
+            .map((item) => item.uuid)
             .join(","),
         };
       }
@@ -244,7 +243,7 @@ function validateAttributeValue(
       if (matchingBlock == null) {
         return { error: "validation.blockMustMatch" };
       }
-      return { value: matchingBlock.id.toString() };
+      return { value: matchingBlock.uuid };
     }
     case "text":
     case "textarea":
@@ -297,7 +296,7 @@ export function prepareImport({
     EMAIL_TARGET,
     ...attributes
       .filter((attribute) => attribute.isRequired)
-      .map((attribute) => getAttributeTarget(attribute.id)),
+      .map((attribute) => getAttributeTarget(attribute.uuid)),
   ];
   const missingRequiredTargets = requiredTargets
     .filter((target) => !mappedTargets.has(target))
@@ -331,8 +330,8 @@ export function prepareImport({
         continue;
       }
 
-      const attributeId = Number(target.replace("attr:", ""));
-      const attribute = attributes.find((item) => item.id === attributeId);
+      const attributeUuid = target.replace("attr:", "");
+      const attribute = attributes.find((item) => item.uuid === attributeUuid);
       if (attribute == null) {
         continue;
       }
@@ -360,7 +359,7 @@ export function prepareImport({
 
       if (result.value !== null) {
         participantAttributes.push({
-          attributeId,
+          attributeUuid,
           value: result.value,
         });
       }

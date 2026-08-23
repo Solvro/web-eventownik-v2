@@ -1,4 +1,4 @@
-import type { ImportedParticipant } from "@/app/dashboard/events/[id]/participants/actions";
+import type { ImportedParticipant } from "@/app/dashboard/events/[uuid]/participants/actions";
 
 export const SKIP_TARGET = "__skip";
 export const EMAIL_TARGET = "email";

@@ -516,7 +516,8 @@
     "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB",
     "unauthorized": "Brak autoryzacji",
     "httpError": "Błąd {status} {statusText}",
-    "invalidEmailId": "Nieprawidłowy identyfikator maila"
+    "invalidEmailUuid": "Nieprawidłowy identyfikator maila",
+    "invalidIdentifier": "Nieprawidłowe UUID zasobu"
   },
   "EventPermissions": {
     "forms": "Formularze",
@@ -539,7 +540,8 @@
     "fileDownloadFailed": "Pobieranie pliku nie powiodło się!",
     "serverError": "Serwer nie działa poprawnie. Spróbuj ponownie później",
     "fileNotFound": "Nie znaleziono pliku",
-    "eventNotFound": "Nie znaleziono wydarzenia lub endpoint nie istnieje"
+    "eventNotFound": "Nie znaleziono wydarzenia lub endpoint nie istnieje",
+    "invalidUuid": "Nieprawidłowe UUID zasobu"
   },
   "Form": {
     "email": "E-mail",
@@ -741,7 +743,8 @@
     "selectPlaceholder": "Wybierz szablon z listy",
     "confirmRecipients": "Zamierzasz wysłać tą wiadomość do {count, plural, one {# uczestnika} other {# uczestników}} z następującymi adresami:",
     "send": "Wyślij",
-    "httpError": "Błąd {status} {statusText}"
+    "httpError": "Błąd {status} {statusText}",
+    "invalidUuid": "Nieprawidłowe UUID zasobu"
   },
   "Sidebar": {
     "general": "Ogólne",
@@ -889,7 +892,8 @@
     "clearAllOptions": "Wyczyść wszystkie opcje",
     "removeAdditionalOptions": "Usuń dodatkowe opcje",
     "serverError": "Serwer nie działa poprawnie. Spróbuj ponownie później",
-    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie"
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    "invalidUuid": "Nieprawidłowe UUID zasobu"
   },
   "Themes": {
     "light": "Jasny",

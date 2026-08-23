@@ -7,7 +7,7 @@ export interface EventAttribute {
   uuid: string;
   name: string;
   slug: string | null;
-  eventUuid: number;
+  eventUuid: string;
   options: AttributeOption[] | null;
   type: string;
   rootBlockUuid: string | undefined;
@@ -69,8 +69,8 @@ export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
   meta: {
     pivot_value: string;
     pivot_created_at: string;
-    pivot_participant_id: number;
-    pivot_attribute_id: number;
+    pivot_participant_id: string;
+    pivot_attribute_id: string;
     pivot_updated_at: string;
   };
 }

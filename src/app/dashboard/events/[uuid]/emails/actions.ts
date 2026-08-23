@@ -11,12 +11,12 @@ import { getSingleEventEmail } from "./data-access";
 
 export async function getSingleEventEmailAction(
   eventUuid: string,
-  emailId: string,
+  emailUuid: string,
 ) {
-  return await getSingleEventEmail(eventUuid, emailId);
+  return await getSingleEventEmail(eventUuid, emailUuid);
 }
 
-export async function createEventEmailTemplate(data: {
+export async function createEventEmail(data: {
   eventUuid: string;
   emailTemplate: UpdateEventEmailPayload;
 }) {
@@ -37,7 +37,7 @@ export async function createEventEmailTemplate(data: {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[createEventEmailTemplate action] Failed to create event email template for event ${data.eventUuid}:`,
+      `[createEventEmail action] Failed to create event email template for event ${data.eventUuid}:`,
       error,
     );
     return {
@@ -60,19 +60,24 @@ export async function createEventEmailTemplate(data: {
 
 export async function updateEventEmail(data: {
   eventUuid: string;
-  mailId: string | null;
+  mailUuid: string | null;
   emailTemplate: UpdateEventEmailPayload;
 }) {
-  const session = await verifySession();
+  if (data.mailUuid == null) {
+    return {
+      success: false,
+      error: { key: "invalidEmailUuid" as EventDetailsKey },
+    };
+  }
 
-  const { eventUuid, mailId, emailTemplate } = data;
+  const session = await verifySession();
 
   if (session == null) {
     redirect("/auth/login");
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${mailId ?? ""}`,
+    `${API_URL}/events/${data.eventUuid}/emails/${data.mailUuid}`,
     {
       method: "PATCH",
       headers: {
@@ -86,7 +91,7 @@ export async function updateEventEmail(data: {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateEventEmail action] Failed to update event email ${mailId ?? ""} for event ${eventUuid}:`,
+      `[updateEventEmail action] Failed to update event email ${data.mailUuid} for event ${data.eventUuid}:`,
       error,
     );
     return {
@@ -148,7 +153,7 @@ export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
   return { success: true };
 }
 
-export async function deleteEventMail(eventUuid: string, mailId: string) {
+export async function deleteEventMail(eventUuid: string, mailUuid: string) {
   const session = await verifySession();
 
   if (session == null) {
@@ -156,7 +161,7 @@ export async function deleteEventMail(eventUuid: string, mailId: string) {
   }
 
   const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${mailId}`,
+    `${API_URL}/events/${eventUuid}/emails/${mailUuid}`,
     {
       method: "DELETE",
       headers: {
@@ -168,7 +173,7 @@ export async function deleteEventMail(eventUuid: string, mailId: string) {
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(
-      `[deleteEventMail action] Failed to delete event mail ${mailId} for event ${eventUuid}:`,
+      `[deleteEventMail action] Failed to delete event mail ${mailUuid} for event ${eventUuid}:`,
       error,
     );
     return {

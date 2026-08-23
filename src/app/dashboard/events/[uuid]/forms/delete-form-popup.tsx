@@ -9,11 +9,11 @@ import { deleteEventForm } from "./actions";
 
 function DeleteFormPopup({
   eventUuid,
-  formId,
+  formUuid,
   formName,
 }: {
   eventUuid: string;
-  formId: string;
+  formUuid: string;
   formName: string;
 }) {
   const t = useTranslations("Dashboard");
@@ -23,7 +23,7 @@ function DeleteFormPopup({
     <DeleteResourcePopup
       resourceName={formName}
       resourceType={t("form")}
-      onDelete={async () => deleteEventForm(eventUuid, formId)}
+      onDelete={async () => deleteEventForm(eventUuid, formUuid)}
       onSuccess={() => {
         router.refresh();
       }}

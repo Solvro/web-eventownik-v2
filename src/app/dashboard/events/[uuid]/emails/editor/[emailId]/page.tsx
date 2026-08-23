@@ -3,8 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
-import { getFormTags } from "@/lib/message-tags/tag-builders";
-import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import type { PuckData } from "@/types/editor";
 
 import {
@@ -17,13 +16,13 @@ import {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string; emailId: string }>;
+  params: Promise<{ id: string; emailUuid: string }>;
 }): Promise<Metadata> {
   const t = await getTranslations("Dashboard");
 
-  const { id, emailId } = await params;
+  const { id, emailUuid } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailId);
+  const emailToEdit = await getSingleEventEmail(id, emailUuid);
 
   return {
     title: t("editing", { name: emailToEdit?.name ?? t("unnamedEmail") }),
@@ -33,17 +32,17 @@ export async function generateMetadata({
 export default async function EventMailEditPage({
   params,
 }: {
-  params: Promise<{ id: string; emailId: string }>;
+  params: Promise<{ id: string; emailUuid: string }>;
 }) {
   const t = await getTranslations("Editor");
   const tMessageTags = await getTranslations("MessageTags");
 
-  const { id, emailId } = await params;
+  const { id, emailUuid } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailId);
+  const emailToEdit = await getSingleEventEmail(id, emailUuid);
 
   if (emailToEdit?.schema == null) {
-    redirect(`/dashboard/events/${id}/emails/${emailId}`);
+    redirect(`/dashboard/events/${id}/emails/${emailUuid}`);
   }
 
   const attributes = await getEventAttributes(id);
@@ -60,8 +59,8 @@ export default async function EventMailEditPage({
       attributes={attributes}
       initialData={JSON.parse(emailToEdit.schema) as PuckData}
       mutationData={{
-        emailId: emailToEdit.id.toString(),
-        eventId: id,
+        emailUuid: emailToEdit.uuid,
+        eventUuid: id,
         mode: "update",
       }}
       eventData={{

@@ -18,7 +18,10 @@ export async function reorderBlockAttributes(
   }
 
   if (!isValidUuid(eventUuid) || orderedIds.some((id) => !isValidUuid(id))) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -78,7 +81,10 @@ export async function createBlock(
     !isValidUuid(attributeUuid) ||
     !isValidUuid(parentUuid)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -126,7 +132,7 @@ export async function createBlock(
 export async function updateBlock(
   eventUuid: string,
   attributeUuid: string,
-  blockId: string,
+  blockUuid: string,
   name: string,
   description: string | null,
   capacity: number | null,
@@ -139,15 +145,18 @@ export async function updateBlock(
   if (
     !isValidUuid(eventUuid) ||
     !isValidUuid(attributeUuid) ||
-    !isValidUuid(blockId)
+    !isValidUuid(blockUuid)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockId)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
     {
       method: "PATCH",
       headers: {
@@ -169,19 +178,16 @@ export async function updateBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[updateBlock action] Failed to update block ${blockId} for event ${eventUuid}:`,
+      `[updateBlock action] Failed to update block ${blockUuid} for event ${eventUuid}:`,
       error,
     );
     return {
       success: false,
       error: {
-        success: false,
-        error: {
-          key: "httpError" as EventDetailsKey,
-          values: {
-            status: response.status,
-            statusText: response.statusText,
-          },
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
         },
       },
     };
@@ -204,7 +210,10 @@ export async function reorderBlocks(
     !isValidUuid(attributeUuid) ||
     orderedIds.some((uuid) => !isValidUuid(uuid))
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const { bearerToken } = session;
@@ -261,7 +270,10 @@ export async function deleteBlock(
     !isValidUuid(blockUuid) ||
     !isValidUuid(attributeUuid)
   ) {
-    return { success: false, error: "Invalid identifier" };
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
   }
 
   const response = await fetch(

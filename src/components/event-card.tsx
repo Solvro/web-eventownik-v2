@@ -38,10 +38,7 @@ export function EventCardBase({
         className,
       )}
     >
-      <Link
-        className="relative"
-        href={`/dashboard/events/${event.id.toString()}`}
-      >
+      <Link className="relative" href={`/dashboard/events/${event.uuid}`}>
         <Image
           src={
             event.photoUrl == null
@@ -70,9 +67,7 @@ export function EventCardBase({
       </Link>
       <div className="flex flex-1 flex-col justify-between p-4">
         <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
-            {event.name}
-          </Link>
+          <Link href={`/dashboard/events/${event.uuid}`}>{event.name}</Link>
         </h3>
         {children}
       </div>
@@ -87,7 +82,7 @@ export function EventCard({ event }: { event: Event }) {
     <EventCardBase event={event} className="border-muted border">
       <div className="flex w-full items-center justify-between">
         <Button asChild variant="ghost" className="flex-1 justify-start">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
+          <Link href={`/dashboard/events/${event.uuid}`}>
             <CircleHelpIcon className="size-4" />
             {t("viewDetails")}
           </Link>
@@ -124,7 +119,7 @@ export function EventCardForSuperadmin({
     >
       <div className="flex w-full flex-col gap-2">
         <Button asChild variant="outline">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
+          <Link href={`/dashboard/events/${event.uuid}`}>
             <LayoutDashboard className="size-4" />
             Dashboard
           </Link>
@@ -137,7 +132,7 @@ export function EventCardForSuperadmin({
         </Button>
         <ActivateEvent
           bearerToken={bearerToken}
-          eventId={event.id}
+          eventUuid={event.uuid}
           isActive={event.isActive}
         />
       </div>

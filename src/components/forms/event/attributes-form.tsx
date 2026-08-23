@@ -110,8 +110,8 @@ export function AttributesForm({
         <div className="space-y-2">
           {fields.map((attribute, index) => (
             <SortableAttributeItem
-              key={attribute.id}
-              id={attribute.id}
+              key={attribute.uuid}
+              uuid={attribute.uuid ?? ""}
               attribute={attribute}
               index={index}
               onUpdateItem={(index_, value) => {

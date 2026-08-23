@@ -46,7 +46,7 @@ export function TableMenu({
       </div>
       <div className="flex items-center gap-2 max-md:w-full max-md:justify-end">
         <ImportParticipantsDialog
-          eventId={eventId}
+          eventUuid={eventUuid}
           attributes={attributes}
           blocks={blocks}
         />

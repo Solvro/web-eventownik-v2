@@ -28,7 +28,7 @@ export default async function DashboardEventFormsPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <h1 className="text-3xl font-bold">Formularze</h1>
-        <CreateEventFormForm eventId={uuid} attributes={attributes} />
+        <CreateEventFormForm eventUuid={uuid} attributes={attributes} />
       </div>
       {forms.length > 0 ? (
         <SortableFormGrid forms={forms} eventUuid={uuid} />

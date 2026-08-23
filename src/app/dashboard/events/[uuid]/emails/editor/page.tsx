@@ -49,8 +49,8 @@ export default async function EventMailEditPage({
         zones: {},
       }}
       mutationData={{
-        emailId: null,
-        eventId: id,
+        emailUuid: null,
+        eventUuid: id,
         mode: "create",
       }}
       eventData={{
