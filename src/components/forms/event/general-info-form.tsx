@@ -3,6 +3,7 @@
 import { format, subDays } from "date-fns";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,7 +23,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import {
+  getDateLocale,
+  translateOrFallback,
+} from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
 export type EventGeneralInfoErrors =
@@ -66,6 +70,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
   const { control, formState, getValues } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
   const t = useTranslations("EventDetails");
+  const locale = useLocale();
 
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
@@ -132,7 +137,9 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                           className="pl-3 text-left font-normal"
                           disabled={formState.isSubmitting}
                         >
-                          {format(field.value, "PPP")}
+                          {format(field.value, "PPP", {
+                            locale: getDateLocale(locale),
+                          })}
                           <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -144,6 +151,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={(date) => date <= subDays(new Date(), 1)}
+                        locale={getDateLocale(locale)}
                       />
                     </PopoverContent>
                   </Popover>
@@ -195,7 +203,9 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                           className="pl-3 text-left font-normal"
                           disabled={formState.isSubmitting}
                         >
-                          {format(field.value, "PPP")}
+                          {format(field.value, "PPP", {
+                            locale: getDateLocale(locale),
+                          })}
                           <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -213,6 +223,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                             ? subDays(new Date(), 1)
                             : getValues("startDate"))
                         }
+                        locale={getDateLocale(locale)}
                       />
                     </PopoverContent>
                   </Popover>

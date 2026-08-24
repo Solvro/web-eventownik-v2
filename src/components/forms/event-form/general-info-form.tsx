@@ -2,7 +2,7 @@
 
 import { format, subDays } from "date-fns";
 import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,16 +31,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import {
+  getDateLocale,
+  translateOrFallback,
+} from "@/i18n/translate-or-fallback";
 import { combineDateAndTime } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
 import { OpenCondition } from "@/types/forms";
-
-export type EventFormGeneralInfoErrors =
-  | "nameRequired"
-  | "descriptionRequired"
-  | "startTimeRequired"
-  | "endTimeRequired";
 
 export const EventFormGeneralInfoSchema = z
   .object({
@@ -72,7 +69,7 @@ export const EventFormGeneralInfoSchema = z
       context.addIssue({
         code: "custom",
         path: ["openTime"],
-        message: "startTimeRequired",
+        message: "openTimeRequired",
       });
     }
 
@@ -80,7 +77,7 @@ export const EventFormGeneralInfoSchema = z
       context.addIssue({
         code: "custom",
         path: ["closeTime"],
-        message: "endTimeRequired",
+        message: "closeTimeRequired",
       });
     }
 
@@ -91,7 +88,7 @@ export const EventFormGeneralInfoSchema = z
       context.addIssue({
         code: "custom",
         path: ["closeDate"],
-        message: "Data zakończenia musi być po dacie rozpoczęcia",
+        message: "closeDateMustBeAfterOpenDate",
       });
     }
   });
@@ -102,6 +99,8 @@ interface GeneralInfoFormProps {
 
 export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
   const t = useTranslations("EventDetails");
+  const locale = useLocale();
+
   const { control, formState, watch } =
     useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
@@ -122,29 +121,8 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.name?.message as EventFormGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.name?.message)}
             </FormMessage>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        name="isFirstForm"
-        control={control}
-        render={({ field }) => (
-          <FormItem className="flex w-fit flex-col">
-            <FormLabel>{t("isRegistrationForm")}</FormLabel>
-            <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                className="m-0"
-                disabled={formState.isSubmitting ? true : undefined}
-              />
-            </FormControl>
           </FormItem>
         )}
       />
@@ -154,7 +132,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         name="openCondition"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Sposób zamknięcia formularza</FormLabel>
+            <FormLabel>{t("formClosingMethod")}</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value}
@@ -166,14 +144,16 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value={OpenCondition.MANUAL}>Ręcznie</SelectItem>
+                <SelectItem value={OpenCondition.MANUAL}>
+                  {t("manual")}
+                </SelectItem>
                 <SelectItem value={OpenCondition.ON_DATE}>
-                  Automatycznie (data i godzina)
+                  {t("automaticDateTime")}
                 </SelectItem>
               </SelectContent>
             </Select>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.openCondition?.message}
+              {translateOrFallback(t, formState.errors.openCondition?.message)}
             </FormMessage>
           </FormItem>
         )}
@@ -188,7 +168,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                 name="openDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col max-sm:flex-1">
-                    <FormLabel>Data i godzina otwarcia</FormLabel>
+                    <FormLabel>{t("openingDateTime")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -197,7 +177,9 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                             className="pl-3 text-left font-normal"
                             disabled={formState.isSubmitting}
                           >
-                            {format(field.value, "PPP")}
+                            {format(field.value, "PPP", {
+                              locale: getDateLocale(locale),
+                            })}
                             <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -209,6 +191,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) => date <= subDays(new Date(), 1)}
+                          locale={getDateLocale(locale)}
                         />
                       </PopoverContent>
                     </Popover>
@@ -233,10 +216,10 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               />
             </div>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.openDate?.message}
+              {translateOrFallback(t, formState.errors.openDate?.message)}
             </FormMessage>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.openTime?.message}
+              {translateOrFallback(t, formState.errors.openTime?.message)}
             </FormMessage>
           </div>
 
@@ -247,7 +230,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                 name="closeDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col max-sm:flex-1">
-                    <FormLabel>Data i godzina zamknięcia</FormLabel>
+                    <FormLabel>{t("closingDateTime")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -256,7 +239,9 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                             className="pl-3 text-left font-normal"
                             disabled={formState.isSubmitting}
                           >
-                            {format(field.value, "PPP")}
+                            {format(field.value, "PPP", {
+                              locale: getDateLocale(locale),
+                            })}
                             <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -268,6 +253,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) => date <= subDays(new Date(), 1)}
+                          locale={getDateLocale(locale)}
                         />
                       </PopoverContent>
                     </Popover>
@@ -291,10 +277,10 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               />
             </div>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.closeDate?.message}
+              {translateOrFallback(t, formState.errors.closeDate?.message)}
             </FormMessage>
             <FormMessage className="text-sm text-red-500">
-              {formState.errors.closeTime?.message}
+              {translateOrFallback(t, formState.errors.closeTime?.message)}
             </FormMessage>
           </div>
         </div>
@@ -324,6 +310,24 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
       )}
 
       <FormField
+        name="isFirstForm"
+        control={control}
+        render={({ field }) => (
+          <FormItem className="flex w-fit flex-col">
+            <FormLabel>{t("isRegistrationForm")}</FormLabel>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className="m-0"
+                disabled={formState.isSubmitting ? true : undefined}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      <FormField
         control={control}
         name="description"
         render={({ field }) => (
@@ -337,11 +341,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               placeholder={t("enterFormDescr")}
             />
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.description
-                  ?.message as EventFormGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.description?.message)}
             </FormMessage>
           </FormItem>
         )}

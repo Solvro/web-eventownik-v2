@@ -50,17 +50,21 @@ function FormEntry({
             form.openDate !== null &&
             form.closeDate !== null && (
               <>
-                <span>Od {formatDate(form.openDate, "dd.MM.yyyy HH:mm")}</span>
+                <span>
+                  {t("from")} {formatDate(form.openDate, "dd.MM.yyyy HH:mm")}
+                </span>
                 <br />
-                <span>do {formatDate(form.closeDate, "dd.MM.yyyy HH:mm")}</span>
+                <span>
+                  {t("to")} {formatDate(form.closeDate, "dd.MM.yyyy HH:mm")}
+                </span>
               </>
             )}
 
           {form.openCondition === OpenCondition.MANUAL &&
             (form.isOpen ? (
-              <span>Przyjmuje zgłoszenia</span>
+              <span>{t("acceptingSubmissions")}</span>
             ) : (
-              <span>Nie przyjmuje zgłoszeń</span>
+              <span>{t("notAcceptingSubmissions")}</span>
             ))}
         </p>
       </div>

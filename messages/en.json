@@ -196,7 +196,11 @@
     "coOrganizerAddError": "Error adding co-organizer {email}. You can add them later in settings",
     "attributeAddWarning": "Failed to add attribute {name}. You can add it later in settings",
     "attributeAddError": "Error adding attribute {name}. You can add it later in settings",
-    "selectColor": "Select color"
+    "selectColor": "Select color",
+    "from": "From",
+    "to": "to",
+    "acceptingSubmissions": "Accepting submissions",
+    "notAcceptingSubmissions": "Not accepting submissions"
   },
   "Editor": {
     "loadingMenu": "Loading menu...",
@@ -517,7 +521,15 @@
     "unauthorized": "Unauthorized",
     "httpError": "Error {status} {statusText}",
     "invalidEmailUuid": "Invalid email ID",
-    "invalidIdentifier": "Invalid resource UUID"
+    "invalidIdentifier": "Invalid resource UUID",
+    "formClosingMethod": "Form closing method",
+    "manual": "Manually",
+    "automaticDateTime": "Automatically (date and time)",
+    "openingDateTime": "Opening date and time",
+    "closingDateTime": "Closing date and time",
+    "openTimeRequired": "Opening time cannot be empty",
+    "closeTimeRequired": "Closing time cannot be empty",
+    "closeDateMustBeAfterOpenDate": "Closing date must be after the opening date"
   },
   "EventPermissions": {
     "forms": "Forms",
