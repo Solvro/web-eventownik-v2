@@ -134,29 +134,30 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       />
 
       <p className="text-foreground/50 my-4 text-center text-sm">
-        <Info className="inline-block size-4 align-[-0.195em]" /> Kontynuując
-        zgadzasz się na warunki zawarte w<br />
+        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
+        {t("consentIntro")}
+        <br />
         <Link
           href={`/${event.slug}/privacy`}
           className="text-(--event-primary-color)/90"
           target="_blank"
         >
-          polityce prywatności
+          {t("privacyPolicy")}
         </Link>
         {event.termsLink === null ? (
-          <span> wydarzenia</span>
+          <span> {t("ofEvent")}</span>
         ) : (
           <>
             {" "}
-            oraz{" "}
+            {t("and")}{" "}
             <Link
               href={event.termsLink}
               className="text-(--event-primary-color)/90"
               target="_blank"
             >
-              regulaminie
+              {t("terms")}
             </Link>{" "}
-            wydarzenia
+            {t("ofEvent")}
           </>
         )}
       </p>

@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { registerFormSchema } from "@/types/schemas";
+import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { register } from "../actions";
 
@@ -63,8 +65,8 @@ function RegisterForm() {
       if ("errors" in result) {
         toast({
           variant: "destructive",
-          title: "O nie! Coś poszło nie tak.",
-          description: "Spróbuj zarejestrować się ponownie.",
+          title: t("somethingWentWrong"),
+          description: t("tryRegisterAgain"),
         });
       } else {
         const redirectUrl = redirectTo ?? "/dashboard/events";
@@ -74,8 +76,8 @@ function RegisterForm() {
       console.error("Registration failed", error);
       toast({
         variant: "destructive",
-        title: "Brak połączenia z serwerem.",
-        description: "Sprawdź swoje połączenie z internetem.",
+        title: t("noServerConnection"),
+        description: t("checkInternetConnection"),
       });
     } finally {
       hCaptchaRef.current?.resetCaptcha();
@@ -113,24 +115,27 @@ function RegisterForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full space-y-4"
       >
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">E-mail</FormLabel>
+              <FormLabel className="sr-only">{t("email")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="E-mail"
+                  placeholder={t("email")}
                   disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                   type="email"
                   {...field}
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.email?.message}
+                {translateOrFallback(
+                  t,
+                  form.formState.errors.email?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -150,7 +155,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.password?.message}
+                {translateOrFallback(
+                  t,
+                  form.formState.errors.password
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -169,7 +178,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.firstName?.message}
+                {translateOrFallback(
+                  t,
+                  form.formState.errors.firstName
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -188,7 +201,11 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {form.formState.errors.lastName?.message}
+                {translateOrFallback(
+                  t,
+                  form.formState.errors.lastName
+                    ?.message as AuthSchemaErrorKeys,
+                )}
               </FormMessage>
             </FormItem>
           )}
@@ -267,19 +284,20 @@ export default function RegisterPage() {
       <Suspense>
         <RegisterForm />
       </Suspense>
-      <div className="text-muted-foreground flex flex-col items-center justify-center gap-2 pb-4 text-center text-sm sm:pb-0">
-        <Info className="size-6" />
-        <p>
-          Rejestrując konto, zgadzasz się na warunki zawarte w <br />
-          <Link
-            href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
-            className="text-primary/90"
-            target="_blank"
-          >
-            regulaminie platformy
-          </Link>
-        </p>
-      </div>
+      <p className="text-foreground/50 max-w-sm text-center text-sm">
+        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
+        {t.rich("termsAgreement", {
+          Link: (chunks) => (
+            <Link
+              href="https://drive.google.com/file/d/1h4f-koiR-Ab2JPrOe7p5JXjohi83mrvB/view"
+              className="text-primary/90"
+              target="_blank"
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
     </>
   );
 }

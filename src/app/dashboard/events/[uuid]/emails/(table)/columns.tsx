@@ -14,11 +14,10 @@ function StatusColumnHeader({
 }: {
   column: Column<EventEmailParticipantData>;
 }) {
-  const t = useTranslations("EmailHistoryTable");
   return (
     <div className="flex items-center gap-1">
       <StatusFilterButton column={column} />
-      <SortableHeader column={column} title={t("statusLabel")} />
+      <SortableHeader column={column} title={"statusLabel"} />
     </div>
   );
 }
@@ -28,9 +27,10 @@ function SortableHeader<TData, TValue>({
   title,
 }: {
   column: Column<TData, TValue>;
-  title: string;
+  title: "recipient" | "date" | "time" | "statusLabel";
 }) {
   const sorting = column.getIsSorted();
+  const t = useTranslations("EmailHistoryTable");
 
   return (
     <button
@@ -40,7 +40,7 @@ function SortableHeader<TData, TValue>({
         column.toggleSorting(sorting === "asc");
       }}
     >
-      <span>{title}</span>
+      <span>{t(title)}</span>
       {sorting === "asc" ? (
         <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
       ) : sorting === "desc" ? (
@@ -55,10 +55,16 @@ function SortableHeader<TData, TValue>({
   );
 }
 
-export const columns: ColumnDef<EventEmailParticipantData>[] = [
+type EmailStatus = "sent" | "pending" | "failed";
+
+export const getColumns = (
+  t: ReturnType<typeof useTranslations>,
+): ColumnDef<EventEmailParticipantData>[] => [
   {
     accessorKey: "email",
-    header: ({ column }) => <SortableHeader column={column} title="Odbiorca" />,
+    header: ({ column }) => (
+      <SortableHeader column={column} title="recipient" />
+    ),
   },
   {
     id: "date",
@@ -70,7 +76,7 @@ export const columns: ColumnDef<EventEmailParticipantData>[] = [
       }
       return value;
     },
-    header: ({ column }) => <SortableHeader column={column} title="Data" />,
+    header: ({ column }) => <SortableHeader column={column} title="date" />,
   },
   {
     id: "time",
@@ -83,24 +89,12 @@ export const columns: ColumnDef<EventEmailParticipantData>[] = [
 
       return format(row.meta.pivot_send_at, "HH:mm");
     },
-    header: ({ column }) => <SortableHeader column={column} title="Godzina" />,
+    header: ({ column }) => <SortableHeader column={column} title="time" />,
   },
   {
     id: "status",
     accessorFn: (row) => {
-      const status = row.meta.pivot_status;
-
-      if (status === "sent") {
-        return "Wysłano";
-      }
-      if (status === "pending") {
-        return "Oczekujące";
-      }
-      if (status === "failed") {
-        return "Nieudane";
-      }
-
-      return status;
+      return t(row.meta.pivot_status as EmailStatus);
     },
     header: ({ column }) => <StatusColumnHeader column={column} />,
     filterFn: (row, _columnId, filterValue) => {

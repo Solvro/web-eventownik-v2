@@ -3,6 +3,7 @@ import type { DragEndEvent } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import { HelpCircle, PlusIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { z } from "zod";
@@ -31,21 +32,43 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
-import type { EventAttributesFormSchema } from "./schema";
+import type {
+  EventAttributesFormErrors,
+  EventAttributesFormSchema,
+} from "./schema";
 import { SortableOption } from "./sortable-option";
 import type { AttributeItemProps, NewEventAttribute } from "./types";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
+const getOptionValue = (option: unknown): string => {
+  if (typeof option === "string") {
+    return option;
+  }
+
+  if (
+    typeof option === "object" &&
+    option !== null &&
+    "value" in option &&
+    typeof (option as { value: unknown }).value === "string"
+  ) {
+    return (option as { value: string }).value;
+  }
+
+  return "";
+};
+
 export function AttributeItem({
   attribute,
   index,
   onUpdateItem,
 }: AttributeItemProps) {
+  const t = useTranslations("EventDetails");
   const { register, formState, setValue, getValues, watch } =
     useFormContext<z.infer<typeof EventAttributesFormSchema>>();
   const [optionsInput, setOptionsInput] = useState("");
@@ -108,14 +131,18 @@ export function AttributeItem({
             defaultValue={attribute.name}
             {...register(`attributes.${index}.name`)}
             disabled={formState.isSubmitting}
-            placeholder="Attribute label"
+            placeholder={t("attributeLabel")}
             className="flex-1"
             onBlur={() => {
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
           />
-          <FormMessage>
-            {formState.errors.attributes?.[index]?.name?.message}
+          <FormMessage className="text-sm text-red-500">
+            {translateOrFallback(
+              t,
+              formState.errors.attributes?.[index]?.name
+                ?.message as EventAttributesFormErrors,
+            )}
           </FormMessage>
         </div>
 
@@ -126,10 +153,10 @@ export function AttributeItem({
             onUpdateItem?.(index, getValues(`attributes.${index}`));
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-62">
             <AttributeTypeOptions />
           </SelectContent>
         </Select>
@@ -145,7 +172,7 @@ export function AttributeItem({
               defaultChecked={attribute.showInList}
             />
             <Label htmlFor={`showInTable-${index.toString()}`}>
-              Pokaż w tabeli
+              {t("showInTable")}
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -162,7 +189,7 @@ export function AttributeItem({
             />
             <div className="flex items-center gap-2">
               <Label htmlFor={`isSensitiveData-${index.toString()}`}>
-                Wrażliwe dane
+                {t("sensitiveData")}
               </Label>
 
               <Dialog>
@@ -172,31 +199,27 @@ export function AttributeItem({
                       <Button
                         size="icon"
                         variant="ghost"
-                        aria-label="Wyjaśnienie czym są wrażliwe dane"
+                        aria-label={t("sensitiveDataExplanation")}
                         className="size-4"
                       >
                         <HelpCircle />
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Wskazówka</TooltipContent>
+                  <TooltipContent side="top">{t("tip")}</TooltipContent>
                 </Tooltip>
 
                 <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
                   <DialogHeader>
                     <DialogTitle className="text-2xl">
-                      Czym są wrażliwe dane?
+                      {t("whatIsSensitiveData")}
                     </DialogTitle>
                     <div className="[&>p]:my-2 [&>p]:text-left sm:[&>p]:text-justify">
+                      <p>{t("sensitiveDataDescr")}</p>
                       <p>
-                        Dane wrażliwe to informacje o prywatnym charakterze. Ich
-                        gromadzenie wymaga uzasadnienia celu, z którym każdy
-                        uczestnik może zapoznać się w Polityce Prywatności
-                        wydarzenia.
-                      </p>
-                      <p>
-                        <strong>Przykłady:</strong> stan zdrowia, przekonania
-                        religijne, poglądy polityczne, dane biometryczne.
+                        {t.rich("sensitiveDataExamples", {
+                          strong: (chunks) => <strong>{chunks}</strong>,
+                        })}
                       </p>
                     </div>
                   </DialogHeader>
@@ -210,7 +233,7 @@ export function AttributeItem({
       {watch(`attributes.${index}.isSensitiveData`) ? (
         <div className="my-2 flex flex-col gap-2">
           <Label htmlFor={`reason-${index.toString()}`}>
-            Powód dla zbierania danych (wymagane dla danych wrażliwych)
+            {t("sensitiveDataReason")}
           </Label>
           <Input
             id={`reason-${index.toString()}`}
@@ -219,13 +242,17 @@ export function AttributeItem({
             onChange={(event_) => {
               setValue(`attributes.${index}.reason`, event_.target.value);
             }}
-            placeholder="np. 'Zorganizowanie posiłków w ośrodku'"
+            placeholder={t("sensitiveDataReasonExamples")}
             onBlur={() => {
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
           />
-          <FormMessage>
-            {formState.errors.attributes?.[index]?.reason?.message}
+          <FormMessage className="text-sm text-red-500">
+            {translateOrFallback(
+              t,
+              formState.errors.attributes?.[index]?.reason
+                ?.message as EventAttributesFormErrors,
+            )}
           </FormMessage>
         </div>
       ) : null}
@@ -239,14 +266,14 @@ export function AttributeItem({
               onChange={(event_) => {
                 setOptionsInput(event_.target.value);
               }}
-              placeholder="Nowa opcja"
+              placeholder={t("newOption")}
               onKeyDown={(event_) => {
                 event_.key === "Enter" && addOption();
               }}
             />
             <Button variant="outline" onClick={addOption}>
               <PlusIcon className="h-4 w-4" />
-              Dodaj opcję
+              {t("addOption")}
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -255,14 +282,17 @@ export function AttributeItem({
               modifiers={[RestrictToHorizontalAxis]}
             >
               {watch(`attributes.${index}.options`)?.map(
-                (option, optionIndex) => (
-                  <SortableOption
-                    key={option}
-                    option={option}
-                    index={optionIndex}
-                    onRemove={handleRemoveOption}
-                  />
-                ),
+                (option, optionIndex) => {
+                  const optionValue = getOptionValue(option);
+                  return (
+                    <SortableOption
+                      key={optionValue}
+                      option={optionValue}
+                      index={optionIndex}
+                      onRemove={handleRemoveOption}
+                    />
+                  );
+                },
               )}
             </DragDropProvider>
           </div>
@@ -272,7 +302,7 @@ export function AttributeItem({
       {watch(`attributes.${index}.type`) === "block" && (
         <div className="space-y-2">
           <Label htmlFor={`block-attributes-${index.toString()}`}>
-            Wyświetlane atrybuty dla uczestników
+            {t("visibleAttributesForParticipants")}
           </Label>
           <MultiSelect
             id={`block-attributes-${index.toString()}`}
@@ -297,12 +327,13 @@ export function AttributeItem({
               setValue(`attributes.${index}.options`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
-            defaultValue={getValues(`attributes.${index}.options`) ?? []}
-            placeholder="Wybierz atrybuty do wyświetlenia"
+            defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
+              (option) => getOptionValue(option),
+            )}
+            placeholder={t("selectAttributesToDisplay")}
           />
           <p className="text-muted-foreground text-sm">
-            Jeśli nie wybrano żadnych atrybutów, zapisy będą anonimowe -
-            uczestnicy będą widzieć tylko ilość zajętych miejsc.
+            {t("anonymousRegistrationsInfo")}
           </p>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -314,7 +345,7 @@ export function AttributeItem({
               defaultChecked={attribute.isMultiple}
             />
             <Label htmlFor={`isMultiple-${index.toString()}`}>
-              Zezwól na wielokrotny wybór
+              {t("allowMultipleSelection")}
             </Label>
           </div>
         </div>
@@ -324,7 +355,7 @@ export function AttributeItem({
         watch(`attributes.${index}.type`) === "block" && (
           <div className="space-y-2">
             <Label htmlFor={`maxSelections-${index.toString()}`}>
-              Maksymalna liczba wybranych bloków
+              {t("maxSelectedBlocks")}
             </Label>
             <Input
               id={`maxSelections-${index.toString()}`}
@@ -335,15 +366,19 @@ export function AttributeItem({
                   Number.parseInt(event_.target.value),
                 );
               }}
-              placeholder="np. '3'"
+              placeholder={t("example3")}
               onBlur={() => {
                 onUpdateItem?.(index, getValues(`attributes.${index}`));
               }}
               type="number"
               className="[appearance:textfield]"
             />
-            <FormMessage>
-              {formState.errors.attributes?.[index]?.maxSelections?.message}
+            <FormMessage className="text-sm text-red-500">
+              {translateOrFallback(
+                t,
+                formState.errors.attributes?.[index]?.maxSelections
+                  ?.message as EventAttributesFormErrors,
+              )}
             </FormMessage>
           </div>
         )}

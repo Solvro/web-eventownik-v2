@@ -4,6 +4,7 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { verifySession } from "@/lib/session";
@@ -17,9 +18,13 @@ import {
 } from "./actions";
 import { ParticipantsLoader } from "./participants-loader";
 
-export const metadata: Metadata = {
-  title: "Uczestnicy",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Sidebar");
+
+  return {
+    title: t("participants"),
+  };
+}
 
 export default async function DashboardEventParticipantsPage({
   params,

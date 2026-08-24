@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleX, Loader, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -13,11 +14,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 
 interface DeleteResourcePopupProps {
   resourceName: string;
   resourceType: string;
-  onDelete: () => Promise<{ success: boolean; error?: string }>;
+  onDelete: () => Promise<{
+    success: boolean;
+    error?: {
+      key: EventDetailsKey;
+      values?: Record<string, string | number | Date>;
+    };
+  }>;
   onSuccess?: () => void;
   triggerTitle?: string;
   triggerClassName?: string;
@@ -31,6 +40,9 @@ function DeleteResourcePopup({
   triggerTitle,
   triggerClassName = "text-red-700",
 }: DeleteResourcePopupProps) {
+  const t = useTranslations("Dashboard");
+  const tEventDetails = useTranslations("EventDetails");
+
   const form = useForm();
   const { toast } = useToast();
   const [shouldDisableButtons, setShouldDisableButtons] = useState(false);
@@ -40,17 +52,28 @@ function DeleteResourcePopup({
     if (result.success) {
       setShouldDisableButtons(true);
       toast({
-        title: `${resourceType} został usunięty`,
-        description: `Usunięto ${resourceType.toLowerCase()} ${resourceName}`,
+        title: t("resourceDeleted", {
+          resourceType,
+        }),
+        description: t("resourceDeletedWithName", {
+          resourceType,
+          resourceName,
+        }),
       });
       if (onSuccess !== undefined) {
         onSuccess();
       }
     } else {
       toast({
-        title: `Nie udało się usunąć ${resourceType.toLowerCase()}!`,
+        title: t("resourceDeleteFailed", {
+          resourceType: resourceType.toLowerCase(),
+        }),
         variant: "destructive",
-        description: result.error,
+        description: translateOrFallback(
+          tEventDetails,
+          result.error?.key,
+          result.error?.values,
+        ),
       });
     }
   }
@@ -61,23 +84,30 @@ function DeleteResourcePopup({
         <Button
           variant="eventGhost"
           size="icon"
-          title={triggerTitle ?? `Usuń ${resourceType.toLowerCase()}`}
+          title={triggerTitle ?? `${t("delete")} ${resourceType.toLowerCase()}`}
           className={triggerClassName}
         >
           <Trash2 />
-          <span className="sr-only">Usuń {resourceType.toLowerCase()}</span>
+          <span className="sr-only">
+            {t("delete")} {resourceType.toLowerCase()}
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-96 max-w-96">
         <div className="sr-only">
-          <DialogTitle>Usuń {resourceType.toLowerCase()}</DialogTitle>
+          <DialogTitle>
+            {t("delete")} {resourceType.toLowerCase()}
+          </DialogTitle>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 text-center">
           <CircleX className="text-destructive h-14 w-14" />
-          <p className="text-lg font-bold">Jesteś pewien?</p>
+          <p className="text-lg font-bold">{t("areYouSure")}</p>
           <p className="text-sm">
-            Czy na pewno chcesz usunąć {resourceType.toLowerCase()}{" "}
-            <strong>{resourceName}</strong>?
+            {t.rich("confirmDeleteResource", {
+              type: resourceType.toLowerCase(),
+              strong: (chunk) => <strong>{chunk}</strong>,
+              name: resourceName,
+            })}
           </p>
           <div className="flex gap-2">
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -89,7 +119,7 @@ function DeleteResourcePopup({
                 {form.formState.isSubmitting || shouldDisableButtons ? (
                   <Loader className="animate-spin" />
                 ) : (
-                  "Usuń"
+                  t("delete")
                 )}
               </Button>
             </form>
@@ -98,7 +128,7 @@ function DeleteResourcePopup({
                 variant="outline"
                 disabled={form.formState.isSubmitting || shouldDisableButtons}
               >
-                Anuluj
+                {t("cancel")}
               </Button>
             </DialogClose>
           </div>

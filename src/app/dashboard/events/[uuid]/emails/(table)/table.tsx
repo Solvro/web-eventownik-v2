@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/table";
 import type { SingleEventEmail } from "@/types/emails";
 
-import { columns } from "./columns";
 import { EmailHistoryToolbar } from "./email-history-toolbar";
 import { useEmailHistoryTable } from "./use-email-history-table";
 
@@ -99,10 +98,10 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={table.getAllLeafColumns().length}
                     className="text-muted-foreground h-24 px-2 text-center text-xs sm:px-3 sm:text-sm"
                   >
-                    Brak wyników
+                    {t("noResults")}
                   </TableCell>
                 </TableRow>
               )}

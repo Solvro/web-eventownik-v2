@@ -1,5 +1,6 @@
 "use server";
 
+import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { combineDateAndTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
@@ -20,7 +21,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: { key: "unauthorized" as EventDetailsKey },
     };
   }
 
@@ -66,9 +67,17 @@ export async function createEventForm(eventUuid: string, form: Payload) {
 
     return {
       success: false,
-      error:
-        errorMessages ||
-        `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: errorMessages
+        ? {
+            message: errorMessages,
+          }
+        : {
+            key: "httpError" as EventDetailsKey,
+            values: {
+              status: response.status,
+              statusText: response.statusText,
+            },
+          },
     };
   }
 
@@ -85,7 +94,7 @@ export async function updateEventForm(
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: { key: "unauthorized" },
     };
   }
 
@@ -134,9 +143,17 @@ export async function updateEventForm(
 
     return {
       success: false,
-      error:
-        errorMessages ||
-        `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: errorMessages
+        ? {
+            message: errorMessages,
+          }
+        : {
+            key: "httpError" as EventDetailsKey,
+            values: {
+              status: response.status,
+              statusText: response.statusText,
+            },
+          },
     };
   }
 
@@ -147,7 +164,7 @@ export async function reorderForms(eventUuid: string, orderedIds: string[]) {
   const session = await verifySession();
 
   if (session == null) {
-    return { success: false, error: "Brak autoryzacji" };
+    return { success: false, error: { key: "unauthorized" } };
   }
 
   //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
@@ -171,7 +188,13 @@ export async function reorderForms(eventUuid: string, orderedIds: string[]) {
     );
     return {
       success: false,
-      error: `Błąd ${failed.status.toString()} ${failed.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: failed.status,
+          statusText: failed.statusText,
+        },
+      },
     };
   }
 
@@ -184,7 +207,7 @@ export async function deleteEventForm(eventUuid: string, formUuid: string) {
   if (session == null) {
     return {
       success: false,
-      error: "Brak autoryzacji",
+      error: { key: "unauthorized" as EventDetailsKey },
     };
   }
 
@@ -206,7 +229,13 @@ export async function deleteEventForm(eventUuid: string, formUuid: string) {
     );
     return {
       success: false,
-      error: `Błąd ${response.status.toString()} ${response.statusText}`,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
     };
   }
 

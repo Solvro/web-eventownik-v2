@@ -1,3 +1,7 @@
+import { useTranslations } from "next-intl";
+
 export default function DashboardSettingsPage() {
-  return <h1 className="text-3xl font-bold">Ustawienia konta</h1>;
+  const t = useTranslations("Dashboard");
+
+  return <h1 className="text-3xl font-bold">{t("accountSettings")}</h1>;
 }

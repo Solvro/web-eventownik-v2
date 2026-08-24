@@ -9,7 +9,7 @@ export interface Event {
   slug: string;
   startDate: string;
   endDate: string;
-  firstFormId: number;
+  firstFormId: string;
   location: string | null;
   primaryColor: string | null;
   organizer: string | null;

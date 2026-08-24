@@ -1,13 +1,14 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
 // TODO(refactor): Refactor types across this entire file.
+export type AttributeOption = string | { label: string; value: string };
 
 export interface EventAttribute {
   uuid: string;
   name: string;
   slug: string | null;
-  eventUuid: number;
-  options: string[] | null;
+  eventUuid: string;
+  options: AttributeOption[] | null;
   type: string;
   rootBlockUuid: string | undefined;
   showInList: boolean;
@@ -33,7 +34,7 @@ export interface AttributeBase {
 export interface Attribute extends Omit<AttributeBase, "value"> {
   eventUuid: string;
   showInList: boolean;
-  options: string[] | null;
+  options: AttributeOption[] | null;
   type: AttributeType;
   order: number | null;
   createdAt: string;
@@ -68,8 +69,8 @@ export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
   meta: {
     pivot_value: string;
     pivot_created_at: string;
-    pivot_participant_id: number;
-    pivot_attribute_id: number;
+    pivot_participant_id: string;
+    pivot_attribute_id: string;
     pivot_updated_at: string;
   };
 }

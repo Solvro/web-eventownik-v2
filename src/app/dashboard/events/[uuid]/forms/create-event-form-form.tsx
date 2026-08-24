@@ -10,6 +10,7 @@ import {
   SquarePlus,
   TextIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
@@ -36,6 +37,7 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import { OpenCondition } from "@/types/forms";
@@ -51,6 +53,7 @@ function CreateEventFormForm({
   eventUuid: string;
   attributes: EventAttribute[];
 }) {
+  const t = useTranslations("EventDetails");
   const router = useRouter();
   const { toast } = useToast();
   const [newEventForm, setNewEventForm] = useAtom(newEventFormAtom);
@@ -91,8 +94,8 @@ function CreateEventFormForm({
     onSubmit: SubmitHandler<EventFormSchema>;
   }[] = [
     {
-      title: "Krok 1",
-      description: "Podstawowe dane",
+      title: t("step", { number: 1 }),
+      description: t("basicInformation"),
       icon: <BookOpenText />,
       content: <GeneralInfoForm />,
       onSubmit: () => {
@@ -100,8 +103,8 @@ function CreateEventFormForm({
       },
     },
     {
-      title: "Krok 2",
-      description: "Wybierz atrybuty",
+      title: t("step", { number: 2 }),
+      description: t("selectAttributes"),
       icon: <TextIcon />,
       content: (
         <AttributesReorder
@@ -121,7 +124,7 @@ function CreateEventFormForm({
 
           if (result.success) {
             toast({
-              title: "Dodano nowy formularz",
+              title: t("newFormCreated"),
             });
 
             setNewEventForm({
@@ -148,15 +151,17 @@ function CreateEventFormForm({
             }, 100);
           } else {
             toast({
-              title: "Nie udało się dodać formularza!",
-              description: result.error,
+              title: t("failedToCreateForm"),
+              description:
+                result.error?.message ??
+                translateOrFallback(t, result.error?.key, result.error?.values),
               variant: "destructive",
             });
           }
         } catch {
           toast({
-            title: "Nie udało się dodać formularza!",
-            description: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+            title: t("failedToCreateForm"),
+            description: t("unexpectedError"),
             variant: "destructive",
           });
         }
@@ -193,12 +198,12 @@ function CreateEventFormForm({
       />
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full sm:w-fit">
-          <SquarePlus className="h-6 w-6" /> Stwórz formularz
+          <SquarePlus className="h-6 w-6" /> {t("createForm")}
         </Button>
       </DialogTrigger>
       <DialogContent className="h-full overflow-y-scroll sm:h-auto sm:max-h-[90vh] sm:overflow-y-auto">
         <DialogHeader className="sr-only">
-          <DialogTitle>Stwórz formularz</DialogTitle>
+          <DialogTitle>{t("createForm")}</DialogTitle>
         </DialogHeader>
         <FormContainer
           step={`${(currentStep + 1).toString()}/${steps.length.toString()}`}
@@ -227,7 +232,7 @@ function CreateEventFormForm({
                     }}
                     disabled={form.formState.isSubmitting}
                   >
-                    <ArrowLeft /> Wróć
+                    <ArrowLeft /> {t("back")}
                   </Button>
                 )}
                 {currentStep === steps.length - 1 ? (
@@ -241,7 +246,7 @@ function CreateEventFormForm({
                     ) : (
                       <SquarePlus />
                     )}{" "}
-                    Dodaj formularz
+                    {t("addForm")}
                   </Button>
                 ) : (
                   <Button
@@ -252,12 +257,11 @@ function CreateEventFormForm({
                   >
                     {form.formState.isSubmitting ? (
                       <>
-                        Zapisywanie danych...{" "}
-                        <Loader2 className="animate-spin" />
+                        {t("savingData")} <Loader2 className="animate-spin" />
                       </>
                     ) : (
                       <>
-                        Dalej <ArrowRight />
+                        {t("next")} <ArrowRight />
                       </>
                     )}
                   </Button>

@@ -39,74 +39,72 @@ export function nameToSlug(name: string): string {
     .replaceAll(/^-|-$/g, "");
 }
 
-// Helper function for string validation
-const requiredString = (attribute: FormAttribute) =>
-  z
-    .string({
-      required_error: `Pole ${getAttributeLabel(attribute.name, "pl")} nie może być puste.`,
-    })
-    .min(1, {
-      message: `Pole ${getAttributeLabel(attribute.name, "pl")} nie może być puste.`,
-    });
+export type FormValidationErrors =
+  | "fieldRequired"
+  | "fieldMinSelect"
+  | "fieldEmail"
+  | "fieldColorRequired"
+  | "fieldNumber"
+  | "fieldDate"
+  | "fieldRequiredChecked"
+  | "fieldPhone";
 
-const validationRules: Record<
-  FormAttribute["type"],
-  (attribute: FormAttribute) => z.ZodType
-> = {
+// Helper function for string validation
+const requiredString = z
+  .string({
+    required_error: "fieldRequired",
+  })
+  .min(1, {
+    message: "fieldRequired",
+  });
+
+const validationRules: Record<FormAttribute["type"], z.ZodType> = {
   select: requiredString,
   text: requiredString,
   time: requiredString,
-  multiselect: (attribute) =>
-    z
-      .array(z.string(), {
-        required_error: `Wybierz przynajmniej jedną opcję dla pola ${getAttributeLabel(attribute.name, "pl")}.`,
-      })
-      .nonempty({
-        message: `Wybierz przynajmniej jedną opcję dla pola ${getAttributeLabel(attribute.name, "pl")}.`,
-      }),
-  email: (attribute) =>
-    requiredString(attribute).email({
-      message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być adresem email`,
+  multiselect: z
+    .array(z.string(), {
+      required_error: "fieldMinSelect",
+    })
+    .nonempty({
+      message: "fieldMinSelect",
     }),
-  color: (attribute) =>
-    z.string({
-      required_error: `Wybierz kolor dla pola ${getAttributeLabel(attribute.name, "pl")}.`,
-    }),
+  email: requiredString.email({
+    message: "fieldEmail",
+  }),
+  color: z.string({
+    required_error: "fieldColorRequired",
+  }),
   textarea: requiredString,
-  number: (attribute) =>
-    z.coerce.number({
-      required_error: `Pole ${getAttributeLabel(attribute.name, "pl")} nie może być puste.`,
-      invalid_type_error: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być liczbą.`,
+  number: z.coerce.number({
+    required_error: "fieldRequired",
+    invalid_type_error: "fieldNumber",
+  }),
+  date: z.coerce.date({
+    required_error: "fieldRequired",
+    invalid_type_error: "fieldDate",
+  }),
+  datetime: z.coerce.date({
+    required_error: "fieldRequired",
+    invalid_type_error: "fieldDate",
+  }),
+  checkbox: z.literal<boolean>(true, {
+    errorMap: () => ({
+      message: "fieldRequiredChecked",
     }),
-  date: (attribute) =>
-    z.coerce.date({
-      required_error: `Pole ${getAttributeLabel(attribute.name, "pl")} nie może być puste.`,
-      invalid_type_error: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być datą.`,
-    }),
-  datetime: (attribute) =>
-    z.coerce.date({
-      required_error: `Pole ${getAttributeLabel(attribute.name, "pl")} nie może być puste.`,
-      invalid_type_error: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być datą.`,
-    }),
-  checkbox: (attribute) =>
-    z.literal<boolean>(true, {
-      errorMap: () => ({
-        message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być zaznaczone.`,
-      }),
-    }),
-  tel: (attribute) =>
-    requiredString(attribute).regex(PHONE_REGEX, {
-      message: `Pole ${getAttributeLabel(attribute.name, "pl")} musi być numerem telefonu.`,
-    }),
+  }),
+  tel: requiredString.regex(PHONE_REGEX, {
+    message: "fieldPhone",
+  }),
   // TODO: After upgrade to zod v4 we could use z.file() and simplify the validation and file handling
   // https://zod.dev/api?id=files
-  file: () => z.any(),
-  drawing: () => z.any(),
-  block: () => z.any(),
+  file: z.any(),
+  drawing: z.any(),
+  block: z.any(),
 };
 
 export function getSchemaObjectForAttribute(attribute: FormAttribute) {
-  const baseRule = validationRules[attribute.type](attribute);
+  const baseRule = validationRules[attribute.type];
   return attribute.isRequired ? baseRule : baseRule.optional();
 }
 

@@ -1,5 +1,5 @@
 import { Cuboid } from "lucide-react";
-import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
@@ -8,15 +8,20 @@ import type { Attribute } from "@/types/attributes";
 
 import { SortableBlockAttributeGrid } from "./sortable-block-attribute-grid";
 
-export const metadata: Metadata = {
-  title: "Bloki",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("Sidebar");
+
+  return {
+    title: t("blocks"),
+  };
+}
 
 export default async function DashboardEventBlocksPage({
   params,
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const t = await getTranslations("Dashboard");
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
@@ -45,7 +50,7 @@ export default async function DashboardEventBlocksPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-3xl font-bold">Bloki</h1>
+      <h1 className="text-3xl font-bold">{t("blocks")}</h1>
       {blocks.length > 0 ? (
         <SortableBlockAttributeGrid blocks={blocks} eventUuid={uuid} />
       ) : (
@@ -53,7 +58,7 @@ export default async function DashboardEventBlocksPage({
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">
             <Cuboid className="text-muted-foreground mb-4 size-12" />
             <h3 className="text-muted-foreground text-lg">
-              Nie masz jeszcze żadnego bloku
+              {t("noBlocksYet")}
             </h3>
           </div>
         </div>

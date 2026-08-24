@@ -1,11 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Loader, Save } from "lucide-react";
+import { Edit, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { updateBlock } from "@/app/dashboard/events/[uuid]/blocks/actions";
 import { Button } from "@/components/ui/button";
@@ -16,30 +16,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import type { Block } from "@/types/blocks";
 
-const BlockSchema = z.object({
-  name: z.string().min(1, "Nazwa bloku jest wymagana"),
-  capacity: z
-    .union([
-      z.coerce.number().min(1, "Pojemność bloku musi być większa niż 0"),
-      z.literal(""),
-    ])
-    .optional(),
-});
+import { BlockForm, BlockSchema } from "./block-form";
+import type { BlockFormValues } from "./block-form";
 
 function EditBlockEntry({
   blockToEdit,
@@ -51,7 +35,8 @@ function EditBlockEntry({
   attributeUuid: string;
   parentUuid: string;
 }) {
-  const form = useForm<z.infer<typeof BlockSchema>>({
+  const t = useTranslations("EventDetails");
+  const form = useForm<BlockFormValues>({
     resolver: zodResolver(BlockSchema),
     defaultValues: {
       name: blockToEdit.name,
@@ -68,7 +53,7 @@ function EditBlockEntry({
     form.formState.isDirty,
   );
 
-  const onSubmit = async (data: z.infer<typeof BlockSchema>) => {
+  const onSubmit = async (data: BlockFormValues) => {
     const result = await updateBlock(
       eventUuid,
       attributeUuid,
@@ -81,7 +66,7 @@ function EditBlockEntry({
     );
     if (result.success) {
       toast({
-        title: "Zapisano zmiany w bloku",
+        title: t("blockChangesSaved"),
       });
       form.reset();
       setDialogOpen(false);
@@ -90,8 +75,12 @@ function EditBlockEntry({
       }, 100);
     } else {
       toast({
-        title: "Nie udało się zapisać zmian w bloku!",
-        description: result.error,
+        title: t("failedToSaveBlockChanges"),
+        description: translateOrFallback(
+          t,
+          result.error?.key,
+          result.error?.values,
+        ),
         variant: "destructive",
       });
     }
@@ -115,12 +104,12 @@ function EditBlockEntry({
       <DialogTrigger asChild>
         <Button variant="eventGhost" size="icon" className="relative">
           <Edit />
-          <span className="sr-only">Edytuj blok</span>
+          <span className="sr-only">{t("editBlock")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="w-96">
         <DialogHeader>
-          <DialogTitle>Edytuj blok</DialogTitle>
+          <DialogTitle>{t("editBlock")}</DialogTitle>
         </DialogHeader>
         <UnsavedChangesAlert
           active={alertActive}
@@ -132,57 +121,13 @@ function EditBlockEntry({
             onConfirm();
           }}
         />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nazwa</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nazwa bloku" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="capacity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Maksymalna liczba osób</FormLabel>
-                  <FormDescription>
-                    Zostaw puste jeśli chcesz aby blok miał nieskończoną ilość
-                    miejsc
-                  </FormDescription>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Pojemność bloku"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              variant="eventDefault"
-              className="w-full"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <Save />
-              )}{" "}
-              Zapisz
-            </Button>
-          </form>
-        </Form>
+        <BlockForm
+          form={form}
+          onSubmit={onSubmit}
+          loadingText={t("saving")}
+          submitText={t("save")}
+          idleIcon={Save}
+        />
       </DialogContent>
     </Dialog>
   );
