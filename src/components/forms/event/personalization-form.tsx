@@ -36,7 +36,7 @@ export const EventPersonalizationFormSchema = z.object({
   socialMediaLinks: z.array(
     z.object({
       label: z.string(),
-      type: z.string(),
+      type: z.literal("general"),
       url: z.string().url("invalidUrl").or(z.literal("")),
     }),
   ),

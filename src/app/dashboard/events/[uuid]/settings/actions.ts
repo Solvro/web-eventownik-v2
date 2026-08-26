@@ -83,16 +83,15 @@ export async function updateEvent(
       formData.append(`links[${index}][label]`, label);
     };
     const validLinks = event.links
-      .map((item) => ({ ...item, url: item.url.trim() || "" }))
-      .filter((item) => item.url !== "");
+      .map((item) => ({
+        ...item,
+        url: item.url.trim(),
+        label: item.label.trim(),
+      }))
+      .filter((item) => item.url);
     if (validLinks.length > 0) {
       for (const [index, item] of validLinks.entries()) {
-        addLinkToFormData(
-          item.url,
-          item.type || "general",
-          item.label || (item.type === "policy" ? "Policy" : ""),
-          index.toString(),
-        );
+        addLinkToFormData(item.url, item.type, item.label, index.toString());
       }
     }
 

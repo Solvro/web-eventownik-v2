@@ -27,7 +27,7 @@ export function SocialMediaLink({
   className?: string;
 }) {
   const { url, label } = link;
-  const displaylabel =
+  const displayLabel =
     label.trim().length > 0 ? label : new URL(url).hostname.replace("www.", "");
 
   return (
@@ -53,7 +53,7 @@ export function SocialMediaLink({
             ) : (
               <FaGlobe size={20} />
             )}
-            {displaylabel}
+            {displayLabel}
           </EventInfoDiv>
         </Link>
       </TooltipTrigger>

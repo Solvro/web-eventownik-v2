@@ -1,5 +1,5 @@
 export interface EventLink {
   url: string;
-  type: string;
+  type: "general" | "policy";
   label: string;
 }

@@ -128,7 +128,11 @@ export function EventSettingsTabs({
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
       participantsNumber: unmodifiedEvent.participantsCount ?? 100,
-      socialMediaLinks: generalLinks,
+      socialMediaLinks: generalLinks as {
+        label?: string;
+        url: string;
+        type: "general";
+      }[],
       slug: unmodifiedEvent.slug,
       contactEmail: unmodifiedEvent.contactEmail ?? undefined,
       // Co-organizers fields
@@ -210,7 +214,13 @@ export function EventSettingsTabs({
       links: [
         ...(values.termsLink == null
           ? []
-          : [{ url: values.termsLink, type: "policy", label: "Policy" }]),
+          : [
+              {
+                url: values.termsLink,
+                type: "policy" as const,
+                label: "Policy",
+              },
+            ]),
         ...values.socialMediaLinks.filter((link) => link.url !== ""),
       ],
       slug: values.slug,

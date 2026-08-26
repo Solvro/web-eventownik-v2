@@ -63,9 +63,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const allLinks = [
     ...(event.termsLink == null
       ? []
-      : [{ url: event.termsLink, type: "policy", label: "Policy" }]),
+      : [{ url: event.termsLink, type: "policy", label: "" }]),
     ...event.socialMediaLinks
-      .filter((link) => link.url)
+      .filter((link) => link.url.trim())
       .map((link) => ({
         url: link.url,
         type: "general",
@@ -73,7 +73,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       })),
   ];
   for (const [index, link] of allLinks.entries()) {
-    addLinkToFormData(link.url, link.type, link.label, index.toString());
+    addLinkToFormData(link.url, link.type, link.label.trim(), index.toString());
   }
 
   if (event.photoUrl) {
