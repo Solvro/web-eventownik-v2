@@ -218,7 +218,7 @@ export function EventSettingsTabs({
               {
                 url: values.termsLink,
                 type: "policy" as const,
-                label: "Policy",
+                label: "",
               },
             ]),
         ...values.socialMediaLinks.filter((link) => link.url !== ""),
