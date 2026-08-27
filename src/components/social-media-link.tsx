@@ -17,31 +17,21 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-function parseMarkdownLink(
-  link: string,
-): { label: string; url: string } | null {
-  const match = /^\[([^\]]+)]\((https?:\/\/[^\s)]+)\)$/.exec(link);
-  if (match != null) {
-    return { label: match[1], url: match[2] };
-  }
-  return null;
-}
+import type { EventLink } from "@/types/link";
 
 export function SocialMediaLink({
   link,
   className,
 }: {
-  link: string;
+  link: EventLink;
   className?: string;
 }) {
-  const md = parseMarkdownLink(link);
-  const url = md == null ? link : md.url;
-  const label =
-    md == null ? new URL(link).hostname.replace("www.", "") : md.label;
+  const { url, label } = link;
+  const displayLabel =
+    label.trim().length > 0 ? label : new URL(url).hostname.replace("www.", "");
 
   return (
-    <Tooltip key={link} delayDuration={0}>
+    <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
         <Link href={url} target="_blank">
           <EventInfoDiv className={className}>
@@ -63,7 +53,7 @@ export function SocialMediaLink({
             ) : (
               <FaGlobe size={20} />
             )}
-            {label}
+            {displayLabel}
           </EventInfoDiv>
         </Link>
       </TooltipTrigger>

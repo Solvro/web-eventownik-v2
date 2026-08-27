@@ -1,5 +1,6 @@
 import type { EventAttribute } from "./attributes";
 import type { EventForm } from "./forms";
+import type { EventLink } from "./link";
 
 export interface Event {
   uuid: string;
@@ -15,12 +16,11 @@ export interface Event {
   organizer: string | null;
   participantsCount: number | null;
   contactEmail: string | null;
-  socialMediaLinks: string[] | null;
   createdAt: string;
   updatedAt: string;
   photoUrl: string | null;
   registerForm: EventForm | null;
-  termsLink: string | null;
+  links: EventLink[];
   isActive: boolean;
   attributes: EventAttribute[];
 }

@@ -19,6 +19,7 @@ import { SocialMediaLink } from "@/components/social-media-link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { parseLinks } from "@/lib/links";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -50,7 +51,7 @@ export default async function DashboardEventPage({
   }
 
   const event = (await response.json()) as Event;
-
+  const { generalLinks } = parseLinks(event.links);
   return (
     <div className="flex h-full flex-col-reverse gap-4 xl:max-h-[calc(100vh-12rem)] xl:flex-row xl:justify-between">
       <div className="flex min-h-0 flex-1 flex-col gap-6">
@@ -98,13 +99,12 @@ export default async function DashboardEventPage({
               </ScrollArea>
             </div>
           ) : null}
-          {event.socialMediaLinks != null &&
-          event.socialMediaLinks.length > 0 ? (
+          {generalLinks != null && generalLinks.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {event.socialMediaLinks.map((link) => (
+              {generalLinks.map((link) => (
                 <SocialMediaLink
                   link={link}
-                  key={link}
+                  key={link.url}
                   className="bg-accent-foreground/60 text-background"
                 />
               ))}

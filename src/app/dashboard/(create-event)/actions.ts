@@ -43,19 +43,37 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("organizer", event.organizer ?? "");
   formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
-  formData.append("termsLink", event.termsLink ?? "");
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
 
-  for (const _link of event.socialMediaLinks) {
-    if (_link.link) {
-      const value =
-        _link.label == null ? _link.link : `[${_link.label}](${_link.link})`;
-      formData.append("socialMediaLinks[]", value);
-    }
+  const addLinkToFormData = (
+    url: string,
+    type: string,
+    label: string,
+    index: string,
+  ) => {
+    formData.append(`links[${index}][url]`, url);
+    formData.append(`links[${index}][type]`, type);
+    formData.append(`links[${index}][label]`, label);
+  };
+
+  const allLinks = [
+    ...(event.termsLink == null
+      ? []
+      : [{ url: event.termsLink, type: "policy", label: "" }]),
+    ...event.socialMediaLinks
+      .filter((link) => link.url.trim())
+      .map((link) => ({
+        url: link.url,
+        type: "general",
+        label: link.label ?? "",
+      })),
+  ];
+  for (const [index, link] of allLinks.entries()) {
+    addLinkToFormData(link.url, link.type, link.label.trim(), index.toString());
   }
 
   if (event.photoUrl) {
@@ -81,11 +99,19 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as { errors: { message: string }[] };
+    const error = (await response.json()) as {
+      message: string[] | string;
+      error: string;
+      statusCode: number;
+    };
+    const messages = Array.isArray(error.message)
+      ? error.message
+      : [error.message || "Unknown error"];
+
     console.error(
-      `[saveEvent] Failed to create event: ${error.errors[0]?.message ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
     );
-    return { errors: error.errors };
+    return { errors: messages.map((message) => ({ message })) };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;

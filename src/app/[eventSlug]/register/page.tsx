@@ -9,6 +9,7 @@ import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
+import { parseLinks } from "@/lib/links";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
@@ -68,6 +69,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   }
 
   const event = (await response.json()) as Event;
+  const { policyLink } = parseLinks(event.links);
 
   const form = event.registerForm;
 
@@ -144,14 +146,14 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         >
           {t("privacyPolicy")}
         </Link>
-        {event.termsLink === null ? (
+        {policyLink == null ? (
           <span> {t("ofEvent")}</span>
         ) : (
           <>
             {" "}
             {t("and")}{" "}
             <Link
-              href={event.termsLink}
+              href={policyLink.url}
               className="text-(--event-primary-color)/90"
               target="_blank"
             >
