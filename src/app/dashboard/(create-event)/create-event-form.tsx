@@ -109,7 +109,11 @@ export function CreateEventForm() {
       photoUrl: event.photoUrl,
       primaryColor: event.primaryColor,
       participantsNumber: event.participantsNumber,
-      socialMediaLinks: event.socialMediaLinks,
+      socialMediaLinks: event.socialMediaLinks as {
+        label?: string;
+        url: string;
+        type: "general";
+      }[],
       slug: event.slug === "" ? nameToSlug(event.name) : event.slug,
       contactEmail: event.contactEmail,
       coorganizers: [],

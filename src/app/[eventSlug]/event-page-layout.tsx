@@ -13,6 +13,7 @@ import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PHOTO_URL } from "@/lib/api";
+import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
 
 import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.png";
@@ -31,6 +32,7 @@ export function EventPageLayout({
   variant = "landing",
 }: EventPageLayoutProps) {
   const showForm = variant === "form";
+  const { generalLinks } = parseLinks(event.links);
 
   return (
     <ViewTransition>
@@ -133,10 +135,9 @@ export function EventPageLayout({
                     ) : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {event.socialMediaLinks != null &&
-                    event.socialMediaLinks.length > 0
-                      ? event.socialMediaLinks.map((link) => (
-                          <SocialMediaLink link={link} key={link} />
+                    {generalLinks != null && generalLinks.length > 0
+                      ? generalLinks.map((link) => (
+                          <SocialMediaLink link={link} key={link.url} />
                         ))
                       : null}
                   </div>
