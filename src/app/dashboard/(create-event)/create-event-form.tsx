@@ -235,7 +235,7 @@ export function CreateEventForm() {
                   )
                   .join("\n") ?? t("tryCreatingEventAgain"),
             });
-          } else if (result.id != null) {
+          } else if (result.uuid != null) {
             URL.revokeObjectURL(event.photoUrl);
 
             if (result.warnings != null && result.warnings.length > 0) {
@@ -285,7 +285,7 @@ export function CreateEventForm() {
 
             setTimeout(() => {
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              router.push(`/dashboard/events/${result.id}`);
+              router.push(`/dashboard/events/${result.uuid}`);
             }, 200);
           }
         } catch {

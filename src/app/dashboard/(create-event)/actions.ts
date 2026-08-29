@@ -20,7 +20,7 @@ interface ErrorMessage {
 }
 
 interface SaveEventResult {
-  id?: string;
+  uuid?: string;
   errors?: {
     message: ErrorMessage | string;
   }[];
@@ -41,7 +41,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
-  formData.append("contactEmail", event.contactEmail ?? "");
+  if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
+    formData.append("contactEmail", event.contactEmail);
+  }
   formData.append("slug", event.slug);
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
@@ -255,7 +257,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   }
 
   return {
-    id: eventUuid,
+    uuid: eventUuid,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
