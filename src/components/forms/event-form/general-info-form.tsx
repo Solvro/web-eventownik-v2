@@ -154,14 +154,14 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
       />
 
       {watch("openCondition") === "ON_DATE" && (
-        <div className="flex flex-col gap-x-12 gap-y-8">
-          <div className="space-y-2">
+        <div className="flex w-full flex-col flex-wrap gap-x-12 gap-y-8 md:flex-row">
+          <div className="flex-1 space-y-2 md:min-w-84">
             <div className="flex flex-row flex-wrap items-end gap-4">
               <FormField
                 control={control}
                 name="openDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col max-sm:flex-1">
+                  <FormItem className="flex flex-1 flex-col">
                     <FormLabel>{t("openingDateTime")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -217,13 +217,13 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
             </FormMessage>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex flex-row flex-wrap items-end gap-4">
+          <div className="flex-1 space-y-2 md:min-w-84">
+            <div className="flex flex-wrap items-end gap-4">
               <FormField
                 control={control}
                 name="closeDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col max-sm:flex-1">
+                  <FormItem className="flex flex-1 flex-col">
                     <FormLabel>{t("closingDateTime")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
