@@ -31,13 +31,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  getDateLocale,
-  translateOrFallback,
-} from "@/i18n/translate-or-fallback";
+import { getDateLocale, translateOrFallback } from "@/i18n/utils";
 import { combineDateAndTime } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
-import { OpenCondition } from "@/types/forms";
 
 export const EventFormGeneralInfoSchema = z
   .object({
@@ -47,7 +43,7 @@ export const EventFormGeneralInfoSchema = z
     closeTime: z.string(),
     openDate: z.date(),
     closeDate: z.date(),
-    openCondition: z.nativeEnum(OpenCondition),
+    openCondition: z.enum(["MANUAL", "ON_DATE"]),
     isFirstForm: z.boolean().default(false),
     isOpen: z.boolean().default(true),
   })
@@ -61,7 +57,7 @@ export const EventFormGeneralInfoSchema = z
   )
 
   .superRefine((schema, context) => {
-    if (schema.openCondition === OpenCondition.MANUAL) {
+    if (schema.openCondition === "MANUAL") {
       return;
     }
 
@@ -144,10 +140,8 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value={OpenCondition.MANUAL}>
-                  {t("manual")}
-                </SelectItem>
-                <SelectItem value={OpenCondition.ON_DATE}>
+                <SelectItem value="MANUAL">{t("manual")}</SelectItem>
+                <SelectItem value="ON_DATE">
                   {t("automaticDateTime")}
                 </SelectItem>
               </SelectContent>
@@ -159,7 +153,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         )}
       />
 
-      {watch("openCondition") === OpenCondition.ON_DATE && (
+      {watch("openCondition") === "ON_DATE" && (
         <div className="flex flex-col gap-x-12 gap-y-8">
           <div className="space-y-2">
             <div className="flex flex-row flex-wrap items-end gap-4">
@@ -286,7 +280,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
         </div>
       )}
 
-      {watch("openCondition") === OpenCondition.MANUAL && (
+      {watch("openCondition") === "MANUAL" && (
         <FormField
           name="isOpen"
           control={control}

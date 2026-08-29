@@ -3,7 +3,6 @@
 import { atom } from "jotai";
 
 import type { FormAttributeBase } from "@/types/attributes";
-import { OpenCondition } from "@/types/forms";
 import type { CompleteEventForm } from "@/types/forms";
 
 export interface NewEventForm extends Omit<
@@ -25,6 +24,6 @@ export const newEventFormAtom = atom<NewEventForm>({
   openDate: new Date(new Date().setHours(24, 0, 0, 0)),
   // Day after tomorrow, midnight
   closeDate: new Date(new Date().setHours(48, 0, 0, 0)),
-  openCondition: OpenCondition.MANUAL,
+  openCondition: "MANUAL",
   attributes: [],
 });

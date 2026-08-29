@@ -42,5 +42,5 @@ const DATE_FNS_LOCALES: Record<string, Locale> = {
 };
 
 export function getDateLocale(locale: string): Locale {
-  return DATE_FNS_LOCALES[locale] ?? enGB;
+  return DATE_FNS_LOCALES[locale] ?? pl;
 }

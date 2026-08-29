@@ -1,11 +1,10 @@
 "use server";
 
-import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { combineDateAndTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
-import { OpenCondition } from "@/types/forms";
 import type { CompleteEventForm } from "@/types/forms";
 
 type Payload = Omit<
@@ -35,12 +34,12 @@ export async function createEventForm(eventUuid: string, form: Payload) {
       name: form.name,
       description: form.description,
       openDate:
-        form.openCondition === OpenCondition.ON_DATE
+        form.openCondition === "ON_DATE"
           ? combineDateAndTime(form.openDate, form.openTime).toISOString()
           : null,
       attributes: form.attributes,
       closeDate:
-        form.openCondition === OpenCondition.ON_DATE
+        form.openCondition === "ON_DATE"
           ? combineDateAndTime(form.closeDate, form.closeTime).toISOString()
           : null,
       isOpen: form.isOpen,
@@ -110,12 +109,12 @@ export async function updateEventForm(
         name: form.name,
         description: form.description,
         openDate:
-          form.openCondition === OpenCondition.ON_DATE
+          form.openCondition === "ON_DATE"
             ? combineDateAndTime(form.openDate, form.openTime).toISOString()
             : null,
         attributes: form.attributes,
         closeDate:
-          form.openCondition === OpenCondition.ON_DATE
+          form.openCondition === "ON_DATE"
             ? combineDateAndTime(form.closeDate, form.closeTime).toISOString()
             : null,
         isFirstForm: form.isFirstForm,

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { Loader, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -45,11 +46,11 @@ function EventFormEditForm({
       openTime:
         formToEdit.openDate === null
           ? "12:00"
-          : `${new Date(formToEdit.openDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.openDate).getMinutes().toString().padStart(2, "0")}`,
+          : format(new Date(formToEdit.openDate), "HH:mm"),
       closeTime:
         formToEdit.closeDate === null
           ? "12:00"
-          : `${new Date(formToEdit.closeDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.closeDate).getMinutes().toString().padStart(2, "0")}`,
+          : format(new Date(formToEdit.closeDate), "HH:mm"),
       openDate: new Date(
         formToEdit.openDate ?? new Date().setHours(24, 0, 0, 0),
       ),

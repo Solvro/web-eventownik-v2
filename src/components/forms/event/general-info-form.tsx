@@ -23,10 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  getDateLocale,
-  translateOrFallback,
-} from "@/i18n/translate-or-fallback";
+import { getDateLocale, translateOrFallback } from "@/i18n/utils";
 import { cn } from "@/lib/utils";
 
 export type EventGeneralInfoErrors =

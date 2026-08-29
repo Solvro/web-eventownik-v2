@@ -37,10 +37,9 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { cn } from "@/lib/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
-import { OpenCondition } from "@/types/forms";
 
 import { createEventForm } from "./actions";
 
@@ -137,7 +136,7 @@ function CreateEventFormForm({
               closeTime: "12:00",
               openDate: new Date(new Date().setHours(24, 0, 0, 0)),
               closeDate: new Date(new Date().setHours(48, 0, 0, 0)),
-              openCondition: OpenCondition.MANUAL,
+              openCondition: "MANUAL",
               attributes: [],
             });
 

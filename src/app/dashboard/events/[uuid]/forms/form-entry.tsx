@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { OpenCondition } from "@/types/forms";
 import type { EventForm } from "@/types/forms";
 
 import { DeleteFormPopup } from "./delete-form-popup";
@@ -46,7 +45,7 @@ function FormEntry({
         </p>
 
         <p className="text-muted-foreground">
-          {form.openCondition === OpenCondition.ON_DATE &&
+          {form.openCondition === "ON_DATE" &&
             form.openDate !== null &&
             form.closeDate !== null && (
               <>
@@ -60,7 +59,7 @@ function FormEntry({
               </>
             )}
 
-          {form.openCondition === OpenCondition.MANUAL &&
+          {form.openCondition === "MANUAL" &&
             (form.isOpen ? (
               <span>{t("acceptingSubmissions")}</span>
             ) : (

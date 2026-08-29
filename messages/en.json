@@ -524,7 +524,7 @@
     "invalidIdentifier": "Invalid resource UUID",
     "formClosingMethod": "Form closing method",
     "manual": "Manually",
-    "automaticDateTime": "Automatically (date and time)",
+    "automaticDateTime": "Auto (date and time)",
     "openingDateTime": "Opening date and time",
     "closingDateTime": "Closing date and time",
     "openTimeRequired": "Opening time cannot be empty",

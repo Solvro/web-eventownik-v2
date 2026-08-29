@@ -1,4 +1,3 @@
-import { OpenCondition } from "@/types/forms";
 import type { EventForm } from "@/types/forms";
 
 /**
@@ -18,7 +17,7 @@ export function combineDateAndTime(date: Date, time: string) {
 }
 
 export function isFormOpen(form: EventForm): boolean {
-  if (form.openCondition === OpenCondition.MANUAL) {
+  if (form.openCondition === "MANUAL") {
     return form.isOpen;
   }
 
