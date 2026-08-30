@@ -3,7 +3,7 @@
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
-import type { FormErrorObject } from "@/types/form";
+import type { FormErrorObject } from "@/types/forms";
 
 interface ErrorResponse {
   errors: FormErrorObject[];

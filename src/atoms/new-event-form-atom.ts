@@ -7,7 +7,7 @@ import type { CompleteEventForm } from "@/types/forms";
 
 export interface NewEventForm extends Omit<
   CompleteEventForm,
-  "uuid" | "eventUuid" | "attributes" | "order"
+  "uuid" | "eventUuid" | "attributes" | "order" | "createdAt" | "updatedAt"
 > {
   attributes: FormAttributeBase[];
 }

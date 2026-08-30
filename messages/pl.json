@@ -372,7 +372,15 @@
     "privacyPolicy": "polityce prywatności",
     "and": "oraz",
     "terms": "regulaminie",
-    "ofEvent": "wydarzenia"
+    "ofEvent": "wydarzenia",
+    "organizerDisabledForm": "Organizator wyłączył ten formularz na Eventowniku",
+    "registrationWillBeAvailable": "Rejestracja będzie dostępna",
+    "formWillBeAvailable": "Formularz będzie dostępny",
+    "registrationWasAvailable": "Rejestracja była dostępna",
+    "formWasAvailable": "Formularz był dostępny",
+    "periodLabel": "{label} od <strong>{openDate}</strong> do <strong>{closeDate}</strong>",
+    "registrationUnavailable": "Rejestracja na <strong>{name}</strong> jest teraz niedostępna",
+    "formUnavailable": "Formularz <strong>{name}</strong> jest teraz niedostępny"
   },
   "EventDetails": {
     "step": "Krok {number}",

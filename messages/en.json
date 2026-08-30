@@ -372,7 +372,15 @@
     "privacyPolicy": "privacy policy",
     "and": "and",
     "terms": "terms and conditions",
-    "ofEvent": "of the event"
+    "ofEvent": "of the event",
+    "organizerDisabledForm": "The organizer has disabled this form on Eventownik",
+    "registrationWillBeAvailable": "Registration will be available",
+    "formWillBeAvailable": "The form will be available",
+    "registrationWasAvailable": "Registration was available",
+    "formWasAvailable": "The form was available",
+    "periodLabel": "{label} from <strong>{openDate}</strong> to <strong>{closeDate}</strong>",
+    "registrationUnavailable": "Registration for <strong>{name}</strong> is currently unavailable",
+    "formUnavailable": "The form <strong>{name}</strong> is currently unavailable"
   },
   "EventDetails": {
     "step": "Step {number}",

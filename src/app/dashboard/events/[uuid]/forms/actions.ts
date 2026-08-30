@@ -9,7 +9,13 @@ import type { CompleteEventForm } from "@/types/forms";
 
 type Payload = Omit<
   CompleteEventForm,
-  "eventUuid" | "uuid" | "slug" | "attributes" | "order"
+  | "eventUuid"
+  | "uuid"
+  | "slug"
+  | "attributes"
+  | "order"
+  | "createdAt"
+  | "updatedAt"
 > & {
   attributes: FormAttributeBase[];
 };

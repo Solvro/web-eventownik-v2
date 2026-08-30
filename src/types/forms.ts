@@ -13,6 +13,8 @@ export interface EventForm {
   openCondition: "MANUAL" | "ON_DATE";
   order: number;
   attributes: FormAttribute[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type CompleteEventForm = Omit<EventForm, "openDate" | "closeDate"> & {
@@ -21,3 +23,9 @@ export type CompleteEventForm = Omit<EventForm, "openDate" | "closeDate"> & {
   openTime: string;
   closeTime: string;
 };
+
+export interface FormErrorObject {
+  rule: string;
+  field: string;
+  message: string;
+}
