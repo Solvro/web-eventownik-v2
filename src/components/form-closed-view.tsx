@@ -57,7 +57,10 @@ export function FormClosedView({
       description={form.description}
       variant="form"
     >
-      <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
+      <div
+        style={{ viewTransitionName: "form-close-info" }}
+        className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center"
+      >
         <Info className="text-muted-foreground size-10" aria-hidden="true" />
 
         <div className="space-y-2">

@@ -67,23 +67,27 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
-      {event.registerForm !== null && isFormOpen(event.registerForm) ? (
+      {event.registerForm === null ? (
+        <div className="flex w-full justify-center pt-4">
+          <p className="bg-background/24 rounded-lg px-4 py-2 text-center backdrop-blur-sm sm:text-2xl sm:font-semibold">
+            {t("registrationDisabled")}
+          </p>
+        </div>
+      ) : (
         <div className="flex w-full justify-center pt-4">
           <Link href={`/${event.slug}/register#form`}>
             <Button
               variant="eventDefault"
               className="text-xl tracking-tight backdrop-blur-sm md:p-6 md:text-2xl pointer-fine:bg-(--event-primary-color)/70"
-              style={{ viewTransitionName: "register-button" }}
+              style={{
+                viewTransitionName: isFormOpen(event.registerForm)
+                  ? "register-button"
+                  : "form-close-info",
+              }}
             >
               {t("registerForThisEvent")}
             </Button>
           </Link>
-        </div>
-      ) : (
-        <div className="flex w-full justify-center pt-4">
-          <p className="bg-background/24 rounded-lg px-4 py-2 text-center backdrop-blur-sm sm:text-2xl sm:font-semibold">
-            {t("registrationDisabled")}
-          </p>
         </div>
       )}
     </EventPageLayout>
