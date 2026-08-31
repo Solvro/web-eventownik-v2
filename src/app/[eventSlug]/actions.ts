@@ -33,6 +33,33 @@ interface SubmitFormResult {
   error?: SubmitFormError;
 }
 
+interface UploadFileResponse {
+  fileId: string;
+}
+
+async function uploadFormFile(
+  eventUuid: string,
+  formUuid: string,
+  file: File,
+): Promise<UploadFileResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/files`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to upload file: ${file.name}`);
+  }
+
+  return (await response.json()) as UploadFileResponse;
+}
+
 /**
  * Server action for both register and 2nd stage participant form submissions.
  */
@@ -44,49 +71,35 @@ export async function submitParticipantForm({
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
   if (!isValidUuid(formUuid)) {
-    return { success: false, error: "Invalid form identifier" };
+    return { success: false, error: { message: "Invalid form identifier" } };
   }
 
   try {
-    const { email, token, ...attributeValues } = values;
+    const fileUploadPromises = files.map(async (file) => {
+      const result = await uploadFormFile(eventUuid, formUuid, file);
+      return {
+        attributeUuid: file.name,
+        value: result.fileId,
+      };
+    });
 
-    const attributes = Object.entries(attributeValues).map(
+    const fileAttributes = await Promise.all(fileUploadPromises);
+
+    const { email, token, ...attributeValues } = values;
+    const textAttributes = Object.entries(attributeValues).map(
       ([attributeUuid, value]) => ({
         attributeUuid,
         value: value ?? null,
       }),
     );
+
+    const attributes = [...textAttributes, ...fileAttributes];
+
     const payload = {
       email,
       ...(participantSlug != null && { participantId: participantSlug }),
       attributes,
     };
-
-    // for (const file of files) {
-    //   // Filename of file is corresponding attribute id
-    //   formData.append(file.name, file);
-    // }
-
-    // if (participantSlug !== undefined) {
-    //   formData.append("participantSlug", participantSlug);
-    // }
-
-    // for (const [key, value] of Object.entries(values)) {
-    //   if (Array.isArray(value)) {
-    //     // Handle opting out
-    //     if (value.length === 0) {
-    //       formData.append(key, "null");
-    //       continue;
-    //     }
-
-    //     for (const item of value) {
-    //       formData.append(key, String(item));
-    //     }
-    //     continue;
-    //   }
-
-    //   formData.append(key, String(value));
-    // }
 
     const response = await fetch(
       `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
@@ -110,8 +123,7 @@ export async function submitParticipantForm({
 
       const errorMessages = [
         errorData.message,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        ...(errorData.errors.map((error) => error.message) ?? []),
+        ...errorData.errors.map((error) => error.message),
       ]
         .filter(Boolean)
         .join("\n");
@@ -120,9 +132,7 @@ export async function submitParticipantForm({
         success: false,
         errors: errorData.errors,
         error: errorMessages
-          ? {
-              message: errorMessages,
-            }
+          ? { message: errorMessages }
           : {
               key: "httpError" as EventDetailsKey,
               values: {
