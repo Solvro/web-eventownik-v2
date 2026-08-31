@@ -180,7 +180,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
             {t("ofEvent")}
           </>
         )}
-      </p> */}
+      </p>
     </EventPageLayout>
   );
 }
