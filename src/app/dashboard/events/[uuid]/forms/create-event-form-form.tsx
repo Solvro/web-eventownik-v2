@@ -39,7 +39,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/forms";
 
 import { createEventForm } from "./actions";
 
@@ -50,7 +51,7 @@ function CreateEventFormForm({
   attributes,
 }: {
   eventUuid: string;
-  attributes: EventAttribute[];
+  attributes: Attribute[];
 }) {
   const t = useTranslations("EventDetails");
   const router = useRouter();
@@ -59,10 +60,8 @@ function CreateEventFormForm({
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
-  const [includedAttributes, setIncludedAttributes] = useState<
-    FormAttributeBase[]
-  >(
-    newEventForm.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
+    newEventForm.attributes.toSorted((a, b) => a.order - b.order),
   );
 
   const { isDirty, isGuardActive, onCancel, onConfirm } =
@@ -73,10 +72,6 @@ function CreateEventFormForm({
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
-      startTime: newEventForm.startTime,
-      endTime: newEventForm.endTime,
-      startDate: newEventForm.startDate,
-      endDate: newEventForm.endDate,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -115,6 +110,7 @@ function CreateEventFormForm({
         try {
           const newForm = {
             ...values,
+            isEditable: true,
             attributes: includedAttributes,
           };
 
@@ -130,11 +126,7 @@ function CreateEventFormForm({
               isFirstForm: false,
               description: "",
               name: "",
-              slug: "",
-              startTime: "12:00",
-              endTime: "12:00",
-              startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-              endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+              isEditable: true,
               attributes: [],
             });
 

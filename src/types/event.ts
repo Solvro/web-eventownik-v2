@@ -1,16 +1,19 @@
-import type { EventAttribute } from "./attributes";
+import type { Attribute } from "./attributes";
 import type { EventForm } from "./forms";
 import type { EventLink } from "./link";
 
 export interface Event {
-  uuid: string;
-  organizerUuid: string;
   name: string;
-  description: string | null;
-  slug: string;
+  uuid: string;
   startDate: string;
   endDate: string;
-  firstFormId: string;
+  createdAt: string;
+  updatedAt: string;
+  slug: string;
+  organizerUuid: string;
+  description: string | null;
+  registerFormUuid: string;
+  registerForm?: EventForm;
   location: string | null;
   primaryColor: string | null;
   organizer: string | null;
@@ -22,5 +25,5 @@ export interface Event {
   firstForm: EventForm | null;
   links: EventLink[];
   isActive: boolean;
-  attributes: EventAttribute[];
+  attributes: Attribute[];
 }

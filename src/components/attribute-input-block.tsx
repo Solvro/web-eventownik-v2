@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
+import type { Block } from "@/types/blocks";
+import type { Participant } from "@/types/participant";
 
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -22,43 +22,28 @@ const valueOrZero = (value: number | null | undefined) => {
  */
 export function AttributeInputBlock({
   block,
-  userData,
+  // participants,
   isMultiple,
   checked,
   onCheckedChange,
   disabled: disabledFromParent,
 }: {
-  block: PublicBlock;
-  userData: PublicParticipant | undefined;
+  block: Block;
+  // participants: Participant[];
+  userData?: Participant;
   isMultiple: boolean;
-  /**
-   * Only required when isMultiple is true
-   */
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
 }) {
+  // console.log("participants:", participants);
+
   const t = useTranslations("Form");
   const isFull =
-    block.capacity !== null && block.meta.participants.length >= block.capacity;
+    block.capacity !== null &&
+    (block.blockParticipantCount ?? 0) >= block.capacity;
 
-  const isRegistered =
-    userData === undefined
-      ? false
-      : userData.attributes.some((attribute) =>
-          attribute.type === "block" && attribute.isMultiple
-            ? attribute.meta.pivot_value.includes(block.uuid)
-            : attribute.meta.pivot_value === block.uuid,
-        );
-  const hasParticipants = block.meta.participants.length > 0;
-  const isAnonymousList =
-    hasParticipants &&
-    block.meta.participants.every(
-      (participant) =>
-        participant.name?.trim() === "" || participant.name === undefined,
-    );
-
-  const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
+  const isDisabled = disabledFromParent ?? isFull;
 
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
@@ -89,28 +74,22 @@ export function AttributeInputBlock({
                 className={cn(
                   "flex items-center gap-2 text-sm",
                   isFull && "text-red-600",
-                  isRegistered && "text-primary",
                 )}
               >
                 <Users className="size-4" />
                 {block.capacity === null
-                  ? valueOrZero(block.meta.participantsInBlockCount)
-                  : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+                  ? valueOrZero(block.blockParticipantCount)
+                  : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
               </div>
             </div>
           </div>
         </FormLabel>
       </div>
-      {isRegistered ? (
-        <p className="text-muted-foreground mb-0 text-sm leading-none whitespace-nowrap">
-          {t("userRegisteredOnBlock")}
-        </p>
-      ) : null}
       <div className="mt-auto">
         <Popover>
           <PopoverTrigger
             className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
-            disabled={!hasParticipants}
+            disabled={block.blockParticipantCount === 0}
           >
             {t("participants")}
             <ChevronRight className="size-4 transition-transform" />
@@ -119,14 +98,14 @@ export function AttributeInputBlock({
             className="w-(--radix-popover-trigger-width) p-2"
             align="center"
           >
-            {isAnonymousList ? (
+            {block.blockParticipantCount === 0 ? (
               <p className="text-muted-foreground px-3 text-sm">
                 {t("anonymousParticipantsList")}
               </p>
-            ) : hasParticipants ? (
+            ) : block.blockParticipantCount > 0 ? (
               <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
                 <ul className="divide-border/60 space-y-0.5 px-1">
-                  {block.meta.participants.map((occupant) => {
+                  {/* {participants.map((occupant) => {
                     const isAnonymous =
                       occupant.name?.trim() === "" ||
                       occupant.name === undefined;
@@ -143,7 +122,7 @@ export function AttributeInputBlock({
                           : occupant.name}
                       </li>
                     );
-                  })}
+                  })} */}
                 </ul>
               </ScrollArea>
             ) : (

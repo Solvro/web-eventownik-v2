@@ -1,21 +1,14 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
-
 import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { CreateEventFormDto } from "@/types/forms";
 
-type Payload = Omit<
-  EventForm,
-  "eventUuid" | "uuid" | "slug" | "attributes" | "order"
-> & {
-  attributes: FormAttributeBase[];
-};
-
-export async function createEventForm(eventUuid: string, form: Payload) {
+export async function createEventForm(
+  eventUuid: string,
+  payload: CreateEventFormDto,
+) {
   const session = await verifySession();
 
   if (session == null) {
@@ -31,15 +24,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.bearerToken}`,
     },
-    body: JSON.stringify({
-      name: form.name,
-      description: form.description,
-      startDate: formatISO9075(new Date()), //formatISO9075(form.startDate),
-      attributes: form.attributes,
-      endDate: null, //formatISO9075(form.endDate),
-      isOpen: form.isOpen,
-      isFirstForm: form.isFirstForm,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -80,7 +65,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
 export async function updateEventForm(
   eventUuid: string,
   formUuid: string,
-  form: Payload,
+  payload: Partial<CreateEventFormDto>,
 ) {
   const session = await verifySession();
 
@@ -91,11 +76,6 @@ export async function updateEventForm(
     };
   }
 
-  form.startDate.setHours(Number.parseInt(form.startTime.split(":")[0]));
-  form.startDate.setMinutes(Number.parseInt(form.startTime.split(":")[1]));
-  form.endDate.setHours(Number.parseInt(form.endTime.split(":")[0]));
-  form.endDate.setMinutes(Number.parseInt(form.endTime.split(":")[1]));
-
   const response = await fetch(
     `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
     {
@@ -104,15 +84,7 @@ export async function updateEventForm(
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.bearerToken}`,
       },
-      body: JSON.stringify({
-        name: form.name,
-        description: form.description,
-        startDate: formatISO9075(form.startDate),
-        attributes: form.attributes,
-        endDate: formatISO9075(form.endDate),
-        isFirstForm: form.isFirstForm,
-        isOpen: form.isOpen,
-      }),
+      body: JSON.stringify(payload),
     },
   );
 

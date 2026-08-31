@@ -21,7 +21,18 @@ export function useParticipantsData(
   const { data: participants, isFetching } = useQuery({
     queryKey: ["participants", eventUuid],
     queryFn: async () => getParticipants(eventUuid),
-    initialData: initialParticipants,
+    select: (response) => response?.data ?? [],
+    initialData: {
+      data: initialParticipants,
+      meta: {
+        page: 1,
+        take: initialParticipants.length,
+        itemCount: initialParticipants.length,
+        pageCount: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      },
+    },
   });
 
   const [flattenedData, setFlattenedData] = useState<FlattenedParticipant[]>(
@@ -29,9 +40,7 @@ export function useParticipantsData(
   );
 
   useEffect(() => {
-    if (participants != null) {
-      setFlattenedData(flattenParticipants(participants));
-    }
+    setFlattenedData(flattenParticipants(participants));
   }, [participants]);
 
   const bulkDeleteMutation = useMutation({

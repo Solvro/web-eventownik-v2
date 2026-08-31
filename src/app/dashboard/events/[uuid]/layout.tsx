@@ -5,7 +5,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { GetAttributesResponse } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
 async function fetchEventAndAttributes(eventUuid: string) {
@@ -38,7 +38,7 @@ async function fetchEventAndAttributes(eventUuid: string) {
   }
 
   const event = (await eventResponse.json()) as Event;
-  const attributes = (await attributesResponse.json()) as Attribute[];
+  const attributes = (await attributesResponse.json()) as GetAttributesResponse;
   return { event, attributes };
 }
 
@@ -72,7 +72,7 @@ export default async function DashboardEventLayout({
   return (
     <div className="mb-12 flex grow flex-col gap-4 sm:mb-0 sm:flex-row sm:gap-14">
       <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
-      <DashboardSidebar event={event} attributes={attributes} />
+      <DashboardSidebar event={event} attributes={attributes.data} />
       <div className="flex max-w-full grow flex-col overflow-x-auto px-0.5">
         {children}
       </div>

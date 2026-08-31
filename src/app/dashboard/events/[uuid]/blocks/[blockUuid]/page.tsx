@@ -7,7 +7,7 @@ import { CreateBlockForm } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid
 import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/toggle-participants-visibility-button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { AttributeBase } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 
 import { SortableBlockGrid } from "./sortable-block-grid";
@@ -18,7 +18,7 @@ async function getRootBlock(
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(blockUuid)}/blocks`,
+    `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(blockUuid)}/blocks`,
     {
       method: "GET",
       headers: {
@@ -53,8 +53,9 @@ async function getRootBlockAttributeName(
       },
     },
   );
+
   if (response.ok) {
-    const attribute = (await response.json()) as AttributeBase;
+    const attribute = (await response.json()) as Attribute;
     return attribute.name;
   } else {
     const error = (await response.json()) as unknown;
@@ -119,7 +120,7 @@ export default async function EventBlockEditPage({
             <span className="text-muted-foreground text-lg">
               {t("totalParticipants", {
                 count: rootBlock.children
-                  .map((block) => block.meta.participantsInBlockCount ?? 0)
+                  ?.map((block) => block.blockParticipantCount ?? 0)
                   .reduce((a, b) => a + b, 0),
               })}
             </span>
@@ -131,7 +132,7 @@ export default async function EventBlockEditPage({
             parentUuid={rootBlock.uuid}
           />
         </div>
-        {rootBlock.children.length > 0 ? (
+        {rootBlock.children !== undefined && rootBlock.children.length > 0 ? (
           <SortableBlockGrid
             blocks={rootBlock.children}
             eventUuid={eventUuid}

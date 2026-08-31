@@ -34,7 +34,7 @@ import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { parseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -59,7 +59,7 @@ type TabComponent = (props: TabProps) => JSX.Element;
 interface TabsProps {
   unmodifiedEvent: Event;
   unmodifiedCoOrganizers: CoOrganizer[];
-  unmodifiedAttributes: EventAttribute[];
+  unmodifiedAttributes: Attribute[];
 }
 
 export function EventSettingsTabs({
@@ -142,19 +142,7 @@ export function EventSettingsTabs({
         permissions: coOrganizer.permissions,
       })),
       // Attributes fields
-      attributes: unmodifiedAttributes.map((attribute) => ({
-        uuid: attribute.uuid,
-        name: attribute.name,
-        slug: attribute.slug ?? "",
-        type: attribute.type,
-        options: attribute.options ?? [],
-        showInList: attribute.showInList,
-        isSensitiveData: attribute.isSensitiveData,
-        reason: attribute.reason ?? "",
-        order: attribute.order ?? 0,
-        isMultiple: attribute.isMultiple,
-        maxSelections: attribute.maxSelections,
-      })),
+      attributes: unmodifiedAttributes,
     },
   });
 

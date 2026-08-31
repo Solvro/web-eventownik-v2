@@ -33,7 +33,7 @@ import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
 
@@ -83,7 +83,7 @@ function TriggerConfigurationInputs({
   trigger,
   form,
 }: {
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
   eventForms: EventForm[];
   trigger: string;
   form: ReturnType<typeof useForm<z.infer<typeof EventEmailEditFormSchema>>>;
@@ -198,7 +198,7 @@ function EventEmailEditForm({
   emailToEdit,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
   eventForms: EventForm[];
   emailToEdit: SingleEventEmail;
 }) {

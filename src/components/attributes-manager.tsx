@@ -10,24 +10,23 @@ import { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/forms";
 
 export interface AttributeItemProps {
   uuid: string;
   index: number;
-  attribute: EventAttribute;
+  attribute: Attribute;
   isIncluded: boolean;
   isRequired: boolean;
-  handleIncludeToggle: (attribute: EventAttribute) => void;
-  handleRequiredToggle: (attribute: EventAttribute) => void;
+  handleIncludeToggle: (attribute: Attribute) => void;
+  handleRequiredToggle: (attribute: Attribute) => void;
 }
 
 export interface AttributesReorderProps {
-  attributes: EventAttribute[];
-  includedAttributes: FormAttributeBase[];
-  setIncludedAttributes: React.Dispatch<
-    React.SetStateAction<FormAttributeBase[]>
-  >;
+  attributes: Attribute[];
+  includedAttributes: FormAttribute[];
+  setIncludedAttributes: React.Dispatch<React.SetStateAction<FormAttribute[]>>;
 }
 
 function AttributeItem({
@@ -94,36 +93,37 @@ function AttributesReorder({
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+  }, [attributes]);
 
   const isIncluded = (attributeUuid: string) => {
     return includedAttributes.some(
-      (attribute) => attribute.uuid === attributeUuid,
+      (attribute) => attribute.attributeUuid === attributeUuid,
     );
   };
 
-  const handleIncludeToggle = (attribute: EventAttribute) => {
+  const handleIncludeToggle = (attribute: Attribute) => {
     if (isIncluded(attribute.uuid)) {
       setIncludedAttributes((previous) =>
-        previous.filter((attribute_) => attribute_.uuid !== attribute.uuid),
+        previous.filter(
+          (attribute_) => attribute_.attributeUuid !== attribute.uuid,
+        ),
       );
     } else {
       setIncludedAttributes((previous) => [
         ...previous,
         {
-          ...attribute,
+          attributeUuid: attribute.uuid,
           isRequired: true,
-          isEditable: true,
           order: previous.length,
         },
       ]);
     }
   };
 
-  const handleRequiredToggle = (attribute: EventAttribute) => {
+  const handleRequiredToggle = (attribute: Attribute) => {
     setIncludedAttributes((previous) =>
       previous.map((attribute_) =>
-        attribute_.uuid === attribute.uuid
+        attribute_.attributeUuid === attribute.uuid
           ? { ...attribute_, isRequired: !attribute_.isRequired }
           : attribute_,
       ),
@@ -131,7 +131,7 @@ function AttributesReorder({
   };
 
   const includedIds = new Set(
-    includedAttributes.map((attribute) => attribute.uuid),
+    includedAttributes.map((attribute) => attribute.attributeUuid),
   );
   const nonIncludedAttributes = attributes.filter(
     (attribute) => !includedIds.has(attribute.uuid),
@@ -173,15 +173,15 @@ function AttributesReorder({
             <h2 className="text-sm">{t("selectedAttributes")}</h2>
             {includedAttributes.map((attribute, index) => {
               const fullAttribute = attributes.find(
-                (a) => a.uuid === attribute.uuid,
+                (a) => a.uuid === attribute.attributeUuid,
               );
               if (fullAttribute == null) {
                 return null;
               }
               return (
                 <AttributeItem
-                  key={attribute.uuid}
-                  uuid={attribute.uuid}
+                  key={attribute.attributeUuid}
+                  uuid={attribute.attributeUuid}
                   index={index}
                   attribute={fullAttribute}
                   isIncluded={true}
@@ -237,4 +237,4 @@ function AttributesReorder({
   );
 }
 
-export { AttributesReorder, AttributeItem };
+export { AttributeItem, AttributesReorder };

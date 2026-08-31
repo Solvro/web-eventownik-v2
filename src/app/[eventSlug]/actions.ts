@@ -3,7 +3,7 @@
 import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
-import type { FormErrorObject } from "@/types/form";
+import type { FormErrorObject } from "@/types/forms";
 
 interface ErrorResponse {
   errors: FormErrorObject[];
@@ -33,6 +33,33 @@ interface SubmitFormResult {
   error?: SubmitFormError;
 }
 
+interface UploadFileResponse {
+  fileId: string;
+}
+
+async function uploadFormFile(
+  eventUuid: string,
+  formUuid: string,
+  file: File,
+): Promise<UploadFileResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/files`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to upload file: ${file.name}`);
+  }
+
+  return (await response.json()) as UploadFileResponse;
+}
+
 /**
  * Server action for both register and 2nd stage participant form submissions.
  */
@@ -43,44 +70,45 @@ export async function submitParticipantForm({
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
-  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
+  if (!isValidUuid(formUuid)) {
     return { success: false, error: { message: "Invalid form identifier" } };
   }
 
   try {
-    const formData = new FormData();
+    const fileUploadPromises = files.map(async (file) => {
+      const result = await uploadFormFile(eventUuid, formUuid, file);
+      return {
+        attributeUuid: file.name,
+        value: result.fileId,
+      };
+    });
 
-    for (const file of files) {
-      // Filename of file is corresponding attribute id
-      formData.append(file.name, file);
-    }
+    const fileAttributes = await Promise.all(fileUploadPromises);
 
-    if (participantSlug !== undefined) {
-      formData.append("participantSlug", participantSlug);
-    }
+    const { email, token, ...attributeValues } = values;
+    const textAttributes = Object.entries(attributeValues).map(
+      ([attributeUuid, value]) => ({
+        attributeUuid,
+        value: value ?? null,
+      }),
+    );
 
-    for (const [key, value] of Object.entries(values)) {
-      if (Array.isArray(value)) {
-        // Handle opting out
-        if (value.length === 0) {
-          formData.append(key, "null");
-          continue;
-        }
+    const attributes = [...textAttributes, ...fileAttributes];
 
-        for (const item of value) {
-          formData.append(key, String(item));
-        }
-        continue;
-      }
-
-      formData.append(key, String(value));
-    }
+    const payload = {
+      email,
+      ...(participantSlug != null && { participantId: participantSlug }),
+      attributes,
+    };
 
     const response = await fetch(
-      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
+      `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
     );
 
@@ -95,8 +123,7 @@ export async function submitParticipantForm({
 
       const errorMessages = [
         errorData.message,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        ...(errorData.errors.map((error) => error.message) ?? []),
+        ...errorData.errors.map((error) => error.message),
       ]
         .filter(Boolean)
         .join("\n");
@@ -105,9 +132,7 @@ export async function submitParticipantForm({
         success: false,
         errors: errorData.errors,
         error: errorMessages
-          ? {
-              message: errorMessages,
-            }
+          ? { message: errorMessages }
           : {
               key: "httpError" as EventDetailsKey,
               values: {

@@ -214,9 +214,7 @@ export function CreateEventForm() {
               ? []
               : event.coorganizers,
           attributes:
-            event.attributes.length === 1 &&
-            !event.attributes[0].name &&
-            event.attributes[0].slug === ""
+            event.attributes.length === 1 && !event.attributes[0].name
               ? []
               : event.attributes,
         };
@@ -288,7 +286,8 @@ export function CreateEventForm() {
               router.push(`/dashboard/events/${result.id}`);
             }, 200);
           }
-        } catch {
+        } catch (error) {
+          console.error("error:", error);
           toast({
             variant: "destructive",
             title: t("serverConnectionError"),
