@@ -5,11 +5,13 @@ import { getTranslations } from "next-intl/server";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
-import type { Form } from "@/types/form";
+import type { EventForm } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
 
 import { EventNotFound } from "../../event-not-found";
@@ -26,7 +28,7 @@ interface FormPageProps {
 
 async function getEvent(eventSlug: string) {
   const eventResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -42,7 +44,7 @@ async function getEvent(eventSlug: string) {
 
 async function getForm(eventSlug: string, formSlug: string) {
   const formResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
     {
       method: "GET",
     },
@@ -52,7 +54,7 @@ async function getForm(eventSlug: string, formSlug: string) {
     console.error(error);
     return null;
   }
-  const form = (await formResponse.json()) as Form;
+  const form = (await formResponse.json()) as EventForm;
   return form;
 }
 
@@ -62,7 +64,7 @@ async function getUserData(
   userSlug: string,
 ) {
   const attributesUrl = new URL(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
   );
 
   for (const attribute of formAttributes) {
@@ -105,6 +107,10 @@ export default async function FormPage({ params }: FormPageProps) {
   const form = await getForm(eventSlug, formSlug);
   if (form === null) {
     return <EventNotFound whatNotFound="form" />;
+  }
+
+  if (!isFormOpen(form)) {
+    return <FormClosedView event={event} form={form} isRegistration={false} />;
   }
 
   const userData = await getUserData(form.attributes, event.slug, userSlug);

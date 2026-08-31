@@ -19,7 +19,7 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   photoUrl: string | null;
-  firstForm: EventForm | null;
+  registerForm: EventForm | null;
   links: EventLink[];
   isActive: boolean;
   attributes: EventAttribute[];

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";

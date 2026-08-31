@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { DashboardKey } from "@/i18n/translate-or-fallback";
+import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";

@@ -2,7 +2,7 @@
 
 import { formatISO } from "date-fns";
 
-import type { DashboardKey } from "@/i18n/translate-or-fallback";
+import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
@@ -10,7 +10,7 @@ import { verifySession } from "@/lib/session";
 import type { Event } from "./state";
 
 export async function isSlugTaken(slug: string) {
-  const response = await fetch(`${API_URL}/events/${slug}/public`);
+  const response = await fetch(`${API_URL}/public/events/${slug}`);
   return response.ok;
 }
 
@@ -20,7 +20,7 @@ interface ErrorMessage {
 }
 
 interface SaveEventResult {
-  id?: string;
+  uuid?: string;
   errors?: {
     message: ErrorMessage | string;
   }[];
@@ -41,7 +41,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
-  formData.append("contactEmail", event.contactEmail ?? "");
+  if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
+    formData.append("contactEmail", event.contactEmail);
+  }
   formData.append("slug", event.slug);
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
@@ -255,7 +257,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   }
 
   return {
-    id: eventUuid,
+    uuid: eventUuid,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

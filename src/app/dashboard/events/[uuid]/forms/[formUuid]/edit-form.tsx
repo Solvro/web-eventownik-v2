@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { Loader, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -42,12 +43,30 @@ function EventFormEditForm({
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      startTime: `${new Date(formToEdit.startDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.startDate).getMinutes().toString().padStart(2, "0")}`,
-      endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
-      startDate: new Date(formToEdit.startDate),
-      endDate: new Date(formToEdit.endDate),
+      openTime:
+        formToEdit.openDate === null
+          ? "12:00"
+          : format(new Date(formToEdit.openDate), "HH:mm"),
+      closeTime:
+        formToEdit.closeDate === null
+          ? "12:00"
+          : format(new Date(formToEdit.closeDate), "HH:mm"),
+      openDate: new Date(
+        formToEdit.openDate ?? new Date().setHours(24, 0, 0, 0),
+      ),
+      closeDate:
+        formToEdit.closeDate === null
+          ? formToEdit.openDate === null
+            ? new Date(new Date().setHours(48, 0, 0, 0))
+            : new Date(
+                new Date(formToEdit.openDate).setDate(
+                  new Date(formToEdit.openDate).getDate() + 1,
+                ),
+              )
+          : new Date(formToEdit.closeDate),
       isFirstForm: formToEdit.isFirstForm,
       isOpen: formToEdit.isOpen,
+      openCondition: formToEdit.openCondition,
     },
   });
   const { toast } = useToast();

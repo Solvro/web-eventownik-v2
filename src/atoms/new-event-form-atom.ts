@@ -3,28 +3,27 @@
 import { atom } from "jotai";
 
 import type { FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { CompleteEventForm } from "@/types/forms";
 
 export interface NewEventForm extends Omit<
-  EventForm,
-  "uuid" | "eventUuid" | "attributes" | "order"
+  CompleteEventForm,
+  "uuid" | "eventUuid" | "attributes" | "order" | "createdAt" | "updatedAt"
 > {
-  startTime: string;
-  endTime: string;
   attributes: FormAttributeBase[];
 }
 
-// TODO: Uncomment `isOpen` stuff once its fixed by backend
 export const newEventFormAtom = atom<NewEventForm>({
   isOpen: true,
   isFirstForm: false,
   description: "<p></p>",
   name: "",
   slug: "",
-  startTime: "12:00",
-  endTime: "12:00",
+  openTime: "12:00",
+  closeTime: "12:00",
   // Tomorrow, midnight
-  startDate: new Date(new Date().setHours(24, 0, 0, 0)),
-  endDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  openDate: new Date(new Date().setHours(24, 0, 0, 0)),
+  // Day after tomorrow, midnight
+  closeDate: new Date(new Date().setHours(48, 0, 0, 0)),
+  openCondition: "MANUAL",
   attributes: [],
 });

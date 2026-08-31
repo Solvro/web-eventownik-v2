@@ -196,7 +196,11 @@
     "coOrganizerAddError": "Wystąpił błąd podczas dodawania współorganizatora {email}. Możesz dodać go później w ustawieniach",
     "attributeAddWarning": "Nie udało się dodać atrybutu {name}. Możesz dodać go później w ustawieniach",
     "attributeAddError": "Wystąpił błąd podczas dodawania atrybutu {name}. Możesz dodać go później w ustawieniach",
-    "selectColor": "Wybór koloru"
+    "selectColor": "Wybór koloru",
+    "from": "Od",
+    "to": "do",
+    "acceptingSubmissions": "Przyjmuje zgłoszenia",
+    "notAcceptingSubmissions": "Nie przyjmuje zgłoszeń"
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -368,7 +372,15 @@
     "privacyPolicy": "polityce prywatności",
     "and": "oraz",
     "terms": "regulaminie",
-    "ofEvent": "wydarzenia"
+    "ofEvent": "wydarzenia",
+    "organizerDisabledForm": "Organizator wyłączył ten formularz na Eventowniku",
+    "registrationWillBeAvailable": "Rejestracja będzie dostępna",
+    "formWillBeAvailable": "Formularz będzie dostępny",
+    "registrationWasAvailable": "Rejestracja była dostępna",
+    "formWasAvailable": "Formularz był dostępny",
+    "periodLabel": "{label} od <strong>{openDate}</strong> do <strong>{closeDate}</strong>",
+    "registrationUnavailable": "Rejestracja na <strong>{name}</strong> jest teraz niedostępna",
+    "formUnavailable": "Formularz <strong>{name}</strong> jest teraz niedostępny"
   },
   "EventDetails": {
     "step": "Krok {number}",
@@ -517,7 +529,15 @@
     "unauthorized": "Brak autoryzacji",
     "httpError": "Błąd {status} {statusText}",
     "invalidEmailUuid": "Nieprawidłowy identyfikator maila",
-    "invalidIdentifier": "Nieprawidłowe UUID zasobu"
+    "invalidIdentifier": "Nieprawidłowe UUID zasobu",
+    "formClosingMethod": "Sposób zamknięcia formularza",
+    "manual": "Ręcznie",
+    "automaticDateTime": "Automatycznie (data i godzina)",
+    "openingDateTime": "Data i godzina otwarcia",
+    "closingDateTime": "Data i godzina zamknięcia",
+    "openTimeRequired": "Godzina otwarcia nie może być pusta",
+    "closeTimeRequired": "Godzina zamknięcia nie może być pusta",
+    "closeDateMustBeAfterOpenDate": "Data zamknięcia musi być po dacie otwarcia"
   },
   "EventPermissions": {
     "forms": "Formularze",

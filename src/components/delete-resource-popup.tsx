@@ -14,8 +14,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import type { EventDetailsKey } from "@/i18n/utils";
+import { translateOrFallback } from "@/i18n/utils";
 
 interface DeleteResourcePopupProps {
   resourceName: string;

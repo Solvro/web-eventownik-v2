@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
 import type { AuthSchemaErrorKeys } from "@/types/schemas";

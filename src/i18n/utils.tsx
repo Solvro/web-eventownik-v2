@@ -1,3 +1,5 @@
+import type { Locale } from "date-fns";
+import { enGB, pl } from "date-fns/locale";
 import type { useTranslations } from "next-intl";
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
@@ -32,4 +34,13 @@ export function translateOrFallback(
     const key = message as TranslationKey;
     return t.has(key) ? t(key, values) : message;
   }
+}
+
+const DATE_FNS_LOCALES: Record<string, Locale> = {
+  pl,
+  en: enGB,
+};
+
+export function getDateLocale(locale: string): Locale {
+  return DATE_FNS_LOCALES[locale] ?? pl;
 }

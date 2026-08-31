@@ -1,3 +1,4 @@
+import { formatDate } from "date-fns";
 import { SquarePen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -42,12 +43,29 @@ function FormEntry({
         <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
           {form.name}
         </p>
-        {/*
+
         <p className="text-muted-foreground">
-          {new Date(form.startDate).toLocaleDateString()} -{" "}
-          {new Date(form.endDate).toLocaleDateString()}
+          {form.openCondition === "ON_DATE" &&
+            form.openDate !== null &&
+            form.closeDate !== null && (
+              <>
+                <span>
+                  {t("from")} {formatDate(form.openDate, "dd.MM.yyyy HH:mm")}
+                </span>
+                <br />
+                <span>
+                  {t("to")} {formatDate(form.closeDate, "dd.MM.yyyy HH:mm")}
+                </span>
+              </>
+            )}
+
+          {form.openCondition === "MANUAL" &&
+            (form.isOpen ? (
+              <span>{t("acceptingSubmissions")}</span>
+            ) : (
+              <span>{t("notAcceptingSubmissions")}</span>
+            ))}
         </p>
-        */}
       </div>
     </div>
   );
