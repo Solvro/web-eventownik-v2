@@ -66,10 +66,12 @@ const PreserveInlineStyles = Extension.create({
 
             for (const div of container.querySelectorAll("div[style]")) {
               const p = document.createElement("p");
-              const style = div.getAttribute("style");
-              if (style !== null) {
-                p.setAttribute("style", style);
-              }
+              // `div[style]` guarantees the attribute is present here.
+              const style = div.getAttribute("style") ?? "";
+              // We turn a `div` into `p`. Paragraphs tend to have default margins in email clients,
+              // unlike divs. If something was a div before the transformation, it shouldn't have
+              // any margin, so we reset it to 0 before applying the other styles
+              p.setAttribute("style", `margin: 0; ${style}`);
               // Move the real child nodes (rather than copying innerHTML as
               // a string) so any div[style] nested inside this one is still
               // reachable by the same querySelectorAll pass.
