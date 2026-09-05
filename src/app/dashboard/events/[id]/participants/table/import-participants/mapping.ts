@@ -1,4 +1,4 @@
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
@@ -59,8 +59,8 @@ function getMatchKey(value: string) {
 function getAttributeMatchKeys(attribute: Attribute) {
   const keys = new Set(
     [
-      getAttributeLabel(attribute.name, "pl"),
-      getAttributeLabel(attribute.name, "en"),
+      legacyTranslate(attribute.name, "pl"),
+      legacyTranslate(attribute.name, "en"),
       attribute.slug ?? "",
     ]
       .filter((value) => value !== "")
