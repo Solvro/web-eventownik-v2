@@ -2,12 +2,15 @@
 
 import { Image } from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extension-placeholder";
+import { TableKit } from "@tiptap/extension-table";
 import { TextAlign } from "@tiptap/extension-text-align";
+import { TextStyle } from "@tiptap/extension-text-style";
 import type { Extensions } from "@tiptap/react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { useEffect } from "react";
 
+import { PreserveInlineStyles } from "@/lib/preserve-inline-styles";
 import { cn } from "@/lib/utils";
 
 import { EditorMenuBar } from "./editor-menu-bar";
@@ -45,7 +48,13 @@ function WysiwygEditor({
       }),
       Image.configure({
         allowBase64: true,
+        inline: true,
       }),
+      TableKit.configure({
+        table: { resizable: true },
+      }),
+      TextStyle,
+      PreserveInlineStyles,
       ...extensions,
     ],
     editable: disabled === undefined ? true : !disabled,
@@ -85,7 +94,7 @@ function WysiwygEditor({
   return (
     <div
       className={cn(
-        "border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[60px] max-w-[974px] resize-y flex-col overflow-hidden rounded-xl border bg-transparent px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-15 max-w-243.5 resize-y flex-col overflow-hidden rounded-xl border bg-transparent text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         disabled === undefined || !disabled
           ? ""
           : "pointer-events-none cursor-not-allowed opacity-50",
@@ -96,7 +105,7 @@ function WysiwygEditor({
       <ScrollArea className="min-h-0 flex-1">
         <EditorContent
           editor={editor}
-          className={isEmailEditor ? "email-root" : ""}
+          className={isEmailEditor ? "email-root bg-white p-2 text-black" : ""}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
