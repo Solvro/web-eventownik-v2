@@ -2,8 +2,6 @@ import { cleanup, screen } from "@testing-library/react";
 import { format } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import type { Attribute } from "@/types/attributes";
-
 import {
   numberCaseData,
   stringLikeDataTestCases,
@@ -77,7 +75,6 @@ describe("Sorting", () => {
   it.each([...stringLikeDataTestCases])(
     "should correctly cycle through each sorting state when sorting by $attributeType type",
     async ({ participants, attributes, attributeType }) => {
-      const typedAttributes = attributes as unknown as Attribute[];
       // NOTE: Default view sorting is handled in the `getParticipants` server action - we enforce it here in the tests
       const initialParticipants = participants.toSorted(
         (a, b) =>
@@ -86,12 +83,12 @@ describe("Sorting", () => {
 
       const { user, getDisplayedValuesFromColumn } = renderTable(
         initialParticipants,
-        typedAttributes,
+        attributes,
       );
 
       const getSortHeader = () =>
         screen.getByRole("button", {
-          name: typedAttributes[0].name,
+          name: attributes[0].name,
         });
 
       const initialOrder = getDisplayedValuesFromColumn(TESTED_COLUMN_INDEX);
@@ -119,16 +116,15 @@ describe("Sorting", () => {
 
   it("should reset any sorting", async () => {
     const { participants, attributes, attributeType } = numberCaseData;
-    const typedAttributes = attributes as unknown as Attribute[];
     const initialParticipants = participants.toSorted(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
     const { user, getDisplayedValuesFromColumn, resetSortingButton } =
-      renderTable(initialParticipants, typedAttributes);
+      renderTable(initialParticipants, attributes);
 
     const sortHeader = screen.getByRole("button", {
-      name: typedAttributes[0].name,
+      name: attributes[0].name,
     });
 
     // Step 1: Capture initial order
@@ -156,16 +152,15 @@ describe("Sorting", () => {
   // TODO: This only checks if the headers indicate a sorting state rather than checking displayed data
   it("should properly apply multisort", async () => {
     const { participants, attributes } = textCaseData;
-    const typedAttributes = attributes as unknown as Attribute[];
-    const { user } = renderTable(participants, typedAttributes);
+    const { user } = renderTable(participants, attributes);
 
     const getTextSortHeader = () =>
       screen.getByRole("columnheader", {
-        name: typedAttributes[0].name,
+        name: attributes[0].name,
       });
     const getTextSortHeaderButton = () =>
       screen.getByRole("button", {
-        name: typedAttributes[0].name,
+        name: attributes[0].name,
       });
 
     // eslint-disable-next-line unicorn/consistent-function-scoping

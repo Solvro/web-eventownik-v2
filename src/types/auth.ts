@@ -31,10 +31,7 @@ export interface SessionPayload extends JWTPayload {
 export type LoginError = "invalidLoginCredentials" | "serverErrorTryLater";
 
 export type ResetPassTokenError =
-  | "sendResetEmailFailed"
-  | "serverErrorTryLater";
+  "sendResetEmailFailed" | "serverErrorTryLater";
 
 export type ResetError =
-  | "tokenInvalidOrExpired"
-  | "passwordResetFailed"
-  | "serverErrorTryLater";
+  "tokenInvalidOrExpired" | "passwordResetFailed" | "serverErrorTryLater";

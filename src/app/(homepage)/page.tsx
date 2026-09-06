@@ -4,12 +4,12 @@ import { Events } from "@/app/(homepage)/sections/events";
 import { Footer } from "@/app/(homepage)/sections/footer";
 import { Functionalities } from "@/app/(homepage)/sections/functionalities";
 import { Hero } from "@/app/(homepage)/sections/hero";
-import { HighlightedEvents } from "@/app/(homepage)/sections/highlighted-events";
 import { Navbar } from "@/app/(homepage)/sections/navbar";
 import { Partners } from "@/app/(homepage)/sections/partners";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
 import { Alerts } from "@/components/alerts";
+import { HighlightedEventsCarousel } from "@/components/highlighted-events-carousel";
 
 export default function Home() {
   return (
@@ -21,7 +21,7 @@ export default function Home() {
             <Alerts className="container mx-auto px-4 sm:px-0 xl:max-w-6xl" />
           </div>
           <Hero />
-          <HighlightedEvents />
+          <HighlightedEventsCarousel className="overflow-x-hidden" />
           <Events />
           <Functionalities />
         </div>
@@ -30,7 +30,7 @@ export default function Home() {
           alt=""
           width={3000}
           height={3000}
-          className="absolute inset-0 w-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] object-cover opacity-10"
+          className="absolute inset-0 w-full mask-[linear-gradient(to_bottom,black_75%,transparent_100%)] object-cover opacity-10"
         />
       </div>
       <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">

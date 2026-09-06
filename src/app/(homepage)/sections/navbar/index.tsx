@@ -22,10 +22,9 @@ export function Navbar() {
         <div className="flex items-center gap-8 uppercase">
           <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
-          <Link href="#events">{t("events")}</Link>
-          <Link href="#functionalities">{t("features")}</Link>
-          <Link href="#faq">FAQ</Link>
-          <Link href="#team">{t("team")}</Link>
+          <Link href="/">Strona główna</Link>
+          <Link href="/events">Wydarzenia</Link>
+          <Link href="/dashboard">Panel</Link>
         </div>
         <div className="flex items-center gap-4">
           <LanguageSwitch />

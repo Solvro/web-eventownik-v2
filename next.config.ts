@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
       },
+      // for placeholder images in development
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
     ],
     dangerouslyAllowLocalIP: true,
   },
@@ -47,7 +52,6 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "20mb",
     },
-    viewTransition: true,
   },
   output: "standalone",
 };
