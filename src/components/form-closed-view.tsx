@@ -20,7 +20,8 @@ export function FormClosedView({
 }: FormClosedViewProps) {
   const t = useTranslations("Event");
 
-  const getFormStatus = async () => {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  const getFormStatus = () => {
     if (form.openCondition === "MANUAL") {
       return isRegistration
         ? t("registrationDisabled")

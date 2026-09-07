@@ -2,12 +2,12 @@
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
-import { combineDateAndTime } from "@/lib/event-form-utils";
+import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { CompleteEventForm } from "@/types/forms";
 
-type Payload = Omit<
+export type Payload = Omit<
   CompleteEventForm,
   | "eventUuid"
   | "uuid"
@@ -39,15 +39,9 @@ export async function createEventForm(eventUuid: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      openDate:
-        form.openCondition === "ON_DATE"
-          ? combineDateAndTime(form.openDate, form.openTime).toISOString()
-          : null,
+      openDate: resolveFormDateTime(form),
       attributes: form.attributes,
-      closeDate:
-        form.openCondition === "ON_DATE"
-          ? combineDateAndTime(form.closeDate, form.closeTime).toISOString()
-          : null,
+      closeDate: resolveFormDateTime(form),
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
       openCondition: form.openCondition,
@@ -114,15 +108,9 @@ export async function updateEventForm(
       body: JSON.stringify({
         name: form.name,
         description: form.description,
-        openDate:
-          form.openCondition === "ON_DATE"
-            ? combineDateAndTime(form.openDate, form.openTime).toISOString()
-            : null,
+        openDate: resolveFormDateTime(form),
         attributes: form.attributes,
-        closeDate:
-          form.openCondition === "ON_DATE"
-            ? combineDateAndTime(form.closeDate, form.closeTime).toISOString()
-            : null,
+        closeDate: resolveFormDateTime(form),
         isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
         openCondition: form.openCondition,

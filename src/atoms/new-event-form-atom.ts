@@ -2,6 +2,7 @@
 
 import { atom } from "jotai";
 
+import { getDefaultFormDates } from "@/lib/event-form-utils";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { CompleteEventForm } from "@/types/forms";
 
@@ -18,12 +19,7 @@ export const newEventFormAtom = atom<NewEventForm>({
   description: "<p></p>",
   name: "",
   slug: "",
-  openTime: "12:00",
-  closeTime: "12:00",
-  // Tomorrow, midnight
-  openDate: new Date(new Date().setHours(24, 0, 0, 0)),
-  // Day after tomorrow, midnight
-  closeDate: new Date(new Date().setHours(48, 0, 0, 0)),
+  ...getDefaultFormDates(),
   openCondition: "MANUAL",
   attributes: [],
 });

@@ -531,6 +531,7 @@
     "invalidEmailUuid": "Nieprawidłowy identyfikator maila",
     "invalidIdentifier": "Nieprawidłowe UUID zasobu",
     "formClosingMethod": "Sposób zamknięcia formularza",
+    "selectFormClosingMethod": "Wybierz sposób zamknięcia formularza",
     "manual": "Ręcznie",
     "automaticDateTime": "Automatycznie (data i godzina)",
     "openingDateTime": "Data i godzina otwarcia",

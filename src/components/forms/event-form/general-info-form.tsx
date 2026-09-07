@@ -1,14 +1,12 @@
 "use client";
 
-import { format, subDays } from "date-fns";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { subDays } from "date-fns";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
+import { FormDateTimeField } from "@/components/date-time-field";
 import { WysiwygEditor } from "@/components/editor";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
   FormDescription,
@@ -19,11 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -31,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { getDateLocale, translateOrFallback } from "@/i18n/utils";
+import { translateOrFallback } from "@/i18n/utils";
 import { combineDateAndTime } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
 
@@ -95,9 +88,8 @@ interface GeneralInfoFormProps {
 
 export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
   const t = useTranslations("EventDetails");
-  const locale = useLocale();
 
-  const { control, formState, watch } =
+  const { control, formState, watch, getValues } =
     useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
   return (
@@ -136,7 +128,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Wybierz sposób zamknięcia formularza" />
+                  <SelectValue placeholder={t("selectFormClosingMethod")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -155,128 +147,30 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
 
       {watch("openCondition") === "ON_DATE" && (
         <div className="flex w-full flex-col flex-wrap gap-x-12 gap-y-8 md:flex-row">
-          <div className="flex-1 space-y-2 md:min-w-84">
-            <div className="flex flex-row flex-wrap items-end gap-4">
-              <FormField
-                control={control}
-                name="openDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col">
-                    <FormLabel>{t("openingDateTime")}</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className="pl-3 text-left font-normal"
-                            disabled={formState.isSubmitting}
-                          >
-                            {format(field.value, "PPP", {
-                              locale: getDateLocale(locale),
-                            })}
-                            <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          className="z-50"
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date <= subDays(new Date(), 1)}
-                          locale={getDateLocale(locale)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormItem>
-                )}
-              />
+          <FormDateTimeField
+            control={control}
+            formState={formState}
+            label={t("openingDateTime")}
+            dateName={"openDate"}
+            timeName={"openTime"}
+            className="flex-1 md:min-w-84"
+          />
 
-              <FormField
-                control={control}
-                name="openTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        {...field}
-                        disabled={formState.isSubmitting}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(t, formState.errors.openDate?.message)}
-            </FormMessage>
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(t, formState.errors.openTime?.message)}
-            </FormMessage>
-          </div>
-
-          <div className="flex-1 space-y-2 md:min-w-84">
-            <div className="flex flex-wrap items-end gap-4">
-              <FormField
-                control={control}
-                name="closeDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col">
-                    <FormLabel>{t("closingDateTime")}</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className="pl-3 text-left font-normal"
-                            disabled={formState.isSubmitting}
-                          >
-                            {format(field.value, "PPP", {
-                              locale: getDateLocale(locale),
-                            })}
-                            <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          className="z-50"
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date <= subDays(new Date(), 1)}
-                          locale={getDateLocale(locale)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="closeTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        disabled={formState.isSubmitting}
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(t, formState.errors.closeDate?.message)}
-            </FormMessage>
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(t, formState.errors.closeTime?.message)}
-            </FormMessage>
-          </div>
+          <FormDateTimeField
+            control={control}
+            formState={formState}
+            label={t("closingDateTime")}
+            dateName={"closeDate"}
+            timeName={"closeTime"}
+            className="flex-1 md:min-w-84"
+            disabled={(date) =>
+              date <
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              (getValues("openDate") === undefined
+                ? subDays(new Date(), 1)
+                : getValues("openDate"))
+            }
+          />
         </div>
       )}
 

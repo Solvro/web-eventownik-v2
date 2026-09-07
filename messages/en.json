@@ -531,6 +531,7 @@
     "invalidEmailUuid": "Invalid email ID",
     "invalidIdentifier": "Invalid resource UUID",
     "formClosingMethod": "Form closing method",
+    "selectFormClosingMethod": "Select the form closing method",
     "manual": "Manually",
     "automaticDateTime": "Auto (date and time)",
     "openingDateTime": "Opening date and time",

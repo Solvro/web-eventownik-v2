@@ -1,5 +1,7 @@
 import type { FormAttribute } from "./attributes";
 
+export type OpenCondition = "MANUAL" | "ON_DATE";
+
 export interface EventForm {
   uuid: string;
   eventUuid: string;
@@ -10,7 +12,7 @@ export interface EventForm {
   slug: string;
   openDate: Date | null;
   closeDate: Date | null;
-  openCondition: "MANUAL" | "ON_DATE";
+  openCondition: OpenCondition;
   order: number;
   attributes: FormAttribute[];
   createdAt: string;
