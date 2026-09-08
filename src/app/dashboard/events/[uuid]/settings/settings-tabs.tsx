@@ -56,6 +56,33 @@ const EventSettingsSchema = z.intersection(
 
 type TabComponent = (props: TabProps) => JSX.Element;
 
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
+}
+
+function formatErrorMessage(
+  message: string | ErrorMessage,
+  t: ReturnType<typeof useTranslations<"Dashboard">>,
+) {
+  if (typeof message === "string") {
+    return message;
+  }
+
+  const values =
+    message.key === "failedToDeleteAttribute" && message.values != null
+      ? {
+          ...message.values,
+          errorData:
+            message.values.errorData === "unknownError"
+              ? t("unknownError")
+              : message.values.errorData,
+        }
+      : message.values;
+
+  return translateOrFallback(t, message.key, values);
+}
+
 interface TabsProps {
   unmodifiedEvent: Event;
   unmodifiedCoOrganizers: CoOrganizer[];
@@ -251,22 +278,7 @@ export function EventSettingsTabs({
               ...eventErrors,
               ...otherErrors,
             ]
-              .map((error) =>
-                translateOrFallback(
-                  t,
-                  error.message.key,
-                  error.message.key === "failedToDeleteAttribute" &&
-                    error.message.values != null
-                    ? {
-                        ...error.message.values,
-                        errorData:
-                          error.message.values.errorData === "unknownError"
-                            ? t("unknownError")
-                            : error.message.values.errorData,
-                      }
-                    : error.message.values,
-                ),
-              )
+              .map((error) => formatErrorMessage(error.message, t))
               .join("\n")}`,
           });
         } else {
@@ -318,7 +330,7 @@ export function EventSettingsTabs({
         variant: "destructive",
         title: t("failedToDeleteEvent"),
         description: `${t("tryAgain")}\n${result.errors
-          .map((error) => translateOrFallback(t, error.message.key))
+          .map((error) => formatErrorMessage(error.message, t))
           .join("\n")}`,
       });
     } else {

@@ -24,25 +24,24 @@ export function FilterButton({
   attributeUuid,
 }: {
   attributeType: AttributeType;
-  options_: (string | { label: string; value: string })[] | null;
+  options_?: (string | { label: string; value: string })[];
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
   blocks: (Block | null)[] | null;
   attributeUuid: string;
-  options_?: string[] | null;
 }) {
   const t = useTranslations("Table");
 
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiSelect" && options_ !== null) ||
+    (attributeType === "multiSelect" && options_ !== undefined) ||
     attributeType === "block"
   ) {
     let options: {
       label: string;
       value: ParticipantAttributeValueType;
     }[] =
-      options_ === null
+      options_ === undefined
         ? []
         : options_.map((option) =>
             typeof option === "string"
@@ -50,7 +49,7 @@ export function FilterButton({
               : { label: option.label, value: option.value },
           );
 
-    if (attributeType === "checkbox" && options_ === null) {
+    if (attributeType === "checkbox" && options_ === undefined) {
       options = [
         { label: t("true"), value: "true" },
         { label: t("false"), value: "false" },
@@ -60,7 +59,7 @@ export function FilterButton({
     if (attributeType === "block") {
       const rootBlock = blocks?.find((b) => b?.attributeUuid === attributeUuid);
       options =
-        rootBlock?.children?.map((block) => ({
+        rootBlock?.children.map((block) => ({
           label: block.name,
           value: block.uuid,
         })) ?? [];

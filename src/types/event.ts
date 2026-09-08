@@ -19,8 +19,6 @@ export interface Event {
   organizer: string | null;
   participantsCount: number | null;
   contactEmail: string | null;
-  createdAt: string;
-  updatedAt: string;
   photoUrl: string | null;
   registerForm: EventForm | null;
   links: EventLink[];

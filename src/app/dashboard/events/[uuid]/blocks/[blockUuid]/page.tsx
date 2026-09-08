@@ -120,7 +120,7 @@ export default async function EventBlockEditPage({
             <span className="text-muted-foreground text-lg">
               {t("totalParticipants", {
                 count: rootBlock.children
-                  ?.map((block) => block.blockParticipantCount ?? 0)
+                  .map((block) => block.blockParticipantCount ?? 0)
                   .reduce((a, b) => a + b, 0),
               })}
             </span>
@@ -132,7 +132,7 @@ export default async function EventBlockEditPage({
             parentUuid={rootBlock.uuid}
           />
         </div>
-        {rootBlock.children !== undefined && rootBlock.children.length > 0 ? (
+        {rootBlock.children.length > 0 ? (
           <SortableBlockGrid
             blocks={rootBlock.children}
             eventUuid={eventUuid}

@@ -38,7 +38,7 @@ export default async function DashboardEventEmailTemplatesPage({
         <h1 className="text-3xl font-bold">{t("emailTemplates")}</h1>
         <CreateEmailTemplateForm
           eventUuid={uuid}
-          attributes={attributes?.data ?? []}
+          attributes={attributes}
           eventForms={forms}
         />
       </div>

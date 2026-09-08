@@ -41,12 +41,12 @@ export function formatAttributeValue(
       const rootBlock = blocks.find((b) => b?.attributeUuid === attributeUuid);
 
       return (
-        rootBlock?.children?.find((b) => {
+        rootBlock?.children.find((b) => {
           return b.uuid === value;
         })?.name ?? value
       );
     }
-    case "multiselect": {
+    case "multiSelect": {
       const items = parseMultiValue(String(value)).filter(Boolean);
       return items.join(", ");
     }

@@ -20,6 +20,7 @@ const valueOrZero = (value: number | null | undefined) => {
 /**
  * A single block entry card, being a radio group item.
  */
+// TODO look how we can get participants
 export function AttributeInputBlock({
   block,
   // participants,
@@ -36,8 +37,6 @@ export function AttributeInputBlock({
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
 }) {
-  // console.log("participants:", participants);
-
   const t = useTranslations("Form");
   const isFull =
     block.capacity !== null &&
@@ -102,7 +101,7 @@ export function AttributeInputBlock({
               <p className="text-muted-foreground px-3 text-sm">
                 {t("anonymousParticipantsList")}
               </p>
-            ) : block.blockParticipantCount > 0 ? (
+            ) : (block.blockParticipantCount ?? 0) > 0 ? (
               <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
                 <ul className="divide-border/60 space-y-0.5 px-1">
                   {/* {participants.map((occupant) => {

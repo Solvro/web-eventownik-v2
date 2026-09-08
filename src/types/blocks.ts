@@ -10,7 +10,7 @@ export interface Block {
   attributeUuid: string | null;
   isRootBlock: boolean;
   blockParticipantCount?: number;
-  children?: Block[];
+  children: Block[];
 }
 
 export interface BlockParticipant {

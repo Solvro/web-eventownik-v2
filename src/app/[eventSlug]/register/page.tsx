@@ -12,7 +12,6 @@ import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
-import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 import type { GetPublicFormResponse } from "@/types/forms";
 
@@ -71,7 +70,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     return <EventNotFound whatNotFound="event" />;
   }
 
-  const event = (await response.json()) as Event;
+  const event = (await eventRes.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
   const form = event.registerForm;

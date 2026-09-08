@@ -7,21 +7,21 @@ import type { Attribute } from "@/types/attributes";
 import { AttributeItem } from "./attribute-item";
 
 export interface SortableAttributeItemProps {
+  id: string;
   attribute: Attribute;
   index: number;
-  id: string;
   onRemove: () => void;
   onUpdateItem?: (index: number, value: Attribute) => void;
 }
 
 export function SortableAttributeItem({
-  uuid,
+  id,
   index,
   onRemove,
   ...props
 }: SortableAttributeItemProps) {
   const { ref, handleRef } = useSortable({
-    id: uuid,
+    id,
     index,
   });
 

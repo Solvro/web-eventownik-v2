@@ -116,7 +116,7 @@ export function createColumns(
 
           // Multiselect case has to be handled separately
           // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
-          if (rowValue !== null && attribute.type === "multiselect") {
+          if (rowValue !== null && attribute.type === "multiSelect") {
             const rawValue = String(row.original[columnId]);
             const normalized = rawValue
               .replaceAll(/^{|}$/g, "")
@@ -139,7 +139,7 @@ export function createColumns(
           <div className="flex items-center gap-1">
             <FilterButton
               attributeType={attribute.type}
-              options_={attribute.options}
+              options_={attribute.config.options}
               blocks={blocks}
               column={info.column}
               attributeUuid={attribute.uuid}
