@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import type { PublicFormAttribute } from "@/types/attributes";
+import type { Attribute, PublicFormAttribute } from "@/types/attributes";
 import type { FormDefinition } from "@/types/forms";
 
 export function cn(...inputs: ClassValue[]) {
@@ -59,10 +59,7 @@ const requiredString = z
     message: "fieldRequired",
   });
 
-const validationRules: Record<
-  PublicFormAttribute["type"],
-  (attribute: PublicFormAttribute) => z.ZodType
-> = {
+const validationRules: Record<PublicFormAttribute["type"], z.ZodType> = {
   select: requiredString,
   text: requiredString,
   time: requiredString,
@@ -110,10 +107,12 @@ const validationRules: Record<
 export function getSchemaObjectForFormDefinition(
   formDefinition: FormDefinition,
 ) {
-  const baseRule = validationRules[formDefinition.attribute.type](
-    formDefinition.attribute,
-  );
+  const baseRule = validationRules[formDefinition.attribute.type];
   return formDefinition.isRequired ? baseRule : baseRule.optional();
+}
+
+export function getSchemaObjectForAttribute(attribute: Attribute) {
+  return validationRules[attribute.type];
 }
 
 export function getSchemaObjectForPublicAttributes(

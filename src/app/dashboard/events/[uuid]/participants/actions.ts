@@ -148,7 +148,7 @@ export async function getAttributes(eventUuid: string) {
 
   if (!isValidUuid(eventUuid)) {
     console.error(`[getAttributes] Invalid event UUID: ${eventUuid}`);
-    return null;
+    return [];
   }
 
   const response = await fetch(
@@ -160,10 +160,10 @@ export async function getAttributes(eventUuid: string) {
   );
   if (!response.ok) {
     console.error("Failed to fetch attributes", response);
-    return null;
+    return [];
   }
   const attributes = (await response.json()) as GetAttributesResponse;
-  return attributes;
+  return attributes.data;
 }
 
 async function getBlockData(

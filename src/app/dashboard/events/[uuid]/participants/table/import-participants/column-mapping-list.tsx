@@ -80,7 +80,7 @@ export function ColumnMappingList({
                     ))}
                   </SelectContent>
                 </Select>
-                {mappedAttribute?.isRequired === true ||
+                {mappedAttribute?.config.isRequired === true ||
                 target === EMAIL_TARGET ? (
                   <span className="sr-only">{t("required")}</span>
                 ) : null}

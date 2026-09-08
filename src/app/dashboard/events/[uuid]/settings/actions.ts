@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -16,13 +17,13 @@ interface ErrorMessage {
 }
 
 interface ErrorResponse {
-  errors: { message: ErrorMessage }[];
+  errors: { message: string | ErrorMessage }[];
 }
 
 interface UpdateResult {
   event?: Event;
   errors: {
-    message: ErrorMessage;
+    message: string | ErrorMessage;
     section: "event" | "coOrganizers" | "attributes";
   }[];
   processedChanges: {
@@ -300,7 +301,7 @@ export async function updateEvent(
             );
 
             if (
-              change.data.config.isSensitiveData &&
+              (change.data.config.isSensitiveData ?? false) &&
               (change.data.config.reason == null ||
                 change.data.config.reason.trim() === "")
             ) {
@@ -360,7 +361,7 @@ export async function updateEvent(
             );
 
             if (
-              change.data.config.isSensitiveData &&
+              (change.data.config.isSensitiveData ?? false) &&
               (change.data.config.reason == null ||
                 change.data.config.reason.trim() === "")
             ) {

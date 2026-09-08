@@ -68,7 +68,7 @@ export async function getSingleEventEmail(
 export async function getEventAttributes(eventUuid: string) {
   const session = await verifySession();
   if (session == null) {
-    return null;
+    return [];
   }
 
   const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
@@ -83,12 +83,12 @@ export async function getEventAttributes(eventUuid: string) {
       `[getEventAttributes] Failed to fetch available attributes when attempting to create a new email for event ${eventUuid}:`,
       response,
     );
-    return null;
+    return [];
   }
 
   const attributes = (await response.json()) as GetAttributesResponse;
 
-  return attributes;
+  return attributes.data;
 }
 
 export async function getEventForms(eventUuid: string) {

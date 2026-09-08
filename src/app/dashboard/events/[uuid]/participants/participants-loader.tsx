@@ -30,7 +30,7 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
     queryKey: ["participants", eventUuid],
     queryFn: async () => getParticipants(eventUuid),
     select: (response) =>
-      response?.data.toSorted(
+      response?.toSorted(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       ),
@@ -43,7 +43,7 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
 
   const { data: blocks } = useQuery({
     queryKey: ["blocks", eventUuid, attributes],
-    queryFn: async () => getBlocks(eventUuid, attributes?.data ?? []),
+    queryFn: async () => getBlocks(eventUuid, attributes ?? []),
     enabled: Boolean(attributes),
   });
 
