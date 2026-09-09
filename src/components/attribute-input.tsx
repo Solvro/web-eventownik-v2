@@ -116,10 +116,12 @@ export function AttributeInput({
                         optionValue,
                       ]);
                     } else {
+                      const newValues = (
+                        (field.value ?? []) as string[]
+                      ).filter((v: string) => v !== optionValue);
+
                       field.onChange(
-                        ((field.value ?? []) as string[]).filter(
-                          (v: string) => v !== optionValue,
-                        ),
+                        newValues.length > 0 ? newValues : undefined,
                       );
                     }
                   }}
@@ -182,7 +184,7 @@ export function AttributeInput({
             id={attribute.id.toString()}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
-              field.onChange(checked);
+              field.onChange(checked === true ? true : undefined);
             }}
           />
           {/*<Label htmlFor={field.name}>{attribute.label || field.name}</Label>*/}
