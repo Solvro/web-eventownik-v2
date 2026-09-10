@@ -33,7 +33,7 @@ import {
 } from "@/app/dashboard/events/[uuid]/emails/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedEditor } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { replaceEmptyParagraphs } from "@/lib/editor";
 import { cn } from "@/lib/utils";
 import type { PuckConfig, PuckMutationData } from "@/types/editor";

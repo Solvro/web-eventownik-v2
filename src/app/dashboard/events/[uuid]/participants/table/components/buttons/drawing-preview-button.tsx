@@ -11,7 +11,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { useToast } from "@/hooks/use-toast";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { downloadFile } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";

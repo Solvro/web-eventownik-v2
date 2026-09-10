@@ -7,7 +7,9 @@ import sanitizeHtml from "sanitize-html";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
+import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
@@ -26,7 +28,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -55,7 +57,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const t = await getTranslations({ locale, namespace: "Event" });
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventSlug)}/public`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
@@ -70,10 +72,14 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const event = (await response.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
-  const form = event.firstForm;
+  const form = event.registerForm;
 
   if (form === null) {
     return <EventNotFound whatNotFound="form" />;
+  }
+
+  if (!isFormOpen(form)) {
+    return <FormClosedView event={event} form={form} />;
   }
 
   const blockAttributesInForm = form.attributes.filter(
@@ -88,31 +94,6 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   if (eventBlocks.includes(null)) {
     return <EventNotFound whatNotFound="blocks" />;
-  }
-
-  if (!form.isOpen) {
-    return (
-      <EventPageLayout
-        event={event}
-        description={event.description ?? ""}
-        variant="form"
-      >
-        <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
-          <Info className="text-muted-foreground size-10" aria-hidden="true" />
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">
-              {t("registrationDisabled")}
-            </h1>
-          </div>
-          <Link
-            href={`/${event.slug}`}
-            className="text-primary text-sm font-medium underline underline-offset-4"
-          >
-            {t("backToEventPage")}
-          </Link>
-        </div>
-      </EventPageLayout>
-    );
   }
 
   return (

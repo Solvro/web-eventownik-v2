@@ -32,7 +32,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import type { AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";

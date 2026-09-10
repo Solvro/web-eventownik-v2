@@ -1,14 +1,12 @@
 "use client";
 
-import { format, subDays } from "date-fns";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import { subDays } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
+import { FormDateTimeField } from "@/components/date-time-field";
 import { WysiwygEditor } from "@/components/editor";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
   FormField,
@@ -17,20 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { cn } from "@/lib/utils";
-
-export type EventGeneralInfoErrors =
-  | "nameRequired"
-  | "startTimeRequired"
-  | "endTimeRequired"
-  | "endDateBeforeStartDate"
-  | "invalidEmail";
 
 export const EventGeneralInfoSchema = z
   .object({
@@ -84,10 +70,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.name?.message as EventGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.name?.message)}
             </FormMessage>
           </FormItem>
         )}
@@ -107,147 +90,34 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.location?.message as EventGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.location?.message)}
             </FormMessage>
           </FormItem>
         )}
       />
       <div className="row-span-2 flex flex-col gap-4">
-        <div className="space-y-2">
-          <div className="flex flex-row flex-wrap items-end gap-4">
-            <FormField
-              control={control}
-              name="startDate"
-              render={({ field }) => (
-                <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>{t("startDateTime")}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className="pl-3 text-left font-normal"
-                          disabled={formState.isSubmitting}
-                        >
-                          {format(field.value, "PPP")}
-                          <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        className="z-50"
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date <= subDays(new Date(), 1)}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="startTime"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormControl>
-                    <Input
-                      disabled={formState.isSubmitting}
-                      type="time"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.startDate?.message as EventGeneralInfoErrors,
-            )}
-          </FormMessage>
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.startTime?.message as EventGeneralInfoErrors,
-            )}
-          </FormMessage>
-        </div>
-        <div className="space-y-2">
-          <div className="flex flex-row flex-wrap items-end gap-4">
-            <FormField
-              control={control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>{t("endDateTime")}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className="pl-3 text-left font-normal"
-                          disabled={formState.isSubmitting}
-                        >
-                          {format(field.value, "PPP")}
-                          <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        className="z-50"
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date <
-                          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                          (getValues("startDate") === undefined
-                            ? subDays(new Date(), 1)
-                            : getValues("startDate"))
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="endTime"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormControl>
-                    <Input
-                      disabled={formState.isSubmitting}
-                      type="time"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.endDate?.message as EventGeneralInfoErrors,
-            )}
-          </FormMessage>
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.endTime?.message as EventGeneralInfoErrors,
-            )}
-          </FormMessage>
-        </div>
+        <FormDateTimeField
+          control={control}
+          formState={formState}
+          label={t("startDateTime")}
+          dateName={"startDate"}
+          timeName={"startTime"}
+        />
+
+        <FormDateTimeField
+          control={control}
+          formState={formState}
+          label={t("endDateTime")}
+          dateName={"endDate"}
+          timeName={"endTime"}
+          disabled={(date) =>
+            date <
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            (getValues("startDate") === undefined
+              ? subDays(new Date(), 1)
+              : getValues("startDate"))
+          }
+        />
       </div>
       <FormField
         name="organizer"
@@ -264,10 +134,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.organizer?.message as EventGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.organizer?.message)}
             </FormMessage>
           </FormItem>
         )}
@@ -288,11 +155,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.contactEmail
-                  ?.message as EventGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.contactEmail?.message)}
             </FormMessage>
           </FormItem>
         )}
@@ -311,10 +174,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               placeholder={t("eventDescrPlaceholder")}
             />
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.description?.message as EventGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.description?.message)}
             </FormMessage>
           </FormItem>
         )}

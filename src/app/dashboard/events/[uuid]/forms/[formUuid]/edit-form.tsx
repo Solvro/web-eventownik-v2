@@ -17,7 +17,8 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
+import { getDefaultFormDates } from "@/lib/event-form-utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
@@ -42,12 +43,10 @@ function EventFormEditForm({
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      startTime: `${new Date(formToEdit.startDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.startDate).getMinutes().toString().padStart(2, "0")}`,
-      endTime: `${new Date(formToEdit.endDate).getHours().toString().padStart(2, "0")}:${new Date(formToEdit.endDate).getMinutes().toString().padStart(2, "0")}`,
-      startDate: new Date(formToEdit.startDate),
-      endDate: new Date(formToEdit.endDate),
+      ...getDefaultFormDates(formToEdit.openDate, formToEdit.closeDate),
       isFirstForm: formToEdit.isFirstForm,
       isOpen: formToEdit.isOpen,
+      openCondition: formToEdit.openCondition,
     },
   });
   const { toast } = useToast();

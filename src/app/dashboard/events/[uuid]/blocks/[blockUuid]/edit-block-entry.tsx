@@ -19,7 +19,7 @@ import {
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import type { Block } from "@/types/blocks";
 
 import { BlockForm, BlockSchema } from "./block-form";

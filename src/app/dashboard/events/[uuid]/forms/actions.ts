@@ -1,16 +1,21 @@
 "use server";
 
-import { formatISO9075 } from "date-fns";
-
-import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { CompleteEventForm } from "@/types/forms";
 
-type Payload = Omit<
-  EventForm,
-  "eventUuid" | "uuid" | "slug" | "attributes" | "order"
+export type Payload = Omit<
+  CompleteEventForm,
+  | "eventUuid"
+  | "uuid"
+  | "slug"
+  | "attributes"
+  | "order"
+  | "createdAt"
+  | "updatedAt"
 > & {
   attributes: FormAttributeBase[];
 };
@@ -34,11 +39,12 @@ export async function createEventForm(eventUuid: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      startDate: formatISO9075(new Date()), //formatISO9075(form.startDate),
+      openDate: resolveFormDateTime(form),
       attributes: form.attributes,
-      endDate: null, //formatISO9075(form.endDate),
+      closeDate: resolveFormDateTime(form),
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
+      openCondition: form.openCondition,
     }),
   });
 
@@ -91,11 +97,6 @@ export async function updateEventForm(
     };
   }
 
-  form.startDate.setHours(Number.parseInt(form.startTime.split(":")[0]));
-  form.startDate.setMinutes(Number.parseInt(form.startTime.split(":")[1]));
-  form.endDate.setHours(Number.parseInt(form.endTime.split(":")[0]));
-  form.endDate.setMinutes(Number.parseInt(form.endTime.split(":")[1]));
-
   const response = await fetch(
     `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
     {
@@ -107,11 +108,12 @@ export async function updateEventForm(
       body: JSON.stringify({
         name: form.name,
         description: form.description,
-        startDate: formatISO9075(form.startDate),
+        openDate: resolveFormDateTime(form),
         attributes: form.attributes,
-        endDate: formatISO9075(form.endDate),
+        closeDate: resolveFormDateTime(form),
         isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
+        openCondition: form.openCondition,
       }),
     },
   );

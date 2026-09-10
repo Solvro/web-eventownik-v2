@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";

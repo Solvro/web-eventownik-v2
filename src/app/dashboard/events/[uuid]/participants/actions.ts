@@ -3,11 +3,7 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-import type {
-  ExportKey,
-  SendMailKey,
-  TableKey,
-} from "@/i18n/translate-or-fallback";
+import type { ExportKey, SendMailKey, TableKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
