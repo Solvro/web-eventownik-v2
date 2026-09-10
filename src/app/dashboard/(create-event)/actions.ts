@@ -108,9 +108,21 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (!response.ok) {
     const errorData = (await response.json()) as ApiErrorResponse;
-    const errors = parseApiErrors(errorData);
+
+    const rawMessages = Array.isArray(errorData.message)
+      ? errorData.message
+      : typeof errorData.message === "string" && errorData.message.trim() !== ""
+        ? [errorData.message]
+        : ["Failed to create event"];
+
+    const errors: NonNullable<SaveEventResult["errors"]> = rawMessages.map(
+      (message) => ({
+        message,
+      }),
+    );
+
     console.error(
-      `[saveEvent] Failed to create event: ${errors[0]?.message ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${rawMessages[0] ?? "Unknown error"}`,
     );
     return { errors };
   }

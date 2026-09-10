@@ -31,6 +31,7 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import type { DashboardKey } from "@/i18n/utils";
 import { translateOrFallback } from "@/i18n/utils";
 import { parseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";

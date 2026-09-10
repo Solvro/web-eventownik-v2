@@ -1,6 +1,6 @@
 import type { PublicFormAttribute } from "./attributes";
 
-type OpenCondition = "ON_DATE" | "MANUAL";
+export type OpenCondition = "ON_DATE" | "MANUAL";
 
 export interface EventForm {
   uuid: string;
@@ -19,13 +19,14 @@ export interface EventForm {
 
 export interface CreateEventFormDto {
   name: string;
-  slug: string;
+  slug?: string;
+  description?: string;
   openDate: Date | null;
   closeDate: Date | null;
-  openCondition: OpenCondition;
-  order: number;
-  attributes: FormAttribute[];
   openCondition?: OpenCondition;
+  order?: number;
+  attributes: FormAttribute[];
+  isFirstForm?: boolean;
   isOpen?: boolean;
 }
 
@@ -65,9 +66,16 @@ export interface FormErrorObject {
   updatedAt: string;
 }
 
-export type CompleteEventForm = Omit<EventForm, "openDate" | "closeDate"> & {
+export interface CompleteEventForm {
+  name: string;
+  description: string;
+  isFirstForm: boolean;
+  isOpen: boolean;
+  slug: string;
   openDate: Date;
   closeDate: Date;
   openTime: string;
   closeTime: string;
-};
+  openCondition: OpenCondition;
+  attributes: FormAttribute[];
+}

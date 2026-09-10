@@ -51,8 +51,11 @@ function EventFormEditForm({
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      ...getDefaultFormDates(formToEdit.openDate, formToEdit.closeDate),
-      isFirstForm: formToEdit.isFirstForm,
+      ...getDefaultFormDates(
+        formToEdit.openDate === null ? null : new Date(formToEdit.openDate),
+        formToEdit.closeDate === null ? null : new Date(formToEdit.closeDate),
+      ),
+      isFirstForm: false,
       isOpen: formToEdit.isOpen,
       openCondition: formToEdit.openCondition,
     },
@@ -70,10 +73,6 @@ function EventFormEditForm({
       const result = await updateEventForm(eventUuid, formToEdit.uuid, {
         ...values,
         attributes: includedAttributes,
-        openDate: formToEdit.openDate ?? undefined,
-        closeDate: formToEdit.closeDate ?? undefined,
-        isEditable: formToEdit.isEditable,
-        openCondition: formToEdit.openCondition,
       });
 
       if (result.success) {

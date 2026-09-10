@@ -73,6 +73,11 @@ function CreateEventFormForm({
     defaultValues: {
       name: newEventForm.name,
       description: newEventForm.description,
+      openTime: newEventForm.openTime,
+      closeTime: newEventForm.closeTime,
+      openDate: newEventForm.openDate,
+      closeDate: newEventForm.closeDate,
+      openCondition: newEventForm.openCondition,
       isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
@@ -111,7 +116,6 @@ function CreateEventFormForm({
         try {
           const newForm = {
             ...values,
-            isEditable: true,
             attributes: includedAttributes,
           };
 
