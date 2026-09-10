@@ -1,16 +1,18 @@
-import { getLocale } from "next-intl/server";
+"use client";
+
+import { useLocale } from "next-intl";
 import sanitizeHtml from "sanitize-html";
 
 import { cn, legacyTranslate } from "@/lib/utils";
 
-async function SanitizedContent({
+function SanitizedContent({
   contentToSanitize,
   className,
 }: {
   contentToSanitize: string;
   className?: string;
 }) {
-  const locale = await getLocale();
+  const locale = useLocale();
 
   const sanitized = sanitizeHtml(contentToSanitize, {
     allowedAttributes: {
