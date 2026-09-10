@@ -516,7 +516,12 @@
     "maxFileSize": "Maximum file size: {maxSize} MB",
     "unauthorized": "Unauthorized",
     "httpError": "Error {status} {statusText}",
-    "invalidEmailId": "Invalid email ID"
+    "invalidEmailId": "Invalid email ID",
+    "dataRecipients": "Data recipients",
+    "dataRecipientsEnabled": "RODO: Participant data will be processed by 3rd party entities",
+    "dataRecipientsExplanation": "Check this box if participants' data will be shared with third-party entities, e.g. a catering firm or payment processor, then list them below. This list will be displayed in the event's RODO privacy clause.",
+    "dataRecipientsPlaceholder": "Comma-separated list of recipients, e.g. 'catering firm, payment processor'",
+    "dataRecipientsRequired": "Please list the third-party entities that will process participant data"
   },
   "EventPermissions": {
     "forms": "Forms",

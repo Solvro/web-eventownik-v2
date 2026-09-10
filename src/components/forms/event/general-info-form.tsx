@@ -1,7 +1,11 @@
 "use client";
 
 import { format, subDays } from "date-fns";
-import { CalendarArrowDownIcon, CalendarArrowUpIcon } from "lucide-react";
+import {
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
+  HelpCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +13,7 @@ import { z } from "zod";
 import { WysiwygEditor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
   FormField,
@@ -22,6 +27,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +40,8 @@ export type EventGeneralInfoErrors =
   | "startTimeRequired"
   | "endTimeRequired"
   | "endDateBeforeStartDate"
-  | "invalidEmail";
+  | "invalidEmail"
+  | "dataRecipientsRequired";
 
 export const EventGeneralInfoSchema = z
   .object({
@@ -43,6 +54,8 @@ export const EventGeneralInfoSchema = z
     location: z.string().optional(),
     organizer: z.string().optional(),
     contactEmail: z.string().email("invalidEmail").or(z.literal("")).optional(),
+    dataRecipientsEnabled: z.boolean(),
+    dataRecipients: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -60,10 +73,19 @@ export const EventGeneralInfoSchema = z
       message: "endDateBeforeStartDate",
       path: ["endDate"],
     },
+  )
+  .refine(
+    (data) =>
+      !data.dataRecipientsEnabled ||
+      (data.dataRecipients?.trim().length ?? 0) > 0,
+    {
+      message: "dataRecipientsRequired",
+      path: ["dataRecipients"],
+    },
   );
 
 export function GeneralInfoForm({ className }: { className?: string }) {
-  const { control, formState, getValues } =
+  const { control, formState, getValues, watch } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
   const t = useTranslations("EventDetails");
 
@@ -319,6 +341,68 @@ export function GeneralInfoForm({ className }: { className?: string }) {
           </FormItem>
         )}
       />
+
+      <div className="col-span-full flex flex-col gap-4">
+        <FormField
+          control={control}
+          name="dataRecipientsEnabled"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center gap-2 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked === true);
+                  }}
+                  disabled={formState.isSubmitting}
+                />
+              </FormControl>
+              <FormLabel>{t("dataRecipientsEnabled")}</FormLabel>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    aria-label={t("dataRecipientsExplanation")}
+                    className="size-4"
+                  >
+                    <HelpCircle />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-72 text-center">
+                  {t("dataRecipientsExplanation")}
+                </TooltipContent>
+              </Tooltip>
+            </FormItem>
+          )}
+        />
+
+        {watch("dataRecipientsEnabled") ? (
+          <FormField
+            control={control}
+            name="dataRecipients"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>{t("dataRecipients")}</FormLabel>
+                <Input
+                  type="text"
+                  disabled={formState.isSubmitting}
+                  placeholder={t("dataRecipientsPlaceholder")}
+                  {...field}
+                />
+                <FormMessage className="text-sm text-red-500">
+                  {translateOrFallback(
+                    t,
+                    formState.errors.dataRecipients
+                      ?.message as EventGeneralInfoErrors,
+                  )}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

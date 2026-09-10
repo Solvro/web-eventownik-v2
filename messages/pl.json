@@ -516,7 +516,12 @@
     "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB",
     "unauthorized": "Brak autoryzacji",
     "httpError": "Błąd {status} {statusText}",
-    "invalidEmailId": "Nieprawidłowy identyfikator maila"
+    "invalidEmailId": "Nieprawidłowy identyfikator maila",
+    "dataRecipients": "Odbiorcy danych",
+    "dataRecipientsEnabled": "RODO: Dane uczestników będą przetwarzane przez podmioty zewnętrzne",
+    "dataRecipientsExplanation": "Zaznacz to pole, jeśli dane uczestników będą udostępniane podmiotom zewnętrznym, np. firmie cateringowej lub operatorowi płatności, a następnie wymień je poniżej. Lista ta zostanie umieszczona w klauzuli RODO wydarzenia.",
+    "dataRecipientsPlaceholder": "Lista odbiorców oddzielona przecinkami, np. 'firma cateringowa, operator płatności'",
+    "dataRecipientsRequired": "Podaj listę podmiotów zewnętrznych, które będą przetwarzać dane uczestników"
   },
   "EventPermissions": {
     "forms": "Formularze",
