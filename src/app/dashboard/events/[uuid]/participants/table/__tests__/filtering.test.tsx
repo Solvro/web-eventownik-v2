@@ -40,7 +40,10 @@ describe("Filtering", () => {
     expect(getDataRows().length).toBe(participants.length);
 
     // Step 2: Enter value which is specific to only 1 row
-    await user.type(globalFilterInput, participants[0].attributes[0].value);
+    await user.type(
+      globalFilterInput,
+      participants[0].attributes[0].value.toString(),
+    );
     expect(getDataRows().length).toBe(1);
 
     //Step 3: Clear global filter input - all rows should be visible

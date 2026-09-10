@@ -24,7 +24,7 @@ export function FilterButton({
   attributeUuid,
 }: {
   attributeType: AttributeType;
-  options_: (string | { label: string; value: string })[] | null;
+  options_?: (string | { label: string; value: string })[];
   column: Column<FlattenedParticipant, ParticipantAttributeValueType>;
   blocks: (Block | null)[] | null;
   attributeUuid: string;
@@ -34,14 +34,14 @@ export function FilterButton({
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiselect" && options_ !== null) ||
+    (attributeType === "multiSelect" && options_ !== undefined) ||
     attributeType === "block"
   ) {
     let options: {
       label: string;
       value: ParticipantAttributeValueType;
     }[] =
-      options_ === null
+      options_ === undefined
         ? []
         : options_.map((option) =>
             typeof option === "string"
@@ -49,7 +49,7 @@ export function FilterButton({
               : { label: option.label, value: option.value },
           );
 
-    if (attributeType === "checkbox" && options_ === null) {
+    if (attributeType === "checkbox" && options_ === undefined) {
       options = [
         { label: t("true"), value: "true" },
         { label: t("false"), value: "false" },

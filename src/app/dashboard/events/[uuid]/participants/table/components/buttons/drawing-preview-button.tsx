@@ -89,7 +89,7 @@ export function DrawingPreviewButton({
         const fileExtension = file.type.split("/")[1];
         downloadFile(
           file,
-          `${participant.email}-${attribute.slug ?? attribute.name}.${fileExtension}`,
+          `${participant.email}-${attribute.uuid}.${fileExtension}`,
         );
       }
     } catch (error) {

@@ -1,17 +1,70 @@
-import type {
-  Attribute,
-  AttributeType,
-  FormAttribute,
-} from "@/types/attributes";
+import type { Attribute, AttributeType } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
 export interface TestCaseData {
   participants: Participant[];
-  // TODO(refactor,multiselect-blocks): Adjust the type here after cleaning up `@/types/attributes.ts`
-  attributes: Omit<Attribute, keyof FormAttribute>[];
+  attributes: Attribute[];
   emails?: EventEmail[];
   attributeType?: AttributeType;
+}
+
+interface RawParticipantAttribute {
+  uuid: string;
+  name: string;
+  slug: string;
+  value: string | number;
+}
+
+interface RawParticipant {
+  uuid: string;
+  email: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  attributes: RawParticipantAttribute[];
+}
+
+interface RawAttribute {
+  uuid: string;
+  name: string;
+  slug?: string;
+  eventUuid?: string;
+  showInList: boolean;
+  order: number;
+  options: string[] | null;
+  type: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+const attributeTypeMap: Record<string, AttributeType> = {
+  textarea: "textArea",
+  multiselect: "multiSelect",
+};
+
+function normalizeParticipants(participants: RawParticipant[]): Participant[] {
+  return participants.map(({ slug: _slug, updatedAt, ...participant }) => ({
+    ...participant,
+    attributes: participant.attributes.map(
+      ({ slug: _attributeSlug, ...attribute }) => ({
+        ...attribute,
+        createdAt: participant.createdAt,
+        updatedAt,
+      }),
+    ),
+    emails: [],
+  }));
+}
+
+function normalizeAttributes(attributes: RawAttribute[]): Attribute[] {
+  return attributes.map(
+    ({ slug: _slug, eventUuid: _eventUuid, options, type, ...attribute }) => ({
+      ...attribute,
+      type: attributeTypeMap[type] ?? (type as AttributeType),
+      config: options === null ? {} : { options },
+    }),
+  );
 }
 
 const nicknameAttributeUuid = crypto.randomUUID();
@@ -30,7 +83,7 @@ const aboutMeAttributeUuid = crypto.randomUUID();
 // There are no test cases for blocks and files
 
 export const textCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
       uuid: crypto.randomUUID(),
@@ -77,21 +130,18 @@ export const textCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: nicknameAttributeUuid,
       name: "Nickname",
       slug: "nickname",
-      eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
       showInList: true,
       order: 0,
       options: null,
       type: "text",
-      createdAt: "2025-07-01T10:03:00Z",
-      updatedAt: "2025-07-01T10:03:00Z",
     },
-  ] as Attribute[],
+  ]),
   attributeType: "text",
   emails: [
     {
@@ -110,29 +160,11 @@ export const textCaseData: TestCaseData = {
         sentCount: "847",
       },
     },
-
-    // NOTE: Commented out because the attribute_changed trigger is not yet implemented on the backend.
-    // Uncomment when the backend supports this feature.
-    // {
-    //   id: 1002,
-    //   eventUuid: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
-    //   name: "VIP Upgrade Notification",
-    //   trigger: "attribute_changed",
-    //   triggerValue: "ticket_type", // AI generated slop - idk if it makes any sense
-    //   triggerValue2: "VIP", // AI generated slop - idk if it makes any sense
-    //   createdAt: "2024-11-08T16:45:30.000Z",
-    //   updatedAt: "2025-02-01T11:18:42.000Z",
-    //   meta: {
-    //     failedCount: "1",
-    //     pendingCount: "0",
-    //     sentCount: "23",
-    //   },
-    // },
   ],
 };
 
 export const selectCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: Male, Female, Other (not alphabetical)
     {
       uuid: crypto.randomUUID(),
@@ -179,8 +211,8 @@ export const selectCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: genderAttributeUuid,
       name: "Gender",
@@ -193,12 +225,12 @@ export const selectCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:05:00Z",
       updatedAt: "2025-07-01T10:05:00Z",
     },
-  ],
+  ]),
   attributeType: "select",
 };
 
 export const emailCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: middle@, auser@, zuser@ (not sorted)
     {
       uuid: crypto.randomUUID(),
@@ -245,8 +277,8 @@ export const emailCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: contactEmailAttributeUuid,
       name: "Contact Email",
@@ -259,12 +291,12 @@ export const emailCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:06:00Z",
       updatedAt: "2025-07-01T10:06:00Z",
     },
-  ],
+  ]),
   attributeType: "email",
 };
 
 export const textareaCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: Love hiking, Software engineer, Creative writer
     {
       uuid: crypto.randomUUID(),
@@ -311,8 +343,8 @@ export const textareaCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: aboutMeAttributeUuid,
       name: "About Me",
@@ -325,12 +357,12 @@ export const textareaCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:07:00Z",
       updatedAt: "2025-07-01T10:07:00Z",
     },
-  ],
-  attributeType: "textarea",
+  ]),
+  attributeType: "textArea",
 };
 
 export const multiselectCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: Rust,Go then Go,Rust then JavaScript,Python (not alphabetical)
     {
       uuid: crypto.randomUUID(),
@@ -377,8 +409,8 @@ export const multiselectCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: skillsAttributeUuid,
       name: "Skills",
@@ -391,12 +423,12 @@ export const multiselectCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:09:00Z",
       updatedAt: "2025-07-01T10:09:00Z",
     },
-  ],
-  attributeType: "multiselect",
+  ]),
+  attributeType: "multiSelect",
 };
 
 export const colorCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: #0000ff (blue), #ff0000 (red), #00ff00 (green)
     {
       uuid: crypto.randomUUID(),
@@ -443,8 +475,8 @@ export const colorCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: favoriteColorAttributeUuid,
       name: "Favorite Color",
@@ -457,12 +489,12 @@ export const colorCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:13:00Z",
       updatedAt: "2025-07-01T10:13:00Z",
     },
-  ],
+  ]),
   attributeType: "color",
 };
 
 export const numberCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: 35, 22, 45 (not in ascending or descending order)
     {
       uuid: crypto.randomUUID(),
@@ -509,8 +541,8 @@ export const numberCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: ageAttributeUuid,
       name: "Age",
@@ -523,12 +555,12 @@ export const numberCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:00:00Z",
       updatedAt: "2025-07-01T10:00:00Z",
     },
-  ],
+  ]),
   attributeType: "number",
 };
 
 export const telCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: +49, +1, +44 (not in ascending order)
     {
       uuid: crypto.randomUUID(),
@@ -575,8 +607,8 @@ export const telCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: phoneNumberAttributeUuid,
       name: "Phone Number",
@@ -589,12 +621,12 @@ export const telCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:12:00Z",
       updatedAt: "2025-07-01T10:12:00Z",
     },
-  ],
+  ]),
   attributeType: "tel",
 };
 
 export const checkboxCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: true, false, true (not sorted)
     {
       uuid: crypto.randomUUID(),
@@ -641,8 +673,8 @@ export const checkboxCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: subscribedAttributeUuid,
       name: "Subscribed",
@@ -655,12 +687,12 @@ export const checkboxCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:01:00Z",
       updatedAt: "2025-07-01T10:01:00Z",
     },
-  ],
+  ]),
   attributeType: "checkbox",
 };
 
 export const timeCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: 17:15, 08:30, 12:45 (not in time order)
     {
       uuid: crypto.randomUUID(),
@@ -707,8 +739,8 @@ export const timeCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: preferredTimeAttributeUuid,
       name: "Preferred Time",
@@ -721,12 +753,12 @@ export const timeCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:02:00Z",
       updatedAt: "2025-07-01T10:02:00Z",
     },
-  ],
+  ]),
   attributeType: "time",
 };
 
 export const dateCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: 1990-05-14, 1985-11-20, 1995-03-08 (not sorted)
     {
       uuid: crypto.randomUUID(),
@@ -773,8 +805,8 @@ export const dateCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: birthdayAttributeUuid,
       name: "Birth Date",
@@ -787,12 +819,12 @@ export const dateCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:11:00Z",
       updatedAt: "2025-07-01T10:11:00Z",
     },
-  ],
+  ]),
   attributeType: "date",
 };
 
 export const datetimeCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: 2025-07-01T14:45, 2025-06-10T09:15, 2025-08-15T18:30
     {
       uuid: crypto.randomUUID(),
@@ -839,8 +871,8 @@ export const datetimeCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: registrationDateTimeAttributeUuid,
       name: "Registration Datetime",
@@ -853,12 +885,12 @@ export const datetimeCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:04:00Z",
       updatedAt: "2025-07-01T10:04:00Z",
     },
-  ],
+  ]),
   attributeType: "datetime",
 };
 
 export const selectAndMultiselectTestCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     {
       uuid: crypto.randomUUID(),
       email: "dan@example.com",
@@ -922,8 +954,8 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: genderAttributeUuid,
       name: "Gender",
@@ -948,11 +980,11 @@ export const selectAndMultiselectTestCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:09:00Z",
       updatedAt: "2025-07-01T10:09:00Z",
     },
-  ],
+  ]),
 };
 
 export const editParticipantTestCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     {
       uuid: crypto.randomUUID(),
       email: "dan@example.com",
@@ -974,8 +1006,8 @@ export const editParticipantTestCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: ageAttributeUuid,
       name: "Age",
@@ -1000,11 +1032,11 @@ export const editParticipantTestCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:09:00Z",
       updatedAt: "2025-07-01T10:09:00Z",
     },
-  ],
+  ]),
 };
 
 export const editParticipantDetailsTestCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     {
       uuid: crypto.randomUUID(),
       email: "dan@example.com",
@@ -1026,12 +1058,12 @@ export const editParticipantDetailsTestCaseData: TestCaseData = {
         },
       ],
     },
-  ],
+  ]),
   attributes: [],
 };
 
 export const deleteParticipantCaseData: TestCaseData = {
-  participants: [
+  participants: normalizeParticipants([
     // Initial order: Medium, Alpha, Zebra (neither ascending nor descending)
     {
       uuid: crypto.randomUUID(),
@@ -1078,21 +1110,18 @@ export const deleteParticipantCaseData: TestCaseData = {
         },
       ],
     },
-  ],
-  attributes: [
+  ]),
+  attributes: normalizeAttributes([
     {
       uuid: nicknameAttributeUuid,
       name: "Nickname",
       slug: "nickname",
-      eventUuid: "e171f4c9-e2be-47fb-831c-ab783c2bf1ff",
       showInList: true,
       order: 0,
       options: null,
       type: "text",
-      createdAt: "2025-07-01T10:03:00Z",
-      updatedAt: "2025-07-01T10:03:00Z",
     },
-  ] as Attribute[],
+  ]),
   attributeType: "text",
 };
 

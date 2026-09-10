@@ -61,7 +61,7 @@ function getAttributeMatchKeys(attribute: Attribute) {
     [
       getAttributeLabel(attribute.name, "pl"),
       getAttributeLabel(attribute.name, "en"),
-      attribute.slug ?? "",
+      attribute.uuid,
     ]
       .filter((value) => value !== "")
       .map((value) => getMatchKey(value)),

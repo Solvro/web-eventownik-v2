@@ -40,26 +40,13 @@ export function formatAttributeValue(
     case "block": {
       const rootBlock = blocks.find((b) => b?.attributeUuid === attributeUuid);
 
-      if (
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-        rootBlock !== null &&
-        rootBlock !== undefined &&
-        rootBlock.attribute.isMultiple
-      ) {
-        const ids = (value as string).split(",").filter(Boolean);
-        return ids
-          .map((id) => rootBlock.children.find((b) => b.uuid === id)?.name)
-          .filter(Boolean)
-          .join(", ");
-      }
-
       return (
         rootBlock?.children.find((b) => {
           return b.uuid === value;
         })?.name ?? value
       );
     }
-    case "multiselect": {
+    case "multiSelect": {
       const items = parseMultiValue(String(value)).filter(Boolean);
       return items.join(", ");
     }

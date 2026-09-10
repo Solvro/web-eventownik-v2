@@ -29,9 +29,7 @@ export function useParticipantsData(
   );
 
   useEffect(() => {
-    if (participants != null) {
-      setFlattenedData(flattenParticipants(participants));
-    }
+    setFlattenedData(flattenParticipants(participants ?? []));
   }, [participants]);
 
   const bulkDeleteMutation = useMutation({

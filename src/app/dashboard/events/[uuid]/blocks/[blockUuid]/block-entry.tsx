@@ -2,7 +2,6 @@ import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
@@ -30,8 +29,7 @@ function BlockEntry({
     block.capacity == null
       ? 0
       : Math.round(
-          (Number(valueOrZero(block.meta.participantsInBlockCount)) /
-            block.capacity) *
+          (Number(valueOrZero(block.blockParticipantCount)) / block.capacity) *
             100,
         );
 
@@ -59,8 +57,8 @@ function BlockEntry({
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
-            ? valueOrZero(block.meta.participantsInBlockCount)
-            : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+            ? valueOrZero(block.blockParticipantCount)
+            : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
         </div>
         <Field className="w-full max-w-sm">
           <Progress
@@ -76,9 +74,7 @@ function BlockEntry({
             </span>
           </FieldLabel>
         </Field>
-        {areParticipantsVisible ? (
-          <BlockParticipantsList participants={block.meta.participants} />
-        ) : null}
+        {areParticipantsVisible ? null : null}
       </div>
     </div>
   );

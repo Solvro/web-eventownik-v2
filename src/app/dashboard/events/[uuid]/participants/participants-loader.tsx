@@ -29,8 +29,8 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const { data: participants, isError: isParticipantsError } = useQuery({
     queryKey: ["participants", eventUuid],
     queryFn: async () => getParticipants(eventUuid),
-    select: (data) =>
-      data?.toSorted(
+    select: (response) =>
+      response?.toSorted(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       ),
