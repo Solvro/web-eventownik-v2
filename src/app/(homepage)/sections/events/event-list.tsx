@@ -73,7 +73,7 @@ function Event({
       return {
         status: t("ongoing"),
         style:
-          "rounded-full bg-[#4473E1]/20 px-5 py-2 text-center font-extrabold whitespace-nowrap text-[#4473E1] dark:text-[#84a9ff]",
+          "rounded-full bg-[#4473E1]/80 px-5 py-2 text-center font-extrabold whitespace-nowrap text-white",
       };
     } else {
       return {
