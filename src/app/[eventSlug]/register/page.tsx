@@ -13,7 +13,6 @@ import { API_URL, PHOTO_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
-import type { GetPublicFormResponse } from "@/types/forms";
 
 import { FormGenerator } from "../form-generator";
 import { getEventBlockAttributeBlocks } from "../utils";
@@ -57,7 +56,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(
+  const eventRes = await fetch(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
@@ -75,17 +74,13 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const form = event.registerForm;
 
-  if (!formRes.ok) {
-    const error = (await formRes.json()) as unknown;
-    console.error(error);
+  if (form == null) {
     return <EventNotFound whatNotFound="form" />;
   }
 
   if (!isFormOpen(form)) {
     return <FormClosedView event={event} form={form} />;
   }
-
-  const form = (await formRes.json()) as GetPublicFormResponse;
 
   const attributes = form.formDefinitions.map((def) => ({
     ...def.attribute,

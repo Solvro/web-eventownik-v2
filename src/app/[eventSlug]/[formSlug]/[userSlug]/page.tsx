@@ -108,7 +108,7 @@ export default async function FormPage({ params }: FormPageProps) {
     return <FormClosedView event={event} form={form} isRegistration={false} />;
   }
 
-  const userData = await getUserData(form.attributes, event.slug, userSlug);
+  const userData = await getUserData(event.slug, userSlug);
   if (userData === null) {
     return <EventNotFound whatNotFound="user" />;
   }

@@ -13,7 +13,6 @@ export interface Event {
   organizerUuid: string;
   description: string | null;
   registerFormUuid: string;
-  registerForm?: EventForm;
   location: string | null;
   primaryColor: string | null;
   organizer: string | null;
