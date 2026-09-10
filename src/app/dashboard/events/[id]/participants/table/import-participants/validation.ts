@@ -1,4 +1,4 @@
-import { getAttributeLabel, getSchemaObjectForAttribute } from "@/lib/utils";
+import { getSchemaObjectForAttribute, legacyTranslate } from "@/lib/utils";
 import type { Attribute, AttributeOption } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 
@@ -71,7 +71,7 @@ function getTargetLabel(
 
   const attributeId = Number(target.replace("attr:", ""));
   const attribute = attributes.find((item) => item.id === attributeId);
-  return attribute == null ? target : getAttributeLabel(attribute.name, locale);
+  return attribute == null ? target : legacyTranslate(attribute.name, locale);
 }
 
 function getSharedValidationError(
@@ -341,7 +341,7 @@ export function prepareImport({
       if (attribute.isRequired && rawValue.trim() === "") {
         issues.push({
           rowIndex,
-          field: getAttributeLabel(attribute.name, locale),
+          field: legacyTranslate(attribute.name, locale),
           message: "validation.required",
         });
         continue;
@@ -351,7 +351,7 @@ export function prepareImport({
       if ("error" in result) {
         issues.push({
           rowIndex,
-          field: getAttributeLabel(attribute.name, locale),
+          field: legacyTranslate(attribute.name, locale),
           message: result.error,
           values: result.values,
         });

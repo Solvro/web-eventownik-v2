@@ -1,14 +1,17 @@
+import { getLocale } from "next-intl/server";
 import sanitizeHtml from "sanitize-html";
 
-import { cn } from "@/lib/utils";
+import { cn, legacyTranslate } from "@/lib/utils";
 
-function SanitizedContent({
+async function SanitizedContent({
   contentToSanitize,
   className,
 }: {
   contentToSanitize: string;
   className?: string;
 }) {
+  const locale = await getLocale();
+
   const sanitized = sanitizeHtml(contentToSanitize, {
     allowedAttributes: {
       a: ["href", "name", "target"],
@@ -32,11 +35,15 @@ function SanitizedContent({
     allowedSchemes: ["data", "https"],
   });
 
+  // TODO: Refactor this once we get proper user-provided values translations
+  // An event description is always contained within a paragraph, `.slice(3, -4)` removes its tags
+  const translated = legacyTranslate(sanitized.slice(3, -4), locale);
+
   return (
     <div
       className={cn("leading-relaxed whitespace-pre-line", className)}
       // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: sanitized }}
+      dangerouslySetInnerHTML={{ __html: translated }}
     />
   );
 }
