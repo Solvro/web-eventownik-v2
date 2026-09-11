@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
@@ -75,7 +75,7 @@ export function ColumnMappingList({
                         key={attribute.id}
                         value={getAttributeTarget(attribute.id)}
                       >
-                        {getAttributeLabel(attribute.name, locale)}
+                        {legacyTranslate(attribute.name, locale)}
                       </SelectItem>
                     ))}
                   </SelectContent>
