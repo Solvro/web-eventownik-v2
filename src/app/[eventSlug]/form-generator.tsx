@@ -17,6 +17,7 @@ export function FormGenerator({
   formId,
   eventSlug,
   userSlug,
+  termsLink,
   editMode,
 }: {
   attributes: FormAttribute[];
@@ -25,6 +26,7 @@ export function FormGenerator({
   formId: string;
   eventSlug: string;
   userSlug?: string;
+  termsLink?: string | null;
   editMode: boolean;
 }) {
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
@@ -87,6 +89,9 @@ export function FormGenerator({
       eventBlocks={eventBlocks}
       editMode={editMode}
       includeEmail={!editMode}
+      includeGdpr={!editMode}
+      eventSlug={eventSlug}
+      termsLink={termsLink}
     />
   );
 }

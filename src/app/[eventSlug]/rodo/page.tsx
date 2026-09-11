@@ -9,11 +9,11 @@ import type { Event } from "@/types/event";
 import { EventNotFound } from "../event-not-found";
 import { EventPageLayout } from "../event-page-layout";
 
-interface RodoPageProps {
+interface GdprPageProps {
   params: Promise<{ eventSlug: string }>;
 }
 
-export default async function RodoPage({ params }: RodoPageProps) {
+export default async function GdprPage({ params }: GdprPageProps) {
   const { eventSlug } = await params;
 
   const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {

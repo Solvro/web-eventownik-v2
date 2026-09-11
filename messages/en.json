@@ -363,12 +363,7 @@
     "noForm": "No registration form for this event.",
     "backToEventPage": "Back to event page",
     "privacyPolicyTitle": "Privacy policy - {name}",
-    "eventPrivacyPolicy": "Privacy policy for event {name}",
-    "consentIntro": "By continuing you agree to the terms in",
-    "privacyPolicy": "privacy policy",
-    "and": "and",
-    "terms": "terms and conditions",
-    "ofEvent": "of the event"
+    "eventPrivacyPolicy": "Privacy policy for event {name}"
   },
   "EventDetails": {
     "step": "Step {number}",
@@ -518,8 +513,8 @@
     "httpError": "Error {status} {statusText}",
     "invalidEmailId": "Invalid email ID",
     "dataRecipients": "Data recipients",
-    "dataRecipientsEnabled": "RODO: Participant data will be processed by 3rd party entities",
-    "dataRecipientsExplanation": "Check this box if participants' data will be shared with third-party entities, e.g. a catering firm or payment processor, then list them below. This list will be displayed in the event's RODO privacy clause.",
+    "dataRecipientsEnabled": "GDPR: Participant data will be processed by third-party entities",
+    "dataRecipientsExplanation": "Check this box if participants' data will be shared with third-party entities, e.g. a catering firm or payment processor, then list them below. This list will be displayed in the event's GDPR privacy policy.",
     "dataRecipientsPlaceholder": "Comma-separated list of recipients, e.g. 'catering firm, payment processor'",
     "dataRecipientsRequired": "Please list the third-party entities that will process participant data"
   },
@@ -551,6 +546,9 @@
     "invalidEmail": "Invalid email address",
     "emailTaken": "This email is already registered for this event.",
     "emailTakenTitle": "Email address is already taken",
+    "gdprNotice": "I have read the <infoLink>privacy policy</infoLink> regarding the processing of my personal data",
+    "gdprNoticeWithTerms": "I have read the <infoLink>privacy policy</infoLink> regarding the processing of my personal data and the event's <termsLink>terms</termsLink>",
+    "gdprRequired": "You must confirm that you have read the privacy policy",
     "registrationSuccess": "Registration successful!",
     "registrationFailed": "Registration failed. Try again later",
     "registrationFailedTitle": "Registration failed",
@@ -570,6 +568,7 @@
     "captchaInProgress": "CAPTCHA verification...",
     "captchaFailed": "CAPTCHA error. Try again",
     "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
+    "gdprIsRequiredTooltip": "You must confirm that you have read the privacy policy regarding the processing of your personal data.",
     "attributeIsRequiredTooltip": "This field is required.",
     "searchBlocksLabel": "Search blocks",
     "searchBlocksPlaceholder": "Search blocks...",
