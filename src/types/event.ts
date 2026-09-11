@@ -21,6 +21,7 @@ export interface Event {
   photoUrl: string | null;
   firstForm: EventForm | null;
   termsLink: string | null;
+  dataRecipients: string | null;
   isActive: boolean;
   attributes: EventAttribute[];
 }

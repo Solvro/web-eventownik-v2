@@ -71,6 +71,7 @@ export async function updateEvent(
     );
     formData.append("contactEmail", event.contactEmail ?? "");
     formData.append("termsLink", event.termsLink ?? "");
+    formData.append("dataRecipients", event.dataRecipients ?? "");
     for (const link of event.socialMediaLinks ?? []) {
       if (link.trim() === "") {
         continue;

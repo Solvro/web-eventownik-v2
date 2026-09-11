@@ -4,6 +4,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,6 +37,8 @@ import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
+import { Checkbox } from "./ui/checkbox";
+
 interface ErrorObject {
   rule: string;
   field: string;
@@ -53,18 +56,26 @@ interface ParticipantFormProps {
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
+  includeGdpr?: boolean;
+  includeTerms?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   editMode?: boolean;
+  eventSlug?: string;
+  termsLink?: string | null;
 }
 
 export function ParticipantForm({
   attributes,
   onSubmit,
   includeEmail = false,
+  includeGdpr = false,
+  includeTerms = false,
   userData,
   eventBlocks = [],
   editMode = false,
+  eventSlug = "",
+  termsLink,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -93,6 +104,12 @@ export function ParticipantForm({
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForAttributes(attributes),
+    ...(includeGdpr && {
+      gdprConsent: z.boolean({ message: t("gdprRequired") }),
+    }),
+    ...(includeTerms && {
+      termsAccepted: z.boolean({ message: t("termsRequired") }),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -108,6 +125,8 @@ export function ParticipantForm({
           accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
           return accumulator;
         }, {}),
+      ...(includeGdpr && { gdprConsent: false }),
+      ...(includeTerms && { termsAccepted: false }),
     },
   });
 
@@ -286,7 +305,7 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full max-w-md space-y-4"
       >
         {includeEmail ? (
           <FormField
@@ -401,6 +420,96 @@ export function ParticipantForm({
             />
           );
         })}
+
+        {includeGdpr ? (
+          <FormField
+            control={form.control}
+            name="gdprConsent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                <FormLabel htmlFor="gdprConsent">
+                  {t.rich("gdprNotice", {
+                    infoLink: (chunks) => (
+                      <Link
+                        href={`/${eventSlug}/rodo`}
+                        className="text-(--event-primary-color)/90"
+                        target="_blank"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}{" "}
+                  <Tooltip>
+                    <TooltipTrigger type="button">
+                      <span className="grow text-red-500">*</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                      {t("gdprIsRequiredTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
+                <FormControl>
+                  <Checkbox
+                    id={"gdprConsent"}
+                    checked={field.value === "true" || field.value === true}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                    }}
+                    className="mr-2"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.gdprConsent?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ) : null}
+
+        {includeTerms ? (
+          <FormField
+            control={form.control}
+            name="termsAccepted"
+            render={({ field }) => (
+              <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                <FormLabel htmlFor="termsAccepted">
+                  {t.rich("termsNotice", {
+                    termsLink: (chunks) => (
+                      <Link
+                        href={termsLink ?? ""}
+                        className="text-(--event-primary-color)/90"
+                        target="_blank"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}{" "}
+                  <Tooltip>
+                    <TooltipTrigger type="button">
+                      <span className="grow text-red-500">*</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                      {t("termsIsRequiredTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
+                <FormControl>
+                  <Checkbox
+                    id={"termsAccepted"}
+                    checked={field.value === "true" || field.value === true}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                    }}
+                    className="mr-2"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.termsAccepted?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ) : null}
 
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">

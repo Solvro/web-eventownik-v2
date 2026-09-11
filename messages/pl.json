@@ -363,12 +363,7 @@
     "noForm": "Brak formularza rejestracyjnego dla tego wydarzenia.",
     "backToEventPage": "Wróć do strony wydarzenia",
     "privacyPolicyTitle": "Polityka prywatności - {name}",
-    "eventPrivacyPolicy": "Polityka prywatności wydarzenia {name}",
-    "consentIntro": "Kontynuując zgadzasz się na warunki zawarte w",
-    "privacyPolicy": "polityce prywatności",
-    "and": "oraz",
-    "terms": "regulaminie",
-    "ofEvent": "wydarzenia"
+    "eventPrivacyPolicy": "Polityka prywatności wydarzenia {name}"
   },
   "EventDetails": {
     "step": "Krok {number}",
@@ -516,7 +511,12 @@
     "maxFileSize": "Maksymalny rozmiar pliku to {maxSize} MB",
     "unauthorized": "Brak autoryzacji",
     "httpError": "Błąd {status} {statusText}",
-    "invalidEmailId": "Nieprawidłowy identyfikator maila"
+    "invalidEmailId": "Nieprawidłowy identyfikator maila",
+    "dataRecipients": "Odbiorcy danych",
+    "dataRecipientsEnabled": "RODO: Dane uczestników będą przetwarzane przez podmioty zewnętrzne",
+    "dataRecipientsExplanation": "Zaznacz to pole, jeśli dane uczestników będą udostępniane podmiotom zewnętrznym, np. firmie cateringowej lub operatorowi płatności, a następnie wymień je poniżej. Lista ta zostanie umieszczona w klauzuli RODO wydarzenia.",
+    "dataRecipientsPlaceholder": "Lista odbiorców oddzielona przecinkami, np. 'firma cateringowa, operator płatności'",
+    "dataRecipientsRequired": "Podaj listę podmiotów zewnętrznych, które będą przetwarzać dane uczestników"
   },
   "EventPermissions": {
     "forms": "Formularze",
@@ -546,6 +546,10 @@
     "invalidEmail": "Nieprawidłowy adres e-mail",
     "emailTaken": "Ten adres e-mail jest już zarejestrowany na to wydarzenie.",
     "emailTakenTitle": "Adres e-mail jest już zajęty",
+    "gdprNotice": "Zapoznałem/am się z <infoLink>klauzulą informacyjną</infoLink> dotyczącą przetwarzania moich danych osobowych",
+    "gdprRequired": "Musisz potwierdzić, że zapoznałeś/aś się z klauzulą RODO",
+    "termsNotice": "Akceptuję <termsLink>regulamin wydarzenia</termsLink>",
+    "termsRequired": "Musisz potwierdzić, że zapoznałeś/aś się z regulaminem wydarzenia",
     "registrationSuccess": "Twoja rejestracja przebiegła pomyślnie!",
     "registrationFailed": "Rejestracja na wydarzenie nie powiodła się. Spróbuj ponownie później",
     "registrationFailedTitle": "Rejestracja na wydarzenie nie powiodła się",
@@ -565,6 +569,8 @@
     "captchaInProgress": "Weryfikacja CAPTCHA...",
     "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie",
     "emailIsRequiredTooltip": "Musisz podać adres e-mail, aby zarejestrować się na to wydarzenie.",
+    "gdprIsRequiredTooltip": "Musisz potwierdzić, że zapoznałeś/aś się z klauzulą informacyjną dotyczącą przetwarzania twoich danych osobowych.",
+    "termsIsRequiredTooltip": "Musisz potwierdzić, że zapoznałeś/aś się z regulaminem wydarzenia.",
     "attributeIsRequiredTooltip": "To pole jest wymagane.",
     "searchBlocksLabel": "Wyszukaj bloki",
     "searchBlocksPlaceholder": "Wyszukaj bloki...",
