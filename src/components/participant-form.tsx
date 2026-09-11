@@ -57,6 +57,7 @@ interface ParticipantFormProps {
   }>;
   includeEmail?: boolean;
   includeGdpr?: boolean;
+  includeTerms?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   editMode?: boolean;
@@ -69,6 +70,7 @@ export function ParticipantForm({
   onSubmit,
   includeEmail = false,
   includeGdpr = false,
+  includeTerms = false,
   userData,
   eventBlocks = [],
   editMode = false,
@@ -105,6 +107,9 @@ export function ParticipantForm({
     ...(includeGdpr && {
       gdprConsent: z.boolean({ message: t("gdprRequired") }),
     }),
+    ...(includeTerms && {
+      termsAccepted: z.boolean({ message: t("termsRequired") }),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -121,6 +126,7 @@ export function ParticipantForm({
           return accumulator;
         }, {}),
       ...(includeGdpr && { gdprConsent: false }),
+      ...(includeTerms && { termsAccepted: false }),
     },
   });
 
@@ -299,7 +305,7 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full max-w-md space-y-4"
       >
         {includeEmail ? (
           <FormField
@@ -422,39 +428,17 @@ export function ParticipantForm({
             render={({ field }) => (
               <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
                 <FormLabel htmlFor="gdprConsent">
-                  <FormControl>
-                    <Checkbox
-                      id={"gdprConsent"}
-                      checked={field.value === "true" || field.value === true}
-                      onCheckedChange={(checked) => {
-                        field.onChange(checked);
-                      }}
-                      className="mr-2"
-                    />
-                  </FormControl>
-                  {t.rich(
-                    termsLink == null ? "gdprNotice" : "gdprNoticeWithTerms",
-                    {
-                      infoLink: (chunks) => (
-                        <Link
-                          href={`/${eventSlug}/rodo`}
-                          className="text-(--event-primary-color)/90"
-                          target="_blank"
-                        >
-                          {chunks}
-                        </Link>
-                      ),
-                      termsLink: (chunks) => (
-                        <Link
-                          href={termsLink ?? ""}
-                          className="text-(--event-primary-color)/90"
-                          target="_blank"
-                        >
-                          {chunks}
-                        </Link>
-                      ),
-                    },
-                  )}{" "}
+                  {t.rich("gdprNotice", {
+                    infoLink: (chunks) => (
+                      <Link
+                        href={`/${eventSlug}/rodo`}
+                        className="text-(--event-primary-color)/90"
+                        target="_blank"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}{" "}
                   <Tooltip>
                     <TooltipTrigger type="button">
                       <span className="grow text-red-500">*</span>
@@ -464,8 +448,63 @@ export function ParticipantForm({
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
+                <FormControl>
+                  <Checkbox
+                    id={"gdprConsent"}
+                    checked={field.value === "true" || field.value === true}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                    }}
+                    className="mr-2"
+                  />
+                </FormControl>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.gdprConsent?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ) : null}
+
+        {includeTerms ? (
+          <FormField
+            control={form.control}
+            name="termsAccepted"
+            render={({ field }) => (
+              <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                <FormLabel htmlFor="termsAccepted">
+                  {t.rich("termsNotice", {
+                    termsLink: (chunks) => (
+                      <Link
+                        href={termsLink ?? ""}
+                        className="text-(--event-primary-color)/90"
+                        target="_blank"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}{" "}
+                  <Tooltip>
+                    <TooltipTrigger type="button">
+                      <span className="grow text-red-500">*</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                      {t("termsIsRequiredTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
+                <FormControl>
+                  <Checkbox
+                    id={"termsAccepted"}
+                    checked={field.value === "true" || field.value === true}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                    }}
+                    className="mr-2"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.termsAccepted?.message}
                 </FormMessage>
               </FormItem>
             )}

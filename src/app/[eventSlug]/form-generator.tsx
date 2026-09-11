@@ -90,6 +90,7 @@ export function FormGenerator({
       editMode={editMode}
       includeEmail={!editMode}
       includeGdpr={!editMode}
+      includeTerms={!editMode && termsLink != null}
       eventSlug={eventSlug}
       termsLink={termsLink}
     />
