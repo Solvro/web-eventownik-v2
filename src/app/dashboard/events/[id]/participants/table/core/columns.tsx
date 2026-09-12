@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { useTranslations as UseTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
@@ -147,7 +147,7 @@ export function createColumns(
             <div className="min-w-0 flex-1">
               <SortHeader
                 info={info}
-                name={getAttributeLabel(attribute.name, locale)}
+                name={legacyTranslate(attribute.name, locale)}
                 truncate
               />
             </div>

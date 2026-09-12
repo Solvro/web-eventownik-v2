@@ -30,11 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import {
-  cn,
-  getAttributeLabel,
-  getSchemaObjectForAttributes,
-} from "@/lib/utils";
+import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -342,7 +338,7 @@ export function ParticipantForm({
                     )}
                   >
                     <FormLabel htmlFor={attribute.id.toString()}>
-                      {getAttributeLabel(attribute.name, locale)}{" "}
+                      {legacyTranslate(attribute.name, locale)}{" "}
                       {attribute.isRequired ? (
                         <Tooltip>
                           <TooltipTrigger type="button">
@@ -400,7 +396,7 @@ export function ParticipantForm({
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
                       (form.formState.errors as any)[attribute.id.toString()]
                         ?.message as FormValidationErrors,
-                      { name: getAttributeLabel(attribute.name, "pl") },
+                      { name: legacyTranslate(attribute.name, "pl") },
                     )}
                   </FormMessage>
                 </FormItem>

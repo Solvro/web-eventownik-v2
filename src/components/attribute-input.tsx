@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -62,7 +62,7 @@ export function AttributeInput({
           <SelectTrigger id={attribute.id.toString()}>
             <SelectValue
               placeholder={t("selectAttribute", {
-                name: getAttributeLabel(attribute.name, locale).toLowerCase(),
+                name: legacyTranslate(attribute.name, locale).toLowerCase(),
               })}
             />
           </SelectTrigger>
