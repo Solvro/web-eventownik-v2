@@ -4,8 +4,6 @@ import {
   ClipboardPenLine,
   Cuboid,
   Mail,
-  PanelLeftClose,
-  PanelLeftOpen,
   Play,
   SlidersHorizontal,
   Users,
@@ -36,6 +34,44 @@ interface SidebarLink {
   route: string;
 }
 
+const DashboardSidebarContext = React.createContext<{
+  isSideBarOpen: boolean;
+  toggleSideBar: () => void;
+} | null>(null);
+
+export function DashboardSidebarProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+
+  return (
+    <DashboardSidebarContext.Provider
+      value={{
+        isSideBarOpen,
+        toggleSideBar: () => {
+          setIsSideBarOpen((isOpen) => !isOpen);
+        },
+      }}
+    >
+      {children}
+    </DashboardSidebarContext.Provider>
+  );
+}
+
+export function useDashboardSidebar() {
+  const context = React.useContext(DashboardSidebarContext);
+
+  if (context === null) {
+    throw new Error(
+      "useDashboardSidebar must be used within DashboardSidebarProvider",
+    );
+  }
+
+  return context;
+}
+
 export function DashboardSidebar({
   event,
   attributes,
@@ -45,8 +81,7 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
-
-  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  const { isSideBarOpen } = useDashboardSidebar();
 
   const blocks = attributes
     .filter(({ type }) => type === "block")
@@ -114,33 +149,6 @@ export function DashboardSidebar({
       <nav
         className={`easy-in border-muted hidden shrink-0 flex-col gap-6 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64 pr-8" : "w-[45px] min-w-[45px] pr-2"}`}
       >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={"ghost"}
-              size={isSideBarOpen ? "default" : "icon"}
-              onClick={() => {
-                setIsSideBarOpen(!isSideBarOpen);
-              }}
-              className={`overflow-hidden transition-all duration-400 ease-in-out ${isSideBarOpen ? "w-full justify-start" : "w-auto justify-start gap-0"}`}
-            >
-              <PanelLeftOpen
-                className={`transition-all duration-100 ${isSideBarOpen ? "absolute opacity-0" : "mx-2 opacity-100"}`}
-              />
-              <PanelLeftClose
-                className={`transition-all duration-100 ${isSideBarOpen ? "opacity-100" : "absolute mx-2 opacity-0"}`}
-              />
-              <span
-                className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 max-w-md -translate-x-[0px] opacity-100" : "ml-0 max-w-0 -translate-x-[5px] opacity-0"}`}
-              >
-                {t("closeSidebar")}
-              </span>
-            </Button>
-          </TooltipTrigger>
-          {!isSideBarOpen && (
-            <TooltipContent side={"right"}>{t("openSidebar")}</TooltipContent>
-          )}
-        </Tooltip>
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
@@ -155,7 +163,7 @@ export function DashboardSidebar({
               className={`space-y-2 transition-all duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
             >
               {section.links.map((link) => (
-                <Tooltip key={link.title}>
+                <Tooltip key={link.title} delayDuration={400}>
                   <TooltipTrigger asChild>
                     <li>
                       <Button
