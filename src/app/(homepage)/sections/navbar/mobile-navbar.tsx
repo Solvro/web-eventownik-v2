@@ -59,7 +59,15 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
               </div>
               <div className="flex flex-col gap-4 text-3xl font-medium uppercase">
                 <Link
-                  href="#events"
+                  href="/"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  Strona główna
+                </Link>
+                <Link
+                  href="/events"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -67,28 +75,12 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                   {t("events")}
                 </Link>
                 <Link
-                  href="#functionalities"
+                  href="/dashboard"
                   onClick={() => {
                     setIsOpen(false);
                   }}
                 >
-                  {t("features")}
-                </Link>
-                <Link
-                  href="#faq"
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  FAQ
-                </Link>
-                <Link
-                  href="#team"
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  {t("team")}
+                  Panel
                 </Link>
               </div>
             </div>
