@@ -47,7 +47,9 @@ function EditorMenuBar({
   }
 
   return (
-    <div className="flex flex-wrap gap-4 pb-4">
+    <div
+      className={`flex flex-wrap gap-4 ${(isEmailEditor ?? false) ? "px-2 pt-2 pb-4" : "pb-4"}`}
+    >
       <div>
         <Tooltip>
           <TooltipTrigger asChild>
