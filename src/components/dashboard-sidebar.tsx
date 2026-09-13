@@ -12,8 +12,14 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
@@ -28,6 +34,44 @@ interface SidebarLink {
   route: string;
 }
 
+const DashboardSidebarContext = React.createContext<{
+  isSideBarOpen: boolean;
+  toggleSideBar: () => void;
+} | null>(null);
+
+export function DashboardSidebarProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+
+  return (
+    <DashboardSidebarContext.Provider
+      value={{
+        isSideBarOpen,
+        toggleSideBar: () => {
+          setIsSideBarOpen((isOpen) => !isOpen);
+        },
+      }}
+    >
+      {children}
+    </DashboardSidebarContext.Provider>
+  );
+}
+
+export function useDashboardSidebar() {
+  const context = React.useContext(DashboardSidebarContext);
+
+  if (context === null) {
+    throw new Error(
+      "useDashboardSidebar must be used within DashboardSidebarProvider",
+    );
+  }
+
+  return context;
+}
+
 export function DashboardSidebar({
   event,
   attributes,
@@ -37,6 +81,7 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
+  const { isSideBarOpen } = useDashboardSidebar();
 
   const blocks = attributes
     .filter(({ type }) => type === "block")
@@ -101,31 +146,53 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden w-64 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
+      <nav
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-6 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64 pr-8" : "w-[45px] min-w-[45px] pr-2"}`}
+      >
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
-            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="space-y-2 pl-2">
+            <h2
+              className={`overflow-hidden text-3xl font-bold whitespace-nowrap transition-all duration-400 ease-in-out ${isSideBarOpen ? "mb-6 max-h-10 opacity-100" : "mb-0 max-h-0 max-w-0 opacity-0"} `}
+            >
+              {section.title}
+            </h2>
+            <ul
+              className={`space-y-2 transition-all duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
+            >
               {section.links.map((link) => (
-                <li key={link.title}>
-                  <Button
-                    className="w-full justify-start"
-                    variant={
-                      isActiveLink(link.route) ? "eventDefault" : "eventGhost"
-                    }
-                    asChild
-                  >
-                    <Link
-                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
-                    >
-                      {link.icon}
-                      <span className="truncate">{link.title}</span>
-                    </Link>
-                  </Button>
-                </li>
+                <Tooltip key={link.title} delayDuration={400}>
+                  <TooltipTrigger asChild>
+                    <li>
+                      <Button
+                        className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "w-full justify-start" : "justify-center"}`}
+                        variant={
+                          isActiveLink(link.route)
+                            ? "eventDefault"
+                            : "eventGhost"
+                        }
+                        size={isSideBarOpen ? "default" : "icon"}
+                        asChild
+                      >
+                        <Link
+                          href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                        >
+                          {link.icon}
+                          <span
+                            className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 hidden w-0 opacity-0"}`}
+                          >
+                            {link.title}
+                          </span>
+                        </Link>
+                      </Button>
+                    </li>
+                  </TooltipTrigger>
+                  {!isSideBarOpen && (
+                    <TooltipContent side={"right"}>{link.title}</TooltipContent>
+                  )}
+                </Tooltip>
               ))}
             </ul>
           </div>
