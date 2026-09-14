@@ -41,6 +41,7 @@ export type EventGeneralInfoErrors =
   | "endTimeRequired"
   | "endDateBeforeStartDate"
   | "invalidEmail"
+  | "contactEmailRequired"
   | "dataRecipientsRequired";
 
 export const EventGeneralInfoSchema = z
@@ -53,7 +54,10 @@ export const EventGeneralInfoSchema = z
     endTime: z.string().nonempty("endTimeRequired"),
     location: z.string().optional(),
     organizer: z.string().optional(),
-    contactEmail: z.string().email("invalidEmail").or(z.literal("")).optional(),
+    contactEmail: z
+      .string({ message: "contactEmailRequired" })
+      .email("invalidEmail")
+      .nonempty("contactEmailRequired"),
     dataRecipientsEnabled: z.boolean(),
     dataRecipients: z.string().optional(),
   })
@@ -88,6 +92,8 @@ export function GeneralInfoForm({ className }: { className?: string }) {
   const { control, formState, getValues, watch } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
   const t = useTranslations("EventDetails");
+
+  console.log(getValues("contactEmail"));
 
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>

@@ -506,6 +506,7 @@
     "slugInvalid": "Only lowercase letters, numbers, and hyphens are allowed",
     "eventSlugExample": "your-event",
     "invalidEmail": "Invalid email address",
+    "contactEmailRequired": "Contact address is required",
     "endDateBeforeStartDate": "End date cannot be earlier than the start date",
     "allowedFileTypes": "Allowed file types: {extensions}",
     "maxFileSize": "Maximum file size: {maxSize} MB",
