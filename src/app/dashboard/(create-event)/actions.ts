@@ -44,6 +44,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("contactEmail", event.contactEmail ?? "");
   formData.append("slug", event.slug);
   formData.append("termsLink", event.termsLink ?? "");
+  formData.append("dataRecipients", event.dataRecipients ?? "");
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
