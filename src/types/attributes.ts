@@ -1,6 +1,38 @@
-import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
-
 // TODO(refactor): Refactor types across this entire file.
+
+/**
+ * The attribute types the app knows, spelled the way this codebase spells them
+ * everywhere. A backend that spells one of them differently is translated where
+ * its response is parsed, so nothing downstream has to know which backend the
+ * answer came from.
+ */
+export type AttributeType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "file"
+  | "drawing"
+  | "select"
+  | "block"
+  | "date"
+  | "time"
+  | "datetime"
+  | "multiselect"
+  | "email"
+  | "tel"
+  | "color"
+  | "checkbox";
+
+/**
+ * Per-type settings the backend stores alongside an attribute.
+ *
+ * `select`, `multiselect` and `block` attributes declare their full option set
+ * in `options`; `allowOther` permits answers outside that set.
+ */
+export interface AttributeConfig {
+  options?: string[];
+  allowOther?: boolean;
+}
 
 export interface EventAttribute {
   uuid: string;
@@ -8,7 +40,8 @@ export interface EventAttribute {
   slug: string | null;
   eventUuid: number;
   options: string[] | null;
-  type: string;
+  config: AttributeConfig | null;
+  type: AttributeType;
   rootBlockUuid: string | undefined;
   showInList: boolean;
   order: number | null;
@@ -73,5 +106,3 @@ export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
     pivot_updated_at: string;
   };
 }
-
-export type AttributeType = (typeof AttributeTypes)[number];

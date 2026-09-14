@@ -263,7 +263,7 @@ export const emailCaseData: TestCaseData = {
   attributeType: "email",
 };
 
-export const textareaCaseData: TestCaseData = {
+export const textAreaCaseData: TestCaseData = {
   participants: [
     // Initial order: Love hiking, Software engineer, Creative writer
     {
@@ -329,7 +329,7 @@ export const textareaCaseData: TestCaseData = {
   attributeType: "textarea",
 };
 
-export const multiselectCaseData: TestCaseData = {
+export const multiSelectCaseData: TestCaseData = {
   participants: [
     // Initial order: Rust,Go then Go,Rust then JavaScript,Python (not alphabetical)
     {
@@ -1100,8 +1100,8 @@ export const stringLikeDataTestCases = [
   textCaseData,
   selectCaseData,
   emailCaseData,
-  textareaCaseData,
-  multiselectCaseData,
+  textAreaCaseData,
+  multiSelectCaseData,
   colorCaseData,
   numberCaseData,
   telCaseData,

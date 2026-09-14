@@ -153,6 +153,10 @@
     "loadError": "Nie udało się załadować statystyk. Spróbuj ponownie.",
     "noData": "Brak danych do wyświetlenia.",
     "noAnswer": "Brak odpowiedzi",
+    "yes": "Tak",
+    "no": "Nie",
+    "unknownBlock": "Nieznany blok",
+    "noStatisticForType": "Ten typ atrybutu nie ma statystyk.",
     "participantsCount": "uczestników"
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import {
   Select,
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getAttributeLabel } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 
 export function AttributeStatisticsPicker({
@@ -21,6 +22,7 @@ export function AttributeStatisticsPicker({
   onSelect: (attributeUuid: string) => void;
 }) {
   const t = useTranslations("Statistics");
+  const locale = useLocale();
 
   return (
     <Select value={value} onValueChange={onSelect}>
@@ -30,7 +32,7 @@ export function AttributeStatisticsPicker({
       <SelectContent>
         {attributes.map((attribute) => (
           <SelectItem key={attribute.uuid} value={attribute.uuid}>
-            {attribute.name}
+            {getAttributeLabel(attribute.name, locale)}
           </SelectItem>
         ))}
       </SelectContent>

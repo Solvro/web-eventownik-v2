@@ -8,7 +8,7 @@ import { describe, it } from "vitest";
 
 import {
   checkboxCaseData,
-  multiselectCaseData,
+  multiSelectCaseData,
   selectAndMultiselectTestCaseData,
   selectCaseData,
   textCaseData,
@@ -52,7 +52,7 @@ describe("Filtering", () => {
     expect(getDataRows().length).toBe(2);
   });
 
-  it.each([selectCaseData, multiselectCaseData, checkboxCaseData])(
+  it.each([selectCaseData, multiSelectCaseData, checkboxCaseData])(
     "should correctly filter rows using header filter for $attributeType attribute",
     async ({ participants, attributes }) => {
       const { user, getDataRows } = renderTable(participants, attributes);
@@ -109,7 +109,7 @@ describe("Filtering", () => {
     },
   );
 
-  it.each([selectCaseData, multiselectCaseData, checkboxCaseData])(
+  it.each([selectCaseData, multiSelectCaseData, checkboxCaseData])(
     "should correctly filter rows by empty values using header filter for $attributeType attribute",
     async ({ participants, attributes }) => {
       // Only one row will have empty values

@@ -1,14 +1,25 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 
-import { countAttributeValues } from "@/app/dashboard/events/[uuid]/statistics/aggregate";
-import { getParticipantsForStats } from "@/app/dashboard/events/[uuid]/statistics/data-access";
+import {
+  buildAttributeStatistic,
+  flattenBlockNames,
+} from "@/app/dashboard/events/[uuid]/statistics/aggregate";
+import {
+  getAttributeBlockTree,
+  getParticipantsForStats,
+} from "@/app/dashboard/events/[uuid]/statistics/data-access";
 import { eventAttributesQueryOptions } from "@/app/dashboard/events/[uuid]/statistics/queries";
+import { StatisticsAnswerList } from "@/app/dashboard/events/[uuid]/statistics/statistics-answer-list";
+import { StatisticsBarChart } from "@/app/dashboard/events/[uuid]/statistics/statistics-bar-chart";
 import { StatisticsPieChart } from "@/app/dashboard/events/[uuid]/statistics/statistics-pie-chart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import { getAttributeLabel } from "@/lib/utils";
+import type { AttributeType } from "@/types/attributes";
 
 export function AttributeStatistics({
   eventUuid,
@@ -18,6 +29,7 @@ export function AttributeStatistics({
   selectedId: string | undefined;
 }) {
   const t = useTranslations("Statistics");
+  const locale = useLocale();
 
   const {
     data: attributes,
@@ -29,16 +41,25 @@ export function AttributeStatistics({
     (attribute) => attribute.uuid === selectedId,
   );
 
+  // Participants are fetched once for the whole page, with every attribute
+  // included, so switching the selected attribute never refetches.
+  const statisticsAttributes = attributes ?? [];
   const participantsQuery = useQuery({
-    queryKey: [
-      "attribute-stats-participants",
-      eventUuid,
-      selectedId,
-      selectedAttribute?.slug,
-    ],
+    queryKey: ["attribute-stats-participants", eventUuid, statisticsAttributes],
     queryFn: async () =>
-      getParticipantsForStats(eventUuid, selectedAttribute?.slug ?? null),
-    enabled: selectedAttribute != null,
+      getParticipantsForStats(eventUuid, statisticsAttributes),
+    enabled: statisticsAttributes.length > 0,
+  });
+
+  // A block answer stores block uuids, so a block attribute needs its tree
+  // before its chart can be labelled. Every other type resolves nothing, and
+  // this query stays disabled.
+  const isBlockAttribute = selectedAttribute?.type === "block";
+  const blockTreeQuery = useQuery({
+    queryKey: ["attribute-block-tree", eventUuid, selectedAttribute?.uuid],
+    queryFn: async () =>
+      getAttributeBlockTree(eventUuid, selectedAttribute?.uuid ?? ""),
+    enabled: isBlockAttribute,
   });
 
   if (isPending) {
@@ -73,28 +94,71 @@ export function AttributeStatistics({
     );
   }
 
-  const counts =
-    selectedAttribute != null && participantsQuery.data != null
-      ? countAttributeValues(
-          participantsQuery.data,
-          selectedAttribute.uuid,
-          t("noAnswer"),
-        )
-      : [];
+  if (participantsQuery.isPending || blockTreeQuery.isLoading) {
+    return (
+      <Empty className="border">
+        <EmptyDescription>{t("loading")}</EmptyDescription>
+      </Empty>
+    );
+  }
+
+  if (
+    participantsQuery.isError ||
+    blockTreeQuery.isError ||
+    selectedAttribute == null
+  ) {
+    return (
+      <Empty className="border">
+        <EmptyDescription>{t("loadError")}</EmptyDescription>
+      </Empty>
+    );
+  }
+
+  const statistic = buildAttributeStatistic({
+    attribute: selectedAttribute,
+    participants: participantsQuery.data,
+    blockNames: flattenBlockNames(blockTreeQuery.data),
+    labels: {
+      noAnswer: t("noAnswer"),
+      yes: t("yes"),
+      no: t("no"),
+      unknownBlock: t("unknownBlock"),
+    },
+  });
 
   return (
-    <div className="flex flex-col gap-8">
-      {participantsQuery.isPending ? (
-        <Empty className="border">
-          <EmptyDescription>{t("loading")}</EmptyDescription>
-        </Empty>
-      ) : participantsQuery.isError ? (
-        <Empty className="border">
-          <EmptyDescription>{t("loadError")}</EmptyDescription>
-        </Empty>
-      ) : (
-        <StatisticsPieChart data={counts} />
-      )}
-    </div>
+    <AttributeStatisticView
+      statistic={statistic}
+      type={selectedAttribute.type}
+    />
   );
+}
+
+function AttributeStatisticView({
+  statistic,
+  type,
+}: {
+  statistic: ReturnType<typeof buildAttributeStatistic>;
+  type: AttributeType;
+}) {
+  const t = useTranslations("Statistics");
+
+  switch (statistic.kind) {
+    case "none": {
+      return (
+        <Empty className="border">
+          <EmptyDescription>{t("noStatisticForType")}</EmptyDescription>
+        </Empty>
+      );
+    }
+    case "pie": {
+      return <StatisticsPieChart data={statistic.buckets} />;
+    }
+    case "bar": {
+      return <StatisticsBarChart data={statistic.buckets} />;
+    }
+    case "list": {
+      return <StatisticsAnswerList answers={statistic.answers} type={type} />;
+    }
+  }
 }

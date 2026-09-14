@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { Activity, useState } from "react";
 
+import { attributeHasStatistic } from "@/app/dashboard/events/[uuid]/statistics/aggregate";
 import { AttributeStatistics } from "@/app/dashboard/events/[uuid]/statistics/attribute-statistics";
 import { AttributeStatisticsPicker } from "@/app/dashboard/events/[uuid]/statistics/attribute-statistics-picker";
 import { eventAttributesQueryOptions } from "@/app/dashboard/events/[uuid]/statistics/queries";
@@ -29,7 +30,14 @@ export default function StatisticsPage() {
   const [selectedAttributeUuid, setSelectedAttributeUuid] = useState<string>();
 
   // Derive the effective selection so we don't need an effect to seed a default.
-  const selectedId = selectedAttributeUuid ?? attributes?.[0]?.uuid;
+  // The default skips attributes that have no statistic, so the page never
+  // opens on a "this type has no statistics" panel; if none of them do, fall
+  // back to the first so the picker still has a value.
+  const selectedId =
+    selectedAttributeUuid ??
+    attributes?.find((attribute) => attributeHasStatistic(attribute.type))
+      ?.uuid ??
+    attributes?.[0]?.uuid;
 
   return (
     <div className="flex flex-col gap-8">

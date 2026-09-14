@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { ComponentProps } from "react";
 import { LabelList, Pie, PieChart } from "recharts";
 
-import type { AttributeValueCount } from "@/app/dashboard/events/[uuid]/statistics/aggregate";
+import type { AnswerBucket } from "@/app/dashboard/events/[uuid]/statistics/aggregate";
 import {
   ChartContainer,
   ChartTooltip,
@@ -25,10 +25,54 @@ const LABEL_MIN_PERCENT = 0.05;
 
 const RADIAN = Math.PI / 180;
 
+// The no-answer bucket of a colour attribute has no hex of its own, so it takes
+// a neutral grey that reads as "no colour picked" rather than as a choice.
+const NO_ANSWER_FILL = "#9ca3af";
+
+// Labels on a ramp slice keep the event's own foreground colour, which is
+// already chosen for contrast against the event's palette.
+const RAMP_LABEL_FILL = "var(--event-primary-foreground-color)";
+
+const DARK_LABEL_FILL = "#000000";
+const LIGHT_LABEL_FILL = "#ffffff";
+
+// Where black and white contrast equally against a fill, by WCAG relative
+// luminance.
+const LUMINANCE_MIDPOINT = 0.179;
+
 function sliceColor(index: number, total: number): string {
   const pct =
     total <= 1 ? 100 : 100 - ((100 - RAMP_FLOOR) * index) / (total - 1);
   return `color-mix(in oklch, var(--event-primary-color) ${pct.toString()}%, white)`;
+}
+
+/** One sRGB channel, gamma-expanded to its linear contribution. */
+function linearChannel(byte: number): number {
+  const channel = byte / 255;
+  return channel <= 0.040_45
+    ? channel / 12.92
+    : ((channel + 0.055) / 1.055) ** 2.4;
+}
+
+/**
+ * Black or white, whichever stays legible on `hex`.
+ *
+ * Participants pick arbitrary colours, so a label sitting on a slice cannot
+ * assume the fill is dark: a pale answer would otherwise be white on white.
+ */
+function labelFillOn(hex: string): string {
+  const digits = hex.replace("#", "");
+  // A shorthand `#abc` stands for the `#aabbcc` each digit doubles into.
+  const expanded =
+    digits.length < 6 ? digits.replaceAll(/([\da-f])/gi, "$1$1") : digits;
+  const channel = (index: number) =>
+    linearChannel(
+      Number.parseInt(expanded.slice(index * 2, index * 2 + 2), 16),
+    );
+  const luminance =
+    0.2126 * channel(0) + 0.7152 * channel(1) + 0.0722 * channel(2);
+
+  return luminance > LUMINANCE_MIDPOINT ? DARK_LABEL_FILL : LIGHT_LABEL_FILL;
 }
 
 interface Slice {
@@ -36,6 +80,8 @@ interface Slice {
   label: string;
   count: number;
   fill: string;
+  /** Label colour that stays readable on `fill`. */
+  labelFill: string;
 }
 
 // LabelList calls its `content` fn once per slice with a polar viewBox rather
@@ -51,9 +97,10 @@ interface SliceLabelProps {
     endAngle?: number;
   };
   index?: number;
+  value?: number;
 }
 
-export function StatisticsPieChart({ data }: { data: AttributeValueCount[] }) {
+export function StatisticsPieChart({ data }: { data: AnswerBucket[] }) {
   const t = useTranslations("Statistics");
 
   if (data.length === 0) {
@@ -64,14 +111,19 @@ export function StatisticsPieChart({ data }: { data: AttributeValueCount[] }) {
     );
   }
 
-  // Attribute values are arbitrary strings, so map each to a safe config key
-  // (used both as the tooltip lookup key and the nameKey).
-  const slices: Slice[] = data.map((entry, index) => ({
-    key: `s${index.toString()}`,
-    label: entry.value,
-    count: entry.count,
-    fill: sliceColor(index, data.length),
-  }));
+  const drawsOwnColors = data.some((entry) => entry.color != null);
+
+  const slices: Slice[] = data.map((entry, index) => {
+    const ownFill = drawsOwnColors ? (entry.color ?? NO_ANSWER_FILL) : null;
+
+    return {
+      key: `s${index.toString()}`,
+      label: entry.answer,
+      count: entry.count,
+      fill: ownFill ?? sliceColor(index, data.length),
+      labelFill: ownFill == null ? RAMP_LABEL_FILL : labelFillOn(ownFill),
+    };
+  });
 
   const chartConfig: ChartConfig = Object.fromEntries(
     slices.map((slice) => [slice.key, { label: slice.label }]),
@@ -84,10 +136,13 @@ export function StatisticsPieChart({ data }: { data: AttributeValueCount[] }) {
   const renderSliceLabel = ({
     viewBox: { cx, cy, innerRadius, outerRadius, startAngle, endAngle } = {},
     index,
+    value,
   }: SliceLabelProps) => {
-    const slice = slices[index ?? 0];
+    const slice = index == null ? undefined : slices[index];
 
     if (
+      slice == null ||
+      (value != null && slice.count !== value) ||
       cx == null ||
       cy == null ||
       innerRadius == null ||
@@ -106,7 +161,7 @@ export function StatisticsPieChart({ data }: { data: AttributeValueCount[] }) {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <g fill="var(--event-primary-foreground-color)">
+      <g fill={slice.labelFill}>
         <text
           x={x}
           y={y - 8}
@@ -124,7 +179,7 @@ export function StatisticsPieChart({ data }: { data: AttributeValueCount[] }) {
           y={y - 1}
           width={13}
           height={13}
-          color="var(--event-primary-foreground-color)"
+          color={slice.labelFill}
         />
       </g>
     );

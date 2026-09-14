@@ -5,25 +5,6 @@ import { atom } from "jotai";
 import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 
-export const AttributeTypes = [
-  "text",
-  "number",
-  "textarea",
-  "file",
-  "drawing",
-  "select",
-  "multiselect",
-  "block",
-  "date",
-  "time",
-  "datetime",
-  "email",
-  "tel",
-  "color",
-  // "password",
-  "checkbox",
-] as const;
-
 export interface Event {
   name: string;
   description: string | undefined;

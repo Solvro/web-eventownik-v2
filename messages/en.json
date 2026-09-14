@@ -153,6 +153,10 @@
     "loadError": "Failed to load statistics. Please try again.",
     "noData": "No data to display.",
     "noAnswer": "No answer",
+    "yes": "Yes",
+    "no": "No",
+    "unknownBlock": "Unknown block",
+    "noStatisticForType": "This attribute type has no statistics.",
     "participantsCount": "participants"
   }
 }
