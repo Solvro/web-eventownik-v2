@@ -93,8 +93,6 @@ export function GeneralInfoForm({ className }: { className?: string }) {
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
   const t = useTranslations("EventDetails");
 
-  console.log(getValues("contactEmail"));
-
   return (
     <div className={cn("grid w-full gap-4 md:grid-cols-2", className)}>
       <FormField
