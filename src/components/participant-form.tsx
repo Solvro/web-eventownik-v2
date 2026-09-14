@@ -105,10 +105,18 @@ export function ParticipantForm({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForAttributes(attributes),
     ...(includeGdpr && {
-      gdprConsent: z.boolean({ message: t("gdprRequired") }),
+      gdprConsent: z.literal<boolean>(true, {
+        errorMap: () => ({
+          message: t("gdprRequired"),
+        }),
+      }),
     }),
     ...(includeTerms && {
-      termsAccepted: z.boolean({ message: t("termsRequired") }),
+      termsAccepted: z.literal<boolean>(true, {
+        errorMap: () => ({
+          message: t("termsRequired"),
+        }),
+      }),
     }),
   });
 
@@ -348,64 +356,66 @@ export function ParticipantForm({
               control={form.control}
               name={attribute.id.toString()}
               render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    attribute.type === "checkbox" &&
-                      "flex flex-row-reverse items-start justify-end space-y-0",
-                  )}
-                >
-                  <FormLabel htmlFor={attribute.id.toString()}>
-                    {legacyTranslate(attribute.name, locale)}{" "}
-                    {attribute.isRequired ? (
-                      <Tooltip>
-                        <TooltipTrigger type="button">
-                          <span className="text-red-500">*</span>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                          {t("attributeIsRequiredTooltip")}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
-                  </FormLabel>
-                  <FormControl>
-                    {attribute.type === "file" ? (
-                      <AttributeInputFile
-                        attribute={attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
-                          )?.meta.pivot_updated_at ?? null
-                        }
-                      />
-                    ) : attribute.type === "drawing" ? (
-                      <AttributeInputDrawing
-                        attribute={attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
-                          )?.meta.pivot_updated_at ?? null
-                        }
-                      />
-                    ) : (
-                      <AttributeInput
-                        attribute={attribute}
-                        userData={userData}
-                        eventBlocks={eventBlocks.filter(
-                          (block) => block.attributeId === attribute.id,
-                        )}
-                        field={field}
-                        shouldCheckUserData={editMode}
-                      />
+                <>
+                  <FormItem
+                    className={cn(
+                      attribute.type === "checkbox" &&
+                        "flex flex-row-reverse items-start justify-end space-y-0",
                     )}
-                  </FormControl>
+                  >
+                    <FormLabel htmlFor={attribute.id.toString()}>
+                      {legacyTranslate(attribute.name, locale)}{" "}
+                      {attribute.isRequired ? (
+                        <Tooltip>
+                          <TooltipTrigger type="button">
+                            <span className="text-red-500">*</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            {t("attributeIsRequiredTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+                    </FormLabel>
+                    <FormControl>
+                      {attribute.type === "file" ? (
+                        <AttributeInputFile
+                          attribute={attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            userData?.attributes.find(
+                              (attribute_) => attribute_.id === attribute.id,
+                            )?.meta.pivot_updated_at ?? null
+                          }
+                        />
+                      ) : attribute.type === "drawing" ? (
+                        <AttributeInputDrawing
+                          attribute={attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            userData?.attributes.find(
+                              (attribute_) => attribute_.id === attribute.id,
+                            )?.meta.pivot_updated_at ?? null
+                          }
+                        />
+                      ) : (
+                        <AttributeInput
+                          attribute={attribute}
+                          userData={userData}
+                          eventBlocks={eventBlocks.filter(
+                            (block) => block.attributeId === attribute.id,
+                          )}
+                          field={field}
+                          shouldCheckUserData={editMode}
+                        />
+                      )}
+                    </FormControl>
+                  </FormItem>
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
@@ -415,7 +425,7 @@ export function ParticipantForm({
                       { name: legacyTranslate(attribute.name, "pl") },
                     )}
                   </FormMessage>
-                </FormItem>
+                </>
               )}
             />
           );
@@ -426,42 +436,44 @@ export function ParticipantForm({
             control={form.control}
             name="gdprConsent"
             render={({ field }) => (
-              <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
-                <FormLabel htmlFor="gdprConsent">
-                  {t.rich("gdprNotice", {
-                    infoLink: (chunks) => (
-                      <Link
-                        href={`/${eventSlug}/rodo`}
-                        className="text-(--event-primary-color)/90"
-                        target="_blank"
-                      >
-                        {chunks}
-                      </Link>
-                    ),
-                  })}{" "}
-                  <Tooltip>
-                    <TooltipTrigger type="button">
-                      <span className="grow text-red-500">*</span>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
-                      {t("gdprIsRequiredTooltip")}
-                    </TooltipContent>
-                  </Tooltip>
-                </FormLabel>
-                <FormControl>
-                  <Checkbox
-                    id={"gdprConsent"}
-                    checked={field.value === "true" || field.value === true}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                    }}
-                    className="mr-2"
-                  />
-                </FormControl>
+              <>
+                <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                  <FormLabel htmlFor="gdprConsent">
+                    {t.rich("gdprNotice", {
+                      infoLink: (chunks) => (
+                        <Link
+                          href={`/${eventSlug}/rodo`}
+                          className="text-(--event-primary-color)/90"
+                          target="_blank"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}{" "}
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <span className="grow text-red-500">*</span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                        {t("gdprIsRequiredTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id={"gdprConsent"}
+                      checked={field.value === "true" || field.value === true}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                      }}
+                      className="mr-2"
+                    />
+                  </FormControl>
+                </FormItem>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.gdprConsent?.message}
                 </FormMessage>
-              </FormItem>
+              </>
             )}
           />
         ) : null}
@@ -471,42 +483,44 @@ export function ParticipantForm({
             control={form.control}
             name="termsAccepted"
             render={({ field }) => (
-              <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
-                <FormLabel htmlFor="termsAccepted">
-                  {t.rich("termsNotice", {
-                    termsLink: (chunks) => (
-                      <Link
-                        href={termsLink ?? ""}
-                        className="text-(--event-primary-color)/90"
-                        target="_blank"
-                      >
-                        {chunks}
-                      </Link>
-                    ),
-                  })}{" "}
-                  <Tooltip>
-                    <TooltipTrigger type="button">
-                      <span className="grow text-red-500">*</span>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
-                      {t("termsIsRequiredTooltip")}
-                    </TooltipContent>
-                  </Tooltip>
-                </FormLabel>
-                <FormControl>
-                  <Checkbox
-                    id={"termsAccepted"}
-                    checked={field.value === "true" || field.value === true}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                    }}
-                    className="mr-2"
-                  />
-                </FormControl>
+              <>
+                <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                  <FormLabel htmlFor="termsAccepted">
+                    {t.rich("termsNotice", {
+                      termsLink: (chunks) => (
+                        <Link
+                          href={termsLink ?? ""}
+                          className="text-(--event-primary-color)/90"
+                          target="_blank"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}{" "}
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <span className="grow text-red-500">*</span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                        {t("termsIsRequiredTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id={"termsAccepted"}
+                      checked={field.value === "true" || field.value === true}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                      }}
+                      className="mr-2"
+                    />
+                  </FormControl>
+                </FormItem>
                 <FormMessage className="text-sm text-red-500">
                   {form.formState.errors.termsAccepted?.message}
                 </FormMessage>
-              </FormItem>
+              </>
             )}
           />
         ) : null}
