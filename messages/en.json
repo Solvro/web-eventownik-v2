@@ -550,7 +550,7 @@
     "gdprNotice": "I have read the <infoLink>privacy policy</infoLink> regarding the processing of my personal data",
     "gdprRequired": "You must confirm that you have read the privacy policy",
     "termsNotice": "I accept the event's <termsLink>terms</termsLink>",
-    "termsRequired": "You must confirm that you have read the event's terms",
+    "termsRequired": "You must confirm that you accept the event's terms",
     "registrationSuccess": "Registration successful!",
     "registrationFailed": "Registration failed. Try again later",
     "registrationFailedTitle": "Registration failed",
