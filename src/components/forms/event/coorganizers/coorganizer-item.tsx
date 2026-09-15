@@ -80,6 +80,7 @@ export const CoOrganizerItem = memo(
                       onPermissionToggle(permission);
                     }}
                     disabled={true} // temporary disabled
+                    aria-label={label}
                   />
                   <Label
                     htmlFor={`permission-${permission.id.toString()}`}

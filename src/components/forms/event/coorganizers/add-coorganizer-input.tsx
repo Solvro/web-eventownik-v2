@@ -62,6 +62,7 @@ export function AddCoOrganizerInput({
             onClick={() => {
               setSelectedPermissions([6, 5, 4, 3]);
             }}
+            aria-label="Dodaj współorganizatora"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -89,6 +90,7 @@ export function AddCoOrganizerInput({
                     }
                   }}
                   disabled={true} // temporary disabled
+                  aria-label={label}
                 />
                 <Label
                   htmlFor={`permission-${permission.id.toString()}-new`}
