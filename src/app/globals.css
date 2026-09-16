@@ -255,6 +255,18 @@
   font-size: 13px;
 }
 
+/* Tiptap's Image node is configured as inline (see editor.tsx) so images can
+   sit inside a paragraph next to other inline content, e.g. a row of social
+   icons. Tailwind's preflight resets img to `display: block`, which
+   overrides that and forces each image onto its own line regardless of the
+   schema setting, so it needs reverting here. */
+@layer base {
+  .email-root img,
+  .ProseMirror img {
+    display: inline;
+  }
+}
+
 /* Email editor exclusive heading spacing */
 .email-root h1 {
   line-height: 1.3;
