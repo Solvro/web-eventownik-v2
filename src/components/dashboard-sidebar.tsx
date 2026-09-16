@@ -11,8 +11,8 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
-import { useState } from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,11 +30,35 @@ interface SidebarSection {
 
 interface SidebarLink {
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   route: string;
 }
 
-const DashboardSidebarContext = React.createContext<{
+const SIDEBAR_STORAGE_KEY = "eventownik-dashboard-sidebar-open";
+
+function readSidebarState(): boolean {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
+
+function writeSidebarState(isOpen: boolean): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
+  } catch {}
+}
+
+const DashboardSidebarContext = createContext<{
   isSideBarOpen: boolean;
   toggleSideBar: () => void;
 } | null>(null);
@@ -42,16 +66,25 @@ const DashboardSidebarContext = React.createContext<{
 export function DashboardSidebarProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-initialize-state
+    setIsSideBarOpen(readSidebarState());
+  }, []);
 
   return (
     <DashboardSidebarContext.Provider
       value={{
         isSideBarOpen,
         toggleSideBar: () => {
-          setIsSideBarOpen((isOpen) => !isOpen);
+          setIsSideBarOpen((isOpen) => {
+            const nextIsOpen = !isOpen;
+            writeSidebarState(nextIsOpen);
+            return nextIsOpen;
+          });
         },
       }}
     >
@@ -61,7 +94,7 @@ export function DashboardSidebarProvider({
 }
 
 export function useDashboardSidebar() {
-  const context = React.useContext(DashboardSidebarContext);
+  const context = useContext(DashboardSidebarContext);
 
   if (context === null) {
     throw new Error(
@@ -147,18 +180,16 @@ export function DashboardSidebar({
   return (
     <>
       <nav
-        className={`easy-in border-muted hidden shrink-0 flex-col gap-6 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64 pr-8" : "w-[45px] min-w-[45px] pr-2"}`}
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64" : "w-[60px]"}`}
       >
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
-        ].map((section) => (
-          <div key={section.title}>
-            <h2
-              className={`overflow-hidden text-3xl font-bold whitespace-nowrap transition-all duration-400 ease-in-out ${isSideBarOpen ? "mb-6 max-h-10 opacity-100" : "mb-0 max-h-0 max-w-0 opacity-0"} `}
-            >
-              {section.title}
-            </h2>
+        ].map((section, id) => (
+          <div
+            key={section.title}
+            className={`pr-2 transition-all ${sections.length === id + 1 ? "" : "border-muted border-b-1 pb-3"} `}
+          >
             <ul
               className={`space-y-2 transition-all duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
             >
@@ -167,13 +198,12 @@ export function DashboardSidebar({
                   <TooltipTrigger asChild>
                     <li>
                       <Button
-                        className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "w-full justify-start" : "justify-center"}`}
+                        className={`w-full justify-start transition-all duration-400 ease-in-out`}
                         variant={
                           isActiveLink(link.route)
                             ? "eventDefault"
                             : "eventGhost"
                         }
-                        size={isSideBarOpen ? "default" : "icon"}
                         asChild
                       >
                         <Link
@@ -181,7 +211,7 @@ export function DashboardSidebar({
                         >
                           {link.icon}
                           <span
-                            className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 hidden w-0 opacity-0"}`}
+                            className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
                           >
                             {link.title}
                           </span>
