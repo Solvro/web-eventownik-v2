@@ -21,6 +21,7 @@ function WysiwygEditor({
   className,
   editorClassName,
   isEmailEditor = false,
+  placeholder = "Napisz wiadomość",
 }: {
   content: string;
   onChange: (value: string) => void;
@@ -32,12 +33,13 @@ function WysiwygEditor({
    * If true, enables tag-related buttons in menu and default CSS styling for editor content.
    */
   isEmailEditor?: boolean;
+  placeholder?: string;
 }) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: "Napisz wiadomość" }),
+      Placeholder.configure({ placeholder }),
       TextAlign.configure({
         types: ["heading", "paragraph", "image"],
       }),
@@ -94,7 +96,7 @@ function WysiwygEditor({
       <ScrollArea className="min-h-0 flex-1">
         <EditorContent
           editor={editor}
-          className={isEmailEditor ? "text-black dark:text-white" : ""}
+          className={isEmailEditor ? "email-root" : ""}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -34,10 +34,11 @@ export function AttributeInput({
   shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Form");
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
-      return <Input type="text" id={attribute.id.toString()} {...field} />;
+      return <Input type="text" id={attribute.uuid} {...field} />;
     }
     case "number": {
       return (
@@ -46,7 +47,7 @@ export function AttributeInput({
           onWheel={(event) => {
             event.currentTarget.blur();
           }}
-          id={attribute.id.toString()}
+          id={attribute.uuid}
           {...field}
         />
       );
@@ -58,24 +59,32 @@ export function AttributeInput({
           defaultValue={field.value as string}
           {...field}
         >
-          <SelectTrigger id={attribute.id.toString()}>
+          <SelectTrigger id={attribute.uuid}>
             <SelectValue
-              placeholder={`${locale === "en" ? "Select" : "Wybierz"} ${getAttributeLabel(attribute.name, locale).toLowerCase()}`}
+              placeholder={t("selectAttribute", {
+                name: getAttributeLabel(attribute.name, locale).toLowerCase(),
+              })}
             />
           </SelectTrigger>
           <SelectContent>
-            {attribute.options?.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
+            {attribute.options?.map((option) => {
+              const optionValue =
+                typeof option === "string" ? option : option.value;
+              const optionLabel =
+                typeof option === "string" ? option : option.label;
+              return (
+                <SelectItem key={optionValue} value={optionValue}>
+                  {optionLabel}
+                </SelectItem>
+              );
+            })}
             {/* 
             This hacky solution allows for setting "empty" option/ "unchecking" option
             Filtering logic is based on this value (" ")
             Feel free to propose better solution
             */}
             {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>Brak</SelectItem>
+              <SelectItem value={" "}>{t("none")}</SelectItem>
             )}
           </SelectContent>
         </Select>
@@ -84,37 +93,48 @@ export function AttributeInput({
     case "multiselect": {
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
-          {attribute.options?.map((option) => (
-            <div key={option} className="mb-2 flex items-center space-x-2">
-              <Checkbox
-                id={`${attribute.id.toString()}-${option}`}
-                disabled={field.disabled}
-                checked={((field.value ?? []) as string[]).includes(option)}
-                onCheckedChange={(checked) => {
-                  if (checked === true) {
-                    field.onChange([
-                      ...((field.value ?? []) as string[]),
-                      option,
-                    ]);
-                  } else {
-                    field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
-                    );
-                  }
-                }}
-              />
-              <Label htmlFor={`${attribute.id.toString()}-${option}`}>
-                {option}
-              </Label>
-            </div>
-          ))}
+          {attribute.options?.map((option) => {
+            const optionValue =
+              typeof option === "string" ? option : option.value;
+            const optionLabel =
+              typeof option === "string" ? option : option.label;
+            return (
+              <div
+                key={optionValue}
+                className="mb-2 flex items-center space-x-2"
+              >
+                <Checkbox
+                  id={`${attribute.uuid}-${optionValue}`}
+                  disabled={field.disabled}
+                  checked={((field.value ?? []) as string[]).includes(
+                    optionValue,
+                  )}
+                  onCheckedChange={(checked) => {
+                    if (checked === true) {
+                      field.onChange([
+                        ...((field.value ?? []) as string[]),
+                        optionValue,
+                      ]);
+                    } else {
+                      field.onChange(
+                        ((field.value ?? []) as string[]).filter(
+                          (v: string) => v !== optionValue,
+                        ),
+                      );
+                    }
+                  }}
+                />
+                <Label htmlFor={`${attribute.uuid}-${optionValue}`}>
+                  {optionLabel}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       );
     }
     case "email": {
-      return <Input type="email" id={attribute.id.toString()} {...field} />;
+      return <Input type="email" id={attribute.uuid} {...field} />;
     }
     case "date": {
       if (
@@ -125,7 +145,7 @@ export function AttributeInput({
         // It may break some features
         field.value = format(field.value as Date, "yyyy-MM-dd");
       }
-      return <Input type="date" id={attribute.id.toString()} {...field} />;
+      return <Input type="date" id={attribute.uuid} {...field} />;
     }
     case "datetime": {
       if (
@@ -135,31 +155,29 @@ export function AttributeInput({
       ) {
         field.value = format(field.value as Date, "yyyy-MM-dd HH:mm");
       }
-      return (
-        <Input type="datetime-local" id={attribute.id.toString()} {...field} />
-      );
+      return <Input type="datetime-local" id={attribute.uuid} {...field} />;
     }
     case "time": {
-      return <Input type="time" id={attribute.id.toString()} {...field} />;
+      return <Input type="time" id={attribute.uuid} {...field} />;
     }
     case "color": {
       return (
         <Input
           type="color"
           className="h-16 w-full"
-          id={attribute.id.toString()}
+          id={attribute.uuid}
           {...field}
         />
       );
     }
     case "textarea": {
-      return <Textarea rows={3} id={attribute.id.toString()} {...field} />;
+      return <Textarea rows={3} id={attribute.uuid} {...field} />;
     }
     case "checkbox": {
       return (
         <div className="flex items-center space-x-2">
           <Checkbox
-            id={attribute.id.toString()}
+            id={attribute.uuid}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
               field.onChange(checked);
@@ -172,7 +190,7 @@ export function AttributeInput({
     case "tel": {
       return (
         <Input
-          id={attribute.id.toString()}
+          id={attribute.uuid}
           type="tel"
           pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
           maxLength={16}
@@ -193,17 +211,13 @@ export function AttributeInput({
         eventBlocks === undefined ||
         (shouldCheckUserData && userData === undefined)
       ) {
-        return (
-          <div>
-            Nie udało się pobrać danych o tym bloku lub o twoich atrybutach 😪
-          </div>
-        );
+        return <div>{t("blockDataFetchFailed")} </div>;
       }
       return (
         <>
           {eventBlocks.map((rootBlock) => (
             <AttributeBlocksWrapper
-              key={rootBlock.id}
+              key={rootBlock.uuid}
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}

@@ -9,24 +9,35 @@ function ScrollArea({
   className,
   children,
   horizontalScroll = false,
+  viewportRef,
+  viewportClassName,
   ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
   horizontalScroll?: boolean;
+  viewportRef?: React.Ref<HTMLDivElement>;
+  viewportClassName?: string;
 }) {
   return (
     <ScrollAreaPrimitive.Root
+      type="always"
       data-slot="scroll-area"
       className={cn("relative", className)}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
+        ref={viewportRef}
         data-slot="scroll-area-viewport"
-        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+        className={cn(
+          "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+          viewportClassName,
+        )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
-      {horizontalScroll ? <ScrollBar orientation="horizontal" /> : null}
+      <ScrollBar className="z-50" />
+      {horizontalScroll ? (
+        <ScrollBar orientation="horizontal" className="z-50" />
+      ) : null}
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   );

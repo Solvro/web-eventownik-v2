@@ -2,6 +2,7 @@
 
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -10,13 +11,17 @@ import { AppLogo } from "@/components/app-logo";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
-const navigation = [
-  // { name: "Dashboard", href: "/dashboard" },
-  { name: "Wydarzenia", href: "/dashboard/events" },
-  // { name: "Ustawienia konta", href: "/dashboard/settings" },
-];
+import { LanguageSwitch } from "./language-switch";
 
 export function Navbar({ authButton }: { authButton: React.ReactNode }) {
+  const t = useTranslations("Dashboard");
+
+  const navigation = [
+    // { name: "Dashboard", href: "/dashboard" },
+    { name: t("events"), href: "/dashboard/events" },
+    // { name: t("accountSettings"), href: "/dashboard/settings" },
+  ];
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -59,6 +64,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
               </div>
             </div>
             <div className="hidden sm:flex sm:items-center sm:gap-2">
+              <LanguageSwitch />
               <ThemeSwitch />
               {authButton}
             </div>
@@ -85,6 +91,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
             ))}
           </div>
           <div className="flex justify-end gap-2 py-2">
+            <LanguageSwitch />
             <ThemeSwitch />
             {authButton}
           </div>

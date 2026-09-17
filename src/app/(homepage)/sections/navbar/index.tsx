@@ -1,5 +1,7 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
+import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 import { AppLogo } from "../app-logo";
@@ -7,6 +9,8 @@ import { AuthButton } from "./auth-button";
 import { MobileNavbar } from "./mobile-navbar";
 
 export function Navbar() {
+  const t = useTranslations("Homepage");
+
   return (
     <div className="flex w-full flex-col items-center px-4">
       {/* Mobile Navbar */}
@@ -18,12 +22,13 @@ export function Navbar() {
         <div className="flex items-center gap-8 uppercase">
           <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
-          <Link href="#events">Wydarzenia</Link>
-          <Link href="#functionalities">Funkcjonalności</Link>
+          <Link href="#events">{t("events")}</Link>
+          <Link href="#functionalities">{t("features")}</Link>
           <Link href="#faq">FAQ</Link>
-          <Link href="#team">Zespół</Link>
+          <Link href="#team">{t("team")}</Link>
         </div>
         <div className="flex items-center gap-4">
+          <LanguageSwitch />
           <ThemeSwitch />
           <AuthButton variant="default" />
         </div>

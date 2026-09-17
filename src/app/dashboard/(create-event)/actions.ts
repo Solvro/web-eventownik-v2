@@ -2,6 +2,7 @@
 
 import { formatISO } from "date-fns";
 
+import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
@@ -9,14 +10,21 @@ import { verifySession } from "@/lib/session";
 import type { Event } from "./state";
 
 export async function isSlugTaken(slug: string) {
-  const response = await fetch(`${API_URL}/events/${slug}/public`);
+  const response = await fetch(`${API_URL}/public/events/${slug}`);
   return response.ok;
 }
 
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
+}
+
 interface SaveEventResult {
-  id?: string;
-  errors?: { message: string }[];
-  warnings?: string[];
+  uuid?: string;
+  errors?: {
+    message: ErrorMessage | string;
+  }[];
+  warnings?: ErrorMessage[];
 }
 
 export async function saveEvent(event: Event): Promise<SaveEventResult> {
@@ -26,28 +34,48 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   }
   const { bearerToken } = session;
 
-  const warnings: string[] = [];
+  const warnings: ErrorMessage[] = [];
 
   const formData = new FormData();
 
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
   formData.append("organizer", event.organizer ?? "");
-  formData.append("contactEmail", event.contactEmail ?? "");
+  if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
+    formData.append("contactEmail", event.contactEmail);
+  }
   formData.append("slug", event.slug);
-  formData.append("termsLink", event.termsLink ?? "");
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsCount", event.participantsNumber.toString());
 
-  for (const _link of event.socialMediaLinks) {
-    if (_link.link) {
-      const value =
-        _link.label == null ? _link.link : `[${_link.label}](${_link.link})`;
-      formData.append("socialMediaLinks[]", value);
-    }
+  const addLinkToFormData = (
+    url: string,
+    type: string,
+    label: string,
+    index: string,
+  ) => {
+    formData.append(`links[${index}][url]`, url);
+    formData.append(`links[${index}][type]`, type);
+    formData.append(`links[${index}][label]`, label);
+  };
+
+  const allLinks = [
+    ...(event.termsLink == null
+      ? []
+      : [{ url: event.termsLink, type: "policy", label: "" }]),
+    ...event.socialMediaLinks
+      .filter((link) => link.url.trim())
+      .map((link) => ({
+        url: link.url,
+        type: "general",
+        label: link.label ?? "",
+      })),
+  ];
+  for (const [index, link] of allLinks.entries()) {
+    addLinkToFormData(link.url, link.type, link.label.trim(), index.toString());
   }
 
   if (event.photoUrl) {
@@ -57,7 +85,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     } catch (error) {
       console.error("[saveEvent] Error processing photo:", error);
       return {
-        errors: [{ message: "Failed to process event photo" }],
+        errors: [
+          { message: { key: "failedToProcessEventPhoto" as DashboardKey } },
+        ],
       };
     }
   }
@@ -71,29 +101,37 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as { errors: { message: string }[] };
+    const error = (await response.json()) as {
+      message: string[] | string;
+      error: string;
+      statusCode: number;
+    };
+    const messages = Array.isArray(error.message)
+      ? error.message
+      : [error.message || "Unknown error"];
+
     console.error(
-      `[saveEvent] Failed to create event: ${error.errors[0]?.message ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
     );
-    return { errors: error.errors };
+    return { errors: messages.map((message) => ({ message })) };
   }
 
-  const data = (await response.json()) as Record<"id", string>;
+  const data = (await response.json()) as Record<"uuid", string>;
 
-  if (!("id" in data)) {
-    console.error("[saveEvent] No event ID returned from server");
+  if (!("uuid" in data)) {
+    console.error("[saveEvent] No event UUID returned from server");
     return { errors: [{ message: "Failed to create event" }] };
   }
 
-  const eventId = data.id;
+  const eventUuid = data.uuid;
 
-  const coOrganizerErrors: string[] = [];
+  const coOrganizerErrors: ErrorMessage[] = [];
   let coOrganizersAdded = 0;
 
   for (const coorganizer of event.coorganizers) {
     try {
       const coorganizerResponse = await fetch(
-        `${API_URL}/events/${eventId}/organizers`,
+        `${API_URL}/events/${eventUuid}/organizers`,
         {
           method: "POST",
           headers: {
@@ -118,9 +156,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           coorganizer.email,
           errorData,
         );
-        coOrganizerErrors.push(
-          `Failed to add co-organizer ${coorganizer.email}. You can add them later in settings.`,
-        );
+        coOrganizerErrors.push({
+          key: "coOrganizerAddWarning",
+          values: {
+            email: coorganizer.email,
+          },
+        });
       }
     } catch (error) {
       console.error(
@@ -128,9 +169,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         coorganizer.email,
         error,
       );
-      coOrganizerErrors.push(
-        `Error adding co-organizer ${coorganizer.email}. You can add them later in settings.`,
-      );
+      coOrganizerErrors.push({
+        key: "coOrganizerAddError",
+        values: {
+          email: coorganizer.email,
+        },
+      });
     }
   }
 
@@ -141,13 +185,13 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     warnings.push(...coOrganizerErrors);
   }
 
-  const attributeErrors: string[] = [];
+  const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
   for (const attribute of event.attributes) {
     try {
       const attributeResponse = await fetch(
-        `${API_URL}/events/${eventId}/attributes`,
+        `${API_URL}/events/${eventUuid}/attributes`,
         {
           method: "POST",
           headers: {
@@ -181,9 +225,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           attribute.name,
           errorData,
         );
-        attributeErrors.push(
-          `Failed to add attribute ${attribute.name}. You can add it later in settings.`,
-        );
+        attributeErrors.push({
+          key: "attributeAddWarning",
+          values: { name: attribute.name },
+        });
       }
     } catch (error) {
       console.error(
@@ -191,9 +236,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
         attribute.name,
         error,
       );
-      attributeErrors.push(
-        `Error adding attribute ${attribute.name}. You can add it later in settings.`,
-      );
+      attributeErrors.push({
+        key: "attributeAddError",
+        values: { name: attribute.name },
+      });
     }
   }
 
@@ -206,12 +252,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (warnings.length > 0) {
     console.warn(
-      `[saveEvent] Event ${eventId} created with ${warnings.length.toString()} warnings`,
+      `[saveEvent] Event ${eventUuid} created with ${warnings.length.toString()} warnings`,
     );
   }
 
   return {
-    id: eventId,
+    uuid: eventUuid,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

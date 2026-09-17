@@ -12,6 +12,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import { CircleAlert, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { EventList } from "@/app/(homepage)/sections/events/event-list";
@@ -45,7 +46,7 @@ function getEventsUrl(year: number, month: number) {
   const formattedEnd = format(endDate, "yyyy-MM-dd");
 
   // 4. Build the URL
-  return `${API_URL}/events/public?from=${formattedStart}&to=${formattedEnd}`;
+  return `${API_URL}/public/events?from=${formattedStart}&to=${formattedEnd}`;
 }
 
 async function fetchEvents(
@@ -62,6 +63,8 @@ async function fetchEvents(
 }
 
 export function Events() {
+  const t = useTranslations("Homepage");
+
   const [filters, setFilters] = useState<{ month: number; year: number }>({
     month: getMonth(new Date()),
     year: getYear(new Date()),
@@ -82,7 +85,7 @@ export function Events() {
     return (
       <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 text-black shadow-xl">
         <Loader2 className="animate-spin" />
-        Pobieranie wydarzeń...
+        {t("loadingEvents")}
       </div>
     );
   }
@@ -91,7 +94,7 @@ export function Events() {
     return (
       <div className="flex flex-row items-center gap-2 rounded-2xl bg-white px-6 py-4 text-black shadow-xl">
         <CircleAlert className="text-red-500" />
-        <p>O nie! Nie udało się pobrać wydarzeń: {error.message}</p>
+        <p>{t("failedToLoadEvents", { message: error.message })}</p>
       </div>
     );
   }

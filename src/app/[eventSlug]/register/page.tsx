@@ -7,7 +7,10 @@ import sanitizeHtml from "sanitize-html";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
+import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
+import { parseLinks } from "@/lib/links";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
@@ -24,9 +27,12 @@ export async function generateMetadata({
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -50,9 +56,12 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
 
   if (!response.ok) {
     const error = (await response.json()) as unknown;
@@ -61,11 +70,16 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   }
 
   const event = (await response.json()) as Event;
+  const { policyLink } = parseLinks(event.links);
 
-  const form = event.firstForm;
+  const form = event.registerForm;
 
   if (form === null) {
     return <EventNotFound whatNotFound="form" />;
+  }
+
+  if (!isFormOpen(form)) {
+    return <FormClosedView event={event} form={form} />;
   }
 
   const blockAttributesInForm = form.attributes.filter(
@@ -74,37 +88,12 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const eventBlocks = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
-      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+      getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
   if (eventBlocks.includes(null)) {
     return <EventNotFound whatNotFound="blocks" />;
-  }
-
-  if (!form.isOpen) {
-    return (
-      <EventPageLayout
-        event={event}
-        description={event.description ?? ""}
-        variant="form"
-      >
-        <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
-          <Info className="text-muted-foreground size-10" aria-hidden="true" />
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">
-              {t("registrationDisabled")}
-            </h1>
-          </div>
-          <Link
-            href={`/${event.slug}`}
-            className="text-primary text-sm font-medium underline underline-offset-4"
-          >
-            {t("backToEventPage")}
-          </Link>
-        </div>
-      </EventPageLayout>
-    );
   }
 
   return (
@@ -121,35 +110,36 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <FormGenerator
         attributes={form.attributes}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.id.toString()}
+        formUuid={form.uuid}
         eventSlug={eventSlug}
         editMode={false}
       />
 
       <p className="text-foreground/50 my-4 text-center text-sm">
-        <Info className="inline-block size-4 align-[-0.195em]" /> Kontynuując
-        zgadzasz się na warunki zawarte w<br />
+        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
+        {t("consentIntro")}
+        <br />
         <Link
           href={`/${event.slug}/privacy`}
           className="text-(--event-primary-color)/90"
           target="_blank"
         >
-          polityce prywatności
+          {t("privacyPolicy")}
         </Link>
-        {event.termsLink === null ? (
-          <span> wydarzenia</span>
+        {policyLink == null ? (
+          <span> {t("ofEvent")}</span>
         ) : (
           <>
             {" "}
-            oraz{" "}
+            {t("and")}{" "}
             <Link
-              href={event.termsLink}
+              href={policyLink.url}
               className="text-(--event-primary-color)/90"
               target="_blank"
             >
-              regulaminie
+              {t("terms")}
             </Link>{" "}
-            wydarzenia
+            {t("ofEvent")}
           </>
         )}
       </p>

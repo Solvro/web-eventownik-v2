@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import React from "react";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
@@ -15,24 +16,28 @@ interface EventPageProps {
 export async function generateMetadata({
   params,
 }: EventPageProps): Promise<Metadata> {
+  const t = await getTranslations("Event");
   const { eventSlug } = await params;
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
     return {
       title: "Eventownik",
-      description: "Nie znaleziono wydarzenia 😪",
+      description: t("notFound"),
     };
   }
   const event = (await response.json()) as Event;
 
   return {
-    title: `Polityka prywatności - ${event.name}`,
-    description: `Polityka prywatności wydarzenia ${event.name}`,
+    title: t("privacyPolicyTitle", { name: event.name }),
+    description: t("eventPrivacyPolicy", { name: event.name }),
     openGraph: {
       images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },
@@ -42,9 +47,12 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
 
-  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const eventResponse = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!eventResponse.ok) {
     const error = (await eventResponse.json()) as unknown;
     console.error(error);
@@ -106,7 +114,7 @@ export default async function EventPage({ params }: EventPageProps) {
               </li>
               {event.attributes.map((attribute) => {
                 return (
-                  <li key={attribute.id}>
+                  <li key={attribute.uuid}>
                     {getAttributeLabel(attribute.name, "pl")}
                     {attribute.isSensitiveData
                       ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.reason ?? "nie podano"}')`

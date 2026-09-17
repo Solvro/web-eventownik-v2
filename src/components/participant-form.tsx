@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
@@ -28,11 +29,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { translateOrFallback } from "@/i18n/utils";
 import {
   cn,
   getAttributeLabel,
   getSchemaObjectForAttributes,
 } from "@/lib/utils";
+import type { FormValidationErrors } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -48,7 +51,11 @@ interface ParticipantFormProps {
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
-  ) => Promise<{ success: boolean; errors?: ErrorObject[]; error?: string }>;
+  ) => Promise<{
+    success: boolean;
+    errors?: ErrorObject[];
+    error?: SubmitFormError;
+  }>;
   includeEmail?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
@@ -64,6 +71,8 @@ export function ParticipantForm({
   editMode = false,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
+  const tEventDetails = useTranslations("EventDetails");
+
   const locale = useLocale();
   const router = useRouter();
 
@@ -80,7 +89,7 @@ export function ParticipantForm({
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const hCaptchaRef = useRef<HCaptcha>(null);
 
-  const submitText = editMode ? t("save") : t("signUp");
+  const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
@@ -100,7 +109,7 @@ export function ParticipantForm({
             attribute.type !== "file" && attribute.type !== "drawing",
         )
         .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+          accumulator[attribute.uuid] = attribute.meta.pivot_value;
           return accumulator;
         }, {}),
     },
@@ -165,7 +174,14 @@ export function ParticipantForm({
             title: editMode
               ? t("editSaveFailedTitle")
               : t("registrationFailedTitle"),
-            description: result.error ?? t("tryAgainLater"),
+            description:
+              result.error?.message ??
+              translateOrFallback(
+                tEventDetails,
+                result.error?.key,
+                result.error?.values,
+              ) ??
+              t("tryAgainLater"),
           });
         }
       }
@@ -234,24 +250,22 @@ export function ParticipantForm({
     let hasValidationErrors = false;
 
     for (const attribute of requiredFileDrawingAttributes) {
-      const hasFile = files.some(
-        (file) => file.name === attribute.id.toString(),
-      );
+      const hasFile = files.some((file) => file.name === attribute.uuid);
       const hasExistingValue =
         userData?.attributes.some(
           (userAttribute) =>
-            userAttribute.id === attribute.id &&
+            userAttribute.uuid === attribute.uuid &&
             userAttribute.meta.pivot_value !== "" &&
             userAttribute.meta.pivot_value.length > 0,
         ) ?? false;
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
-        form.setError(attribute.id.toString(), {
+        form.setError(attribute.uuid, {
           message:
             attribute.type === "file"
-              ? "To pole wymaga wgrania pliku."
-              : "To pole wymaga narysowania czegoś.",
+              ? t("fileUploadRequired")
+              : t("drawingRequired"),
         });
       }
     }
@@ -283,7 +297,7 @@ export function ParticipantForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Email{" "}
+                  {t("email")}{" "}
                   <Tooltip>
                     <TooltipTrigger type="button">
                       <span className="text-red-500">*</span>
@@ -313,9 +327,9 @@ export function ParticipantForm({
         {sortedAttributes.map((attribute) => {
           return (
             <FormField
-              key={attribute.id}
+              key={attribute.uuid}
               control={form.control}
-              name={attribute.id.toString()}
+              name={attribute.uuid}
               render={({ field }) => (
                 <FormItem
                   className={cn(
@@ -323,7 +337,7 @@ export function ParticipantForm({
                       "flex flex-row-reverse items-start justify-end space-y-0",
                   )}
                 >
-                  <FormLabel htmlFor={attribute.id.toString()}>
+                  <FormLabel htmlFor={attribute.uuid}>
                     {getAttributeLabel(attribute.name, locale)}{" "}
                     {attribute.isRequired ? (
                       <Tooltip>
@@ -346,7 +360,7 @@ export function ParticipantForm({
                         setFiles={setFiles}
                         lastUpdate={
                           userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
+                            (attribute_) => attribute_.uuid === attribute.uuid,
                           )?.meta.pivot_updated_at ?? null
                         }
                       />
@@ -359,7 +373,7 @@ export function ParticipantForm({
                         setFiles={setFiles}
                         lastUpdate={
                           userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
+                            (attribute_) => attribute_.uuid === attribute.uuid,
                           )?.meta.pivot_updated_at ?? null
                         }
                       />
@@ -368,7 +382,7 @@ export function ParticipantForm({
                         attribute={attribute}
                         userData={userData}
                         eventBlocks={eventBlocks.filter(
-                          (block) => block.attributeId === attribute.id,
+                          (block) => block.attributeUuid === attribute.uuid,
                         )}
                         field={field}
                         shouldCheckUserData={editMode}
@@ -376,11 +390,13 @@ export function ParticipantForm({
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
-                    {
+                    {translateOrFallback(
+                      t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                      (form.formState.errors as any)[attribute.id.toString()]
-                        ?.message
-                    }
+                      (form.formState.errors as any)[attribute.uuid]
+                        ?.message as FormValidationErrors,
+                      { name: getAttributeLabel(attribute.name, "pl") },
+                    )}
                   </FormMessage>
                 </FormItem>
               )}

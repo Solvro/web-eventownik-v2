@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ export async function AuthButton({
   className?: string;
 }) {
   const session = await verifySession();
+  const t = await getTranslations("Homepage");
+
   return (
     <Button
       asChild
@@ -20,9 +23,9 @@ export async function AuthButton({
       className={cn("border-foreground", className)}
     >
       {session === null ? (
-        <Link href="/auth/login">Zaloguj się</Link>
+        <Link href="/auth/login">{t("login")}</Link>
       ) : (
-        <Link href="/dashboard/events">Panel organizatora</Link>
+        <Link href="/dashboard/events">{t("organizerPanel")}</Link>
       )}
     </Button>
   );

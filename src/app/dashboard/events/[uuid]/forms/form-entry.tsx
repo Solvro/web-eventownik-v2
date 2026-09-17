@@ -1,0 +1,74 @@
+import { formatDate } from "date-fns";
+import { SquarePen } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import type { EventForm } from "@/types/forms";
+
+import { DeleteFormPopup } from "./delete-form-popup";
+
+function FormEntry({
+  form,
+  eventUuid,
+}: {
+  form: EventForm;
+  eventUuid: string;
+}) {
+  const t = useTranslations("Dashboard");
+
+  return (
+    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
+      <div className="flex items-center justify-end">
+        <Button variant="eventGhost" size="icon" asChild>
+          <Link href={`forms/${form.uuid}`}>
+            <SquarePen />
+            <span className="sr-only">{t("editForm")}</span>
+          </Link>
+        </Button>
+        {/* TODO: Implement form preview */}
+        {/*<Button variant="eventGhost" size="icon" asChild>*/}
+        {/*  <Link href="/">*/}
+        {/*    <Eye />*/}
+        {/*    <span className="sr-only">Podgląd formularzu</span>*/}
+        {/*  </Link>*/}
+        {/*</Button>*/}
+        <DeleteFormPopup
+          eventUuid={eventUuid}
+          formUuid={form.uuid}
+          formName={form.name}
+        />
+      </div>
+      <div className="flex grow flex-col items-center justify-center gap-2 text-center">
+        <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
+          {form.name}
+        </p>
+
+        <p className="text-muted-foreground">
+          {form.openCondition === "ON_DATE" &&
+            form.openDate !== null &&
+            form.closeDate !== null && (
+              <>
+                <span>
+                  {t("from")} {formatDate(form.openDate, "dd.MM.yyyy HH:mm")}
+                </span>
+                <br />
+                <span>
+                  {t("to")} {formatDate(form.closeDate, "dd.MM.yyyy HH:mm")}
+                </span>
+              </>
+            )}
+
+          {form.openCondition === "MANUAL" &&
+            (form.isOpen ? (
+              <span>{t("acceptingSubmissions")}</span>
+            ) : (
+              <span>{t("notAcceptingSubmissions")}</span>
+            ))}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export { FormEntry };

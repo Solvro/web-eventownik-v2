@@ -1,7 +1,9 @@
 "use server";
 
+import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
-import type { FormErrorObject } from "@/types/form";
+import { isValidUuid } from "@/lib/is-valid-uuid";
+import type { FormErrorObject } from "@/types/forms";
 
 interface ErrorResponse {
   errors: FormErrorObject[];
@@ -13,16 +15,22 @@ interface SubmitFormOptions {
   /**
    * Legacy events have IDs, new events have slugs - this handles both
    */
-  eventId: string;
-  formId: string;
+  eventUuid: string;
+  formUuid: string;
   files: File[];
   participantSlug?: string;
+}
+
+export interface SubmitFormError {
+  message?: string;
+  key?: EventDetailsKey;
+  values?: Record<string, string | number | Date>;
 }
 
 interface SubmitFormResult {
   success: boolean;
   errors?: FormErrorObject[];
-  error?: string;
+  error?: SubmitFormError;
 }
 
 /**
@@ -30,11 +38,15 @@ interface SubmitFormResult {
  */
 export async function submitParticipantForm({
   values,
-  eventId,
-  formId,
+  eventUuid,
+  formUuid,
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
+  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
+    return { success: false, error: { message: "Invalid form identifier" } };
+  }
+
   try {
     const formData = new FormData();
 
@@ -65,7 +77,7 @@ export async function submitParticipantForm({
     }
 
     const response = await fetch(
-      `${API_URL}/events/${eventId}/forms/${formId}/submit`,
+      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
         body: formData,
@@ -92,9 +104,17 @@ export async function submitParticipantForm({
       return {
         success: false,
         errors: errorData.errors,
-        error:
-          errorMessages ||
-          `Błąd ${response.status.toString()} ${response.statusText}`,
+        error: errorMessages
+          ? {
+              message: errorMessages,
+            }
+          : {
+              key: "httpError" as EventDetailsKey,
+              values: {
+                status: response.status,
+                statusText: response.statusText,
+              },
+            },
       };
     }
   } catch (error) {

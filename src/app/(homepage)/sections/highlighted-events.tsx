@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { TargetAndTransition, VariantLabels } from "motion/react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -17,39 +18,6 @@ interface HighlightedEvent {
     alt: string;
   };
 }
-
-const events: HighlightedEvent[] = [
-  {
-    name: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
-    description:
-      "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalność i sprawdzili jak skutecznie może usprawnić zarządzanie dużym wydarzeniem.",
-    year: 2025,
-    image: {
-      src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
-      alt: "RAJD „SHREKSPEDYCJA: WELCOME TO BAGNO”",
-    },
-  },
-  {
-    name: 'Rejs "W8 na Fali"',
-    description:
-      "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia - Rejsu 2025.",
-    year: 2025,
-    image: {
-      src: "/assets/landing/highlighted-events/rejs-w8.jpg",
-      alt: 'Rejs "W8 na Fali"',
-    },
-  },
-  {
-    name: "Wyjazd do Graz w ramach Unite!",
-    description:
-      "Studenci z naszego Koła Solvro wzięli udział w wymianie do Graz w ramach programu Unite!  Podczas organizacji wyjazdu korzystali z Eventownika, który usprawnił jego planowanie oraz realizację od początku do końca.",
-    year: 2025,
-    image: {
-      src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
-      alt: "Wyjazd do Graz w ramach Unite!",
-    },
-  },
-];
 
 const variants = {
   left: {
@@ -108,7 +76,7 @@ function CarouselImage({
       initial={initial}
       animate={animate}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-[600px] min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
+      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-150 min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
       onClick={() => {
         onClick(index);
       }}
@@ -153,9 +121,41 @@ function CarouselImage({
 export function HighlightedEvents() {
   const variantsList = ["left", "center", "right"];
   const [index, setIndex] = useState(0);
+  const t = useTranslations("Homepage");
+
+  const events: HighlightedEvent[] = [
+    {
+      name: t("HighlightedEvents.event1Name"),
+      description: t("HighlightedEvents.event1Description"),
+      year: 2025,
+      image: {
+        src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
+        alt: t("HighlightedEvents.event1Name"),
+      },
+    },
+    {
+      name: t("HighlightedEvents.event2Name"),
+      description: t("HighlightedEvents.event2Description"),
+      year: 2025,
+      image: {
+        src: "/assets/landing/highlighted-events/rejs-w8.jpg",
+        alt: t("HighlightedEvents.event2Name"),
+      },
+    },
+    {
+      name: t("HighlightedEvents.event3Name"),
+      description: t("HighlightedEvents.event3Description"),
+      year: 2025,
+      image: {
+        src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
+        alt: t("HighlightedEvents.event3Name"),
+      },
+    },
+  ];
+
   return (
     <div className="-mt-16 flex w-full flex-col items-start gap-8 overflow-x-hidden pt-16 lg:gap-16">
-      <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-[520px] w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
+      <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-130 w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
         <CarouselImage
           src={events[1].image.src}
           alt={events[1].image.alt}
@@ -192,7 +192,7 @@ export function HighlightedEvents() {
       </div>
       <div className="flex w-full flex-row items-center justify-center gap-6">
         <button
-          title="Poprzednie zdjęcie"
+          title={t("previousImage")}
           onClick={() => {
             setIndex((index - 1 + variantsList.length) % variantsList.length);
           }}
@@ -200,7 +200,7 @@ export function HighlightedEvents() {
           <ArrowLeft className="size-9" />
         </button>
         <button
-          title="Następne zdjęcie"
+          title={t("nextImage")}
           onClick={() => {
             setIndex((index + 1) % variantsList.length);
           }}

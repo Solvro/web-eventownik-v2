@@ -1,5 +1,6 @@
 import { useDebouncedCallback } from "@tanstack/react-pacer";
 import { Eraser, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import type {
   ControllerRenderProps,
@@ -29,6 +30,7 @@ export function AttributeInputDrawing({
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   lastUpdate: string | null;
 }) {
+  const t = useTranslations("Dashboard");
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const [eraseMode, setEraseMode] = useState(false);
   const [strokeColor, setStrokeColor] = useState("#000000");
@@ -46,9 +48,7 @@ export function AttributeInputDrawing({
 
         if (isEmpty) {
           setFiles((previousFiles) =>
-            previousFiles.filter(
-              (file) => file.name !== attribute.id.toString(),
-            ),
+            previousFiles.filter((file) => file.name !== attribute.uuid),
           );
           return;
         }
@@ -56,7 +56,7 @@ export function AttributeInputDrawing({
         const dataUrl = await canvasRef.current.exportImage("png");
         const response = await fetch(dataUrl);
         const blob = await response.blob();
-        const file = new File([blob], attribute.id.toString(), {
+        const file = new File([blob], attribute.uuid, {
           type: "image/png",
         });
 
@@ -67,11 +67,11 @@ export function AttributeInputDrawing({
           return [...filtered, file];
         });
 
-        resetField(attribute.id.toString());
+        resetField(attribute.uuid);
       } catch (error) {
         console.error("Failed to export drawing:", error);
-        setError(attribute.id.toString(), {
-          message: "Nie udało się zapisać rysunku",
+        setError(attribute.uuid, {
+          message: t("failedToSaveDrawing"),
         });
       }
     },
@@ -107,7 +107,9 @@ export function AttributeInputDrawing({
       {lastUpdate != null && (
         <div>
           <span className="text-muted-foreground text-sm">
-            Ostatnio zapisany rysunek: {new Date(lastUpdate).toLocaleString()}
+            {t("lastSavedDrawing", {
+              date: new Date(lastUpdate).toLocaleString(),
+            })}
           </span>
         </div>
       )}
@@ -139,16 +141,16 @@ export function AttributeInputDrawing({
             style={{ backgroundColor: strokeColor }}
             asChild
           >
-            <label htmlFor={`stroke-color-${attribute.id.toString()}`}>
+            <label htmlFor={`stroke-color-${attribute.uuid}`}>
               <input
                 type="color"
-                id={`stroke-color-${attribute.id.toString()}`}
+                id={`stroke-color-${attribute.uuid}`}
                 value={strokeColor}
                 onChange={(event_) => {
                   setStrokeColor(event_.target.value);
                 }}
                 className="pointer-events-none h-0 w-0 p-4 opacity-0"
-                aria-label="Wybór koloru"
+                aria-label={t("selectColor")}
               />
             </label>
           </Button>
@@ -191,7 +193,7 @@ export function AttributeInputDrawing({
           className="flex-1"
         >
           <RotateCcw />
-          Cofnij
+          {t("undo")}
         </Button>
         <Button
           type="button"
@@ -201,10 +203,10 @@ export function AttributeInputDrawing({
           className="flex-1"
         >
           <Trash2 />
-          Wyczyść
+          {t("clear")}
         </Button>
       </div>
-      <input type="hidden" id={attribute.id.toString()} {...field} />
+      <input type="hidden" id={attribute.uuid} {...field} />
     </div>
   );
 }

@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import type { NewEventAttribute } from "./types";
 
+export type EventAttributesFormErrors =
+  | "attributeNameRequired"
+  | "attributeNameExists"
+  | "sensitiveDataReasonRequired";
+
 export const EventAttributesFormSchema = z.object({
   attributes: z
     .array(z.custom<NewEventAttribute>())
@@ -22,7 +27,7 @@ export const EventAttributesFormSchema = z.object({
           context.addIssue({
             code: z.ZodIssueCode.custom,
             path: [index, "name"],
-            message: "Nazwa atrybutu nie może być pusta.",
+            message: "attributeNameRequired",
           });
         }
         const normalizedName = attribute.name.toLowerCase().trim();
@@ -30,7 +35,7 @@ export const EventAttributesFormSchema = z.object({
           context.addIssue({
             code: z.ZodIssueCode.custom,
             path: [index, "name"],
-            message: "Atrybut o tej nazwie już istnieje.",
+            message: "attributeNameExists",
           });
         }
         nameSet.add(normalizedName);
@@ -42,7 +47,7 @@ export const EventAttributesFormSchema = z.object({
           context.addIssue({
             code: z.ZodIssueCode.custom,
             path: [index, "reason"],
-            message: "Powód jest wymagany dla danych wrażliwych.",
+            message: "sensitiveDataReasonRequired",
           });
         }
       }

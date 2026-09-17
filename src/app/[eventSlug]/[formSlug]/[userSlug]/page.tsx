@@ -1,14 +1,17 @@
 import { User } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { EventInfoDiv } from "@/components/event-info-div";
+import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
-import type { Form } from "@/types/form";
+import type { EventForm } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
 
 import { EventNotFound } from "../../event-not-found";
@@ -24,9 +27,12 @@ interface FormPageProps {
 }
 
 async function getEvent(eventSlug: string) {
-  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const eventResponse = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!eventResponse.ok) {
     const error = (await eventResponse.json()) as unknown;
     console.error(error);
@@ -38,7 +44,7 @@ async function getEvent(eventSlug: string) {
 
 async function getForm(eventSlug: string, formSlug: string) {
   const formResponse = await fetch(
-    `${API_URL}/events/${eventSlug}/forms/${formSlug}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
     {
       method: "GET",
     },
@@ -48,7 +54,7 @@ async function getForm(eventSlug: string, formSlug: string) {
     console.error(error);
     return null;
   }
-  const form = (await formResponse.json()) as Form;
+  const form = (await formResponse.json()) as EventForm;
   return form;
 }
 
@@ -58,11 +64,11 @@ async function getUserData(
   userSlug: string,
 ) {
   const attributesUrl = new URL(
-    `${API_URL}/events/${eventSlug}/participants/${userSlug}`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
   );
 
   for (const attribute of formAttributes) {
-    attributesUrl.searchParams.append("attributes[]", attribute.id.toString());
+    attributesUrl.searchParams.append("attributes[]", attribute.uuid);
   }
 
   const userDataResponse = await fetch(attributesUrl, {
@@ -80,12 +86,13 @@ async function getUserData(
 export async function generateMetadata({
   params,
 }: FormPageProps): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
   const { eventSlug, formSlug } = await params;
 
   const form = await getForm(eventSlug, formSlug);
 
   return {
-    title: form === null ? "Formularz" : form.name,
+    title: form === null ? t("form") : form.name,
   };
 }
 
@@ -102,6 +109,10 @@ export default async function FormPage({ params }: FormPageProps) {
     return <EventNotFound whatNotFound="form" />;
   }
 
+  if (!isFormOpen(form)) {
+    return <FormClosedView event={event} form={form} isRegistration={false} />;
+  }
+
   const userData = await getUserData(form.attributes, event.slug, userSlug);
   if (userData === null) {
     return <EventNotFound whatNotFound="user" />;
@@ -113,7 +124,7 @@ export default async function FormPage({ params }: FormPageProps) {
 
   const eventBlocks = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
-      getEventBlockAttributeBlocks(event.slug, attribute.id.toString()),
+      getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
@@ -140,7 +151,7 @@ export default async function FormPage({ params }: FormPageProps) {
         attributes={form.attributes}
         userData={userData}
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
-        formId={form.id.toString()}
+        formUuid={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}
         editMode={true}
