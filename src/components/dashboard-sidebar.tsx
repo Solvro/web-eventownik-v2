@@ -180,7 +180,7 @@ export function DashboardSidebar({
   return (
     <>
       <nav
-        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-64" : "w-[60px]"}`}
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
       >
         {[
           ...sections,
@@ -211,7 +211,7 @@ export function DashboardSidebar({
                         >
                           {link.icon}
                           <span
-                            className={`transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
+                            className={`min-w-0 truncate transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
                           >
                             {link.title}
                           </span>
