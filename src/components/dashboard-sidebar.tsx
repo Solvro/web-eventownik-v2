@@ -180,7 +180,7 @@ export function DashboardSidebar({
   return (
     <>
       <nav
-        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-all duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-[width] duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
       >
         {[
           ...sections,
@@ -188,17 +188,17 @@ export function DashboardSidebar({
         ].map((section, id) => (
           <div
             key={section.title}
-            className={`pr-2 transition-all ${sections.length === id + 1 ? "" : "border-muted border-b-1 pb-3"} `}
+            className={`pr-2 ${sections.length === id + 1 ? "" : "border-muted border-b-1 pb-3"} `}
           >
             <ul
-              className={`space-y-2 transition-all duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
+              className={`space-y-2 transition-[padding-left] duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
             >
               {section.links.map((link) => (
                 <Tooltip key={link.title} delayDuration={400}>
                   <TooltipTrigger asChild>
                     <li>
                       <Button
-                        className={`w-full justify-start transition-all duration-400 ease-in-out`}
+                        className="w-full justify-start transition-none"
                         variant={
                           isActiveLink(link.route)
                             ? "eventDefault"
@@ -211,7 +211,7 @@ export function DashboardSidebar({
                         >
                           {link.icon}
                           <span
-                            className={`min-w-0 truncate transition-all duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
+                            className={`min-w-0 truncate transition-[margin-left,width,opacity] duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
                           >
                             {link.title}
                           </span>
