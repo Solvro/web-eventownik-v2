@@ -744,6 +744,8 @@
     "httpError": "Error {status} {statusText}"
   },
   "Sidebar": {
+    "closeSidebar": "Collapse panel",
+    "openSidebar": "Expand panel",
     "general": "General",
     "event": "Event",
     "forms": "Forms",
