@@ -20,7 +20,10 @@ if (sessionCookieMaxAgeString === "") {
   throw new Error("SESSION_COOKIE_MAX_AGE env variable is not set!!!");
 }
 
-const sessionCookieMaxAge = Number.parseInt(sessionCookieMaxAgeString, 10);
+export const sessionCookieMaxAge = Number.parseInt(
+  sessionCookieMaxAgeString,
+  10,
+);
 if (Number.isNaN(sessionCookieMaxAge)) {
   throw new TypeError(
     "SESSION_COOKIE_MAX_AGE must be a valid number (in seconds)!!!",
@@ -69,13 +72,12 @@ export async function createSession(
 
 export async function logout() {
   const cookieStore = await cookies();
-  const clientCookies = cookieStore.toString();
 
   try {
     const backendResponse = await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: {
-        Cookie: clientCookies,
+        Cookie: cookieStore.toString(),
       },
     });
 
@@ -96,15 +98,16 @@ export async function logout() {
 }
 
 export const verifySession = cache(async () => {
-  const cookie = await cookies();
-  const cookieSession = cookie.get("session")?.value;
+  const cookieStore = await cookies();
+  const cookieSession = cookieStore.get("session")?.value;
+
   if (cookieSession !== undefined) {
     const session = await decrypt(cookieSession);
 
-    if (session === undefined) {
-      return null;
+    if (session !== undefined) {
+      return { ...session };
     }
-    return { ...session };
   }
+
   return null;
 });
