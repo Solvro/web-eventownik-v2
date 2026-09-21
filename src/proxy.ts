@@ -50,9 +50,15 @@ export async function proxy(request: NextRequest) {
 
           return redirectResponse;
         }
+
+        response.cookies.delete("refresh_token");
+        response.cookies.delete("session");
       }
     } catch (error) {
       console.error("[Middleware] Failed to refresh token:", error);
+
+      response.cookies.delete("refresh_token");
+      response.cookies.delete("session");
     }
   }
 
