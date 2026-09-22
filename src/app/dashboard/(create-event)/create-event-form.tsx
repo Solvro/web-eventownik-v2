@@ -214,9 +214,7 @@ export function CreateEventForm() {
               ? []
               : event.coorganizers,
           attributes:
-            event.attributes.length === 1 &&
-            !event.attributes[0].name &&
-            event.attributes[0].slug === ""
+            event.attributes.length === 1 && !event.attributes[0].name
               ? []
               : event.attributes,
         };

@@ -191,6 +191,7 @@
     "failedToUpdateAttribute": "Failed to update attribute {name}: {errorData}",
     "failedToDeleteAttribute": "Failed to delete attribute {name}: {errorData}",
     "failedToProcessAttribute": "Error processing attribute {name}: {errorData}",
+    "invalidAttributeUuid": "Invalid attribute UUID for {name}",
     "failedToCreateEvent": "Failed to create event",
     "coOrganizerAddWarning": "Failed to add co-organizer {email}. You can add them later in settings",
     "coOrganizerAddError": "Error adding co-organizer {email}. You can add them later in settings",

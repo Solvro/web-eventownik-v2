@@ -3,7 +3,7 @@ import "server-only";
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
+import type { GetAttributesResponse } from "@/types/attributes";
 import type { EventEmail, SingleEventEmail } from "@/types/emails";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
@@ -86,9 +86,9 @@ export async function getEventAttributes(eventUuid: string) {
     return [];
   }
 
-  const attributes = (await response.json()) as EventAttribute[];
+  const attributes = (await response.json()) as GetAttributesResponse;
 
-  return attributes;
+  return attributes.data;
 }
 
 export async function getEventForms(eventUuid: string) {

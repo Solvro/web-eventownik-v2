@@ -8,7 +8,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { GetAttributesResponse } from "@/types/attributes";
 
 import {
   getAttributes,
@@ -54,7 +54,7 @@ export default async function DashboardEventParticipantsPage({
     }),
   ]);
 
-  const attributes = queryClient.getQueryData<Attribute[]>([
+  const attributes = queryClient.getQueryData<GetAttributesResponse>([
     "attributes",
     uuid,
   ]);
@@ -62,7 +62,7 @@ export default async function DashboardEventParticipantsPage({
   if (attributes != null) {
     await queryClient.prefetchQuery({
       queryKey: ["blocks", uuid, attributes],
-      queryFn: async () => getBlocks(uuid, attributes),
+      queryFn: async () => getBlocks(uuid, attributes.data),
     });
   }
 

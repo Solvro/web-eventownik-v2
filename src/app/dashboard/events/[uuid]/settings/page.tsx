@@ -5,8 +5,8 @@ import { notFound, redirect } from "next/navigation";
 import { EventSettingsTabs } from "@/app/dashboard/events/[uuid]/settings/settings-tabs";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
-import type { CoOrganizer } from "@/types/co-organizer";
+import type { GetAttributesResponse } from "@/types/attributes";
+import type { GetCoOrganizersResponse } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -54,7 +54,8 @@ export default async function DashboardEventSettingsPage({
   if (!coOrganizersResponse.ok) {
     notFound();
   }
-  const coOrganizers = (await coOrganizersResponse.json()) as CoOrganizer[];
+  const coOrganizers =
+    (await coOrganizersResponse.json()) as GetCoOrganizersResponse;
 
   const attributesResponse = await fetch(
     `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
@@ -67,8 +68,8 @@ export default async function DashboardEventSettingsPage({
   if (!attributesResponse.ok) {
     notFound();
   }
-  const attributes = (await attributesResponse.json()) as EventAttribute[];
-  attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const attributes = (await attributesResponse.json()) as GetAttributesResponse;
+  attributes.data.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <>
@@ -76,8 +77,8 @@ export default async function DashboardEventSettingsPage({
       <div className="flex flex-1 flex-col">
         <EventSettingsTabs
           unmodifiedEvent={event}
-          unmodifiedCoOrganizers={coOrganizers}
-          unmodifiedAttributes={attributes}
+          unmodifiedCoOrganizers={coOrganizers.data}
+          unmodifiedAttributes={attributes.data}
         />
       </div>
     </>

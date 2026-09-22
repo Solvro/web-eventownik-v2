@@ -43,7 +43,7 @@ export const ATTRIBUTE_TYPES: {
     icon: <Binary />,
   },
   {
-    value: "textarea",
+    value: "textArea",
     title: "textarea",
     description: "textareaHint",
     icon: <LetterText />,
@@ -67,7 +67,7 @@ export const ATTRIBUTE_TYPES: {
     icon: <SquareDashedMousePointer />,
   },
   {
-    value: "multiselect",
+    value: "multiSelect",
     title: "multiselect",
     description: "multiselectHint",
     icon: <ListTodo />,

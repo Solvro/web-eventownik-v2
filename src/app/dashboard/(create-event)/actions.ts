@@ -9,6 +9,12 @@ import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
 
+interface ApiErrorResponse {
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
+}
+
 export async function isSlugTaken(slug: string) {
   const response = await fetch(`${API_URL}/public/events/${slug}`);
   return response.ok;
@@ -101,19 +107,24 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as {
-      message: string[] | string;
-      error: string;
-      statusCode: number;
-    };
-    const messages = Array.isArray(error.message)
-      ? error.message
-      : [error.message || "Unknown error"];
+    const errorData = (await response.json()) as ApiErrorResponse;
+
+    const rawMessages = Array.isArray(errorData.message)
+      ? errorData.message
+      : typeof errorData.message === "string" && errorData.message.trim() !== ""
+        ? [errorData.message]
+        : ["Failed to create event"];
+
+    const errors: NonNullable<SaveEventResult["errors"]> = rawMessages.map(
+      (message) => ({
+        message,
+      }),
+    );
 
     console.error(
-      `[saveEvent] Failed to create event: ${messages[0] ?? "Unknown error"}`,
+      `[saveEvent] Failed to create event: ${rawMessages[0] ?? "Unknown error"}`,
     );
-    return { errors: messages.map((message) => ({ message })) };
+    return { errors };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;
@@ -148,9 +159,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       if (coorganizerResponse.ok) {
         coOrganizersAdded++;
       } else {
-        const errorData = (await coorganizerResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData =
+          (await coorganizerResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add co-organizer %s:",
           coorganizer.email,
@@ -201,15 +211,21 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           body: JSON.stringify({
             name: attribute.name,
             type: attribute.type,
-            slug: attribute.slug,
             showInList: attribute.showInList,
-            options:
-              (attribute.options ?? []).length > 0
-                ? attribute.options
-                : undefined,
             order: attribute.order,
-            isSensitiveData: false,
-            reason: null,
+            config: {
+              options:
+                (attribute.config.options ?? []).length > 0
+                  ? attribute.config.options
+                  : null,
+              isSensitiveData: attribute.config.isSensitiveData,
+              reason:
+                (attribute.config.isSensitiveData ?? false)
+                  ? (attribute.config.reason ?? null)
+                  : null,
+              isMultiple: attribute.config.isMultiple ?? false,
+              maxSelections: attribute.config.maxSelections ?? null,
+            },
           }),
         },
       );
@@ -217,9 +233,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       if (attributeResponse.ok) {
         attributesAdded++;
       } else {
-        const errorData = (await attributeResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData = (await attributeResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add attribute %s:",
           attribute.name,

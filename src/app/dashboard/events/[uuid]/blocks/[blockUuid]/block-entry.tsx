@@ -2,12 +2,12 @@ import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
-import type { Block } from "@/types/blocks";
+import type { Block, BlockParticipant } from "@/types/blocks";
 
+import { BlockParticipantsList } from "./block-participants-list";
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
 
@@ -19,10 +19,12 @@ function BlockEntry({
   block,
   eventUuid,
   attributeUuid,
+  participants,
 }: {
   block: Block;
   eventUuid: string;
   attributeUuid: string;
+  participants: BlockParticipant[];
 }) {
   const t = useTranslations("Dashboard");
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
@@ -30,8 +32,7 @@ function BlockEntry({
     block.capacity == null
       ? 0
       : Math.round(
-          (Number(valueOrZero(block.meta.participantsInBlockCount)) /
-            block.capacity) *
+          (Number(valueOrZero(block.blockParticipantCount)) / block.capacity) *
             100,
         );
 
@@ -59,8 +60,8 @@ function BlockEntry({
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
-            ? valueOrZero(block.meta.participantsInBlockCount)
-            : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+            ? valueOrZero(block.blockParticipantCount)
+            : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
         </div>
         <Field className="w-full max-w-sm">
           <Progress
@@ -77,7 +78,7 @@ function BlockEntry({
           </FieldLabel>
         </Field>
         {areParticipantsVisible ? (
-          <BlockParticipantsList participants={block.meta.participants} />
+          <BlockParticipantsList participants={participants} />
         ) : null}
       </div>
     </div>

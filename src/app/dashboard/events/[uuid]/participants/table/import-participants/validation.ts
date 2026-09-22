@@ -144,7 +144,7 @@ function validateAttributeValue(
         return { value: "true" };
       }
       if (falsy.includes(normalized)) {
-        if (attribute.isRequired) {
+        if (attribute.config.isRequired ?? false) {
           return { error: "validation.requiredChecked" };
         }
         return { value: "false" };
@@ -152,7 +152,7 @@ function validateAttributeValue(
       return { error: "validation.boolean" };
     }
     case "select": {
-      const options = attribute.options ?? [];
+      const options = attribute.config.options ?? [];
       const option = findMatchingOption(trimmed, options);
       if (option == null) {
         return {
@@ -162,8 +162,8 @@ function validateAttributeValue(
       }
       return { value: resolveAttributeOption(option).value };
     }
-    case "multiselect": {
-      const options = attribute.options ?? [];
+    case "multiSelect": {
+      const options = attribute.config.options ?? [];
       const values = trimmed
         .split(MULTI_VALUE_SEPARATOR)
         .map((item) => item.trim())
@@ -178,12 +178,12 @@ function validateAttributeValue(
         };
       }
       if (
-        attribute.maxSelections != null &&
-        matchedValues.length > attribute.maxSelections
+        attribute.config.maxSelections != null &&
+        matchedValues.length > attribute.config.maxSelections
       ) {
         return {
           error: "validation.tooManyOptions",
-          values: { max: attribute.maxSelections },
+          values: { max: attribute.config.maxSelections },
         };
       }
       return {
@@ -209,7 +209,7 @@ function validateAttributeValue(
       return { value: trimmed };
     }
     case "block": {
-      if (attribute.isMultiple) {
+      if (attribute.config.isMultiple ?? false) {
         const values = trimmed
           .split(MULTI_VALUE_SEPARATOR)
           .map((item) => item.trim())
@@ -222,12 +222,12 @@ function validateAttributeValue(
           return { error: "validation.blockNotInList" };
         }
         if (
-          attribute.maxSelections != null &&
-          matchedBlocks.length > attribute.maxSelections
+          attribute.config.maxSelections != null &&
+          matchedBlocks.length > attribute.config.maxSelections
         ) {
           return {
             error: "validation.tooManyBlocks",
-            values: { max: attribute.maxSelections },
+            values: { max: attribute.config.maxSelections },
           };
         }
 
@@ -246,7 +246,7 @@ function validateAttributeValue(
       return { value: matchingBlock.uuid };
     }
     case "text":
-    case "textarea":
+    case "textArea":
     case "time":
     case "tel": {
       const sharedError = getSharedValidationError(trimmed, attribute);
@@ -295,7 +295,7 @@ export function prepareImport({
   const requiredTargets: Exclude<MappingTarget, typeof SKIP_TARGET>[] = [
     EMAIL_TARGET,
     ...attributes
-      .filter((attribute) => attribute.isRequired)
+      .filter((attribute) => attribute.config.isRequired ?? false)
       .map((attribute) => getAttributeTarget(attribute.uuid)),
   ];
   const missingRequiredTargets = requiredTargets
@@ -337,7 +337,7 @@ export function prepareImport({
       }
 
       const rawValue = row[Number(columnIndex)] ?? "";
-      if (attribute.isRequired && rawValue.trim() === "") {
+      if ((attribute.config.isRequired ?? false) && rawValue.trim() === "") {
         issues.push({
           rowIndex,
           field: getAttributeLabel(attribute.name, locale),

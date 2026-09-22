@@ -31,10 +31,11 @@ import { Form } from "@/components/ui/form";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { toast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import type { DashboardKey } from "@/i18n/utils";
 import { translateOrFallback } from "@/i18n/utils";
 import { parseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
@@ -56,10 +57,37 @@ const EventSettingsSchema = z.intersection(
 
 type TabComponent = (props: TabProps) => JSX.Element;
 
+interface ErrorMessage {
+  key: DashboardKey;
+  values?: Record<string, string | number | Date>;
+}
+
+function formatErrorMessage(
+  message: string | ErrorMessage,
+  t: ReturnType<typeof useTranslations<"Dashboard">>,
+) {
+  if (typeof message === "string") {
+    return message;
+  }
+
+  const values =
+    message.key === "failedToDeleteAttribute" && message.values != null
+      ? {
+          ...message.values,
+          errorData:
+            message.values.errorData === "unknownError"
+              ? t("unknownError")
+              : message.values.errorData,
+        }
+      : message.values;
+
+  return translateOrFallback(t, message.key, values);
+}
+
 interface TabsProps {
   unmodifiedEvent: Event;
   unmodifiedCoOrganizers: CoOrganizer[];
-  unmodifiedAttributes: EventAttribute[];
+  unmodifiedAttributes: Attribute[];
 }
 
 export function EventSettingsTabs({
@@ -142,19 +170,7 @@ export function EventSettingsTabs({
         permissions: coOrganizer.permissions,
       })),
       // Attributes fields
-      attributes: unmodifiedAttributes.map((attribute) => ({
-        uuid: attribute.uuid,
-        name: attribute.name,
-        slug: attribute.slug ?? "",
-        type: attribute.type,
-        options: attribute.options ?? [],
-        showInList: attribute.showInList,
-        isSensitiveData: attribute.isSensitiveData,
-        reason: attribute.reason ?? "",
-        order: attribute.order ?? 0,
-        isMultiple: attribute.isMultiple,
-        maxSelections: attribute.maxSelections,
-      })),
+      attributes: unmodifiedAttributes,
     },
   });
 
@@ -263,22 +279,7 @@ export function EventSettingsTabs({
               ...eventErrors,
               ...otherErrors,
             ]
-              .map((error) =>
-                translateOrFallback(
-                  t,
-                  error.message.key,
-                  error.message.key === "failedToDeleteAttribute" &&
-                    error.message.values != null
-                    ? {
-                        ...error.message.values,
-                        errorData:
-                          error.message.values.errorData === "unknownError"
-                            ? t("unknownError")
-                            : error.message.values.errorData,
-                      }
-                    : error.message.values,
-                ),
-              )
+              .map((error) => formatErrorMessage(error.message, t))
               .join("\n")}`,
           });
         } else {
@@ -330,7 +331,7 @@ export function EventSettingsTabs({
         variant: "destructive",
         title: t("failedToDeleteEvent"),
         description: `${t("tryAgain")}\n${result.errors
-          .map((error) => translateOrFallback(t, error.message.key))
+          .map((error) => formatErrorMessage(error.message, t))
           .join("\n")}`,
       });
     } else {

@@ -34,7 +34,7 @@ import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { MessageTag } from "@/lib/message-tags";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import { getBase64FromUrl } from "@/lib/utils";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
@@ -119,7 +119,7 @@ export const getPuckConfig = ({
 }: {
   tags: MessageTag[];
   forms: Pick<EventForm, "uuid" | "name">[];
-  attributes: Pick<EventAttribute, "uuid" | "name">[];
+  attributes: Pick<Attribute, "uuid" | "name">[];
   eventData: PuckEventData;
   t: ReturnType<typeof useTranslations<"Editor">>;
   tEmailTriggers: ReturnType<typeof useTranslations<"EmailTriggers">>;

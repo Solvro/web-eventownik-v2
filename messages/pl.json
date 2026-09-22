@@ -191,6 +191,7 @@
     "failedToUpdateAttribute": "Nie udało się zaktualizować atrybutu {name}: {errorData}",
     "failedToDeleteAttribute": "Nie udało się usunąć atrybutu {name}: {errorData}",
     "failedToProcessAttribute": "Wystąpił błąd podczas przetwarzania atrybutu {name}: {errorData}",
+    "invalidAttributeUuid": "Nieprawidłowy identyfikator UUID atrybutu {name}",
     "failedToCreateEvent": "Nie udało się utworzyć wydarzenia",
     "coOrganizerAddWarning": "Nie udało się dodać współorganizatora {email}. Możesz dodać go później w ustawieniach",
     "coOrganizerAddError": "Wystąpił błąd podczas dodawania współorganizatora {email}. Możesz dodać go później w ustawieniach",
