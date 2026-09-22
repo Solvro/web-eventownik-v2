@@ -2,12 +2,13 @@
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import type { CreateEventFormDto } from "@/types/forms";
 
 export async function createEventForm(
   eventUuid: string,
-  payload: CreateEventFormDto,
+  form: CreateEventFormDto,
 ) {
   const session = await verifySession();
 
@@ -24,7 +25,16 @@ export async function createEventForm(
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.bearerToken}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      name: form.name,
+      description: form.description,
+      openDate: resolveFormDateTime(form.openCondition, form.closeDate),
+      closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
+      attributes: form.attributes,
+      isFirstForm: form.isFirstForm,
+      isOpen: form.isOpen,
+      openCondition: form.openCondition,
+    }),
   });
 
   if (!response.ok) {
@@ -65,7 +75,7 @@ export async function createEventForm(
 export async function updateEventForm(
   eventUuid: string,
   formUuid: string,
-  payload: Partial<CreateEventFormDto>,
+  form: Partial<CreateEventFormDto>,
 ) {
   const session = await verifySession();
 
@@ -84,7 +94,16 @@ export async function updateEventForm(
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.bearerToken}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        name: form.name,
+        description: form.description,
+        openDate: resolveFormDateTime(form.openCondition, form.closeDate),
+        closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
+        attributes: form.attributes,
+        isFirstForm: form.isFirstForm,
+        isOpen: form.isOpen,
+        openCondition: form.openCondition,
+      }),
     },
   );
 

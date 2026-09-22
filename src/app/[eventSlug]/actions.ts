@@ -86,14 +86,14 @@ export async function submitParticipantForm({
     const fileAttributes = await Promise.all(fileUploadPromises);
 
     const { email, token, ...attributeValues } = values;
-    const textAttributes = Object.entries(attributeValues).map(
+    const regularAttributes = Object.entries(attributeValues).map(
       ([attributeUuid, value]) => ({
         attributeUuid,
         value: value ?? null,
       }),
     );
 
-    const attributes = [...textAttributes, ...fileAttributes];
+    const attributes = [...regularAttributes, ...fileAttributes];
 
     const payload = {
       email,

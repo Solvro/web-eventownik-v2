@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import type { Attribute } from "@/types/attributes";
 import type { FormAttribute } from "@/types/forms";
 
-export interface AttributeItemProps {
+interface AttributeItemProps {
   uuid: string;
   index: number;
   attribute: Attribute;
@@ -69,7 +69,7 @@ function AttributeItem({
         </Label>
       </div>
       <span className="bg-popover flex items-center rounded-full px-3 py-1 text-sm">
-        <Label htmlFor={`required-${attribute.uuid}`}>Wymagane</Label>
+        <Label htmlFor={`required-${attribute.uuid}`}>{t("required")}</Label>
         <Checkbox
           id={`required-${attribute.uuid}`}
           className="ml-2"

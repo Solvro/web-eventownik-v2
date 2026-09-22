@@ -286,8 +286,7 @@ export function CreateEventForm() {
               router.push(`/dashboard/events/${result.uuid}`);
             }, 200);
           }
-        } catch (error) {
-          console.error("error:", error);
+        } catch {
           toast({
             variant: "destructive",
             title: t("serverConnectionError"),

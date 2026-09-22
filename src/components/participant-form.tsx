@@ -6,6 +6,7 @@ import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
+import type { FieldErrors } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,17 +36,30 @@ import {
   getAttributeLabel,
   getSchemaObjectForPublicAttributes,
 } from "@/lib/utils";
-import type { FormValidationErrors } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { Participant } from "@/types/participant";
-
-/* eslint-disable unicorn/prevent-abbreviations */
 
 interface ErrorObject {
   rule: string;
   field: string;
   message: string;
+}
+
+function getFieldErrorMessage(
+  errors: FieldErrors,
+  fieldName: string,
+): string | undefined {
+  const fieldError = Object.entries(errors).find(
+    ([key]) => key === fieldName,
+  )?.[1];
+
+  if (fieldError == null || typeof fieldError !== "object") {
+    return undefined;
+  }
+
+  const message = "message" in fieldError ? fieldError.message : undefined;
+  return typeof message === "string" ? message : undefined;
 }
 
 interface ParticipantFormProps {
@@ -104,14 +118,9 @@ export function ParticipantForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...(includeEmail && { email: "" }),
-      ...formDefinitions
-        .filter(
-          (def) =>
-            def.attribute.type !== "file" && def.attribute.type !== "drawing",
-        )
-        .reduce<Record<string, string>>((accumulator) => {
-          return accumulator;
-        }, {}),
+      ...userData?.attributes.reduce<Record<string, string>>((accumulator) => {
+        return accumulator;
+      }, {}),
     },
   });
 
@@ -387,12 +396,16 @@ export function ParticipantForm({
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (form.formState.errors as any)[
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                        formDefinition.attribute.uuid
-                      ]?.message as FormValidationErrors,
-                      { name: getAttributeLabel(AttributeInput.name, "pl") },
+                      getFieldErrorMessage(
+                        form.formState.errors,
+                        formDefinition.attribute.uuid,
+                      ),
+                      {
+                        name: getAttributeLabel(
+                          formDefinition.attribute.name,
+                          "pl",
+                        ),
+                      },
                     )}
                   </FormMessage>
                 </FormItem>

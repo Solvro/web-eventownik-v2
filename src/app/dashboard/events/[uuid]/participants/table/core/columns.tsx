@@ -101,7 +101,7 @@ export function createColumns(
           name: attribute.name,
           showInTable: attribute.showInList,
         },
-        ...(["multiselect", "block"].includes(attribute.type)
+        ...(["multiSelect", "block"].includes(attribute.type)
           ? { minSize: 240 }
           : {}),
         filterFn: (

@@ -24,6 +24,7 @@ export function formatAttributeValue(
   type: Attribute["type"],
   attributeUuid: string,
   blocks: (Block | null)[],
+  isMultiple: boolean,
 ) {
   if (value === undefined || value === null || value === "") {
     return value;
@@ -39,6 +40,14 @@ export function formatAttributeValue(
       );
     case "block": {
       const rootBlock = blocks.find((b) => b?.attributeUuid === attributeUuid);
+
+      if (rootBlock !== null && rootBlock !== undefined && isMultiple) {
+        const ids = (value as string).split(",").filter(Boolean);
+        return ids
+          .map((id) => rootBlock.children.find((b) => b.uuid === id)?.name)
+          .filter(Boolean)
+          .join(", ");
+      }
 
       return (
         rootBlock?.children.find((b) => {
