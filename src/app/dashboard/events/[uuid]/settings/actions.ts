@@ -397,6 +397,14 @@ export async function updateEvent(
           break;
         }
         case "delete": {
+          if (
+            !unmodifiedEvent.attributes.some(
+              (attribute) => attribute.uuid === change.data.uuid,
+            )
+          ) {
+            continue;
+          }
+
           if (!isValidUuid(change.data.uuid)) {
             result.errors.push({
               message: {
