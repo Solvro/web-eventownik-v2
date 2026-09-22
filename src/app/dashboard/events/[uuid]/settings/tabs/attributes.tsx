@@ -4,19 +4,9 @@ import type { Attribute } from "@/types/attributes";
 import type { AttributeChange } from "../change-types";
 import type { TabProps } from "./tab-props";
 
-const toChangeData = (attribute: Attribute): AttributeChange["data"] => ({
-  uuid: attribute.uuid,
-  name: attribute.name,
-  type: attribute.type,
-  showInList: attribute.showInList,
-  order: attribute.order,
-  config: attribute.config,
-});
-
 export function Attributes({ setAttributesChanges }: TabProps) {
-  // Track changes using form callbacks
   const handleAdd = (attribute: Attribute) => {
-    const newAttribute = toChangeData(attribute);
+    const newAttribute = { ...attribute };
 
     setAttributesChanges((previous: AttributeChange[]) => {
       const newChange: AttributeChange = {
@@ -29,7 +19,7 @@ export function Attributes({ setAttributesChanges }: TabProps) {
   };
 
   const handleUpdate = (_index: number, attribute: Attribute) => {
-    const updatedAttribute = toChangeData(attribute);
+    const updatedAttribute = { ...attribute };
 
     setAttributesChanges((previous: AttributeChange[]) => {
       const existing = previous.find(
@@ -54,7 +44,7 @@ export function Attributes({ setAttributesChanges }: TabProps) {
   };
 
   const handleRemove = (_index: number, attribute: Attribute) => {
-    const attributeToDelete = toChangeData(attribute);
+    const attributeToDelete = { ...attribute };
 
     setAttributesChanges((previous: AttributeChange[]) => {
       // Ignore changes for this attribute that were added before (e.g. an update followed by delete)

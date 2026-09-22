@@ -78,7 +78,7 @@ export function AttributeInput({
               </SelectItem>
             ))}
             {!(attribute.config.isRequired ?? false) && (
-              <SelectItem value={clearValue}>Brak</SelectItem>
+              <SelectItem value={clearValue}>{t("none")}</SelectItem>
             )}
           </SelectContent>
         </Select>
@@ -201,7 +201,7 @@ export function AttributeInput({
               key={rootBlock.uuid}
               field={field}
               userData={userData}
-              eventBlocks={rootBlock.children ?? []}
+              eventBlocks={rootBlock.children}
               isMultiple={attribute.config.isMultiple}
               maxSelections={attribute.config.maxSelections}
             />

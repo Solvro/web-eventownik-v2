@@ -103,8 +103,8 @@ export async function getParticipants(eventUuid: string) {
     console.error("Failed to fetch participants", response);
     return null;
   }
-  const participants = (await response.json()) as Participant[];
-  return participants.toSorted(
+  const participants = (await response.json()) as { data: Participant[] };
+  return participants.data.toSorted(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 }
@@ -148,7 +148,7 @@ export async function getAttributes(eventUuid: string) {
 
   if (!isValidUuid(eventUuid)) {
     console.error(`[getAttributes] Invalid event UUID: ${eventUuid}`);
-    return [];
+    return null;
   }
 
   const response = await fetch(
@@ -160,10 +160,10 @@ export async function getAttributes(eventUuid: string) {
   );
   if (!response.ok) {
     console.error("Failed to fetch attributes", response);
-    return [];
+    return null;
   }
   const attributes = (await response.json()) as GetAttributesResponse;
-  return attributes.data;
+  return attributes;
 }
 
 async function getBlockData(

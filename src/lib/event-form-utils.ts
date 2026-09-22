@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 
-import type { EventForm } from "@/types/forms";
+import type { CreateEventFormDto, EventForm } from "@/types/forms";
 
 /**
  * Combines a date with a time and returns a new Date object.
@@ -68,4 +68,20 @@ export function getDefaultFormDates(
     openTime: openDate === null ? "12:00" : format(openDate, "HH:mm"),
     closeTime: closeDate === null ? "12:00" : format(closeDate, "HH:mm"),
   };
+}
+
+/**
+ * Resolves the close date and time of a form based on its open condition
+ *
+ * @returns The ISO string representation of the combined close date and time if the open condition is "ON_DATE", otherwise null
+ */
+export function resolveFormDateTime(
+  openCondition: CreateEventFormDto["openCondition"],
+  closeDate: CreateEventFormDto["closeDate"] | undefined,
+): string | null {
+  return openCondition === "ON_DATE" &&
+    closeDate !== null &&
+    closeDate !== undefined
+    ? closeDate.toISOString()
+    : null;
 }

@@ -334,7 +334,12 @@ export async function updateEvent(
         case "update": {
           if (!isValidUuid(change.data.uuid)) {
             result.errors.push({
-              message: "Invalid attribute identifier",
+              message: {
+                key: "invalidAttributeUuid",
+                values: {
+                  name: change.data.name,
+                },
+              },
               section: "attributes",
             });
             continue;
@@ -394,7 +399,12 @@ export async function updateEvent(
         case "delete": {
           if (!isValidUuid(change.data.uuid)) {
             result.errors.push({
-              message: "Invalid attribute identifier",
+              message: {
+                key: "invalidAttributeUuid",
+                values: {
+                  name: change.data.name,
+                },
+              },
               section: "attributes",
             });
             continue;

@@ -6,7 +6,7 @@ import type { Attribute } from "@/types/attributes";
 
 import { AttributeItem } from "./attribute-item";
 
-export interface SortableAttributeItemProps {
+interface SortableAttributeItemProps {
   id: string;
   attribute: Attribute;
   index: number;

@@ -63,6 +63,7 @@ export function EditableCell({
         attribute.type,
         attribute.uuid,
         blocks,
+        attribute.config.isMultiple ?? false,
       );
       return formatted instanceof Date ? formatted.toISOString() : formatted;
     }

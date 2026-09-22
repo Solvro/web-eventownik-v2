@@ -24,8 +24,6 @@ import type { EventForm, FormAttribute } from "@/types/forms";
 
 import { updateEventForm } from "../actions";
 
-/* eslint-disable unicorn/prevent-abbreviations */
-
 interface EventFormEditFormProps {
   eventUuid: string;
   formToEdit: EventForm;
@@ -40,10 +38,10 @@ function EventFormEditForm({
   const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
     formToEdit.formDefinitions
       .toSorted((a, b) => a.order - b.order)
-      .map((def) => ({
-        attributeUuid: def.attribute.uuid,
-        isRequired: def.isRequired,
-        order: def.order,
+      .map((definition) => ({
+        attributeUuid: definition.attribute.uuid,
+        isRequired: definition.isRequired,
+        order: definition.order,
       })),
   );
   const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({

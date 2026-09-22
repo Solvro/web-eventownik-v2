@@ -1,5 +1,3 @@
-import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
-
 import type { PaginationMeta } from "./common";
 
 export interface AttributeConfig {
@@ -38,4 +36,19 @@ export interface PublicFormAttribute {
   updatedAt?: string;
 }
 
-export type AttributeType = (typeof AttributeTypes)[number];
+export type AttributeType =
+  | "text"
+  | "number"
+  | "textArea"
+  | "file"
+  | "drawing"
+  | "select"
+  | "multiSelect"
+  | "block"
+  | "date"
+  | "time"
+  | "datetime"
+  | "email"
+  | "tel"
+  | "color"
+  | "checkbox";

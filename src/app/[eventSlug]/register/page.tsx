@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prevent-abbreviations */
 import { format } from "date-fns";
 import { Info } from "lucide-react";
 import type { Metadata } from "next";
@@ -56,20 +55,20 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const eventRes = await fetch(
+  const eventResponse = await fetch(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
   );
 
-  if (!eventRes.ok) {
-    const error = (await eventRes.json()) as unknown;
+  if (!eventResponse.ok) {
+    const error = (await eventResponse.json()) as unknown;
     console.error(error);
     return <EventNotFound whatNotFound="event" />;
   }
 
-  const event = (await eventRes.json()) as Event;
+  const event = (await eventResponse.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
   const form = event.registerForm;
@@ -82,11 +81,11 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     return <FormClosedView event={event} form={form} />;
   }
 
-  const attributes = form.formDefinitions.map((def) => ({
-    ...def.attribute,
+  const attributes = form.formDefinitions.map((definition) => ({
+    ...definition.attribute,
     config: {
-      ...def.attribute.config,
-      isRequired: def.isRequired,
+      ...definition.attribute.config,
+      isRequired: definition.isRequired,
     },
   }));
 
