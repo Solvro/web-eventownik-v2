@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
-import type { Block } from "@/types/blocks";
+import type { Block, BlockParticipant } from "@/types/blocks";
 
+import { BlockParticipantsList } from "./block-participants-list";
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
 
@@ -18,10 +19,12 @@ function BlockEntry({
   block,
   eventUuid,
   attributeUuid,
+  participants,
 }: {
   block: Block;
   eventUuid: string;
   attributeUuid: string;
+  participants: BlockParticipant[];
 }) {
   const t = useTranslations("Dashboard");
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
@@ -74,7 +77,9 @@ function BlockEntry({
             </span>
           </FieldLabel>
         </Field>
-        {areParticipantsVisible ? null : null}
+        {areParticipantsVisible ? (
+          <BlockParticipantsList participants={participants} />
+        ) : null}
       </div>
     </div>
   );
