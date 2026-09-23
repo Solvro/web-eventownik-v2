@@ -151,12 +151,18 @@ export function downloadFile(blob: Blob, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-export function getAttributeLabel(name: string, language: string) {
+/**
+ * Parses a JSON string matching `{"pl": "text", "en": "text"}` format
+ * @param value JSON string
+ * @param language Locale key - either "pl" or "en"
+ * @returns The text matching the locale. If not found - the `pl` text. If that wasn't found either - the first key's value. Otherwise - the original string
+ */
+export function legacyTranslate(value: string, language: string) {
   try {
-    const parsed = JSON.parse(name) as Record<string, string>;
+    const parsed = JSON.parse(value) as Record<string, string>;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return parsed[language] ?? parsed.pl ?? Object.values(parsed)[0] ?? name;
+    return parsed[language] ?? parsed.pl ?? Object.values(parsed)[0] ?? value;
   } catch {
-    return name;
+    return value;
   }
 }

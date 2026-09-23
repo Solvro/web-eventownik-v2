@@ -30,11 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import {
-  cn,
-  getAttributeLabel,
-  getSchemaObjectForAttributes,
-} from "@/lib/utils";
+import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
@@ -333,71 +329,74 @@ export function ParticipantForm({
               control={form.control}
               name={attribute.id.toString()}
               render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    attribute.type === "checkbox" &&
-                      "flex flex-row-reverse items-start justify-end space-y-0",
-                  )}
-                >
-                  <FormLabel htmlFor={attribute.id.toString()}>
-                    {getAttributeLabel(attribute.name, locale)}{" "}
-                    {attribute.isRequired ? (
-                      <Tooltip>
-                        <TooltipTrigger type="button">
-                          <span className="text-red-500">*</span>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                          {t("attributeIsRequiredTooltip")}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
-                  </FormLabel>
-                  <FormControl>
-                    {attribute.type === "file" ? (
-                      <AttributeInputFile
-                        attribute={attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
-                          )?.meta.pivot_updated_at ?? null
-                        }
-                      />
-                    ) : attribute.type === "drawing" ? (
-                      <AttributeInputDrawing
-                        attribute={attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.id === attribute.id,
-                          )?.meta.pivot_updated_at ?? null
-                        }
-                      />
-                    ) : (
-                      <AttributeInput
-                        attribute={attribute}
-                        userData={userData}
-                        eventBlocks={eventBlocks.filter(
-                          (block) => block.attributeId === attribute.id,
-                        )}
-                        field={field}
-                        shouldCheckUserData={editMode}
-                      />
+                <FormItem>
+                  <div
+                    className={cn(
+                      attribute.type === "checkbox" &&
+                        "flex flex-row-reverse items-start justify-end space-y-0",
+                      "w-full",
                     )}
-                  </FormControl>
+                  >
+                    <FormLabel htmlFor={attribute.id.toString()}>
+                      {legacyTranslate(attribute.name, locale)}{" "}
+                      {attribute.isRequired ? (
+                        <Tooltip>
+                          <TooltipTrigger type="button">
+                            <span className="text-red-500">*</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            {t("attributeIsRequiredTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+                    </FormLabel>
+                    <FormControl>
+                      {attribute.type === "file" ? (
+                        <AttributeInputFile
+                          attribute={attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            userData?.attributes.find(
+                              (attribute_) => attribute_.id === attribute.id,
+                            )?.meta.pivot_updated_at ?? null
+                          }
+                        />
+                      ) : attribute.type === "drawing" ? (
+                        <AttributeInputDrawing
+                          attribute={attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            userData?.attributes.find(
+                              (attribute_) => attribute_.id === attribute.id,
+                            )?.meta.pivot_updated_at ?? null
+                          }
+                        />
+                      ) : (
+                        <AttributeInput
+                          attribute={attribute}
+                          userData={userData}
+                          eventBlocks={eventBlocks.filter(
+                            (block) => block.attributeId === attribute.id,
+                          )}
+                          field={field}
+                          shouldCheckUserData={editMode}
+                        />
+                      )}
+                    </FormControl>
+                  </div>
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
                       (form.formState.errors as any)[attribute.id.toString()]
                         ?.message as FormValidationErrors,
-                      { name: getAttributeLabel(attribute.name, "pl") },
+                      { name: legacyTranslate(attribute.name, "pl") },
                     )}
                   </FormMessage>
                 </FormItem>

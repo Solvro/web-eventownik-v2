@@ -48,6 +48,7 @@ export const containerDefaults = {
 
 export const EMAIL_ALLOWED_TAGS = [
   "img",
+  "a",
   "p",
   "h1",
   "h2",
@@ -68,11 +69,15 @@ export const EMAIL_ALLOWED_TAGS = [
   "tbody",
   "tr",
   "td",
+  "th",
 ];
 
 export const EMAIL_ALLOWED_ATTRIBUTES = {
   "*": ["class", "style"],
-  img: ["src", "alt"],
+  img: ["src", "alt", "width", "height", "title"],
+  a: ["href", "target", "rel"],
+  td: ["colspan", "rowspan", "colwidth"],
+  th: ["colspan", "rowspan", "colwidth"],
   // Tags
   span: [
     "data-type",
