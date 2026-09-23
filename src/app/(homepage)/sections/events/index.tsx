@@ -59,7 +59,7 @@ async function fetchEvents(
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.json() as Promise<EventType[]>;
+  return ((await response.json()) as { data: EventType[] }).data;
 }
 
 export function Events() {

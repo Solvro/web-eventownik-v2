@@ -38,7 +38,9 @@ async function fetchEventAndAttributes(eventUuid: string) {
   }
 
   const event = (await eventResponse.json()) as Event;
-  const attributes = (await attributesResponse.json()) as Attribute[];
+  const attributes = (
+    (await attributesResponse.json()) as { data: Attribute[] }
+  ).data;
   return { event, attributes };
 }
 
