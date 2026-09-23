@@ -42,7 +42,7 @@ export default async function DashboardEventBlocksPage({
     notFound();
   }
 
-  const attributes = (await response.json()) as Attribute[];
+  const attributes = ((await response.json()) as { data: Attribute[] }).data;
 
   const blocks = attributes.filter(
     (attribute: { type: string }) => attribute.type === "block",

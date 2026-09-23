@@ -54,7 +54,9 @@ export default async function DashboardEventSettingsPage({
   if (!coOrganizersResponse.ok) {
     notFound();
   }
-  const coOrganizers = (await coOrganizersResponse.json()) as CoOrganizer[];
+  const coOrganizers = (
+    (await coOrganizersResponse.json()) as { data: CoOrganizer[] }
+  ).data;
 
   const attributesResponse = await fetch(
     `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
@@ -67,7 +69,9 @@ export default async function DashboardEventSettingsPage({
   if (!attributesResponse.ok) {
     notFound();
   }
-  const attributes = (await attributesResponse.json()) as EventAttribute[];
+  const attributes = (
+    (await attributesResponse.json()) as { data: EventAttribute[] }
+  ).data;
   attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (

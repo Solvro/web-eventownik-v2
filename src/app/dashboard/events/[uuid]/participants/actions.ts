@@ -102,7 +102,8 @@ export async function getParticipants(eventUuid: string) {
     console.error("Failed to fetch participants", response);
     return null;
   }
-  const participants = (await response.json()) as Participant[];
+  const participants = ((await response.json()) as { data: Participant[] })
+    .data;
   return participants.toSorted(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
@@ -161,7 +162,7 @@ export async function getAttributes(eventUuid: string) {
     console.error("Failed to fetch attributes", response);
     return null;
   }
-  const attributes = (await response.json()) as Attribute[];
+  const attributes = ((await response.json()) as { data: Attribute[] }).data;
   return attributes;
 }
 
@@ -485,7 +486,7 @@ export async function getEmails(eventUuid: string) {
     console.error("Failed to fetch mails", response);
     return null;
   }
-  const mails = (await response.json()) as EventEmail[];
+  const mails = ((await response.json()) as { data: EventEmail[] }).data;
   return mails;
 }
 
