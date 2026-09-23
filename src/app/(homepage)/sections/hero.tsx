@@ -63,7 +63,7 @@ export function Hero() {
           variant={"outline"}
           asChild
         >
-          <Link href="#events">{t("browseEvents")}</Link>
+          <Link href="/events">{t("browseEvents")}</Link>
         </Button>
       </motion.div>
     </motion.div>

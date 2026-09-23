@@ -3,7 +3,6 @@
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useState } from "react";
 
 import { LanguageSwitch } from "@/components/language-switch";
@@ -11,10 +10,11 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
 import { AppLogo } from "../app-logo";
+import { NavLinks } from "./section-nav";
 
 export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
   const t = useTranslations("Homepage");
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
@@ -28,7 +28,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
           className="bg-background aspect-square h-full rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141] [&_svg]:size-8"
           title={t("openMenu")}
           onClick={() => {
-            setIsOpen(!isOpen);
+            setIsOpen((open) => !open);
           }}
         >
           <Menu />
@@ -51,45 +51,18 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                   className="p-0 [&_svg]:size-8"
                   title={t("closeMenu")}
                   onClick={() => {
-                    setIsOpen(!isOpen);
+                    setIsOpen(false);
                   }}
                 >
                   <X />
                 </Button>
               </div>
               <div className="flex flex-col gap-4 text-3xl font-medium uppercase">
-                <Link
-                  href="#events"
-                  onClick={() => {
+                <NavLinks
+                  onNavigate={() => {
                     setIsOpen(false);
                   }}
-                >
-                  {t("events")}
-                </Link>
-                <Link
-                  href="#functionalities"
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  {t("features")}
-                </Link>
-                <Link
-                  href="#faq"
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  FAQ
-                </Link>
-                <Link
-                  href="#team"
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  {t("team")}
-                </Link>
+                />
               </div>
             </div>
             <div className="flex w-full flex-col items-center gap-4">
