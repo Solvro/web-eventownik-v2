@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 
 export function SkipLink() {
-  const t = useTranslations("Homepage");
+  const t = useTranslations("Accessibility");
 
   return (
     <a

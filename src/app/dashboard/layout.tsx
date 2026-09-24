@@ -24,9 +24,9 @@ export default function DashboardLayout({
           <Navbar authButton={<AuthButton />} />
           <Alerts />
         </header>
-        <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
+        <div className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   );

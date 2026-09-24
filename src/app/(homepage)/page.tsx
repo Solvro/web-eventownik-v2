@@ -10,12 +10,10 @@ import { Partners } from "@/app/(homepage)/sections/partners";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
 import { Alerts } from "@/components/alerts";
-import { SkipLink } from "@/components/skip-link";
 
 export default function Home() {
   return (
     <div className="text-foreground min-h-screen">
-      <SkipLink />
       <div className="relative bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
         <Image
           src={"/assets/landing/footer_bg.jpg"}

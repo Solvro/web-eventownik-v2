@@ -1,4 +1,7 @@
 {
+  "Accessibility": {
+    "skipToMainContent": "Skip to main content"
+  },
   "AttributeTypes": {
     "text": "Text",
     "textHint": "Short text field",
@@ -622,7 +625,6 @@
     "events": "Events",
     "features": "Features",
     "team": "Team",
-    "skipToMainContent": "Skip to main content",
     "loadingEvents": "Loading events...",
     "failedToLoadEvents": "Oh no! Failed to load events: {message}",
     "upcoming": "Upcoming",

@@ -9,7 +9,6 @@ import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { LanguageSwitch } from "@/components/language-switch";
 import { SanitizedContent } from "@/components/sanitized-content";
-import { SkipLink } from "@/components/skip-link";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,7 +34,6 @@ export function EventPageLayout({
 
   return (
     <ViewTransition>
-      <SkipLink />
       <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
         <EventPrimaryColorSetter
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing,@typescript-eslint/strict-boolean-expressions

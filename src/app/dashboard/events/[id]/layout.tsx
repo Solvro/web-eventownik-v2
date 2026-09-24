@@ -70,9 +70,12 @@ export default async function DashboardEventLayout({
     <div className="mb-12 flex grow flex-col gap-4 sm:mb-0 sm:flex-row sm:gap-14">
       <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
       <DashboardSidebar event={event} attributes={attributes} />
-      <div className="flex max-w-full grow flex-col overflow-x-auto px-0.5">
+      <main
+        id="main-content"
+        className="flex max-w-full grow flex-col overflow-x-auto px-0.5"
+      >
         {children}
-      </div>
+      </main>
     </div>
   );
 }
