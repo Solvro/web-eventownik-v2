@@ -599,11 +599,9 @@
   },
   "Homepage": {
     "HighlightedEvents": {
-      "event1Name": "RAJD \"SHREKSPEDYCJA: WELCOME TO BAGNO\"",
-      "event1Description": "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalność i sprawdzili jak skutecznie może usprawnić zarządzanie dużym wydarzeniem.",
-      "event2Name": "Rejs \"W8 na Fali\"",
-      "event2Description": "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia — Rejsu 2025.",
       "event3Name": "Wyjazd do Graz w ramach Unite!",
+      "event1Description": "Organizatorom z WRSS W6, W8 i W12 został pilotażowo udostępniony Eventownik, aby przetestowali jego funkcjonalność i sprawdzili jak skutecznie może usprawnić zarządzanie dużym wydarzeniem.",
+      "event2Description": "Po sukcesie Eventownika na Rajdzie, WuZetka postanowiła ponownie skorzystać z aplikacji przy organizacji ich kolejnego wydarzenia — Rejsu 2025.",
       "event3Description": "Studenci z naszego Koła Solvro wzięli udział w wymianie do Graz w ramach programu Unite!  Podczas organizacji wyjazdu korzystali z Eventownika, który usprawnił jego planowanie oraz realizację od początku do końca."
     },
     "areYouPwrStudent": "Jesteś studentem Politechniki Wrocławskiej?",

@@ -11,6 +11,8 @@ import { Badge } from "../../../components/ui/badge";
 
 interface HighlightedEvent {
   name: string;
+  /** Language of the name, set only if it differs from the page's language */
+  nameLang?: string;
   year: number;
   description?: string;
   image: {
@@ -55,6 +57,7 @@ function CarouselImage({
   initial,
   animate,
   title,
+  titleLang,
   description,
   year,
   onClick,
@@ -65,6 +68,7 @@ function CarouselImage({
   initial: TargetAndTransition;
   animate: VariantLabels;
   title: string;
+  titleLang?: string;
   description?: string;
   year: number;
   onClick: (index: number) => void;
@@ -104,7 +108,10 @@ function CarouselImage({
         />
         <div className="absolute inset-0 flex h-full w-full flex-col items-start gap-2 rounded-4xl bg-gradient-to-r from-black/75 to-transparent px-4 py-8 text-left text-white sm:gap-4 sm:px-8 sm:py-16">
           <Badge>{year}</Badge>
-          <h3 className="text-2xl font-semibold max-sm:text-xl sm:text-3xl">
+          <h3
+            lang={titleLang}
+            className="text-2xl font-semibold max-sm:text-xl sm:text-3xl"
+          >
             {title}
           </h3>
           {description == null ? null : (
@@ -125,21 +132,23 @@ export function HighlightedEvents() {
 
   const events: HighlightedEvent[] = [
     {
-      name: t("HighlightedEvents.event1Name"),
+      name: 'RAJD "SHREKSPEDYCJA: WELCOME TO BAGNO"',
+      nameLang: "pl",
       description: t("HighlightedEvents.event1Description"),
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
-        alt: t("HighlightedEvents.event1Name"),
+        alt: 'RAJD "SHREKSPEDYCJA: WELCOME TO BAGNO"',
       },
     },
     {
-      name: t("HighlightedEvents.event2Name"),
+      name: 'Rejs "W8 na Fali"',
+      nameLang: "pl",
       description: t("HighlightedEvents.event2Description"),
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/rejs-w8.jpg",
-        alt: t("HighlightedEvents.event2Name"),
+        alt: 'Rejs "W8 na Fali"',
       },
     },
     {
@@ -163,6 +172,7 @@ export function HighlightedEvents() {
           animate={variantsList[index]}
           year={events[1].year}
           title={events[1].name}
+          titleLang={events[1].nameLang}
           description={events[1].description}
           onClick={setIndex}
           index={1}
@@ -174,6 +184,7 @@ export function HighlightedEvents() {
           animate={variantsList[(index + 2) % variantsList.length]}
           year={events[2].year}
           title={events[2].name}
+          titleLang={events[2].nameLang}
           description={events[2].description}
           onClick={setIndex}
           index={2}
@@ -185,6 +196,7 @@ export function HighlightedEvents() {
           animate={variantsList[(index + 1) % variantsList.length]}
           year={events[0].year}
           title={events[0].name}
+          titleLang={events[0].nameLang}
           description={events[0].description}
           onClick={setIndex}
           index={0}
