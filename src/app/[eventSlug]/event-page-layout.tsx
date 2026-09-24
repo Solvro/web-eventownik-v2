@@ -9,6 +9,7 @@ import { EventInfoDiv } from "@/components/event-info-div";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { LanguageSwitch } from "@/components/language-switch";
 import { SanitizedContent } from "@/components/sanitized-content";
+import { SkipLink } from "@/components/skip-link";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,6 +35,7 @@ export function EventPageLayout({
 
   return (
     <ViewTransition>
+      <SkipLink />
       <div className="flex min-h-dvh flex-col md:max-h-dvh md:flex-row">
         <EventPrimaryColorSetter
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing,@typescript-eslint/strict-boolean-expressions
@@ -71,7 +73,7 @@ export function EventPageLayout({
                 />
               </div>
             </nav>
-            <div className="flex min-h-0 flex-col gap-2">
+            <main id="main-content" className="flex min-h-0 flex-col gap-2">
               <div className="flex min-h-0 flex-col pt-8 sm:px-8">
                 <h1
                   className="mb-4 text-4xl font-bold md:text-5xl"
@@ -154,7 +156,7 @@ export function EventPageLayout({
                 </ScrollArea>
                 {!showForm && children}
               </div>
-            </div>
+            </main>
           </div>
         </div>
         {showForm ? (

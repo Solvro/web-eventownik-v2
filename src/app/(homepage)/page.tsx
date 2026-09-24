@@ -7,10 +7,10 @@ import { Hero } from "@/app/(homepage)/sections/hero";
 import { HighlightedEvents } from "@/app/(homepage)/sections/highlighted-events";
 import { Navbar } from "@/app/(homepage)/sections/navbar";
 import { Partners } from "@/app/(homepage)/sections/partners";
-import { SkipLink } from "@/app/(homepage)/sections/skip-link";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
 import { Alerts } from "@/components/alerts";
+import { SkipLink } from "@/components/skip-link";
 
 export default function Home() {
   return (
