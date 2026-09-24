@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-import { deleteSession, verifySession } from "@/lib/session";
+import { logout, verifySession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
+import { LogoutSubmitButton } from "./logout-submit-button";
 import { Button } from "./ui/button";
 import type { ButtonProps } from "./ui/button";
 
@@ -30,16 +31,10 @@ export async function AuthButton({
       className={className}
       action={async () => {
         "use server";
-        await deleteSession();
+        await logout();
       }}
     >
-      <Button
-        type="submit"
-        variant={variant}
-        className={cn("border-foreground", className)}
-      >
-        {t("logout")}
-      </Button>
+      <LogoutSubmitButton variant={variant} className={className} />
     </form>
   );
 }

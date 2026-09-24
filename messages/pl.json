@@ -36,6 +36,8 @@
     "registerTitle": "Rejestracja organizatora",
     "registerDescription": "Podaj swój e-mail by się zarejestrować",
     "creatingAccount": "Tworzenie konta...",
+    "registerSuccess": "Konto zostało utworzone",
+    "registerSuccessDescription": "Możesz się teraz zalogować przy użyciu swoich danych",
     "loginExisting": "Posiadasz już konto? Zaloguj się",
     "loginTitle": "Logowanie organizatora",
     "loginDescription": "Podaj swój e-mail by się zalogować",
@@ -90,6 +92,7 @@
   "Dashboard": {
     "organizerPanel": "Panel organizatora",
     "logout": "Wyloguj się",
+    "loggingOut": "Wylogowywanie...",
     "login": "Zaloguj się",
     "editEvent": "Edytuj wydarzenie",
     "eventImage": "Zdjęcie wydarzenia",
