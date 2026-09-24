@@ -622,6 +622,7 @@
     "events": "Wydarzenia",
     "features": "Funkcjonalności",
     "team": "Zespół",
+    "skipToMainContent": "Przejdź do treści głównej",
     "loadingEvents": "Pobieranie wydarzeń...",
     "failedToLoadEvents": "O nie! Nie udało się pobrać wydarzeń: {message}",
     "upcoming": "Nadchodzące",

@@ -56,7 +56,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                   <X />
                 </Button>
               </div>
-              <div className="flex flex-col gap-4 text-3xl font-medium uppercase">
+              <nav className="flex flex-col gap-4 text-3xl font-medium uppercase">
                 <Link
                   href="#events"
                   onClick={() => {
@@ -89,7 +89,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 >
                   {t("team")}
                 </Link>
-              </div>
+              </nav>
             </div>
             <div className="flex w-full flex-col items-center gap-4">
               <div className="flex w-full items-center justify-end gap-4">

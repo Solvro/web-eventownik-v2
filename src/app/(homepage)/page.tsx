@@ -7,6 +7,7 @@ import { Hero } from "@/app/(homepage)/sections/hero";
 import { HighlightedEvents } from "@/app/(homepage)/sections/highlighted-events";
 import { Navbar } from "@/app/(homepage)/sections/navbar";
 import { Partners } from "@/app/(homepage)/sections/partners";
+import { SkipLink } from "@/app/(homepage)/sections/skip-link";
 import { Team } from "@/app/(homepage)/sections/team";
 import { ToPWr } from "@/app/(homepage)/sections/to-pwr";
 import { Alerts } from "@/components/alerts";
@@ -14,33 +15,42 @@ import { Alerts } from "@/components/alerts";
 export default function Home() {
   return (
     <div className="text-foreground min-h-screen">
-      <div className="relative flex h-full w-full items-center bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
-        <div className="z-10 flex w-full flex-col items-center gap-20 pt-4 lg:pt-12">
-          <div className="flex w-full flex-col gap-4">
-            <Navbar />
-            <Alerts className="container mx-auto px-4 sm:px-0 xl:max-w-6xl" />
-          </div>
-          <Hero />
-          <HighlightedEvents />
-          <Events />
-          <Functionalities />
-        </div>
+      <SkipLink />
+      <div className="relative bg-gradient-to-r from-[#E9EAEE] to-[#6f83af] dark:from-[#101011] dark:to-[#213560]">
         <Image
           src={"/assets/landing/footer_bg.jpg"}
           alt=""
           width={3000}
           height={3000}
-          className="absolute inset-0 w-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] object-cover opacity-10"
+          className="absolute inset-x-0 top-0 w-full [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] object-cover opacity-10"
         />
-      </div>
-      <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
-        <div className="flex w-full flex-col items-center px-4">
-          <Team />
-          <ToPWr />
+        <div className="relative z-10 flex w-full flex-col items-center gap-20 pt-4 lg:pt-12">
+          <div className="flex w-full flex-col gap-4">
+            <Navbar />
+            <Alerts className="container mx-auto px-4 sm:px-0 xl:max-w-6xl" />
+          </div>
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="flex w-full flex-col items-center focus:outline-none"
+          >
+            <div className="flex w-full flex-col items-center gap-20">
+              <Hero />
+              <HighlightedEvents />
+              <Events />
+              <Functionalities />
+            </div>
+            <div className="border-input flex w-full flex-col items-center border-t border-dashed bg-white dark:bg-[#101011]">
+              <div className="flex w-full flex-col items-center px-4">
+                <Team />
+                <ToPWr />
+              </div>
+              <Partners />
+            </div>
+          </main>
         </div>
-        <Partners />
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 }
