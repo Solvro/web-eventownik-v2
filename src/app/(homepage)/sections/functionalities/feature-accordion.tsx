@@ -308,9 +308,9 @@ export function FeatureAccordion() {
       <div className="grid w-full grid-cols-1 items-center justify-center xl:grid-cols-2">
         <div className="z-10 flex h-full w-full items-center justify-center bg-white xl:justify-end dark:bg-[#101011]">
           <div className="w-full space-y-2 p-8 sm:p-16 xl:max-w-3xl">
-            <p className="pb-4 text-4xl font-bold sm:text-5xl">
+            <h2 className="pb-4 text-4xl font-bold sm:text-5xl">
               {t("frequentlyAskedQuestions")}
-            </p>
+            </h2>
             <Accordion
               type="single"
               collapsible

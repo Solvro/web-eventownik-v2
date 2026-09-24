@@ -300,13 +300,13 @@ export async function Team() {
         <p className="w-min rounded-full border border-[#6583C8] px-5 py-2 text-xl font-medium whitespace-nowrap text-[#6583C8]">
           Solvro Team
         </p>
-        <p className="text-center text-3xl font-medium">
+        <h2 className="text-center text-3xl font-medium">
           {t.rich("teamIntroDescription", {
             span: (chunks) => <span className="text-[#6583C8]">{chunks}</span>,
             br: () => <br />,
             count: team.length,
           })}
-        </p>
+        </h2>
       </div>
       <div className="flex flex-col items-center gap-16 lg:gap-32">
         <HighlightedMembers team={team.slice(0, 5)} />
