@@ -7,6 +7,18 @@ import { API_URL } from "./lib/api";
 import { parseSetCookieHeader } from "./lib/cookies";
 import type { AuthSuccessResponse } from "./types/auth";
 
+function redirectToLogin(request: NextRequest) {
+  const loginUrl = new URL("/auth/login", request.nextUrl);
+  loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+
+  const response = NextResponse.redirect(loginUrl);
+
+  response.cookies.delete("refresh_token");
+  response.cookies.delete("session");
+
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
@@ -40,15 +52,7 @@ export async function proxy(request: NextRequest) {
         });
       } else {
         if (request.nextUrl.pathname.startsWith("/dashboard")) {
-          const loginUrl = new URL("/auth/login", request.nextUrl);
-          loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-
-          const redirectResponse = NextResponse.redirect(loginUrl);
-
-          redirectResponse.cookies.delete("refresh_token");
-          redirectResponse.cookies.delete("session");
-
-          return redirectResponse;
+          return redirectToLogin(request);
         }
 
         response.cookies.delete("refresh_token");
@@ -56,6 +60,10 @@ export async function proxy(request: NextRequest) {
       }
     } catch (error) {
       console.error("[Middleware] Failed to refresh token:", error);
+
+      if (request.nextUrl.pathname.startsWith("/dashboard")) {
+        return redirectToLogin(request);
+      }
 
       response.cookies.delete("refresh_token");
       response.cookies.delete("session");
