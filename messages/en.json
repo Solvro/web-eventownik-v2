@@ -421,7 +421,7 @@
     "links": "Links",
     "addLink": "Add link",
     "slug": "Slug",
-    "attributeLabel": "Attribute label",
+    "attributeLabel": "Attribute name",
     "showInTable": "Show in table",
     "sensitiveData": "Sensitive data",
     "sensitiveDataExplanation": "Explanation of sensitive data",

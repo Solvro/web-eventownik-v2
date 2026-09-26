@@ -7,6 +7,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { setEventPrimaryColors } from "@/components/event-primary-color";
+import { RequirementAsterisk } from "@/components/requirement-asterisk";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   FormControl,
@@ -169,11 +170,15 @@ export function PersonalizationForm({ className }: { className?: string }) {
           control={control}
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("participantsCount")}</FormLabel>
+              <FormLabel>
+                {t("participantsCount")}{" "}
+                <RequirementAsterisk tooltip={t("required")} />
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   min={1}
+                  required
                   disabled={formState.isSubmitting}
                   {...field}
                 />
@@ -292,7 +297,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>
-                {t("slug")}{" "}
+                {t("slug")} <RequirementAsterisk tooltip={t("required")} />{" "}
                 <span className="text-neutral-500">
                   (eventownik.solvro.pl/...)
                 </span>
@@ -300,6 +305,9 @@ export function PersonalizationForm({ className }: { className?: string }) {
               <FormControl>
                 <Input
                   type="text"
+                  required
+                  minLength={3}
+                  pattern="[a-z0-9\-]+"
                   placeholder={t("eventSlugExample")}
                   {...field}
                 />
