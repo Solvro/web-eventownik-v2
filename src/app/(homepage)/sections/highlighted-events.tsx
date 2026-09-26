@@ -17,7 +17,6 @@ interface HighlightedEvent {
   description?: string;
   image: {
     src: string;
-    alt: string;
   };
 }
 
@@ -53,7 +52,6 @@ const variants = {
 
 function CarouselImage({
   src,
-  alt,
   initial,
   animate,
   title,
@@ -64,7 +62,6 @@ function CarouselImage({
   index,
 }: {
   src: string;
-  alt: string;
   initial: TargetAndTransition;
   animate: VariantLabels;
   title: string;
@@ -101,7 +98,7 @@ function CarouselImage({
       <div className="relative h-full w-full">
         <Image
           src={src}
-          alt={alt}
+          alt=""
           className="border-input aspect-[25/18] h-auto w-full rounded-4xl border object-cover sm:aspect-[25/16]"
           width={750}
           height={540}
@@ -138,7 +135,6 @@ export function HighlightedEvents() {
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
-        alt: 'RAJD "SHREKSPEDYCJA: WELCOME TO BAGNO"',
       },
     },
     {
@@ -148,7 +144,6 @@ export function HighlightedEvents() {
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/rejs-w8.jpg",
-        alt: 'Rejs "W8 na Fali"',
       },
     },
     {
@@ -157,7 +152,6 @@ export function HighlightedEvents() {
       year: 2025,
       image: {
         src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
-        alt: t("HighlightedEvents.event3Name"),
       },
     },
   ];
@@ -167,7 +161,6 @@ export function HighlightedEvents() {
       <div className="relative flex h-[calc((100vw-3rem)*18/25*1.08)] max-h-130 w-full justify-center sm:h-[calc((100vw-3rem)*16/25*1.08)] md:h-[calc(600px*16/25*1.08)]">
         <CarouselImage
           src={events[1].image.src}
-          alt={events[1].image.alt}
           initial={variants.left}
           animate={variantsList[index]}
           year={events[1].year}
@@ -179,7 +172,6 @@ export function HighlightedEvents() {
         />
         <CarouselImage
           src={events[2].image.src}
-          alt={events[2].image.alt}
           initial={variants.right}
           animate={variantsList[(index + 2) % variantsList.length]}
           year={events[2].year}
@@ -191,7 +183,6 @@ export function HighlightedEvents() {
         />
         <CarouselImage
           src={events[0].image.src}
-          alt={events[0].image.alt}
           initial={variants.center}
           animate={variantsList[(index + 1) % variantsList.length]}
           year={events[0].year}
