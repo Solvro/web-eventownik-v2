@@ -25,7 +25,7 @@ function FeatureTile({
         {icon}
       </div>
       <div className="space-y-1.5">
-        <h4 className="text-lg font-medium">{name}</h4>
+        <h5 className="text-lg font-medium">{name}</h5>
         <p className="text-[#515151] dark:text-[#B4B4B4]">{description}</p>
       </div>
     </div>
@@ -35,14 +35,14 @@ function FeatureTile({
 function FeatureStep({ step }: { step: number }) {
   const t = useTranslations("Homepage");
   return (
-    <p className="text-lg font-medium sm:text-2xl">
+    <h3 className="text-lg font-medium sm:text-2xl">
       {t("step")} {step}
-    </p>
+    </h3>
   );
 }
 
 function FeatureTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-2xl font-medium sm:text-5xl">{children}</h3>;
+  return <h4 className="text-2xl font-medium sm:text-5xl">{children}</h4>;
 }
 
 function FeatureDescription({ children }: { children: React.ReactNode }) {

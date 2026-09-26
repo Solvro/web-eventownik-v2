@@ -54,7 +54,7 @@ export function FeatureAccordion() {
         <div className="relative grid h-full w-full max-w-3xl grid-cols-5 items-end gap-4 sm:grid-cols-2 sm:gap-0">
           <Image
             src="/assets/landing/functionalities/mobile-mockup.png"
-            alt="Wygląd Eventownika na urządzeniach mobilnych"
+            alt=""
             className="col-span-3 w-full justify-self-end rounded-3xl drop-shadow-[-200px_-35px_50000px_rgba(56,115,255,0.69)] sm:col-span-1 sm:px-8"
             width={2000}
             height={1000}
@@ -68,7 +68,7 @@ export function FeatureAccordion() {
             </p>
             <Image
               src="https://cms.solvro.pl/assets/8b57e57a-e701-4d9a-88e5-c254e9299fee?key=member"
-              alt="Amelia Sroczyńska"
+              alt=""
               width={250}
               height={250}
               className="aspect-square h-32 w-auto -rotate-6 rounded-4xl drop-shadow-[0px_-35px_500px_rgba(56,115,255,0.69)] sm:h-auto"
