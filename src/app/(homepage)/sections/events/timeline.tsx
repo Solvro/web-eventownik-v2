@@ -28,6 +28,8 @@ function TimelineStep({
     <div className="flex flex-col items-center gap-2">
       <button
         onClick={onClick}
+        // Keyboard users control the timeline with the previous/next month buttons
+        tabIndex={-1}
         className={cn(
           "text-4xl uppercase transition",
           isActive
