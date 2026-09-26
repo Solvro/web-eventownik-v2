@@ -412,6 +412,7 @@
     "addImage": "Add image",
     "imageFormatHint": "1:1 aspect ratio, 1080x1080px recommended",
     "eventImagePreview": "Event image preview",
+    "chooseEventImage": "Choose event image",
     "eventColor": "Event color",
     "participantsCount": "Number of participants",
     "termsLink": "Terms & conditions link",

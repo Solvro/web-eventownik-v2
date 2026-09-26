@@ -69,11 +69,32 @@ export function PersonalizationForm({ className }: { className?: string }) {
           return (
             <FormItem className="flex w-full flex-col">
               <FormLabel>{t("image")}</FormLabel>
+              <Input
+                id={fileInputId}
+                className="peer pointer-events-none absolute h-0 w-0 opacity-0"
+                type="file"
+                aria-label={t("chooseEventImage")}
+                accept="image/png, image/gif, image/jpeg"
+                disabled={formState.isSubmitting}
+                {...processedField}
+                onChange={(event_) => {
+                  const input = event_.target as HTMLInputElement;
+                  if (input.files?.[0] != null) {
+                    const currentImage = getValues("photoUrl");
+                    if (currentImage?.startsWith("blob:") === true) {
+                      URL.revokeObjectURL(currentImage);
+                    }
+                    const newBlobUrl = URL.createObjectURL(input.files[0]);
+                    setValue("photoUrl", newBlobUrl);
+                    field.onChange(newBlobUrl);
+                  }
+                }}
+              />
               <FormLabel
                 htmlFor={fileInputId}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "border-box flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500",
+                  "border-box peer-focus-visible:ring-ring flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 peer-focus-visible:ring-1",
                   imageValue != null &&
                     imageValue !== "" &&
                     "overflow-hidden p-0",
@@ -102,26 +123,6 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   />
                 )}
               </FormLabel>
-              <Input
-                id={fileInputId}
-                className="hidden"
-                type="file"
-                accept="image/png, image/gif, image/jpeg"
-                disabled={formState.isSubmitting}
-                {...processedField}
-                onChange={(event_) => {
-                  const input = event_.target as HTMLInputElement;
-                  if (input.files?.[0] != null) {
-                    const currentImage = getValues("photoUrl");
-                    if (currentImage?.startsWith("blob:") === true) {
-                      URL.revokeObjectURL(currentImage);
-                    }
-                    const newBlobUrl = URL.createObjectURL(input.files[0]);
-                    setValue("photoUrl", newBlobUrl);
-                    field.onChange(newBlobUrl);
-                  }
-                }}
-              />
             </FormItem>
           );
         }}
@@ -133,10 +134,23 @@ export function PersonalizationForm({ className }: { className?: string }) {
           render={({ field }) => (
             <FormItem className="flex flex-col gap-2 space-y-0">
               <FormLabel>{t("eventColor")}</FormLabel>
+              <FormControl>
+                <Input
+                  type="color"
+                  className="peer pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
+                  disabled={formState.isSubmitting}
+                  {...field}
+                  value={field.value ?? "#3672fd"}
+                  onChange={(event_) => {
+                    setEventPrimaryColors(event_.target.value);
+                    field.onChange(event_);
+                  }}
+                />
+              </FormControl>
               <FormLabel
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "cursor-pointer justify-start",
+                  "peer-focus-visible:ring-ring cursor-pointer justify-start peer-focus-visible:ring-1",
                 )}
               >
                 <span
@@ -147,19 +161,6 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 />
                 <p>{getValues("primaryColor")}</p>
               </FormLabel>
-              <FormControl>
-                <Input
-                  type="color"
-                  className="pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
-                  disabled={formState.isSubmitting}
-                  {...field}
-                  value={field.value ?? "#3672fd"}
-                  onChange={(event_) => {
-                    setEventPrimaryColors(event_.target.value);
-                    field.onChange(event_);
-                  }}
-                />
-              </FormControl>
             </FormItem>
           )}
         />

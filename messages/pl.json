@@ -412,6 +412,7 @@
     "addImage": "Dodaj zdjęcie",
     "imageFormatHint": "Format 1:1, zalecane 1080x1080px",
     "eventImagePreview": "Podgląd zdjęcia wydarzenia",
+    "chooseEventImage": "Wybierz zdjęcie wydarzenia",
     "eventColor": "Kolor wydarzenia",
     "participantsCount": "Liczba uczestników",
     "termsLink": "Link do regulaminu",
