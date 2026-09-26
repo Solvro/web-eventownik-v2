@@ -222,11 +222,12 @@ Accessibility is essential for both users and testing. Follow these patterns:
 
 - **Buttons**: Always have visible text or `aria-label` for icon-only buttons
 - **Inputs**: Always have associated `<label>` elements or `aria-label`
-- **Custom-styled inputs** (file, color, etc.): Never hide the native input with `hidden` / `display: none` - it becomes unreachable by keyboard and invisible to screen readers. Hide it visually instead, place it **before** its custom `<label>` and mark it as a `peer`, so the label can show the focus ring via `peer-focus-visible:*`
-- **File inputs**: Give them an `aria-label`, since their label's content may change (e.g. an image preview replacing the "Add image" text)
+- **Custom-styled inputs** (file, color, etc.) - pick one of two patterns:
+  - **Opened by a `<label>`**: Never hide the native input with `hidden` / `display: none` - it becomes unreachable by keyboard and invisible to screen readers. Hide it visually instead, place it **before** its custom `<label>` and mark it as a `peer`, so the label can show the focus ring via `peer-focus-visible:*`. Give file inputs an `aria-label`, since the label's content may change (e.g. an image preview replacing the "Add image" text)
+  - **Opened by a `<Button>`** (via `inputRef.current?.click()`): Hide the input with `hidden`, so it doesn't add a second, invisible tab stop. The button is the accessible control - make sure it has visible text or an `aria-label`
 
 ```typescript
-// Visually hidden, but still focusable file input
+// Opened by a label: visually hidden, but still focusable file input
 <Input
   id={fileInputId}
   type="file"

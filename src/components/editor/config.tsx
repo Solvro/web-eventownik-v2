@@ -750,7 +750,7 @@ export const getPuckConfig = ({
                   <input
                     type="file"
                     accept="image/*"
-                    className="sr-only"
+                    className="hidden"
                     aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
@@ -911,7 +911,7 @@ export const getPuckConfig = ({
                   <input
                     type="file"
                     accept="image/*"
-                    className="sr-only"
+                    className="hidden"
                     aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
