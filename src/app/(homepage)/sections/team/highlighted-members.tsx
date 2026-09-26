@@ -74,7 +74,7 @@ export function HighlightedMember({
               ? member.image
               : "/assets/landing/person.webp"
           }
-          alt={member.name}
+          alt=""
           width={500}
           height={500}
           className="h-auto w-full rounded-2xl sm:rounded-4xl"
