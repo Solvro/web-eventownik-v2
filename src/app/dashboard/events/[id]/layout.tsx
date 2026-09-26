@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
@@ -46,11 +47,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const { event } = await fetchEventAndAttributes(id);
+  const t = await getTranslations("Dashboard");
 
   return {
     title: {
       template: `%s — ${event.name} | Eventownik`,
-      default: `Dashboard — ${event.name}`,
+      default: `${t("organizerPanel")} — ${event.name}`,
     },
   };
 }

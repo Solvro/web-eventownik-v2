@@ -97,8 +97,6 @@ export function EventCard({ event }: { event: Event }) {
           variant="icon"
           className="size-12"
           buttonVariant="ghost"
-          label={t("share")}
-          tooltipText={t("copiedToClipboard")}
         />
       </div>
     </EventCardBase>
