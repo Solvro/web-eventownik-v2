@@ -14,6 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const themes = [
@@ -30,6 +35,7 @@ function ThemeSwitch({
 }) {
   const { resolvedTheme, theme, setTheme } = useTheme();
   const t = useTranslations("Themes");
+  const tAccessibility = useTranslations("Accessibility");
 
   const [mounted, setMounted] = useState<boolean>(false);
 
@@ -40,14 +46,20 @@ function ThemeSwitch({
 
   return mounted ? (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={variant}
-          className={cn("size-12 [&_svg]:size-5", className)}
-        >
-          {resolvedTheme === "light" ? <Sun /> : <Moon />}
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={variant}
+              className={cn("size-12 [&_svg]:size-5", className)}
+            >
+              {resolvedTheme === "light" ? <Sun /> : <Moon />}
+              <span className="sr-only">{tAccessibility("changeTheme")}</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>{tAccessibility("changeTheme")}</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent>
         {themes.map((_theme) => (
           <DropdownMenuItem
@@ -68,6 +80,7 @@ function ThemeSwitch({
       className={cn("border-foreground size-12 [&_svg]:size-5", className)}
     >
       <Sun />
+      <span className="sr-only">{tAccessibility("changeTheme")}</span>
     </Button>
   );
 }

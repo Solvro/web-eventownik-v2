@@ -1,6 +1,10 @@
 {
   "Accessibility": {
-    "skipToMainContent": "Skip to main content"
+    "skipToMainContent": "Skip to main content",
+    "changeLanguage": "Change language",
+    "changeTheme": "Change theme",
+    "goToNextMonth": "Go to the next month",
+    "goToPreviousMonth": "Go to the previous month"
   },
   "AttributeTypes": {
     "text": "Text",
