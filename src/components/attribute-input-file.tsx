@@ -80,6 +80,8 @@ export function AttributeInputFile({
   lastUpdate: string | null;
 }) {
   const t = useTranslations("EventDetails");
+  // A previously uploaded file satisfies the requirement
+  const isFileRequired = attribute.isRequired && lastUpdate === null;
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -142,6 +144,7 @@ export function AttributeInputFile({
       <Input
         type="file"
         id={attribute.id.toString()}
+        required={isFileRequired}
         {...field}
         onChange={handleFileChange}
       />

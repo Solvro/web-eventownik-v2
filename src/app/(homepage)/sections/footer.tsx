@@ -13,7 +13,7 @@ export function Footer() {
     <footer className="z-10 flex w-full flex-col items-center bg-white dark:bg-[#101011]">
       <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 pt-16 pb-8 sm:gap-32 sm:py-16 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
-          <p>{t("stayUpdatedWithEventownik")}</p>
+          <h2>{t("stayUpdatedWithEventownik")}</h2>
           <Link
             href="/newsletter-eventownik"
             className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"

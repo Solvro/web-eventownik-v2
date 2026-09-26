@@ -27,22 +27,22 @@ export function Hero() {
           #wytrzyma
         </p>
       </motion.div>
-      <motion.p
+      <motion.h1
         className="text-5xl font-bold uppercase sm:text-8xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08, duration: 0.3, ease: "easeOut" }}
       >
         Eventownik Solvro
-      </motion.p>
-      <motion.p
+      </motion.h1>
+      <motion.h2
         className="text-xl text-[#191A1A] sm:text-3xl dark:text-[#D9E8FF]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.16, duration: 0.3, ease: "easeOut" }}
       >
         {t("letsCreateAnEventTogether")}
-      </motion.p>
+      </motion.h2>
       <motion.div
         className="flex flex-row flex-wrap items-center justify-center gap-4"
         initial={{ opacity: 0, y: 20 }}

@@ -274,7 +274,7 @@ function EditorMenuBar({
 
       <input
         type="file"
-        className="sr-only"
+        className="hidden"
         aria-label={t("insertImage")}
         ref={fileInputRef}
         onChangeCapture={async (event) => {
@@ -294,6 +294,7 @@ function EditorMenuBar({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             variant="eventGhost"
+            aria-label={t("insertImage")}
           >
             <ImageIcon />
           </Button>

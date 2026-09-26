@@ -47,7 +47,7 @@ export default async function EventListPage() {
   const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
 
   return (
-    <div className="flex flex-col gap-4">
+    <main id="main-content" className="flex flex-col gap-4">
       <div className="space-y-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-3xl font-bold">{t("myEvents")}</h1>
@@ -102,6 +102,6 @@ export default async function EventListPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

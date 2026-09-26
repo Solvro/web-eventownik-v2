@@ -6,9 +6,9 @@ export default function DashboardHomepage() {
   const t = useTranslations("Dashboard");
 
   return (
-    <div className="flex flex-col gap-4">
+    <main id="main-content" className="flex flex-col gap-4">
       <h1 className="text-3xl font-bold">{t("organizerPanel")}</h1>
       <CreateEventForm />
-    </div>
+    </main>
   );
 }

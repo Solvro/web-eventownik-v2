@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { z } from "zod";
 
+import { RequirementAsterisk } from "@/components/requirement-asterisk";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -130,6 +131,8 @@ export function AttributeItem({
           <Input
             defaultValue={attribute.name}
             {...register(`attributes.${index}.name`)}
+            required
+            aria-label={t("attributeLabel")}
             disabled={formState.isSubmitting}
             placeholder={t("attributeLabel")}
             className="flex-1"
@@ -233,12 +236,13 @@ export function AttributeItem({
       {watch(`attributes.${index}.isSensitiveData`) ? (
         <div className="my-2 flex flex-col gap-2">
           <Label htmlFor={`reason-${index.toString()}`}>
-            {t("sensitiveDataReason")}
+            {t("sensitiveDataReason")}{" "}
+            <RequirementAsterisk tooltip={t("required")} />
           </Label>
           <Input
             id={`reason-${index.toString()}`}
             defaultValue={attribute.reason ?? ""}
-            required={attribute.isSensitiveData}
+            required
             onChange={(event_) => {
               setValue(`attributes.${index}.reason`, event_.target.value);
             }}

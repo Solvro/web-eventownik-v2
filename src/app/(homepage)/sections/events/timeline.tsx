@@ -3,7 +3,7 @@
 import { eachMonthOfInterval, getMonth, getYear } from "date-fns";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 import { motion } from "motion/react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,8 @@ function TimelineStep({
     <div className="flex flex-col items-center gap-2">
       <button
         onClick={onClick}
+        // Keyboard users control the timeline with the previous/next month buttons
+        tabIndex={-1}
         className={cn(
           "text-4xl uppercase transition",
           isActive
@@ -77,6 +79,7 @@ export function Timeline({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const locale = useLocale();
+  const t = useTranslations("Accessibility");
   const [width, setWidth] = useState(0);
 
   // Get the width of the timeline
@@ -115,6 +118,7 @@ export function Timeline({
           }}
           disabled={filters.month === 0 && filters.year === 2025}
         >
+          <span className="sr-only">{t("goToPreviousMonth")}</span>
           <ArrowLeftCircle />
         </Button>
         <Button
@@ -135,6 +139,7 @@ export function Timeline({
             filters.month === 11 && filters.year === getYear(new Date()) + 1
           }
         >
+          <span className="sr-only">{t("goToNextMonth")}</span>
           <ArrowRightCircle />
         </Button>
       </div>

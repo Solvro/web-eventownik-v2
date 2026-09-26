@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
@@ -46,11 +47,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const { event } = await fetchEventAndAttributes(id);
+  const t = await getTranslations("Dashboard");
 
   return {
     title: {
       template: `%s — ${event.name} | Eventownik`,
-      default: `Dashboard — ${event.name}`,
+      default: `${t("organizerPanel")} — ${event.name}`,
     },
   };
 }
@@ -70,9 +72,12 @@ export default async function DashboardEventLayout({
     <div className="mb-12 flex grow flex-col gap-4 sm:mb-0 sm:flex-row sm:gap-14">
       <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
       <DashboardSidebar event={event} attributes={attributes} />
-      <div className="flex max-w-full grow flex-col overflow-x-auto px-0.5">
+      <main
+        id="main-content"
+        className="flex max-w-full grow flex-col overflow-x-auto px-0.5"
+      >
         {children}
-      </div>
+      </main>
     </div>
   );
 }

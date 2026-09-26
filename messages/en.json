@@ -1,4 +1,11 @@
 {
+  "Accessibility": {
+    "skipToMainContent": "Skip to main content",
+    "changeLanguage": "Change language",
+    "changeTheme": "Change theme",
+    "goToNextMonth": "Go to the next month",
+    "goToPreviousMonth": "Go to the previous month"
+  },
   "AttributeTypes": {
     "text": "Text",
     "textHint": "Short text field",
@@ -405,6 +412,7 @@
     "addImage": "Add image",
     "imageFormatHint": "1:1 aspect ratio, 1080x1080px recommended",
     "eventImagePreview": "Event image preview",
+    "chooseEventImage": "Choose event image",
     "eventColor": "Event color",
     "participantsCount": "Number of participants",
     "termsLink": "Terms & conditions link",
@@ -413,7 +421,7 @@
     "links": "Links",
     "addLink": "Add link",
     "slug": "Slug",
-    "attributeLabel": "Attribute label",
+    "attributeLabel": "Attribute name",
     "showInTable": "Show in table",
     "sensitiveData": "Sensitive data",
     "sensitiveDataExplanation": "Explanation of sensitive data",
@@ -596,11 +604,9 @@
   },
   "Homepage": {
     "HighlightedEvents": {
-      "event1Name": "RAJD \"SHREKSPEDYCJA: WELCOME TO BAGNO\"",
-      "event1Description": "Organizers from WRSS (Faculty Council of the Student Government) W6, W8, and W12 were given pilot access to Eventownik to test its functionality and evaluate how effectively it can improve the management of a large-scale event.",
-      "event2Name": "Rejs \"W8 na Fali\"",
-      "event2Description": "After the success of Eventownik during the Raid, WuZetka decided to once again use the application to organize their next event — the W8 River Trip 2025.",
       "event3Name": "Trip to Graz within the Unite! program",
+      "event1Description": "Organizers from WRSS (Faculty Council of the Student Government) W6, W8, and W12 were given pilot access to Eventownik to test its functionality and evaluate how effectively it can improve the management of a large-scale event.",
+      "event2Description": "After the success of Eventownik during the Raid, WuZetka decided to once again use the application to organize their next event — the W8 River Trip 2025.",
       "event3Description": "Students from our KN Solvro participated in an exchange trip to Graz as part of the Unite! program. During the organization of the trip, they used Eventownik, which improved the entire planning and execution process."
     },
     "areYouPwrStudent": "Are you a student at Wrocław University of Science and Technology?",
