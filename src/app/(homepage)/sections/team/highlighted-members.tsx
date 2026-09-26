@@ -79,6 +79,7 @@ export function HighlightedMember({
           height={500}
           className="h-auto w-full rounded-2xl sm:rounded-4xl"
         />
+        <p className="sr-only">{member.name}</p>
       </motion.a>
     </motion.div>
   );
