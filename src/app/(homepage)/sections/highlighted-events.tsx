@@ -127,9 +127,9 @@ export function HighlightedEvents() {
     {
       name: t("HighlightedEvents.event1Name"),
       description: t("HighlightedEvents.event1Description"),
-      year: 2025,
+      year: 2026,
       image: {
-        src: "/assets/landing/highlighted-events/shrekspedycja.jpg",
+        src: "/assets/landing/highlighted-events/bal-inzyniera.png",
         alt: t("HighlightedEvents.event1Name"),
       },
     },
@@ -145,9 +145,9 @@ export function HighlightedEvents() {
     {
       name: t("HighlightedEvents.event3Name"),
       description: t("HighlightedEvents.event3Description"),
-      year: 2025,
+      year: 2026,
       image: {
-        src: "/assets/landing/highlighted-events/wyjazd-graz.jpg",
+        src: "/assets/landing/highlighted-events/kiss-it.png",
         alt: t("HighlightedEvents.event3Name"),
       },
     },
