@@ -46,7 +46,7 @@ function getEventsUrl(year: number, month: number) {
   const formattedEnd = format(endDate, "yyyy-MM-dd");
 
   // 4. Build the URL
-  return `${API_URL}/public/events?from=${formattedStart}&to=${formattedEnd}`;
+  return `${API_URL}/public/events?after=${formattedStart}&before=${formattedEnd}`;
 }
 
 async function fetchEvents(
@@ -59,7 +59,7 @@ async function fetchEvents(
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.json() as Promise<EventType[]>;
+  return ((await response.json()) as { data: EventType[] }).data;
 }
 
 export function Events() {
