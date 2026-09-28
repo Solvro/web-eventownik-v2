@@ -1,8 +1,6 @@
-import { formatRelative, subDays } from "date-fns";
-import { getLocale } from "next-intl/server";
+import { format } from "date-fns";
 import Link from "next/link";
 
-import { getDateLocale } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
@@ -11,6 +9,18 @@ import { EventPageLayout } from "../event-page-layout";
 
 interface GdprPageProps {
   params: Promise<{ eventSlug: string }>;
+}
+
+function DataRecipients({ dataRecipients }: { dataRecipients: string | null }) {
+  return dataRecipients == null ? (
+    <span className="font-medium italic">brak zewnętrznych odbiorców</span>
+  ) : (
+    <ul className="font-medium">
+      {dataRecipients.split(",").map((recipient) => (
+        <li key={recipient}>{recipient}</li>
+      ))}
+    </ul>
+  );
 }
 
 export default async function GdprPage({ params }: GdprPageProps) {
@@ -27,9 +37,6 @@ export default async function GdprPage({ params }: GdprPageProps) {
 
   const event = (await eventResponse.json()) as Event;
 
-  const locale = await getLocale();
-  const dateLocale = getDateLocale(locale);
-
   return (
     <EventPageLayout
       event={event}
@@ -44,10 +51,7 @@ export default async function GdprPage({ params }: GdprPageProps) {
             aplikację Politechniki Wrocławskiej – Eventownik
           </h1>
           <p className="mt-3 text-sm">
-            Ostatnia aktualizacja:{" "}
-            {formatRelative(subDays(new Date(event.updatedAt), 3), new Date(), {
-              locale: dateLocale,
-            })}
+            Ostatnia aktualizacja: {format(event.updatedAt, "dd.MM.yyyy")}
           </p>
         </header>
 
@@ -206,10 +210,7 @@ export default async function GdprPage({ params }: GdprPageProps) {
             </p>
             <p className="mt-3">
               Konkretni odbiorcy danych dla tego Wydarzenia:{" "}
-              <span className="font-medium">
-                {event.dataRecipients ??
-                  "brak dodatkowych zewnętrznych odbiorców"}
-              </span>
+              <DataRecipients dataRecipients={event.dataRecipients} />
             </p>
             <p className="mt-3">
               Administrator udostępnia dane osobowe wykonawcom usług
