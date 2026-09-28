@@ -12,6 +12,9 @@ import { TableMenu } from "../components/buttons/table-menu";
 import { ParticipantTable } from "../core/participants-table";
 import { Providers } from "./providers";
 
+// Stable reference - a new array on each render would recreate columns and remount cells
+const BLOCKS: never[] = [];
+
 function TableWrapper({
   participants,
   attributes,
@@ -31,7 +34,7 @@ function TableWrapper({
   const { table, globalFilter } = useParticipantsTable({
     data,
     attributes,
-    blocks: [],
+    blocks: BLOCKS,
     eventId: "100",
     onUpdateData: (rowIndex: number, value: FlattenedParticipant) => {
       setData((prev) =>
@@ -49,7 +52,7 @@ function TableWrapper({
         isQuerying={isQuerying}
         emails={emails}
         attributes={attributes}
-        blocks={[]}
+        blocks={BLOCKS}
         deleteManyParticipants={async (ids) => {
           await deleteManyParticipants(ids);
           table.resetRowSelection();

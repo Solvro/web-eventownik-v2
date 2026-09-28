@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { server } from "./tests/msw/node";
 
 beforeAll(() => {
-  server.listen();
+  server.listen({ onUnhandledRequest: "error" });
 });
 
 afterEach(() => {
