@@ -123,37 +123,9 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
         formId={form.id.toString()}
         eventSlug={eventSlug}
+        termsLink={event.termsLink}
         editMode={false}
       />
-
-      <p className="text-foreground/50 my-4 text-center text-sm">
-        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
-        {t("consentIntro")}
-        <br />
-        <Link
-          href={`/${event.slug}/privacy`}
-          className="text-(--event-primary-color)/90"
-          target="_blank"
-        >
-          {t("privacyPolicy")}
-        </Link>
-        {event.termsLink === null ? (
-          <span> {t("ofEvent")}</span>
-        ) : (
-          <>
-            {" "}
-            {t("and")}{" "}
-            <Link
-              href={event.termsLink}
-              className="text-(--event-primary-color)/90"
-              target="_blank"
-            >
-              {t("terms")}
-            </Link>{" "}
-            {t("ofEvent")}
-          </>
-        )}
-      </p>
     </EventPageLayout>
   );
 }
