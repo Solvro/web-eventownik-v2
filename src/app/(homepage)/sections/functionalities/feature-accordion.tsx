@@ -152,6 +152,7 @@ export function FeatureAccordion() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         key="no-account-needed"
+        aria-hidden
         className="flex h-96 flex-col items-center justify-center overflow-hidden p-4 sm:h-full sm:min-h-160 sm:p-8 xl:items-start"
       >
         <div className="relative flex h-full w-full max-w-3xl flex-col items-center justify-center">
@@ -216,6 +217,7 @@ export function FeatureAccordion() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         key="coorganizers"
+        aria-hidden
         className="relative flex h-96 w-full flex-col items-center justify-center overflow-hidden p-4 sm:h-192 sm:p-8 xl:items-start"
       >
         <div className="z-10 flex w-full max-w-3xl -translate-y-3/4 flex-row items-center justify-center drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:-translate-y-3/5">
@@ -230,7 +232,7 @@ export function FeatureAccordion() {
             </div>
             <Image
               src="/assets/landing/functionalities/organizer-1.jpg"
-              alt={`${t("organizer")} 1`}
+              alt=""
               width={200}
               height={200}
               className="aspect-square h-full w-40 -rotate-6 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
@@ -247,7 +249,7 @@ export function FeatureAccordion() {
             </div>
             <Image
               src="/assets/landing/functionalities/organizer-2.jpg"
-              alt={`${t("organizer")} 2`}
+              alt=""
               width={200}
               height={200}
               className="z-10 aspect-square h-full w-40 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
@@ -264,7 +266,7 @@ export function FeatureAccordion() {
             </div>
             <Image
               src="/assets/landing/functionalities/organizer-3.jpg"
-              alt={`${t("organizer")} 3`}
+              alt=""
               width={200}
               height={200}
               className="aspect-square h-full w-40 rotate-6 rounded-4xl shadow-2xl drop-shadow-2xl sm:w-auto"
@@ -273,7 +275,7 @@ export function FeatureAccordion() {
         </div>
         <Image
           src="/assets/landing/functionalities/event-settings.png"
-          alt={t("coorganizerSettingsInOrganizerPanel")}
+          alt=""
           className="absolute translate-y-2/3 rounded-4xl border border-[#798DDE] bg-[#26486E]/40 p-2 drop-shadow-[0_-35px_100px_rgba(56,115,255,0.69)] sm:translate-y-3/5"
           width={2000}
           height={1000}

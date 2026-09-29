@@ -76,11 +76,10 @@ export function ToPWr() {
                 variants={childVariants}
                 className="mx-auto mt-4 max-w-xs text-3xl font-bold sm:max-w-none sm:text-4xl md:text-5xl"
               >
-                {t("installApp")} <span className="sr-only">ToPWR</span>
+                {t("installApp")}{" "}
                 <Image
                   src={"/assets/logo/topwr_logo.svg"}
-                  alt=""
-                  aria-hidden="true"
+                  alt="ToPWR"
                   className="inline brightness-0 dark:invert"
                   width={140}
                   height={50}

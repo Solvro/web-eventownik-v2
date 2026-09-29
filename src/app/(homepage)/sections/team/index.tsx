@@ -330,7 +330,9 @@ export async function Team() {
           <p className="font-medium whitespace-nowrap">{t("giveUsAStar")}</p>
           <div className="flex flex-row items-center gap-1">
             <Star fill="#3672FD" strokeWidth={0} size={20} />
-            <p className="font-medium">{stargazers_count}</p>
+            <p aria-hidden className="font-medium">
+              {stargazers_count}
+            </p>
           </div>
         </a>
       </div>
