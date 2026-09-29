@@ -1,23 +1,80 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { verifySession } from "@/lib/session";
+import { encrypt, sessionCookieMaxAge, verifySession } from "@/lib/session";
+
+import { API_URL } from "./lib/api";
+import { parseSetCookieHeader } from "./lib/cookies";
+import type { AuthSuccessResponse } from "./types/auth";
+
+function redirectToLogin(request: NextRequest) {
+  const loginUrl = new URL("/auth/login", request.nextUrl);
+  loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+
+  const response = NextResponse.redirect(loginUrl);
+
+  response.cookies.delete("refresh_token");
+  response.cookies.delete("session");
+
+  return response;
+}
 
 export async function proxy(request: NextRequest) {
-  const session = await verifySession();
+  const response = NextResponse.next();
 
-  if (
-    typeof session?.bearerToken !== "string" ||
-    session.bearerToken.length === 0
-  ) {
-    const loginUrl = new URL("/auth/login", request.nextUrl);
-    loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  const initialSession = await verifySession();
+
+  if (initialSession === null) {
+    try {
+      const backendResponse = await fetch(`${API_URL}/auth/refresh`, {
+        method: "POST",
+        headers: {
+          Cookie: request.headers.get("cookie") ?? "",
+        },
+      });
+
+      if (backendResponse.ok) {
+        const data = (await backendResponse.json()) as AuthSuccessResponse;
+        const setCookieHeader = backendResponse.headers.get("set-cookie");
+
+        if (setCookieHeader != null) {
+          response.cookies.set(parseSetCookieHeader(setCookieHeader));
+        }
+
+        response.cookies.set({
+          name: "session",
+          value: await encrypt({ bearerToken: data.access_token }),
+          httpOnly: true,
+          secure: true,
+          expires: new Date(Date.now() + sessionCookieMaxAge * 1000),
+          sameSite: "lax",
+          path: "/",
+        });
+      } else {
+        if (request.nextUrl.pathname.startsWith("/dashboard")) {
+          return redirectToLogin(request);
+        }
+
+        response.cookies.delete("refresh_token");
+        response.cookies.delete("session");
+      }
+    } catch (error) {
+      console.error("[Middleware] Failed to refresh token:", error);
+
+      if (request.nextUrl.pathname.startsWith("/dashboard")) {
+        return redirectToLogin(request);
+      }
+
+      response.cookies.delete("refresh_token");
+      response.cookies.delete("session");
+    }
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+  ],
 };

@@ -38,6 +38,7 @@ jobs:
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
           NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
+          SESSION_COOKIE_MAX_AGE: 3540
         if: always()
 
       - name: Build
@@ -46,5 +47,6 @@ jobs:
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
           NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
+          SESSION_COOKIE_MAX_AGE: 3540
         run: npm run build
         if: always()

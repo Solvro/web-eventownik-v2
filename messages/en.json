@@ -36,6 +36,8 @@
     "registerTitle": "Organizer registration",
     "registerDescription": "Enter your email to register",
     "creatingAccount": "Creating account...",
+    "registerSuccess": "Account created successfully",
+    "registerSuccessDescription": "You can now sign in using your credentials",
     "loginExisting": "Already have an account? Sign in",
     "loginTitle": "Organizer sign in",
     "loginDescription": "Enter your email to sign in",
@@ -90,6 +92,7 @@
   "Dashboard": {
     "organizerPanel": "Organizer panel",
     "logout": "Sign out",
+    "loggingOut": "Signing out...",
     "login": "Sign in",
     "editEvent": "Edit event",
     "eventImage": "Event image",
