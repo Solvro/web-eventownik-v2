@@ -47,9 +47,15 @@ export default async function DashboardEventBlocksPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-3xl font-bold">{t("blocks")}</h1>
+      <h1 id="blocks-heading" className="text-3xl font-bold">
+        {t("blocks")}
+      </h1>
       {blocks.length > 0 ? (
-        <SortableBlockAttributeGrid blocks={blocks} eventId={id} />
+        <SortableBlockAttributeGrid
+          blocks={blocks}
+          eventId={id}
+          labelledBy="blocks-heading"
+        />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">

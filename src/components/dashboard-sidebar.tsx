@@ -107,8 +107,16 @@ export function DashboardSidebar({
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
-            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="space-y-2 pl-2">
+            <h2
+              id={`${section.title}-section-title`}
+              className="mb-6 text-3xl font-bold"
+            >
+              {section.title}
+            </h2>
+            <ul
+              className="space-y-2 pl-2"
+              aria-labelledby={`${section.title}-section-title`}
+            >
               {section.links.map((link) => (
                 <li key={link.title}>
                   <Button

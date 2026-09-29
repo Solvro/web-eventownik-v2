@@ -17,15 +17,19 @@ function SortableTile({ id, index, children }: SortableTileProps) {
   const { ref, isDragSource } = useSortable({ id, index });
 
   return (
-    <div
+    // dnd-kit sets role="button" on draggables unless a role is already present,
+    // which would strip the list item semantics
+    // eslint-disable-next-line jsx-a11y/no-redundant-roles
+    <li
       ref={ref}
+      role="listitem"
       className={cn(
         "group relative cursor-grab transition-opacity active:cursor-grabbing max-sm:w-full",
         isDragSource && "z-50 opacity-50",
       )}
     >
       {children}
-    </div>
+    </li>
   );
 }
 
@@ -33,12 +37,15 @@ interface SortableTileGridProps<T extends { id: number }> {
   items: T[];
   onReorder: (orderedIds: number[]) => Promise<{ success: boolean }>;
   renderItem: (item: T) => React.ReactNode;
+  /** Id of the element (usually the page heading) labelling the list */
+  labelledBy: string;
 }
 
 function SortableTileGrid<T extends { id: number }>({
   items: initialItems,
   onReorder,
   renderItem,
+  labelledBy,
 }: SortableTileGridProps<T>) {
   const [items, setItems] = useState(initialItems);
   const [, startTransition] = useTransition();
@@ -80,13 +87,16 @@ function SortableTileGrid<T extends { id: number }>({
 
   return (
     <DragDropProvider onDragEnd={handleDragEnd}>
-      <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
+      <ul
+        aria-labelledby={labelledBy}
+        className="flex flex-wrap justify-center gap-8 sm:justify-start"
+      >
         {items.map((item, index) => (
           <SortableTile key={item.id} id={item.id} index={index}>
             {renderItem(item)}
           </SortableTile>
         ))}
-      </div>
+      </ul>
     </DragDropProvider>
   );
 }

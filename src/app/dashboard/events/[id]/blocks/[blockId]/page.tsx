@@ -115,7 +115,9 @@ export default async function EventBlockEditPage({
       <div className="flex grow flex-col gap-8">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="md:space-y-2">
-            <h1 className="text-3xl font-bold">{rootBlockName}</h1>
+            <h1 id="block-heading" className="text-3xl font-bold">
+              {rootBlockName}
+            </h1>
             <span className="text-muted-foreground text-lg">
               {t("totalParticipants", {
                 count: rootBlock.children
@@ -136,6 +138,7 @@ export default async function EventBlockEditPage({
             blocks={rootBlock.children}
             eventId={eventId}
             attributeId={rootBlockId}
+            labelledBy="block-heading"
           />
         ) : (
           <div className="flex flex-wrap justify-center gap-8 sm:justify-start">

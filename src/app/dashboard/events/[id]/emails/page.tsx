@@ -32,7 +32,9 @@ export default async function DashboardEventEmailTemplatesPage({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-3xl font-bold">{t("emailTemplates")}</h1>
+        <h1 id="email-templates-heading" className="text-3xl font-bold">
+          {t("emailTemplates")}
+        </h1>
         <CreateEmailTemplateForm
           eventId={id}
           eventAttributes={attributes}
@@ -44,7 +46,11 @@ export default async function DashboardEventEmailTemplatesPage({
           <p className="text-red-600">{t("templatesLoadError")}</p>
         </div>
       ) : templates.length > 0 ? (
-        <SortableEmailGrid templates={templates} eventId={id} />
+        <SortableEmailGrid
+          templates={templates}
+          eventId={id}
+          labelledBy="email-templates-heading"
+        />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">

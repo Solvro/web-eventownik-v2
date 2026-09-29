@@ -13,7 +13,7 @@ import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
@@ -29,19 +29,14 @@ export function EventCardBase({
   children?: React.ReactNode;
   className?: string;
 }) {
-  const t = useTranslations("Dashboard");
-
   return (
     <div
       className={cn(
-        "bg-background flex h-full flex-col overflow-hidden rounded-xl",
+        "bg-background group relative flex h-full flex-col overflow-hidden rounded-xl",
         className,
       )}
     >
-      <Link
-        className="relative"
-        href={`/dashboard/events/${event.id.toString()}`}
-      >
+      <div className="relative">
         <Image
           src={
             event.photoUrl == null
@@ -51,7 +46,7 @@ export function EventCardBase({
           width="500"
           height="500"
           className="aspect-square w-full object-cover"
-          alt={`${t("eventImage")} ${event.name}`}
+          alt=""
         />
         <div className="absolute inset-0 z-10 flex h-full flex-col justify-between p-4">
           <div className="flex flex-row justify-between">
@@ -67,10 +62,14 @@ export function EventCardBase({
             </EventInfoBlock>
           </div>
         </div>
-      </Link>
+      </div>
       <div className="flex flex-1 flex-col justify-between p-4">
         <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
+          {/* Stretched link: its ::after covers the whole card, so the card acts as a single link */}
+          <Link
+            href={`/dashboard/events/${event.id.toString()}`}
+            className="focus-visible:after:ring-ring after:absolute after:inset-0 after:z-20 after:rounded-xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-inset"
+          >
             {event.name}
           </Link>
         </h3>
@@ -86,16 +85,20 @@ export function EventCard({ event }: { event: Event }) {
   return (
     <EventCardBase event={event} className="border-muted border">
       <div className="flex w-full items-center justify-between">
-        <Button asChild variant="ghost" className="flex-1 justify-start">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
-            <CircleHelpIcon className="size-4" />
-            {t("viewDetails")}
-          </Link>
-        </Button>
+        <span
+          aria-hidden="true"
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "group-hover:bg-primary/10 flex-1 justify-start",
+          )}
+        >
+          <CircleHelpIcon className="size-4" />
+          {t("viewDetails")}
+        </span>
         <ShareButton
           path={event.slug}
           variant="icon"
-          className="size-12"
+          className="relative z-30 size-12"
           buttonVariant="ghost"
         />
       </div>
@@ -121,23 +124,29 @@ export function EventCardForSuperadmin({
       )}
     >
       <div className="flex w-full flex-col gap-2">
-        <Button asChild variant="outline">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
-            <LayoutDashboard className="size-4" />
-            Dashboard
-          </Link>
-        </Button>
-        <Button asChild variant="outline">
+        <span
+          aria-hidden="true"
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "group-hover:bg-accent group-hover:text-accent-foreground",
+          )}
+        >
+          <LayoutDashboard className="size-4" />
+          Dashboard
+        </span>
+        <Button asChild variant="outline" className="relative z-30">
           <Link href={`/${event.slug}`} target="_blank">
             <Globe className="size-4" />
             {t("page")}
           </Link>
         </Button>
-        <ActivateEvent
-          bearerToken={bearerToken}
-          eventId={event.id}
-          isActive={event.isActive}
-        />
+        <div className="relative z-30 flex flex-col">
+          <ActivateEvent
+            bearerToken={bearerToken}
+            eventId={event.id}
+            isActive={event.isActive}
+          />
+        </div>
       </div>
     </EventCardBase>
   );

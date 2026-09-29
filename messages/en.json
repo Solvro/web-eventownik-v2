@@ -4,7 +4,8 @@
     "changeLanguage": "Change language",
     "changeTheme": "Change theme",
     "goToNextMonth": "Go to the next month",
-    "goToPreviousMonth": "Go to the previous month"
+    "goToPreviousMonth": "Go to the previous month",
+    "close": "Close"
   },
   "AttributeTypes": {
     "text": "Text",
