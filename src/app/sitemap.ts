@@ -14,13 +14,13 @@ async function fetchPublicEvents(): Promise<Event[]> {
 
   try {
     const response = await fetch(
-      `${API_URL}/events/public?from=${from}&to=${to}`,
+      `${API_URL}/public/events?after=${from}&before=${to}`,
       { next: { revalidate: 3600 } },
     );
     if (!response.ok) {
       return [];
     }
-    return (await response.json()) as Event[];
+    return ((await response.json()) as { data: Event[] }).data;
   } catch {
     return [];
   }

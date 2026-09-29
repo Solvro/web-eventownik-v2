@@ -27,7 +27,8 @@ async function getEventAttributes(eventUuid: string) {
     return [];
   }
 
-  const attributes = (await response.json()) as EventAttribute[];
+  const attributes = ((await response.json()) as { data: EventAttribute[] })
+    .data;
 
   return attributes;
 }

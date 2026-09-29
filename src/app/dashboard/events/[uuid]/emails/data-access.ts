@@ -29,7 +29,7 @@ export async function getEventEmails(eventUuid: string) {
     return null;
   }
 
-  const emails = (await response.json()) as EventEmail[];
+  const emails = ((await response.json()) as { data: EventEmail[] }).data;
 
   return emails;
 }
@@ -86,7 +86,8 @@ export async function getEventAttributes(eventUuid: string) {
     return [];
   }
 
-  const attributes = (await response.json()) as EventAttribute[];
+  const attributes = ((await response.json()) as { data: EventAttribute[] })
+    .data;
 
   return attributes;
 }
