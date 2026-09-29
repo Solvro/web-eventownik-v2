@@ -11,9 +11,15 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
@@ -24,8 +30,79 @@ interface SidebarSection {
 
 interface SidebarLink {
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   route: string;
+}
+
+const SIDEBAR_STORAGE_KEY = "eventownik-dashboard-sidebar-open";
+
+function readSidebarState(): boolean {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
+
+function writeSidebarState(isOpen: boolean): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
+  } catch {}
+}
+
+const DashboardSidebarContext = createContext<{
+  isSideBarOpen: boolean;
+  toggleSideBar: () => void;
+} | null>(null);
+
+export function DashboardSidebarProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-initialize-state
+    setIsSideBarOpen(readSidebarState());
+  }, []);
+
+  return (
+    <DashboardSidebarContext.Provider
+      value={{
+        isSideBarOpen,
+        toggleSideBar: () => {
+          setIsSideBarOpen((isOpen) => {
+            const nextIsOpen = !isOpen;
+            writeSidebarState(nextIsOpen);
+            return nextIsOpen;
+          });
+        },
+      }}
+    >
+      {children}
+    </DashboardSidebarContext.Provider>
+  );
+}
+
+export function useDashboardSidebar() {
+  const context = useContext(DashboardSidebarContext);
+
+  if (context === null) {
+    throw new Error(
+      "useDashboardSidebar must be used within DashboardSidebarProvider",
+    );
+  }
+
+  return context;
 }
 
 export function DashboardSidebar({
@@ -37,6 +114,7 @@ export function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");
+  const { isSideBarOpen } = useDashboardSidebar();
 
   const blocks = attributes
     .filter(({ type }) => type === "block")
@@ -101,31 +179,50 @@ export function DashboardSidebar({
 
   return (
     <>
-      <nav className="border-muted hidden w-64 shrink-0 flex-col gap-6 border-r pr-8 sm:flex">
+      <nav
+        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-[width] duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
+      >
         {[
           ...sections,
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
-        ].map((section) => (
-          <div key={section.title}>
-            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="space-y-2 pl-2">
+        ].map((section, id) => (
+          <div
+            key={section.title}
+            className={`pr-2 ${sections.length === id + 1 ? "" : "border-muted border-b-1 pb-3"} `}
+          >
+            <ul
+              className={`space-y-2 transition-[padding-left] duration-400 ease-in-out ${isSideBarOpen ? "pl-2" : "pl-0"}`}
+            >
               {section.links.map((link) => (
-                <li key={link.title}>
-                  <Button
-                    className="w-full justify-start"
-                    variant={
-                      isActiveLink(link.route) ? "eventDefault" : "eventGhost"
-                    }
-                    asChild
-                  >
-                    <Link
-                      href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
-                    >
-                      {link.icon}
-                      <span className="truncate">{link.title}</span>
-                    </Link>
-                  </Button>
-                </li>
+                <Tooltip key={link.title} delayDuration={400}>
+                  <TooltipTrigger asChild>
+                    <li>
+                      <Button
+                        className="w-full justify-start transition-none"
+                        variant={
+                          isActiveLink(link.route)
+                            ? "eventDefault"
+                            : "eventGhost"
+                        }
+                        asChild
+                      >
+                        <Link
+                          href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                        >
+                          {link.icon}
+                          <span
+                            className={`min-w-0 truncate transition-[margin-left,width,opacity] duration-400 ease-in-out ${isSideBarOpen ? "ml-2 w-auto opacity-100" : "ml-0 w-0 opacity-0"}`}
+                          >
+                            {link.title}
+                          </span>
+                        </Link>
+                      </Button>
+                    </li>
+                  </TooltipTrigger>
+                  {!isSideBarOpen && (
+                    <TooltipContent side={"right"}>{link.title}</TooltipContent>
+                  )}
+                </Tooltip>
               ))}
             </ul>
           </div>
