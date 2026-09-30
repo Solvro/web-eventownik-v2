@@ -1,7 +1,8 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Info, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -34,14 +35,14 @@ function RegisterForm() {
   const searchParameters = useSearchParams();
   const redirectTo = searchParameters.get("redirectTo");
 
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
 
   const pendingFormData = useRef<z.infer<typeof registerFormSchema> | null>(
     null,
   );
-  const hCaptchaRef = useRef<HCaptcha>(null);
+  const captchaRef = useRef<TurnstileInstance>(null);
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -80,7 +81,9 @@ function RegisterForm() {
         description: t("checkInternetConnection"),
       });
     } finally {
-      hCaptchaRef.current?.resetCaptcha();
+      // Tokens are single-use, so get a fresh one for the next submission
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
       setIsAwaitingCaptcha(false);
     }
   }
@@ -89,7 +92,7 @@ function RegisterForm() {
    * Triggered upon captcha verification
    */
   async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
+    setCaptchaToken(token);
     setDidCaptchaFail(false);
 
     if (pendingFormData.current !== null) {
@@ -102,12 +105,11 @@ function RegisterForm() {
    * Form submission after Zod validation
    */
   async function handleFormSubmit(values: z.infer<typeof registerFormSchema>) {
-    if (hCaptchaToken === null) {
+    if (captchaToken === null) {
       pendingFormData.current = values;
       setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
     } else {
-      await submitWithCaptcha(values, hCaptchaToken);
+      await submitWithCaptcha(values, captchaToken);
     }
   }
 
@@ -211,17 +213,13 @@ function RegisterForm() {
           )}
         />
 
-        <HCaptcha
-          ref={hCaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-          size="invisible"
-          onVerify={handleCaptchaVerify}
+        <Turnstile
+          ref={captchaRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
+          options={{ appearance: "interaction-only", size: "flexible" }}
+          onSuccess={handleCaptchaVerify}
           onExpire={() => {
-            setHCaptchaToken(null);
-            setDidCaptchaFail(true);
-          }}
-          onClose={() => {
-            setDidCaptchaFail(true);
+            setCaptchaToken(null);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occurred:", captchaError);
@@ -234,9 +232,12 @@ function RegisterForm() {
             type="button"
             variant="destructive"
             className="w-full"
-            onClick={() => {
+            onClick={(event) => {
+              // React reuses this button's DOM node for the submit button, so without this
+              // the click would also submit the form once the button re-renders
+              event.preventDefault();
               setDidCaptchaFail(false);
-              hCaptchaRef.current?.execute();
+              captchaRef.current?.reset();
             }}
           >
             <Ban className="size-8" />
