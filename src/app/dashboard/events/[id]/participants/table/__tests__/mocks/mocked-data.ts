@@ -1,8 +1,8 @@
-import type { Attribute, FormAttribute } from "@/types/attributes";
 import type { Participant } from "@/types/participant";
 
-// TODO(refactor,multiselect-blocks): Adjust the type here after cleaning up `@/types/attributes.ts`
-export const mockedAttributes: Omit<Attribute, keyof FormAttribute>[] = [
+import type { TestAttribute } from "./test-attributes";
+
+export const mockedAttributes: TestAttribute[] = [
   {
     id: 1,
     name: "First Name",
