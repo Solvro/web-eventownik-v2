@@ -94,7 +94,7 @@ Copy `.env.example` to `.env` and configure:
 NEXT_PUBLIC_EVENTOWNIK_API=<backend API URL>
 SESSION_SECRET=<session encryption secret>
 NEXT_PUBLIC_PHOTO_URL=<backend photo URL>
-NEXT_PUBLIC_HCAPTCHA_SITEKEY=<hCaptcha site key>
+NEXT_PUBLIC_TURNSTILE_SITEKEY=<Cloudflare Turnstile site key>
 NEXT_PUBLIC_OTEL_METRICS_ENDPOINT=<SigNoz OTLP endpoint>
 NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME=<service name for SigNoz>
 ```

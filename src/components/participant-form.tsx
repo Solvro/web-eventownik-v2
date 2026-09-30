@@ -1,7 +1,8 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -77,7 +78,7 @@ export function ParticipantForm({
   const router = useRouter();
 
   const [files, setFiles] = useState<File[]>([]);
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
@@ -87,7 +88,7 @@ export function ParticipantForm({
   );
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
-  const hCaptchaRef = useRef<HCaptcha>(null);
+  const captchaRef = useRef<TurnstileInstance>(null);
 
   const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
@@ -122,7 +123,7 @@ export function ParticipantForm({
     setSuccess(false);
     setIsAwaitingCaptcha(false);
     setDidCaptchaFail(false);
-    setHCaptchaToken(null);
+    setCaptchaToken(null);
     pendingFormData.current = null;
   }
 
@@ -140,7 +141,10 @@ export function ParticipantForm({
     token: string,
   ) {
     try {
-      const result = await onSubmit({ ...values, token }, files);
+      const result = await onSubmit(
+        { ...values, "cf-turnstile-response": token },
+        files,
+      );
       if (result.success) {
         setFiles([]);
         if (editMode) {
@@ -195,7 +199,9 @@ export function ParticipantForm({
         description: t("serverError"),
       });
     } finally {
-      hCaptchaRef.current?.resetCaptcha();
+      // Tokens are single-use, so get a fresh one for the next submission
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
       // We set it here instead of in `handleCaptchaVerify` to prevent submit button content flash
       setIsAwaitingCaptcha(false);
     }
@@ -222,7 +228,7 @@ export function ParticipantForm({
    * Calls submitWithCaptcha with the captcha token.
    */
   async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
+    setCaptchaToken(token);
     setDidCaptchaFail(false);
 
     if (pendingFormData.current !== null) {
@@ -233,8 +239,8 @@ export function ParticipantForm({
 
   /**
    * Second stage of form submission after Zod validation.
-   * Checks captcha status: executes captcha if not yet verified, and
-   * if captcha is verified, submits form right away - noticable in edit mode.
+   * Checks captcha status: the challenge runs in the background as soon as the form renders,
+   * so if it's already solved the form is submitted right away, otherwise we wait for it.
    *
    * After this function finishes, `form.formState.isSubmitSuccessful` will be true, that's why
    * we don't rely on it to show the success screen.
@@ -274,13 +280,12 @@ export function ParticipantForm({
       return;
     }
 
-    if (hCaptchaToken === null) {
+    if (captchaToken === null) {
       pendingFormData.current = values;
 
       setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
     } else {
-      await submitWithCaptcha(values, hCaptchaToken);
+      await submitWithCaptcha(values, captchaToken);
     }
   }
 
@@ -410,17 +415,13 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        <HCaptcha
-          ref={hCaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-          size="invisible"
-          onVerify={handleCaptchaVerify}
+        <Turnstile
+          ref={captchaRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
+          options={{ appearance: "interaction-only", size: "flexible" }}
+          onSuccess={handleCaptchaVerify}
           onExpire={() => {
-            setHCaptchaToken(null);
-            setDidCaptchaFail(true);
-          }}
-          onClose={() => {
-            setDidCaptchaFail(true);
+            setCaptchaToken(null);
           }}
           onError={(captchaError) => {
             console.error("Captcha error occurred:", captchaError);
@@ -433,9 +434,12 @@ export function ParticipantForm({
             type="button"
             variant="destructive"
             className="sticky bottom-4 w-full shadow-lg md:bottom-0"
-            onClick={() => {
+            onClick={(event) => {
+              // React reuses this button's DOM node for the submit button, so without this
+              // the click would also submit the form once the button re-renders
+              event.preventDefault();
               setDidCaptchaFail(false);
-              hCaptchaRef.current?.execute();
+              captchaRef.current?.reset();
             }}
           >
             <Ban className="size-8" />
