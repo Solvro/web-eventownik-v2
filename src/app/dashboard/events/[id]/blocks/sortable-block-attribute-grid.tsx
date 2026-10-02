@@ -13,14 +13,17 @@ import { reorderBlockAttributes } from "./actions";
 function SortableBlockAttributeGrid({
   blocks,
   eventId,
+  labelledBy,
 }: {
   blocks: Attribute[];
   eventId: string;
+  labelledBy: string;
 }) {
   const t = useTranslations("Dashboard");
 
   return (
     <SortableTileGrid
+      labelledBy={labelledBy}
       items={blocks}
       onReorder={async (orderedIds) =>
         reorderBlockAttributes(eventId, orderedIds)

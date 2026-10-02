@@ -21,12 +21,23 @@ import {
   Underline,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { useEditorActiveState } from "@/hooks/use-editor-active-state";
 import { getBase64FromUrl } from "@/lib/utils";
 
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 function EditorMenuBar({
@@ -41,6 +52,9 @@ function EditorMenuBar({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const activeState = useEditorActiveState(editor);
+  const [isAltTextDialogOpen, setIsAltTextDialogOpen] = useState(false);
+  const [pendingImage, setPendingImage] = useState<File | null>(null);
+  const [altText, setAltText] = useState("");
 
   if (editor === null) {
     return <div className="h-8">{t("loadingMenu")}</div>;
@@ -274,19 +288,71 @@ function EditorMenuBar({
 
       <input
         type="file"
-        className="sr-only"
+        className="hidden"
         aria-label={t("insertImage")}
         ref={fileInputRef}
-        onChangeCapture={async (event) => {
+        onChangeCapture={(event) => {
           const input = event.target as HTMLInputElement;
           if (input.files?.[0] != null) {
-            const newBlobUrl = URL.createObjectURL(input.files[0]);
-            const base64 = await getBase64FromUrl(newBlobUrl);
-            editor.chain().focus().setImage({ src: base64 }).run();
-            URL.revokeObjectURL(newBlobUrl);
+            setPendingImage(input.files[0]);
+            setAltText("");
+            setIsAltTextDialogOpen(true);
+            // Allow picking the same file again later
+            input.value = "";
           }
         }}
       />
+      <Dialog open={isAltTextDialogOpen} onOpenChange={setIsAltTextDialogOpen}>
+        <DialogContent className="max-w-md">
+          <form
+            className="grid gap-4"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              // The dialog is portalled, but React events still bubble up
+              // the component tree - don't submit a surrounding form
+              event.stopPropagation();
+              if (pendingImage === null) {
+                return;
+              }
+              setIsAltTextDialogOpen(false);
+              const newBlobUrl = URL.createObjectURL(pendingImage);
+              const base64 = await getBase64FromUrl(newBlobUrl);
+              editor
+                .chain()
+                .focus()
+                .setImage({ src: base64, alt: altText.trim() })
+                .run();
+              URL.revokeObjectURL(newBlobUrl);
+              setPendingImage(null);
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>{t("insertImage")}</DialogTitle>
+              <DialogDescription>{t("enterAltText")}</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-2">
+              <Label htmlFor="editor-image-alt-text">{t("altText")}</Label>
+              <Input
+                id="editor-image-alt-text"
+                value={altText}
+                onChange={(event) => {
+                  setAltText(event.target.value);
+                }}
+              />
+            </div>
+            <DialogFooter className="gap-2">
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  {t("cancel")}
+                </Button>
+              </DialogClose>
+              <Button type="submit" variant="eventDefault">
+                {t("insert")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -294,6 +360,7 @@ function EditorMenuBar({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             variant="eventGhost"
+            aria-label={t("insertImage")}
           >
             <ImageIcon />
           </Button>

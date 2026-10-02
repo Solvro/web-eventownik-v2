@@ -7,6 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { WysiwygEditor } from "@/components/editor";
+import { RequirementAsterisk } from "@/components/requirement-asterisk";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -74,10 +75,13 @@ export function GeneralInfoForm({ className }: { className?: string }) {
         control={control}
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>{t("name")}</FormLabel>
+            <FormLabel>
+              {t("name")} <RequirementAsterisk tooltip={t("required")} />
+            </FormLabel>
             <FormControl>
               <Input
                 type="text"
+                required
                 disabled={formState.isSubmitting}
                 placeholder={t("enterEventName")}
                 {...field}
@@ -123,7 +127,10 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>{t("startDateTime")}</FormLabel>
+                  <FormLabel>
+                    {t("startDateTime")}{" "}
+                    <RequirementAsterisk tooltip={t("required")} />
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -159,6 +166,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      required
                       {...field}
                     />
                   </FormControl>
@@ -186,7 +194,10 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-1 flex-col">
-                  <FormLabel>{t("endDateTime")}</FormLabel>
+                  <FormLabel>
+                    {t("endDateTime")}{" "}
+                    <RequirementAsterisk tooltip={t("required")} />
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -228,6 +239,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
                     <Input
                       disabled={formState.isSubmitting}
                       type="time"
+                      required
                       {...field}
                     />
                   </FormControl>

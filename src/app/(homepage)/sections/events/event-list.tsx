@@ -122,7 +122,7 @@ function Event({
             </div>
             <div className="flex w-full flex-col gap-12 xl:w-[calc(100%-42rem)] 2xl:w-[calc(100%-50rem)]">
               <div className="w-full space-y-6">
-                <p className="text-4xl font-semibold">{name}</p>
+                <h3 className="text-4xl font-semibold">{name}</h3>
                 <p className="text-sm font-medium">{organizer}</p>
                 {description === null ||
                 /^<p>\s*<\/p>$/.test(description.trim()) ? (
@@ -164,6 +164,7 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
 
   return (
     <section id="events" className="flex flex-col">
+      <h2 className="sr-only">{t("events")}</h2>
       <div className="border-input z-10 flex w-full flex-col divide-y-[1px] border-b bg-white dark:bg-[#101011]">
         {events != null && events.length > 0 ? (
           events

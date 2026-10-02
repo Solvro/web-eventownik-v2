@@ -113,11 +113,7 @@ export default async function DashboardEventPage({
                 <SquarePenIcon /> {t("editEvent")}
               </Link>
             </Button>
-            <ShareButton
-              path={event.slug}
-              label={t("share")}
-              tooltipText={t("copiedToClipboard")}
-            />
+            <ShareButton path={event.slug} />
           </div>
         </div>
       </div>

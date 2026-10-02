@@ -47,10 +47,12 @@ export default async function EventListPage() {
   const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
 
   return (
-    <div className="flex flex-col gap-4">
+    <main id="main-content" className="flex flex-col gap-4">
       <div className="space-y-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h1 className="text-3xl font-bold">{t("myEvents")}</h1>
+          <h1 id="my-events-heading" className="text-3xl font-bold">
+            {t("myEvents")}
+          </h1>
           <div className="flex items-center gap-2">
             <CreateEventForm />
             {isSuperAdmin ? (
@@ -71,7 +73,10 @@ export default async function EventListPage() {
                   size="icon"
                   className="ml-auto size-12 border border-amber-400 bg-amber-200/50 hover:bg-amber-200/70 sm:hidden dark:border-amber-400/70 dark:bg-amber-200/20 dark:hover:bg-amber-200/30"
                 >
-                  <Link href="/dashboard/admin">
+                  <Link
+                    href="/dashboard/admin"
+                    aria-label={t("superadminPanel")}
+                  >
                     <Shield />
                   </Link>
                 </Button>
@@ -89,19 +94,26 @@ export default async function EventListPage() {
             <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl</a>
           </AlertDescription>
         </Alert>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {events.length > 0 ? (
-            events.map((event) => <EventCard key={event.id} event={event} />)
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-              <CalendarDays className="text-muted-foreground mb-4 size-12" />
-              <h3 className="text-muted-foreground text-lg">
-                {t("noEventsYet")}
-              </h3>
-            </div>
-          )}
-        </div>
+        {events.length > 0 ? (
+          <ul
+            aria-labelledby="my-events-heading"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+          >
+            {events.map((event) => (
+              <li key={event.id}>
+                <EventCard event={event} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <CalendarDays className="text-muted-foreground mb-4 size-12" />
+            <h3 className="text-muted-foreground text-lg">
+              {t("noEventsYet")}
+            </h3>
+          </div>
+        )}
       </div>
-    </div>
+    </main>
   );
 }

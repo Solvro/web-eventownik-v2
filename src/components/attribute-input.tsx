@@ -38,7 +38,14 @@ export function AttributeInput({
   //TODO add lacking implementation for block type
   switch (attribute.type) {
     case "text": {
-      return <Input type="text" id={attribute.id.toString()} {...field} />;
+      return (
+        <Input
+          type="text"
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
+      );
     }
     case "number": {
       return (
@@ -48,6 +55,7 @@ export function AttributeInput({
             event.currentTarget.blur();
           }}
           id={attribute.id.toString()}
+          required={attribute.isRequired}
           {...field}
         />
       );
@@ -58,6 +66,7 @@ export function AttributeInput({
           onValueChange={field.onChange}
           defaultValue={field.value as string}
           {...field}
+          required={attribute.isRequired}
         >
           <SelectTrigger id={attribute.id.toString()}>
             <SelectValue
@@ -136,7 +145,14 @@ export function AttributeInput({
       );
     }
     case "email": {
-      return <Input type="email" id={attribute.id.toString()} {...field} />;
+      return (
+        <Input
+          type="email"
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
+      );
     }
     case "date": {
       if (
@@ -147,7 +163,14 @@ export function AttributeInput({
         // It may break some features
         field.value = format(field.value as Date, "yyyy-MM-dd");
       }
-      return <Input type="date" id={attribute.id.toString()} {...field} />;
+      return (
+        <Input
+          type="date"
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
+      );
     }
     case "datetime": {
       if (
@@ -158,11 +181,23 @@ export function AttributeInput({
         field.value = format(field.value as Date, "yyyy-MM-dd HH:mm");
       }
       return (
-        <Input type="datetime-local" id={attribute.id.toString()} {...field} />
+        <Input
+          type="datetime-local"
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
       );
     }
     case "time": {
-      return <Input type="time" id={attribute.id.toString()} {...field} />;
+      return (
+        <Input
+          type="time"
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
+      );
     }
     case "color": {
       return (
@@ -170,18 +205,27 @@ export function AttributeInput({
           type="color"
           className="h-16 w-full"
           id={attribute.id.toString()}
+          required={attribute.isRequired}
           {...field}
         />
       );
     }
     case "textarea": {
-      return <Textarea rows={3} id={attribute.id.toString()} {...field} />;
+      return (
+        <Textarea
+          rows={3}
+          id={attribute.id.toString()}
+          required={attribute.isRequired}
+          {...field}
+        />
+      );
     }
     case "checkbox": {
       return (
         <div className="flex items-center space-x-2">
           <Checkbox
             id={attribute.id.toString()}
+            required={attribute.isRequired}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
               field.onChange(checked === true ? true : undefined);
@@ -195,6 +239,7 @@ export function AttributeInput({
       return (
         <Input
           id={attribute.id.toString()}
+          required={attribute.isRequired}
           type="tel"
           pattern="^(\+\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{3,4}$"
           maxLength={16}

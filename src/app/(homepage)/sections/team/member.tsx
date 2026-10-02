@@ -31,7 +31,7 @@ export function Member({ member }: { member: TeamMember }) {
             ? member.image
             : "/assets/landing/person.webp"
         }
-        alt={member.name}
+        alt=""
         width={500}
         height={500}
         className="aspect-square h-auto w-full max-w-12 rounded-full sm:max-w-20"
@@ -52,7 +52,7 @@ export function Member({ member }: { member: TeamMember }) {
                     ? member.image
                     : "/assets/landing/person.webp"
                 }
-                alt={member.name}
+                alt=""
                 width={500}
                 height={500}
                 className="size-16 rounded-full sm:size-20"

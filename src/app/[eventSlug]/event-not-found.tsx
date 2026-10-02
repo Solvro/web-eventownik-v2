@@ -18,7 +18,10 @@ export function EventNotFound({ whatNotFound }: NotFoundProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <main
+      id="main-content"
+      className="flex min-h-screen items-center justify-center"
+    >
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">{messages[whatNotFound]}</h1>
         <p className="text-lg">{t("checkLinkOrContactOrganizer")}</p>
@@ -28,6 +31,6 @@ export function EventNotFound({ whatNotFound }: NotFoundProps) {
           </Button>
         </Link>
       </div>
-    </div>
+    </main>
   );
 }

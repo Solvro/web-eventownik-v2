@@ -27,11 +27,17 @@ export default async function DashboardEventFormsPage({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-3xl font-bold">{t("forms")}</h1>
+        <h1 id="forms-heading" className="text-3xl font-bold">
+          {t("forms")}
+        </h1>
         <CreateEventFormForm eventId={id} attributes={attributes} />
       </div>
       {forms.length > 0 ? (
-        <SortableFormGrid forms={forms} eventId={id} />
+        <SortableFormGrid
+          forms={forms}
+          eventId={id}
+          labelledBy="forms-heading"
+        />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">

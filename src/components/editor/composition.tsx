@@ -192,6 +192,11 @@ function Toolbar() {
   const rightVisible = uiState.rightSideBarVisible;
   const { back, forward, hasFuture, hasPast } = history;
 
+  const leftPanelLabel = leftVisible ? t("hideLeftPanel") : t("showLeftPanel");
+  const rightPanelLabel = rightVisible
+    ? t("hideRightPanel")
+    : t("showRightPanel");
+
   return (
     <div className="flex justify-between border-b border-(--event-primary-color)/50">
       <div className="flex justify-center">
@@ -209,11 +214,10 @@ function Toolbar() {
               }}
             >
               <Sidebar />
+              <span className="sr-only">{leftPanelLabel}</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            {leftVisible ? t("hideLeftPanel") : t("showLeftPanel")}
-          </TooltipContent>
+          <TooltipContent>{leftPanelLabel}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -229,11 +233,10 @@ function Toolbar() {
               }}
             >
               <Sidebar className="scale-[-1_-1]" />
+              <span className="sr-only">{rightPanelLabel}</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            {rightVisible ? t("hideRightPanel") : t("showRightPanel")}
-          </TooltipContent>
+          <TooltipContent>{rightPanelLabel}</TooltipContent>
         </Tooltip>
       </div>
       <div className="flex justify-center">
@@ -241,6 +244,7 @@ function Toolbar() {
           <TooltipTrigger asChild>
             <Button variant="eventGhost" onClick={back} disabled={!hasPast}>
               <Undo2 />
+              <span className="sr-only">{t("undo")}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t("undo")}</TooltipContent>
@@ -253,6 +257,7 @@ function Toolbar() {
               disabled={!hasFuture}
             >
               <Redo2 />
+              <span className="sr-only">{t("redo")}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t("redo")}</TooltipContent>
