@@ -1,5 +1,4 @@
 import type { Config, Data, Slot } from "@puckeditor/core";
-import type { CSSProperties } from "react";
 
 import type {
   AppearanceFields,
@@ -13,6 +12,7 @@ import type { LooseAutocomplete } from "./utils";
 export interface ImageFields extends LayoutFields {
   size: string;
   src: string;
+  alt: string;
 }
 
 export interface LinkImageFields extends ImageFields, LayoutFields {
