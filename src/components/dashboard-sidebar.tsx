@@ -128,6 +128,9 @@ export function DashboardSidebar({
                   >
                     <Link
                       href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                      aria-current={
+                        isActiveLink(link.route) ? "page" : undefined
+                      }
                     >
                       {link.icon}
                       <span className="truncate">{link.title}</span>
@@ -167,6 +170,7 @@ export function DashboardSidebar({
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                    aria-current={isActiveLink(link.route) ? "page" : undefined}
                   >
                     {link.icon}
                     <span className="sr-only">{link.title}</span>
