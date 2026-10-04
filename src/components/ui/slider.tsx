@@ -47,7 +47,7 @@ const rangeVariants = cva("absolute h-full", {
 });
 
 const thumbVariants = cva(
-  "block h-4 w-4 rounded-full border shadow transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+  "block h-4 w-4 rounded-full border shadow transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {

@@ -95,7 +95,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                 htmlFor={fileInputId}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "border-box peer-focus-visible:ring-ring flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 peer-focus-visible:ring-1",
+                  "border-box peer-focus-visible:ring-ring flex aspect-square h-min w-full cursor-pointer flex-col items-center justify-center gap-1 text-neutral-500 peer-focus-visible:ring-2",
                   imageValue != null &&
                     imageValue !== "" &&
                     "overflow-hidden p-0",
@@ -151,7 +151,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
               <FormLabel
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "peer-focus-visible:ring-ring cursor-pointer justify-start peer-focus-visible:ring-1",
+                  "peer-focus-visible:ring-ring cursor-pointer justify-start peer-focus-visible:ring-2",
                 )}
               >
                 <span

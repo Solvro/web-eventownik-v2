@@ -237,7 +237,7 @@ Accessibility is essential for both users and testing. Follow these patterns:
 />
 <label
   htmlFor={fileInputId}
-  className="peer-focus-visible:ring-ring cursor-pointer peer-focus-visible:ring-1"
+  className="peer-focus-visible:ring-ring cursor-pointer peer-focus-visible:ring-2"
 >
   {/* Custom input UI, e.g. an image preview */}
 </label>

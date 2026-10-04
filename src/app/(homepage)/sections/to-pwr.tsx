@@ -68,7 +68,7 @@ export function ToPWr() {
             <div className="mx-auto space-y-4 pb-6 text-center">
               <motion.h2
                 variants={childVariants}
-                className="font-mono text-sm font-semibold tracking-wider text-orange-300 uppercase"
+                className="font-mono text-sm font-semibold tracking-wider text-orange-800 uppercase dark:text-orange-300"
               >
                 {t("areYouPwrStudent")}
               </motion.h2>
