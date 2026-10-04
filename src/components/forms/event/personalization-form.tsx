@@ -37,7 +37,7 @@ export const EventPersonalizationFormSchema = z.object({
   socialMediaLinks: z.array(
     z.object({
       label: z.string().optional(),
-      link: z.string().url("invalidUrl").or(z.literal("")),
+      link: z.string().url("invalidUrl"),
     }),
   ),
   slug: z
@@ -265,13 +265,20 @@ export function PersonalizationForm({ className }: { className?: string }) {
                     {formState.errors.socialMediaLinks?.[index]?.label
                       ?.message != null && (
                       <p className="text-sm text-[0.8rem] font-medium text-red-500">
-                        {formState.errors.socialMediaLinks[index].label.message}
+                        {translateOrFallback(
+                          t,
+                          formState.errors.socialMediaLinks[index].label
+                            .message,
+                        )}
                       </p>
                     )}
                     {formState.errors.socialMediaLinks?.[index]?.link
                       ?.message != null && (
                       <p className="text-sm text-[0.8rem] font-medium text-red-500">
-                        {formState.errors.socialMediaLinks[index].link.message}
+                        {translateOrFallback(
+                          t,
+                          formState.errors.socialMediaLinks[index].link.message,
+                        )}
                       </p>
                     )}
                   </div>

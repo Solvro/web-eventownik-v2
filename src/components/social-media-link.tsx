@@ -21,11 +21,17 @@ import {
 function parseMarkdownLink(
   link: string,
 ): { label: string; url: string } | null {
-  const match = /^\[([^\]]+)]\((https?:\/\/[^\s)]+)\)$/.exec(link);
+  const match = /^\[([^\]]*)]\((https?:\/\/[^\s)]+)\)$/.exec(link);
   if (match != null) {
-    return { label: match[1], url: match[2] };
+    const url = match[2];
+    const label = match[1].trim() || getHostname(url);
+    return { label, url };
   }
   return null;
+}
+
+function getHostname(url: string): string {
+  return new URL(url).hostname.replace("www.", "");
 }
 
 export function SocialMediaLink({
@@ -37,8 +43,7 @@ export function SocialMediaLink({
 }) {
   const md = parseMarkdownLink(link);
   const url = md == null ? link : md.url;
-  const label =
-    md == null ? new URL(link).hostname.replace("www.", "") : md.label;
+  const label = md == null ? getHostname(link) : md.label;
 
   return (
     <Tooltip key={link} delayDuration={0}>
