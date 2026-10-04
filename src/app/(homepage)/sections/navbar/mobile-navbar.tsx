@@ -23,6 +23,7 @@ const FOCUSABLE_SELECTOR = [
 
 export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
   const t = useTranslations("Homepage");
+  const tAccessibility = useTranslations("Accessibility");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
@@ -95,6 +96,11 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
           }}
         >
           <Menu />
+          <span className="sr-only">
+            {tAccessibility("toggleMobileMenu", {
+              action: isOpen ? "close" : "open",
+            })}
+          </span>
         </Button>
       </header>
       <AnimatePresence>
@@ -121,6 +127,9 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                   }}
                 >
                   <X />
+                  <span className="sr-only">
+                    {tAccessibility("toggleMobileMenu", { action: "close" })}
+                  </span>
                 </Button>
               </div>
               <nav className="flex flex-col gap-4 text-3xl font-medium uppercase">

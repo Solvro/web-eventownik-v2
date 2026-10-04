@@ -163,11 +163,13 @@ export function DashboardSidebar({
                   }
                   size="icon"
                   className="size-10"
+                  asChild
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
                   >
                     {link.icon}
+                    <span className="sr-only">{link.title}</span>
                   </Link>
                 </Button>
               </li>

@@ -5,7 +5,8 @@
     "changeTheme": "Zmień motyw",
     "goToNextMonth": "Przejdź do następnego miesiąca",
     "goToPreviousMonth": "Przejdź do poprzedniego miesiąca",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "toggleMobileMenu": "{action, select, open {Otwórz} other {Zamknij}} menu mobilne"
   },
   "AttributeTypes": {
     "text": "Tekst",
