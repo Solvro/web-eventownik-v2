@@ -53,7 +53,7 @@ export function Hero() {
         transition={{ delay: 0.24, duration: 0.3, ease: "easeOut" }}
       >
         <Button
-          className="w-full rounded-full bg-[#6583C8] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
+          className="w-full rounded-full bg-[#4F71BF] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
           asChild
         >
           <Link href="/dashboard/events">
