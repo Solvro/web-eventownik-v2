@@ -33,16 +33,21 @@ export function TableColumnHeader<TData>({ header }: TableHeaderProps<TData>) {
           : flexRender(header.column.columnDef.header, header.getContext())}
       </div>
       {header.column.getCanResize() && (
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-        <div
-          id={`resize_${header.column.id}`}
-          onMouseDown={header.getResizeHandler()}
-          onTouchStart={header.getResizeHandler()}
-          className={cn(
-            "absolute top-0 -right-1 h-full w-1 cursor-col-resize touch-none select-none",
-            isResizing ? "bg-primary" : "hover:bg-primary",
-          )}
-        />
+        <>
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+          <div
+            id={`resize_${header.column.id}`}
+            onMouseDown={header.getResizeHandler()}
+            onTouchStart={header.getResizeHandler()}
+            className="peer absolute top-0 -right-1 z-10 h-full w-4 cursor-col-resize touch-none select-none"
+          />
+          <div
+            className={cn(
+              "absolute top-0 -right-1 h-full w-1 cursor-col-resize touch-none select-none",
+              isResizing ? "bg-primary" : "peer-hover:bg-primary",
+            )}
+          ></div>
+        </>
       )}
     </TableHead>
   );
