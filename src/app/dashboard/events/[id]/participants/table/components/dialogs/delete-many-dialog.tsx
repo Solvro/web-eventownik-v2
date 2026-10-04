@@ -42,6 +42,7 @@ export function DeleteManyParticipantsDialog({
           disabled={true}
         >
           <Trash2 />
+          <span className="sr-only">{t("deleteManyTooltip")}</span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>{t("deleteManyTooltip")}</TooltipContent>

@@ -25,12 +25,13 @@ export function HelpDialog() {
           <DialogTrigger asChild>
             <Button size="icon" variant="outline">
               <HelpCircle />
+              <span className="sr-only">{t("helpTooltip")}</span>
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>{t("helpTooltip")}</TooltipContent>
       </Tooltip>
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl">{t("helpTitle")}</DialogTitle>
           <div className="[&>p]:my-2">
