@@ -74,8 +74,18 @@ export function FeatureAccordion() {
               className="aspect-square h-32 w-auto -rotate-6 rounded-4xl drop-shadow-[0px_-35px_500px_rgba(56,115,255,0.69)] sm:h-auto"
             />
             <div className="flex flex-col items-center text-center text-xs text-[#515151] sm:text-xl dark:text-[#B4B4B4]">
-              <a href="tel:+48606365628">+48 606 365 628</a>
-              <a href="mailto:eventownik@pwr.edu.pl">eventownik@pwr.edu.pl</a>
+              <a
+                href="tel:+48606365628"
+                className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+              >
+                +48 606 365 628
+              </a>
+              <a
+                href="mailto:eventownik@pwr.edu.pl"
+                className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+              >
+                eventownik@pwr.edu.pl
+              </a>
             </div>
           </div>
         </div>

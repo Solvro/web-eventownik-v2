@@ -76,8 +76,9 @@ function CarouselImage({
       variants={variants}
       initial={initial}
       animate={animate}
+      whileFocus={{ filter: "brightness(100%)" }}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
-      className="absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-150 min-w-0 -translate-x-1/2 sm:aspect-[25/16] md:w-full"
+      className="focus-visible:ring-ring absolute left-1/2 aspect-[25/18] h-auto w-[calc(100%-3rem)] max-w-150 min-w-0 -translate-x-1/2 rounded-4xl focus-visible:ring-2 focus-visible:outline-hidden sm:aspect-[25/16] md:w-full"
       onClick={() => {
         onClick(index);
       }}
@@ -195,6 +196,7 @@ export function HighlightedEvents() {
       </div>
       <div className="flex w-full flex-row items-center justify-center gap-6">
         <button
+          className="focus-visible:ring-ring rounded-full focus-visible:ring-2 focus-visible:outline-hidden"
           title={t("previousImage")}
           onClick={() => {
             setIndex((index - 1 + variantsList.length) % variantsList.length);
@@ -203,6 +205,7 @@ export function HighlightedEvents() {
           <ArrowLeft className="size-9" />
         </button>
         <button
+          className="focus-visible:ring-ring rounded-full focus-visible:ring-2 focus-visible:outline-hidden"
           title={t("nextImage")}
           onClick={() => {
             setIndex((index + 1) % variantsList.length);

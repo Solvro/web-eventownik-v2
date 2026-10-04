@@ -145,7 +145,7 @@ function AlertBanner({
           target={alert.open_in_new_tab ? "_blank" : undefined}
           rel={alert.open_in_new_tab ? "noopener noreferrer" : undefined}
           aria-label={alert.title === "" ? t("alertLink") : alert.title}
-          className="absolute inset-0 rounded-lg focus:ring-2 focus:ring-current focus:outline-none"
+          className="focus:ring-ring absolute inset-0 rounded-lg focus:ring-2 focus:outline-none"
         />
       ) : null}
       <Icon aria-hidden="true" />
@@ -163,7 +163,7 @@ function AlertBanner({
             onDismiss(alert.id);
           }}
           aria-label={t("dismissAlert")}
-          className="absolute top-2 right-2 rounded p-1 opacity-70 transition hover:bg-black/5 hover:opacity-100 focus:ring-2 focus:ring-current focus:outline-none dark:hover:bg-white/10"
+          className="focus:ring-ring absolute top-2 right-2 rounded p-1 opacity-70 transition hover:bg-black/5 hover:opacity-100 focus:ring-2 focus:outline-none dark:hover:bg-white/10"
         >
           <X className="size-4" aria-hidden="true" />
         </button>

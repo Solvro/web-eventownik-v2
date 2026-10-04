@@ -22,10 +22,30 @@ export function Navbar() {
         <div className="flex items-center gap-8 uppercase">
           <AppLogo />
           <nav className="flex items-center gap-8">
-            <Link href="#events">{t("events")}</Link>
-            <Link href="#functionalities">{t("features")}</Link>
-            <Link href="#faq">FAQ</Link>
-            <Link href="#team">{t("team")}</Link>
+            <Link
+              href="#events"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("events")}
+            </Link>
+            <Link
+              href="#functionalities"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("features")}
+            </Link>
+            <Link
+              href="#faq"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="#team"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("team")}
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">

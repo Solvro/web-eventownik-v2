@@ -135,6 +135,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
               <nav className="flex flex-col gap-4 text-3xl font-medium uppercase">
                 <Link
                   href="#events"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -143,6 +144,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#functionalities"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -151,6 +153,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#faq"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -159,6 +162,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#team"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
