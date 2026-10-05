@@ -136,6 +136,10 @@ export function EventSettingsTabs({
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizer ?? "",
       termsLink: unmodifiedEvent.termsLink ?? "",
+      dataRecipientsEnabled:
+        unmodifiedEvent.dataRecipients != null &&
+        unmodifiedEvent.dataRecipients.trim() !== "",
+      dataRecipients: unmodifiedEvent.dataRecipients ?? "",
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
@@ -217,6 +221,9 @@ export function EventSettingsTabs({
       location: values.location ?? "",
       organizer: values.organizer ?? "",
       termsLink: values.termsLink ?? "",
+      dataRecipients: values.dataRecipientsEnabled
+        ? (values.dataRecipients?.trim() ?? "")
+        : "",
       photoUrl: values.photoUrl ?? null,
       primaryColor: values.primaryColor,
       participantsCount: values.participantsNumber,
