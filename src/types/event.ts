@@ -1,4 +1,5 @@
 import type { EventAttribute } from "./attributes";
+import type { EventCategory } from "./categories";
 import type { EventForm } from "./forms";
 
 export interface Event {
@@ -23,4 +24,5 @@ export interface Event {
   termsLink: string | null;
   isActive: boolean;
   attributes: EventAttribute[];
+  categories: EventCategory[];
 }

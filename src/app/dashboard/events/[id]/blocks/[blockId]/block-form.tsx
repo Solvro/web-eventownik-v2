@@ -32,8 +32,7 @@ export const BlockSchema = z.object({
 export type BlockFormValues = z.infer<typeof BlockSchema>;
 
 type BlockFormError =
-  | "blockNameRequired"
-  | "blockCapacityMustBeGreaterThanZero";
+  "blockNameRequired" | "blockCapacityMustBeGreaterThanZero";
 
 export function BlockForm({
   form,

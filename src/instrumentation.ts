@@ -3,8 +3,7 @@ import { OTLPHttpJsonTraceExporter, registerOTel } from "@vercel/otel";
 
 if (process.env.NEXT_RUNTIME === "nodejs") {
   const requested = process.env.OTEL_LOG_LEVEL as
-    | keyof typeof DiagLogLevel
-    | undefined;
+    keyof typeof DiagLogLevel | undefined;
   let level: DiagLogLevel = DiagLogLevel.ERROR;
   if (
     requested &&

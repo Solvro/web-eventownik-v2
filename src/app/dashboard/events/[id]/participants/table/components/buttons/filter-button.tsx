@@ -67,8 +67,7 @@ export function FilterButton({
 
     const filterValues =
       (column.getFilterValue() as
-        | ParticipantAttributeValueType[]
-        | undefined) ?? [];
+        ParticipantAttributeValueType[] | undefined) ?? [];
 
     options.push({ label: t("none"), value: null });
 
