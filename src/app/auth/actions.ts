@@ -4,7 +4,11 @@ import type { z } from "zod";
 
 import { API_URL } from "@/lib/api";
 import { createSession } from "@/lib/session";
-import type { AuthErrorResponse, AuthSuccessResponse } from "@/types/auth";
+import type {
+  Admin,
+  AuthErrorResponse,
+  AuthSuccessResponse,
+} from "@/types/auth";
 import type {
   loginFormSchema,
   registerFormSchema,
@@ -28,20 +32,13 @@ export async function register(
       token: values.token,
     }),
   }).then(async (response) => {
-    if (response.status === 200) {
-      return response.json() as Promise<AuthSuccessResponse>;
+    if (response.status === 201) {
+      return response.json() as Promise<Admin>;
     }
     console.error("Error when registering", response);
     return response.json() as Promise<AuthErrorResponse>;
   });
-  if ("token" in data) {
-    try {
-      await createSession({ bearerToken: data.token });
-    } catch (error) {
-      console.error("Error when creating session", error);
-      return { errors: ["Internal server error"] };
-    }
-  }
+
   return data;
 }
 
@@ -49,7 +46,7 @@ export async function login(
   values: z.infer<typeof loginFormSchema> & { token: string },
 ) {
   try {
-    const user = await fetch(`${API_URL}/auth/login`, {
+    const backendResponse = await fetch(`${API_URL}/auth/login`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -57,15 +54,17 @@ export async function login(
       body: JSON.stringify({
         email: values.email,
         password: values.password,
-        rememberMe: true,
         token: values.token,
       }),
     }).then(async (response) => {
       switch (response.status) {
-        case 200: {
-          return response.json() as Promise<AuthSuccessResponse>;
+        case 201: {
+          const backendSetCookie = response.headers.get("set-cookie");
+          const data = (await response.json()) as AuthSuccessResponse;
+
+          return { ...data, backendSetCookie };
         }
-        case 400: {
+        case 401: {
           return { error: "invalidLoginCredentials" };
         }
         default: {
@@ -73,11 +72,13 @@ export async function login(
         }
       }
     });
-    if ("error" in user) {
-      return { success: false, error: user.error };
+    if ("error" in backendResponse) {
+      return { success: false, error: backendResponse.error };
     }
-    await createSession({ bearerToken: user.token });
-    //return user;
+    await createSession(
+      { bearerToken: backendResponse.access_token },
+      backendResponse.backendSetCookie,
+    );
   } catch (error) {
     console.error("Error during logging in", error);
     return { success: false, error: "serverErrorTryLater" };
@@ -89,7 +90,7 @@ export async function sendPasswordResetToken(
   values: z.infer<typeof sendPasswordResetTokenSchema> & { token: string },
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -122,14 +123,14 @@ export async function resetPassword(
   values: z.infer<typeof resetPasswordSchema>,
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/resetPassword`, {
+    const response = await fetch(`${API_URL}/auth/reset-password`, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
         token: values.token,
-        newPassword: values.newPassword,
+        password: values.newPassword,
       }),
     });
 
