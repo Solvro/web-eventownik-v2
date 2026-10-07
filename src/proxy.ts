@@ -14,7 +14,7 @@ function redirectToLogin(request: NextRequest) {
   const response = NextResponse.redirect(loginUrl);
 
   response.cookies.delete("refresh_token");
-  response.cookies.delete("session");
+  response.cookies.delete("session-v3");
 
   return response;
 }
@@ -42,7 +42,7 @@ export async function proxy(request: NextRequest) {
         }
 
         response.cookies.set({
-          name: "session",
+          name: "session-v3",
           value: await encrypt({ bearerToken: data.access_token }),
           httpOnly: true,
           secure: true,
@@ -56,7 +56,7 @@ export async function proxy(request: NextRequest) {
         }
 
         response.cookies.delete("refresh_token");
-        response.cookies.delete("session");
+        response.cookies.delete("session-v3");
       }
     } catch (error) {
       console.error("[Middleware] Failed to refresh token:", error);
@@ -66,7 +66,7 @@ export async function proxy(request: NextRequest) {
       }
 
       response.cookies.delete("refresh_token");
-      response.cookies.delete("session");
+      response.cookies.delete("session-v3");
     }
   }
 

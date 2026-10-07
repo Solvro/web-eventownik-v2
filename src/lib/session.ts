@@ -57,7 +57,7 @@ export async function createSession(
   const session = await encrypt(sessionPayload);
   const cookieStore = await cookies();
 
-  cookieStore.set("session", session, {
+  cookieStore.set("session-v3", session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -92,14 +92,14 @@ export async function logout() {
   }
 
   cookieStore.delete("refresh_token");
-  cookieStore.delete("session");
+  cookieStore.delete("session-v3");
 
   redirect("/");
 }
 
 export const verifySession = cache(async () => {
   const cookieStore = await cookies();
-  const cookieSession = cookieStore.get("session")?.value;
+  const cookieSession = cookieStore.get("session-v3")?.value;
 
   if (cookieSession !== undefined) {
     const session = await decrypt(cookieSession);
