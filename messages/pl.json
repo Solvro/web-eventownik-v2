@@ -744,6 +744,8 @@
     "httpError": "Błąd {status} {statusText}"
   },
   "Sidebar": {
+    "closeSidebar": "Zwiń panel",
+    "openSidebar": "Rozwiń panel",
     "general": "Ogólne",
     "event": "Wydarzenie",
     "forms": "Formularze",
