@@ -2,16 +2,14 @@
 
 import { ChevronRight, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useId } from "react";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { FormControl, FormItem, FormLabel } from "./ui/form";
+import { NativeCheckbox, NativeRadio } from "./ui/native-choice";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { RadioGroupItem } from "./ui/radio-group";
 import { ScrollArea } from "./ui/scroll-area";
 
 const valueOrZero = (value: number | null | undefined) => {
@@ -19,12 +17,13 @@ const valueOrZero = (value: number | null | undefined) => {
 };
 
 /**
- * A single block entry card, being a radio group item.
+ * A single block entry card, with a radio (or a checkbox when isMultiple is true) to choose it.
  */
 export function AttributeInputBlock({
   block,
   userData,
   isMultiple,
+  name,
   checked,
   onCheckedChange,
   disabled: disabledFromParent,
@@ -33,10 +32,11 @@ export function AttributeInputBlock({
   userData: PublicParticipant | undefined;
   isMultiple: boolean;
   /**
-   * Only required when isMultiple is true
+   * Name shared by all radios of the attribute, only required when isMultiple is false
    */
-  checked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+  name?: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
 }) {
   const t = useTranslations("Form");
@@ -64,19 +64,27 @@ export function AttributeInputBlock({
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
       <div className="flex items-start gap-4">
-        {isMultiple ? (
-          <Checkbox
-            checked={checked}
-            disabled={isDisabled}
-            onCheckedChange={(innerChecked) =>
-              onCheckedChange?.(innerChecked === true)
-            }
-          />
-        ) : (
-          <FormControl>
-            <RadioGroupItem value={block.id.toString()} disabled={isDisabled} />
-          </FormControl>
-        )}
+        <FormControl>
+          {isMultiple ? (
+            <NativeCheckbox
+              checked={checked}
+              disabled={isDisabled}
+              onChange={(event_) => {
+                onCheckedChange(event_.target.checked);
+              }}
+            />
+          ) : (
+            <NativeRadio
+              name={name}
+              value={block.id.toString()}
+              checked={checked}
+              disabled={isDisabled}
+              onChange={(event_) => {
+                onCheckedChange(event_.target.checked);
+              }}
+            />
+          )}
+        </FormControl>
         <FormLabel className="flex grow">
           <div className="grid w-full grow grid-cols-[1fr_auto] items-start gap-4 font-semibold">
             <p
