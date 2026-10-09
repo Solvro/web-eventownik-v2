@@ -2,6 +2,7 @@
 
 import { ChevronRight, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useId } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";

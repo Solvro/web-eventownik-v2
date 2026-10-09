@@ -6,12 +6,13 @@ import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import type { EventAttributesFormSchema } from "./attributes/schema";
 import { SortableAttributeItem } from "./attributes/sortable-attribute-item";
@@ -46,6 +47,7 @@ export function AttributesForm({
 
   const attributes = watch("attributes");
   const [newAttributeName, setNewAttributeName] = useState("");
+  const newAttributeInputId = useId();
 
   const handleAddAttribute = () => {
     const label = newAttributeName.trim();
@@ -128,7 +130,11 @@ export function AttributesForm({
       </DragDropProvider>
 
       <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+        <Label htmlFor={newAttributeInputId} className="sr-only">
+          {t("newAttributeNameLabel")}
+        </Label>
         <Input
+          id={newAttributeInputId}
           value={newAttributeName}
           onChange={(event_) => {
             setNewAttributeName(event_.target.value);

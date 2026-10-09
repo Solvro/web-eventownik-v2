@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { GripVertical, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +13,7 @@ export function SortableAttributeItem({
   onRemove,
   ...props
 }: SortableAttributeItemProps) {
+  const t = useTranslations("EventDetails");
   const { ref, handleRef } = useSortable({
     id,
     index,
@@ -31,6 +33,7 @@ export function SortableAttributeItem({
             variant="eventGhost"
             size="icon"
             onClick={onRemove}
+            aria-label={t("deleteAttribute")}
             className="text-destructive hover:text-foreground my-2 hover:bg-red-500/10"
           >
             <Trash2 className="h-4 w-4" />

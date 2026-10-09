@@ -53,7 +53,7 @@ export const CoOrganizerItem = memo(
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              aria-label="Open permissions menu"
+              aria-label={t("openPermissionsMenu")}
               className="size-12"
             >
               <EllipsisVertical />

@@ -134,7 +134,10 @@ export function PersonalizationForm({ className }: { className?: string }) {
           control={control}
           render={({ field }) => (
             <FormItem className="flex flex-col gap-2 space-y-0">
-              <FormLabel>{t("eventColor")}</FormLabel>
+              {/* Not a <label>, so the input has a single label (the one below) */}
+              <p className="text-sm leading-none font-medium">
+                {t("eventColor")}
+              </p>
               <FormControl>
                 <Input
                   type="color"
@@ -160,6 +163,9 @@ export function PersonalizationForm({ className }: { className?: string }) {
                     backgroundColor: getValues("primaryColor") ?? "#3672fd",
                   }}
                 />
+                <span className="sr-only">
+                  {t("colorPicker", { name: t("eventColor") })} -{" "}
+                </span>
                 <p>{getValues("primaryColor")}</p>
               </FormLabel>
             </FormItem>
@@ -258,6 +264,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         onClick={() => {
                           remove(index);
                         }}
+                        aria-label={t("deleteLink")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

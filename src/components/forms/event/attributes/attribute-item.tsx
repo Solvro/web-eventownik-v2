@@ -265,7 +265,14 @@ export function AttributeItem({
         watch(`attributes.${index}.type`) === "multiselect") && (
         <div className="space-y-2">
           <div className="flex gap-2">
+            <Label
+              htmlFor={`newOption-${index.toString()}`}
+              className="sr-only"
+            >
+              {t("newOption")}
+            </Label>
             <Input
+              id={`newOption-${index.toString()}`}
               value={optionsInput}
               onChange={(event_) => {
                 setOptionsInput(event_.target.value);

@@ -134,9 +134,12 @@ function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">{t("email")}</FormLabel>
+                <FormLabel htmlFor="email" className="sr-only">
+                  {t("email")}
+                </FormLabel>
                 <FormControl>
                   <Input
+                    id="email"
                     type="email"
                     disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                     placeholder={t("email")}
@@ -157,9 +160,12 @@ function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">{t("passwordLabel")}</FormLabel>
+                <FormLabel htmlFor="password" className="sr-only">
+                  {t("passwordLabel")}
+                </FormLabel>
                 <FormControl>
                   <Input
+                    id="password"
                     type="password"
                     disabled={form.formState.isSubmitting || isAwaitingCaptcha}
                     placeholder={t("passwordLabel")}
@@ -255,8 +261,8 @@ export default function LoginPage() {
   return (
     <>
       <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">{t("loginTitle")}</p>
-        <p>{t("loginDescription")}</p>
+        <h1 className="text-3xl font-black">{t("loginTitle")}</h1>
+        <h2>{t("loginDescription")}</h2>
       </div>
       <Suspense>
         <LoginForm />

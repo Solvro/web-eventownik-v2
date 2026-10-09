@@ -411,6 +411,7 @@ export function EventSettingsTabs({
                 <Button
                   variant="destructive"
                   className="bg-background hover:bg-destructive/10 size-12 border border-red-500 text-red-500 sm:hidden"
+                  aria-label={t("deleteEvent")}
                 >
                   <Trash2 />
                 </Button>

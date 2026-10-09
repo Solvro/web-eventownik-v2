@@ -162,6 +162,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="startTime"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
+                  <FormLabel className="sr-only">{t("startTime")}</FormLabel>
                   <FormControl>
                     <Input
                       disabled={formState.isSubmitting}
@@ -235,6 +236,7 @@ export function GeneralInfoForm({ className }: { className?: string }) {
               name="endTime"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
+                  <FormLabel className="sr-only">{t("endTime")}</FormLabel>
                   <FormControl>
                     <Input
                       disabled={formState.isSubmitting}

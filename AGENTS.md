@@ -221,6 +221,7 @@ Accessibility is essential for both users and testing. Follow these patterns:
 #### Interactive Elements
 
 - **Buttons**: Always have visible text or `aria-label` for icon-only buttons
+- **Icons**: Don't add `aria-hidden` to Lucide icons - `lucide-react` already renders them with `aria-hidden="true"`
 - **Inputs**: Always have associated `<label>` elements or `aria-label`
 - **Custom-styled inputs** (file, color, etc.) - pick one of two patterns:
   - **Opened by a `<label>`**: Never hide the native input with `hidden` / `display: none` - it becomes unreachable by keyboard and invisible to screen readers. Hide it visually instead, place it **before** its custom `<label>` and mark it as a `peer`, so the label can show the focus ring via `peer-focus-visible:*`. Give file inputs an `aria-label`, since the label's content may change (e.g. an image preview replacing the "Add image" text)
