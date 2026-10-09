@@ -31,7 +31,7 @@ export function Member({ member }: { member: TeamMember }) {
             ? member.image
             : "/assets/landing/person.webp"
         }
-        alt={member.name}
+        alt=""
         width={500}
         height={500}
         className="aspect-square h-auto w-full max-w-12 rounded-full sm:max-w-20"
@@ -52,7 +52,7 @@ export function Member({ member }: { member: TeamMember }) {
                     ? member.image
                     : "/assets/landing/person.webp"
                 }
-                alt={member.name}
+                alt=""
                 width={500}
                 height={500}
                 className="size-16 rounded-full sm:size-20"
@@ -78,7 +78,7 @@ export function Member({ member }: { member: TeamMember }) {
       <a
         href={member.url}
         target="_blank"
-        className="absolute inset-0 z-30 block h-full w-full shrink-0"
+        className="focus-visible:ring-ring absolute inset-0 z-30 block h-full w-full shrink-0 rounded-full focus-visible:ring-2 focus-visible:outline-hidden"
         rel="noreferrer noopener"
       >
         <p className="sr-only">{member.name}</p>

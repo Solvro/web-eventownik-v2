@@ -27,7 +27,10 @@ export function AppLogo({
   }, []);
 
   return mounted ? (
-    <Link href="/">
+    <Link
+      href="/"
+      className="focus-visible:ring-ring block rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+    >
       <Image
         src={forceTheme ? getSource(forceTheme) : getSource(resolvedTheme)}
         alt="Eventownik"

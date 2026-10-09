@@ -28,16 +28,22 @@ function getBaseColumns(t: TableTranslator) {
       minSize: 40,
       maxSize: 40,
       header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(Boolean(value));
-          }}
-          aria-label={t("selectAllPageRows")}
-        />
+        <>
+          <label htmlFor="select-all" className="sr-only">
+            {t("selectAllPageRows")}
+          </label>
+          <Checkbox
+            id="select-all"
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => {
+              table.toggleAllPageRowsSelected(Boolean(value));
+            }}
+            aria-label={t("selectAllPageRows")}
+          />
+        </>
       ),
       cell: ({ row }) => (
         <Checkbox
@@ -162,6 +168,7 @@ export function createColumns(
   const editColumn = columnHelper.display({
     id: "edit",
     cell: ({ row, table }) => <EditParticipantButton row={row} table={table} />,
+    header: () => <span className="sr-only">{t("editColumnHeader")}</span>,
     size: 48,
     minSize: 48,
     maxSize: 48,

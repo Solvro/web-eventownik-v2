@@ -5,7 +5,35 @@ import Link from "next/link";
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+
+const SOCIAL_LINKS = [
+  {
+    href: "https://github.com/Solvro/web-eventownik-v2",
+    icon: FaGithub,
+    labelKey: "eventownikGithubRepo",
+  },
+  {
+    href: "https://www.instagram.com/knsolvro/",
+    icon: FaInstagram,
+    labelKey: "solvroInstagram",
+  },
+  {
+    href: "https://www.facebook.com/knsolvro",
+    icon: FaFacebook,
+    labelKey: "solvroFacebook",
+  },
+  {
+    href: "https://www.linkedin.com/company/knsolvro/",
+    icon: FaLinkedin,
+    labelKey: "solvroLinkedIn",
+  },
+] as const;
 
 export function Footer() {
   const t = useTranslations("Homepage");
@@ -13,7 +41,7 @@ export function Footer() {
     <footer className="z-10 flex w-full flex-col items-center bg-white dark:bg-[#101011]">
       <div className="container flex w-full flex-col items-center justify-between gap-16 px-8 pt-16 pb-8 sm:gap-32 sm:py-16 2xl:flex-row 2xl:items-center">
         <div className="flex w-full flex-col text-3xl font-medium 2xl:w-auto">
-          <p>{t("stayUpdatedWithEventownik")}</p>
+          <h2>{t("stayUpdatedWithEventownik")}</h2>
           <Link
             href="/newsletter-eventownik"
             className="flex flex-row items-center gap-2 text-[#6583C8] hover:underline"
@@ -69,54 +97,25 @@ export function Footer() {
               />
             </a>
             <div className="flex flex-row gap-6">
-              <a
-                title={t("eventownikGithubRepo")}
-                href="https://github.com/Solvro/web-eventownik-v2"
-                target="_blank"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "aspect-square rounded-full p-2",
-                )}
-                rel="noopener noreferrer"
-              >
-                <FaGithub />
-              </a>
-              <a
-                title={t("solvroInstagram")}
-                href="https://www.instagram.com/knsolvro/"
-                target="_blank"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "aspect-square rounded-full p-2",
-                )}
-                rel="noopener noreferrer"
-              >
-                <FaInstagram />
-              </a>
-              <a
-                title={t("solvroFacebook")}
-                href="https://www.facebook.com/knsolvro"
-                target="_blank"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "aspect-square rounded-full p-2",
-                )}
-                rel="noopener noreferrer"
-              >
-                <FaFacebook />
-              </a>
-              <a
-                title={t("solvroLinkedIn")}
-                href="https://www.linkedin.com/company/knsolvro/"
-                target="_blank"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "aspect-square rounded-full p-2",
-                )}
-                rel="noopener noreferrer"
-              >
-                <FaLinkedin />
-              </a>
+              {SOCIAL_LINKS.map(({ href, icon: Icon, labelKey }) => (
+                <Tooltip key={href}>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={href}
+                      target="_blank"
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "aspect-square rounded-full p-2",
+                      )}
+                      rel="noopener noreferrer"
+                    >
+                      <Icon aria-hidden="true" />
+                      <span className="sr-only">{t(labelKey)}</span>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>{t(labelKey)}</TooltipContent>
+                </Tooltip>
+              ))}
             </div>
           </div>
         </div>
@@ -128,14 +127,14 @@ export function Footer() {
               <div className="container flex w-full flex-row items-center justify-center gap-8">
                 <Image
                   src="/logo_outline_light.png"
-                  alt={t("eventownikLogo")}
+                  alt=""
                   width="1500"
                   height="1000"
                   className="block dark:hidden"
                 />
                 <Image
                   src="/logo_outline_dark.png"
-                  alt={t("eventownikLogo")}
+                  alt=""
                   width="1500"
                   height="1000"
                   className="hidden dark:block"

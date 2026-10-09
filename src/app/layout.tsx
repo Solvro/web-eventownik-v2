@@ -7,6 +7,7 @@ import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 
 import { Providers } from "@/components/providers";
+import { SkipLink } from "@/components/skip-link";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,7 @@ export default async function RootLayout({
       <body className={cn(spaceGrotesk.variable, "font-sans antialiased")}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
+            <SkipLink />
             <NextTopLoader />
             <Toaster />
             {children}

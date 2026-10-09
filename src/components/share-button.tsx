@@ -1,6 +1,7 @@
 "use client";
 
 import { Share2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,6 @@ interface ShareButtonProps {
     | undefined;
   className?: string;
   label?: string;
-  tooltipText?: string;
 }
 
 export function ShareButton({
@@ -32,9 +32,10 @@ export function ShareButton({
   variant = "full",
   buttonVariant = "outline",
   className,
-  label = "Udostępnij",
-  tooltipText = "Skopiowano do schowka!",
+  label,
 }: ShareButtonProps) {
+  const t = useTranslations("Dashboard");
+  const buttonLabel = label ?? t("share");
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
@@ -59,15 +60,15 @@ export function ShareButton({
           variant={buttonVariant}
           onClick={handleCopy}
           className={className}
-          aria-label={variant === "icon" ? label : undefined}
+          aria-label={variant === "icon" ? buttonLabel : undefined}
         >
           <Share2Icon
             className={variant === "full" ? "mr-2 h-4 w-4" : "h-4 w-4"}
           />
-          {variant === "full" && label}
+          {variant === "full" && buttonLabel}
         </Button>
       </TooltipTrigger>
-      <TooltipContent>{tooltipText}</TooltipContent>
+      <TooltipContent>{t("copiedToClipboard")}</TooltipContent>
     </Tooltip>
   );
 }

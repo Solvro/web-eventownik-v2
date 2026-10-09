@@ -23,26 +23,29 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <p className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 text-sm font-medium sm:text-base dark:bg-[#192237]">
+        <p
+          aria-hidden
+          className="flex h-full w-full rounded-full bg-[#a7b3cd] px-4 py-2 text-sm font-medium sm:text-base dark:bg-[#192237]"
+        >
           #wytrzyma
         </p>
       </motion.div>
-      <motion.p
+      <motion.h1
         className="text-5xl font-bold uppercase sm:text-8xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08, duration: 0.3, ease: "easeOut" }}
       >
         Eventownik Solvro
-      </motion.p>
-      <motion.p
+      </motion.h1>
+      <motion.h2
         className="text-xl text-[#191A1A] sm:text-3xl dark:text-[#D9E8FF]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.16, duration: 0.3, ease: "easeOut" }}
       >
         {t("letsCreateAnEventTogether")}
-      </motion.p>
+      </motion.h2>
       <motion.div
         className="flex flex-row flex-wrap items-center justify-center gap-4"
         initial={{ opacity: 0, y: 20 }}
@@ -50,7 +53,7 @@ export function Hero() {
         transition={{ delay: 0.24, duration: 0.3, ease: "easeOut" }}
       >
         <Button
-          className="w-full rounded-full bg-[#6583C8] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
+          className="w-full rounded-full bg-[#4F71BF] px-5 py-4 text-base font-medium hover:bg-[#4b78df] sm:w-auto sm:text-lg"
           asChild
         >
           <Link href="/dashboard/events">

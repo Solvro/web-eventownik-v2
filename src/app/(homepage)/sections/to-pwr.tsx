@@ -68,23 +68,23 @@ export function ToPWr() {
             <div className="mx-auto space-y-4 pb-6 text-center">
               <motion.h2
                 variants={childVariants}
-                className="font-mono text-sm font-semibold tracking-wider text-orange-500 uppercase"
+                className="font-mono text-sm font-semibold tracking-wider text-orange-800 uppercase dark:text-orange-300"
               >
                 {t("areYouPwrStudent")}
               </motion.h2>
-              <motion.h3
+              <motion.p
                 variants={childVariants}
                 className="mx-auto mt-4 max-w-xs text-3xl font-bold sm:max-w-none sm:text-4xl md:text-5xl"
               >
                 {t("installApp")}{" "}
                 <Image
                   src={"/assets/logo/topwr_logo.svg"}
-                  alt={t("topwrLogo")}
+                  alt="ToPWR"
                   className="inline brightness-0 dark:invert"
                   width={140}
                   height={50}
                 />
-              </motion.h3>
+              </motion.p>
               <motion.p
                 variants={childVariants}
                 className="mx-auto mt-6 max-w-2xl text-lg leading-6 text-balance text-slate-600 dark:text-slate-300"

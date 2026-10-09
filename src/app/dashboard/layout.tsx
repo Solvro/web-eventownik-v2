@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import React from "react";
 
 import { Alerts } from "@/components/alerts";
 import { AuthButton } from "@/components/auth-button";
 import { Navbar } from "@/components/navbar";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | Eventownik",
-    default: "Dashboard",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Dashboard");
+
+  return {
+    title: {
+      template: "%s | Eventownik",
+      default: t("organizerPanel"),
+    },
+  };
+}
 
 export default function DashboardLayout({
   children,
@@ -24,9 +29,9 @@ export default function DashboardLayout({
           <Navbar authButton={<AuthButton />} />
           <Alerts />
         </header>
-        <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
+        <div className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   );

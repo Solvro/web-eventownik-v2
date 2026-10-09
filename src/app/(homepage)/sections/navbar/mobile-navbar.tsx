@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LanguageSwitch } from "@/components/language-switch";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -12,18 +12,82 @@ import { Button } from "@/components/ui/button";
 
 import { AppLogo } from "../app-logo";
 
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
 export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
   const t = useTranslations("Homepage");
+  const tAccessibility = useTranslations("Accessibility");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflowY = document.body.style.overflowY;
+    document.body.style.overflowY = "hidden";
+
+    const getFocusableElements = () =>
+      [
+        ...(menuRef.current?.querySelectorAll<HTMLElement>(
+          FOCUSABLE_SELECTOR,
+        ) ?? []),
+      ].filter((element) => element.offsetParent !== null);
+
+    getFocusableElements().at(0)?.focus();
+
+    // Keep keyboard focus cycling within the menu while it's open
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Nested components (e.g. dropdowns) may handle Tab themselves
+      if (event.key !== "Tab" || event.defaultPrevented) {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+      const first = focusableElements.at(0);
+      const last = focusableElements.at(-1);
+      if (first === undefined || last === undefined) {
+        event.preventDefault();
+        return;
+      }
+
+      const active = document.activeElement;
+      const isFocusInside = menuRef.current?.contains(active) ?? false;
+
+      if (event.shiftKey && (active === first || !isFocusInside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !isFocusInside)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflowY = previousOverflowY;
+    };
+  }, [isOpen]);
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
       <header className="container flex w-full flex-row items-center justify-between gap-4 lg:hidden">
         <div className="bg-background flex flex-col items-center justify-center rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141]">
-          <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
         </div>
         <Button
+          ref={openButtonRef}
           variant="outline"
           className="bg-background aspect-square h-full rounded-2xl border border-[#B2B2B2] p-3 dark:border-[#414141] [&_svg]:size-8"
           title={t("openMenu")}
@@ -32,6 +96,11 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
           }}
         >
           <Menu />
+          <span className="sr-only">
+            {tAccessibility("toggleMobileMenu", {
+              action: isOpen ? "close" : "open",
+            })}
+          </span>
         </Button>
       </header>
       <AnimatePresence>
@@ -41,6 +110,8 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            ref={menuRef}
+            id="mobile-menu"
             className="bg-background border-border fixed inset-0 z-50 flex h-svh w-full flex-col justify-between gap-8 p-8 lg:hidden"
           >
             <div className="flex w-full flex-col gap-8">
@@ -51,15 +122,20 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                   className="p-0 [&_svg]:size-8"
                   title={t("closeMenu")}
                   onClick={() => {
-                    setIsOpen(!isOpen);
+                    setIsOpen(false);
+                    openButtonRef.current?.focus();
                   }}
                 >
                   <X />
+                  <span className="sr-only">
+                    {tAccessibility("toggleMobileMenu", { action: "close" })}
+                  </span>
                 </Button>
               </div>
-              <div className="flex flex-col gap-4 text-3xl font-medium uppercase">
+              <nav className="flex flex-col gap-4 text-3xl font-medium uppercase">
                 <Link
                   href="#events"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -68,6 +144,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#functionalities"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -76,6 +153,7 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#faq"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -84,13 +162,14 @@ export function MobileNavbar({ authButton }: { authButton: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#team"
+                  className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
                   onClick={() => {
                     setIsOpen(false);
                   }}
                 >
                   {t("team")}
                 </Link>
-              </div>
+              </nav>
             </div>
             <div className="flex w-full flex-col items-center gap-4">
               <div className="flex w-full items-center justify-end gap-4">

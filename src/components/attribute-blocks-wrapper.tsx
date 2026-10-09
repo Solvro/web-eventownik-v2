@@ -10,11 +10,10 @@ import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
-import { Checkbox } from "./ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "./ui/field";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Input } from "./ui/input";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { NativeCheckbox, NativeRadio } from "./ui/native-choice";
 
 function includeBlock(
   block: PublicBlock,
@@ -34,7 +33,7 @@ function includeBlock(
 /**
  * This component wraps all block entries for a block type attribute.
  * It provides an accordion root element for block occupants accordion items.
- * It provides a radio group element for radio items within the blocks.
+ * It provides a radio group element for the radios within the blocks.
  */
 export function AttributeBlocksWrapper({
   field,
@@ -62,6 +61,7 @@ export function AttributeBlocksWrapper({
   );
 
   const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
+  const selectedValue = isMultiple ? null : String(field.value);
 
   const handleMultiChange = (blockId: string, checked: boolean) => {
     const current = (field.value ?? []) as string[];
@@ -95,12 +95,12 @@ export function AttributeBlocksWrapper({
               />
             </Field>
             <Field orientation="horizontal" className="w-min">
-              <Checkbox
+              <NativeCheckbox
                 id="hide-full-checkbox"
                 name="hide-full-checkbox"
                 checked={hideFullBlocks}
-                onCheckedChange={(checked) => {
-                  setHideFullBlocks(checked === true);
+                onChange={(event_) => {
+                  setHideFullBlocks(event_.target.checked);
                 }}
               />
               <FieldLabel
@@ -140,10 +140,10 @@ export function AttributeBlocksWrapper({
             <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
               <div className="flex items-center gap-4">
                 <FormControl>
-                  <Checkbox
+                  <NativeCheckbox
                     checked={((field.value ?? []) as string[]).length === 0}
-                    onCheckedChange={(c) => {
-                      if (c === true) {
+                    onChange={(event_) => {
+                      if (event_.target.checked) {
                         field.onChange([]);
                       }
                     }}
@@ -162,7 +162,9 @@ export function AttributeBlocksWrapper({
               userData={userData}
               block={childBlock}
               isMultiple={true}
-              checked={selectedValues?.includes(childBlock.id.toString())}
+              checked={
+                selectedValues?.includes(childBlock.id.toString()) ?? false
+              }
               onCheckedChange={(checked) => {
                 handleMultiChange(childBlock.id.toString(), checked);
               }}
@@ -177,11 +179,13 @@ export function AttributeBlocksWrapper({
           ))}
         </div>
       ) : (
-        <RadioGroup
-          onValueChange={field.onChange}
-          defaultValue={String(field.value)}
+        // Native radios instead of Radix's RadioGroup, which redirects keyboard
+        // focus to the checked radio and breaks tab order with the
+        // "Participants" buttons between the radios
+        <div
+          role="radiogroup"
           className={cn(
-            "mt-4",
+            "mt-4 grid gap-2",
             eventBlocks.length >= 3 && "w-full xl:min-w-xl xl:grid-cols-2",
           )}
         >
@@ -195,7 +199,14 @@ export function AttributeBlocksWrapper({
             <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
               <div className="flex items-center gap-4">
                 <FormControl>
-                  <RadioGroupItem value={"null"} />
+                  <NativeRadio
+                    name={field.name}
+                    value="null"
+                    checked={selectedValue === "null"}
+                    onChange={() => {
+                      field.onChange("null");
+                    }}
+                  />
                 </FormControl>
                 <FormLabel>
                   <p>{t("noBlockOption")}</p>
@@ -210,9 +221,14 @@ export function AttributeBlocksWrapper({
               userData={userData}
               block={childBlock}
               isMultiple={false}
+              name={field.name}
+              checked={selectedValue === childBlock.id.toString()}
+              onCheckedChange={() => {
+                field.onChange(childBlock.id.toString());
+              }}
             />
           ))}
-        </RadioGroup>
+        </div>
       )}
     </div>
   );

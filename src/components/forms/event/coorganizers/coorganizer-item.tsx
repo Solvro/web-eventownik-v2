@@ -35,7 +35,7 @@ export const CoOrganizerItem = memo(
 
     return (
       <div className="flex w-full items-center gap-2">
-        <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 grow items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-1 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:w-full md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
+        <div className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 grow items-center rounded-xl border bg-transparent py-3 ps-1 pe-4 text-lg shadow-xs transition-colors file:border-0 file:bg-transparent focus-visible:ring-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:w-full md:text-sm [&::-webkit-inner-spin-button]:appearance-none">
           <Image
             src={avatarUrl}
             alt={`${email}'s avatar`}
@@ -53,7 +53,7 @@ export const CoOrganizerItem = memo(
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              aria-label="Open permissions menu"
+              aria-label={t("openPermissionsMenu")}
               className="size-12"
             >
               <EllipsisVertical />

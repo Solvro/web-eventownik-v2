@@ -13,6 +13,7 @@ import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
 import { AttributeInputFile } from "@/components/attribute-input-file";
+import { RequirementAsterisk } from "@/components/requirement-asterisk";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,18 +24,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
 import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
+import type { AttributeType, FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
+
+// Attribute types whose inputs can't use the native `required` attribute
+const NON_NATIVE_REQUIRED_TYPES = new Set<AttributeType>([
+  "multiselect",
+  "drawing",
+  "block",
+]);
 
 interface ErrorObject {
   rule: string;
@@ -296,18 +299,12 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>
                   {t("email")}{" "}
-                  <Tooltip>
-                    <TooltipTrigger type="button">
-                      <span className="text-red-500">*</span>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
-                      {t("emailIsRequiredTooltip")}
-                    </TooltipContent>
-                  </Tooltip>
+                  <RequirementAsterisk tooltip={t("emailIsRequiredTooltip")} />
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
+                    required
                     disabled={form.formState.isSubmitting}
                     placeholder={t("emailPlaceholder")}
                     {...field}
@@ -340,14 +337,13 @@ export function ParticipantForm({
                     <FormLabel htmlFor={attribute.id.toString()}>
                       {legacyTranslate(attribute.name, locale)}{" "}
                       {attribute.isRequired ? (
-                        <Tooltip>
-                          <TooltipTrigger type="button">
-                            <span className="text-red-500">*</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="right">
-                            {t("attributeIsRequiredTooltip")}
-                          </TooltipContent>
-                        </Tooltip>
+                        <RequirementAsterisk
+                          tooltip={t("attributeIsRequiredTooltip")}
+                          // These inputs can't be marked as required natively
+                          announce={NON_NATIVE_REQUIRED_TYPES.has(
+                            attribute.type,
+                          )}
+                        />
                       ) : null}
                     </FormLabel>
                     <FormControl>

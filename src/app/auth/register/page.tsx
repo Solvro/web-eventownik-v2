@@ -278,8 +278,8 @@ export default function RegisterPage() {
   return (
     <>
       <div className="space-y-2 text-center">
-        <p className="text-3xl font-black">{t("registerTitle")}</p>
-        <p>{t("registerDescription")}</p>
+        <h1 className="text-3xl font-black">{t("registerTitle")}</h1>
+        <h2>{t("registerDescription")}</h2>
       </div>
       <Suspense>
         <RegisterForm />

@@ -22,9 +22,14 @@ export function AddToCalendarButton({ event }: { event: Event }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <EventInfoDiv className="hover:bg-accent/20 cursor-pointer">
-          <CalendarPlus size={20} />
-          <span className="hidden md:inline"> {t("addToCalendar")}</span>
+        <EventInfoDiv
+          asChild
+          className="hover:bg-accent/20 focus-visible:ring-ring cursor-pointer outline-hidden focus-visible:ring-2"
+        >
+          <button type="button">
+            <CalendarPlus size={20} aria-hidden="true" />
+            <span className="sr-only md:not-sr-only">{t("addToCalendar")}</span>
+          </button>
         </EventInfoDiv>
       </DialogTrigger>
       <DialogContent className="w-95/100 max-w-md">

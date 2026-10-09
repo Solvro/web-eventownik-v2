@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,6 +33,7 @@ export function AddCoOrganizerInput({
     PermissionType[]
   >([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const emailInputId = useId();
 
   const isEmailValid = isValidEmail(newEmail);
   const emailAlreadyExists = existingEmails.includes(newEmail);
@@ -45,7 +46,11 @@ export function AddCoOrganizerInput({
 
   return (
     <div className="flex items-center gap-2">
+      <Label htmlFor={emailInputId} className="sr-only">
+        {t("coOrganizerEmail")}
+      </Label>
       <Input
+        id={emailInputId}
         value={newEmail}
         onChange={(event_) => {
           setNewEmail(event_.target.value);
@@ -62,6 +67,7 @@ export function AddCoOrganizerInput({
             onClick={() => {
               setSelectedPermissions([6, 5, 4, 3]);
             }}
+            aria-label={t("addCoOrganizer")}
           >
             <Plus className="h-4 w-4" />
           </Button>

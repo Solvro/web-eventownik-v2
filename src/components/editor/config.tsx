@@ -750,7 +750,7 @@ export const getPuckConfig = ({
                   <input
                     type="file"
                     accept="image/*"
-                    className="sr-only"
+                    className="hidden"
                     aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
@@ -808,17 +808,23 @@ export const getPuckConfig = ({
               </div>
             ),
           },
+          alt: {
+            type: "text",
+            label: t("alt"),
+            labelIcon: <Type />,
+          },
           ...withLayout(t),
         },
         defaultProps: {
           src: "",
           size: "128",
+          alt: "",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ size, src, layout: { margin, padding } }) {
+        render({ size, src, alt, layout: { margin, padding } }) {
           const sizeValue = size === "auto" ? "auto" : `${size}px`;
           return (
             <table width="100%" {...tableProps} style={tableStyles}>
@@ -828,7 +834,7 @@ export const getPuckConfig = ({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src === "" ? `/editor-image-placeholder.svg` : src}
-                      alt=""
+                      alt={alt}
                       width={sizeValue === "auto" ? undefined : sizeValue}
                       style={{
                         display: "block",
@@ -911,7 +917,7 @@ export const getPuckConfig = ({
                   <input
                     type="file"
                     accept="image/*"
-                    className="sr-only"
+                    className="hidden"
                     aria-label={t("selectImage")}
                     ref={fileInputRef}
                     onChangeCapture={async (event) => {
@@ -969,6 +975,11 @@ export const getPuckConfig = ({
               </div>
             ),
           },
+          alt: {
+            type: "text",
+            label: t("alt"),
+            labelIcon: <Type />,
+          },
           href: {
             type: "text",
             label: t("link"),
@@ -979,20 +990,21 @@ export const getPuckConfig = ({
         defaultProps: {
           src: "",
           size: "128",
+          alt: "",
           href: "",
           layout: {
             margin: "0",
             padding: "0",
           },
         },
-        render({ size, src, href, layout: { margin, padding } }) {
+        render({ size, src, alt, href, layout: { margin, padding } }) {
           const sizeValue = size === "auto" ? "auto" : `${size}px`;
 
           const image = (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={src === "" ? `/editor-image-placeholder.svg` : src}
-              alt=""
+              alt={alt}
               width={sizeValue === "auto" ? undefined : sizeValue}
               style={{
                 display: "block",

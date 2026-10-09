@@ -15,6 +15,7 @@ import { LanguageSwitch } from "./language-switch";
 
 export function Navbar({ authButton }: { authButton: React.ReactNode }) {
   const t = useTranslations("Dashboard");
+  const tAccessibility = useTranslations("Accessibility");
 
   const navigation = [
     // { name: "Dashboard", href: "/dashboard" },
@@ -41,6 +42,11 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
               <Collapsible.Trigger asChild>
                 <Button variant="ghost" className="px-3 [&_svg]:size-6">
                   {isMenuOpen ? <X /> : <Menu />}
+                  <span className="sr-only">
+                    {tAccessibility("toggleMobileMenu", {
+                      action: isMenuOpen ? "close" : "open",
+                    })}
+                  </span>
                 </Button>
               </Collapsible.Trigger>
             </div>

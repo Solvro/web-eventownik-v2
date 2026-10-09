@@ -10,13 +10,16 @@ function SortableBlockGrid({
   blocks,
   eventId,
   attributeId,
+  labelledBy,
 }: {
   blocks: Block[];
   eventId: string;
   attributeId: string;
+  labelledBy: string;
 }) {
   return (
     <SortableTileGrid
+      labelledBy={labelledBy}
       items={blocks}
       onReorder={async (orderedIds) =>
         reorderBlocks(eventId, attributeId, orderedIds)

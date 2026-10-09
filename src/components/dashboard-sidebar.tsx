@@ -107,8 +107,16 @@ export function DashboardSidebar({
           ...(blocks.length > 0 ? [{ title: t("blocks"), links: blocks }] : []),
         ].map((section) => (
           <div key={section.title}>
-            <h2 className="mb-6 text-3xl font-bold">{section.title}</h2>
-            <ul className="space-y-2 pl-2">
+            <h2
+              id={`${section.title}-section-title`}
+              className="mb-6 text-3xl font-bold"
+            >
+              {section.title}
+            </h2>
+            <ul
+              className="space-y-2 pl-2"
+              aria-labelledby={`${section.title}-section-title`}
+            >
               {section.links.map((link) => (
                 <li key={link.title}>
                   <Button
@@ -120,6 +128,9 @@ export function DashboardSidebar({
                   >
                     <Link
                       href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                      aria-current={
+                        isActiveLink(link.route) ? "page" : undefined
+                      }
                     >
                       {link.icon}
                       <span className="truncate">{link.title}</span>
@@ -155,11 +166,14 @@ export function DashboardSidebar({
                   }
                   size="icon"
                   className="size-10"
+                  asChild
                 >
                   <Link
                     href={`/dashboard/events/${event.id.toString()}/${link.route === event.id.toString() ? "" : link.route}`}
+                    aria-current={isActiveLink(link.route) ? "page" : undefined}
                   >
                     {link.icon}
+                    <span className="sr-only">{link.title}</span>
                   </Link>
                 </Button>
               </li>

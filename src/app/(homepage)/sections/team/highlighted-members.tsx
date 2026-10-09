@@ -27,14 +27,14 @@ export function HighlightedMember({
 }) {
   return (
     <motion.div
-      className="group absolute flex items-center justify-center"
+      className="group absolute flex items-center justify-center focus-within:z-30!"
       variants={{
         hidden: { x: 0, y: 0 },
         visible: { x: translateX, y: translateY },
       }}
       style={{ zIndex }}
     >
-      <div className="absolute hidden flex-col items-center opacity-0 transition-all group-hover:opacity-100 group-hover:drop-shadow-2xl sm:flex sm:translate-y-0 sm:group-hover:-translate-y-16 lg:group-hover:-translate-y-26 xl:group-hover:-translate-y-40">
+      <div className="absolute hidden flex-col items-center opacity-0 transition-all group-hover:opacity-100 group-hover:drop-shadow-2xl group-has-focus-visible:opacity-100 group-has-focus-visible:drop-shadow-2xl sm:flex sm:translate-y-0 sm:group-hover:-translate-y-16 sm:group-has-focus-visible:-translate-y-16 lg:group-hover:-translate-y-26 lg:group-has-focus-visible:-translate-y-26 xl:group-hover:-translate-y-40 xl:group-has-focus-visible:-translate-y-40">
         <div
           className="pointer-events-none flex flex-row items-center gap-2 rounded-full px-5 py-2.5 text-black lg:gap-4"
           style={{ backgroundColor: color }}
@@ -58,7 +58,7 @@ export function HighlightedMember({
         rel="noreferrer noopener"
         className={cn(
           className,
-          "inline-block aspect-square shrink-0 rounded-2xl shadow-[0_0_0_2px_currentColor] transition sm:rounded-4xl sm:shadow-none sm:group-hover:shadow-[0_0_0_2px_currentColor]",
+          "focus-visible:ring-offset-background focus-visible:ring-ring inline-block aspect-square shrink-0 rounded-2xl shadow-[0_0_0_2px_currentColor] transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden sm:rounded-4xl sm:shadow-none sm:group-hover:shadow-[0_0_0_2px_currentColor]",
           // Responsive sizing
           "w-[clamp(4.5rem,18vw,8rem)] md:w-[8rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[18rem]",
         )}
@@ -74,11 +74,12 @@ export function HighlightedMember({
               ? member.image
               : "/assets/landing/person.webp"
           }
-          alt={member.name}
+          alt=""
           width={500}
           height={500}
           className="h-auto w-full rounded-2xl sm:rounded-4xl"
         />
+        <p className="sr-only">{member.name}</p>
       </motion.a>
     </motion.div>
   );

@@ -20,12 +20,33 @@ export function Navbar() {
       {/* Desktop Navbar */}
       <header className="bg-background container hidden w-full flex-row items-center justify-between gap-4 rounded-2xl border border-[#B2B2B2] p-3 lg:flex xl:max-w-6xl dark:border-[#414141]">
         <div className="flex items-center gap-8 uppercase">
-          <h1 className="sr-only">Eventownik</h1>
           <AppLogo />
-          <Link href="#events">{t("events")}</Link>
-          <Link href="#functionalities">{t("features")}</Link>
-          <Link href="#faq">FAQ</Link>
-          <Link href="#team">{t("team")}</Link>
+          <nav className="flex items-center gap-8">
+            <Link
+              href="#events"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("events")}
+            </Link>
+            <Link
+              href="#functionalities"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("features")}
+            </Link>
+            <Link
+              href="#faq"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="#team"
+              className="focus-visible:ring-ring rounded-sm focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              {t("team")}
+            </Link>
+          </nav>
         </div>
         <div className="flex items-center gap-4">
           <LanguageSwitch />

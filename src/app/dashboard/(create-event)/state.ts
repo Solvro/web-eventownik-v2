@@ -55,7 +55,7 @@ export const eventAtom = atom<Event>({
   location: "",
   organizer: "",
   photoUrl: "",
-  primaryColor: "#3672fd",
+  primaryColor: "#2666FD",
   participantsNumber: 1,
   socialMediaLinks: [],
   slug: "",

@@ -71,7 +71,7 @@ export function EventPageLayout({
                 />
               </div>
             </nav>
-            <div className="flex min-h-0 flex-col gap-2">
+            <main id="main-content" className="flex min-h-0 flex-col gap-2">
               <div className="flex min-h-0 flex-col pt-8 sm:px-8">
                 <h1
                   className="mb-4 text-4xl font-bold md:text-5xl"
@@ -154,7 +154,7 @@ export function EventPageLayout({
                 </ScrollArea>
                 {!showForm && children}
               </div>
-            </div>
+            </main>
           </div>
         </div>
         {showForm ? (
