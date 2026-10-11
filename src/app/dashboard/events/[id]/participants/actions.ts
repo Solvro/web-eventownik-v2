@@ -10,8 +10,8 @@ import type {
   SendMailKey,
   TableKey,
 } from "@/i18n/translate-or-fallback";
-import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
+import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
@@ -331,21 +331,13 @@ export async function getRegistrationForm(eventId: string) {
   return forms.data.find((form) => form.isFirstForm) ?? null;
 }
 
-export async function createParticipant(
-  eventId: string,
-  values: Record<string, unknown>,
-): Promise<{
+interface ParticipantFormResult {
   success: boolean;
   errors?: FormErrorObject[];
   error?: SubmitFormError;
-}> {
-  const session = await verifySession();
-  if (session === null) {
-    redirect("/auth/login");
-  }
+}
 
-  const { email, ...attributes } = values;
-
+function toParticipantAttributesPayload(attributes: Record<string, unknown>) {
   const participantAttributes: {
     attributeId: number;
     value: string | string[] | null;
@@ -375,14 +367,32 @@ export async function createParticipant(
     }
   }
 
+  return participantAttributes;
+}
+
+async function sendParticipantForm(
+  url: string,
+  method: "POST" | "PATCH",
+  values: Record<string, unknown>,
+): Promise<ParticipantFormResult> {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const { email, ...attributes } = values;
+
   try {
-    const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
-      method: "POST",
+    const response = await fetch(url, {
+      method,
       headers: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, participantAttributes }),
+      body: JSON.stringify({
+        email,
+        participantAttributes: toParticipantAttributesPayload(attributes),
+      }),
     });
 
     if (!response.ok) {
@@ -392,7 +402,7 @@ export async function createParticipant(
       };
 
       console.error(
-        `[createParticipant] Failed to create participant for event ${eventId}:`,
+        `[sendParticipantForm] ${method} ${url} failed:`,
         response,
         errorData,
       );
@@ -420,11 +430,34 @@ export async function createParticipant(
       };
     }
   } catch (error) {
-    console.error("[createParticipant] Error when creating participant", error);
+    console.error(`[sendParticipantForm] ${method} ${url} failed:`, error);
     return { success: false };
   }
 
   return { success: true };
+}
+
+export async function createParticipant(
+  eventId: string,
+  values: Record<string, unknown>,
+) {
+  return sendParticipantForm(
+    `${API_URL}/events/${eventId}/participants`,
+    "POST",
+    values,
+  );
+}
+
+export async function editParticipant(
+  eventId: string,
+  participantId: number,
+  values: Record<string, unknown>,
+) {
+  return sendParticipantForm(
+    `${API_URL}/events/${eventId}/participants/${participantId.toString()}`,
+    "PATCH",
+    values,
+  );
 }
 
 async function createImportedParticipants(

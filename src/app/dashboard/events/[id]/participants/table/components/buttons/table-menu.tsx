@@ -6,7 +6,7 @@ import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { ImportParticipantsDialog } from "../../import-participants-dialog";
-import { AddParticipantDialog } from "../dialogs/add-participant-dialog";
+import { AddParticipantDialog } from "../dialogs/participant-dialog";
 import { ColumnSettingsDropdown } from "../table-ui/column-settings-dropdown";
 import { TableSelectionInfo } from "../table-ui/table-selection-info";
 import { TableToolbar } from "../table-ui/table-toolbar";

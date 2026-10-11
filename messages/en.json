@@ -870,7 +870,7 @@
     "bulkEditSuccess": "Bulk edit applied successfully",
     "bulkEditError": "Could not update {count, plural, =1 {1 participant} other {# participants}}",
     "columnOrderLoadError": "An error occurred while loading the column order",
-    "editParticipantSuccess": "Participant changes saved",
+    "editParticipantSuccess": "Changes saved",
     "editParticipantError": "Failed to save participant changes",
     "none": "None",
     "uploaded": "Uploaded",
@@ -897,7 +897,12 @@
     "addParticipantSuccessDescription": "The participant has been successfully added to the event",
     "addParticipantNoForm": "This event doesn't have a registration form yet.",
     "addParticipantFormError": "Failed to load the registration form.",
-    "addParticipantSkippedAttributes": "File and drawing fields are not available when adding a participant manually."
+    "addParticipantSkippedAttributes": "File and drawing fields are not available when adding a participant manually.",
+    "participantRegistrationDateTime": "Registration date and time",
+    "editParticipantTitle": "Edit participant",
+    "editParticipantDescription": "Change the participant's data in the registration form.",
+    "editParticipantSuccessDescription": "The participant's data has been updated",
+    "editParticipantLoadError": "Failed to load the participant's data."
   },
   "Themes": {
     "light": "Light",

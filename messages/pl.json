@@ -870,7 +870,7 @@
     "bulkEditSuccess": "Grupowa edycja zakończona pomyślnie",
     "bulkEditError": "Nie udało się zaktualizować {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
     "columnOrderLoadError": "Wystąpił błąd podczas wczytywania kolejności kolumn",
-    "editParticipantSuccess": "Zapisano zmiany w uczestniku",
+    "editParticipantSuccess": "Zapisano zmiany",
     "editParticipantError": "Nie udało się zapisać zmian w uczestniku!",
     "none": "Brak",
     "uploaded": "Przesłany",
@@ -897,7 +897,12 @@
     "addParticipantSuccessDescription": "Uczestnik został pomyślnie dodany do wydarzenia",
     "addParticipantNoForm": "To wydarzenie nie ma jeszcze formularza rejestracyjnego.",
     "addParticipantFormError": "Nie udało się załadować formularza rejestracyjnego.",
-    "addParticipantSkippedAttributes": "Pola typu plik i rysunek nie są dostępne przy ręcznym dodawaniu uczestnika."
+    "addParticipantSkippedAttributes": "Pola typu plik i rysunek nie są dostępne przy ręcznym dodawaniu uczestnika.",
+    "participantRegistrationDateTime": "Data i godzina rejestracji",
+    "editParticipantTitle": "Edytuj uczestnika",
+    "editParticipantDescription": "Zmień dane uczestnika w formularzu rejestracyjnym.",
+    "editParticipantSuccessDescription": "Dane uczestnika zostały zaktualizowane",
+    "editParticipantLoadError": "Nie udało się załadować danych uczestnika."
   },
   "Themes": {
     "light": "Jasny",
