@@ -3,16 +3,21 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
+import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import type {
+  EventDetailsKey,
   ExportKey,
   SendMailKey,
   TableKey,
 } from "@/i18n/translate-or-fallback";
 import { API_URL } from "@/lib/api";
+import type { PaginatedResponse } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
+import type { FormErrorObject } from "@/types/form";
+import type { EventForm } from "@/types/forms";
 import type { Participant } from "@/types/participant";
 
 export interface ImportedParticipant {
@@ -300,6 +305,125 @@ export async function updateParticipant(
     }
     return { success: false };
   }
+  return { success: true };
+}
+
+export async function getRegistrationForm(eventId: string) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventId}/forms?perPage=100`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    },
+  );
+
+  if (!response.ok) {
+    console.error("Failed to fetch registration form", response);
+    throw new Error("Failed to fetch registration form");
+  }
+
+  const forms = (await response.json()) as PaginatedResponse<EventForm>;
+  return forms.data.find((form) => form.isFirstForm) ?? null;
+}
+
+export async function createParticipant(
+  eventId: string,
+  values: Record<string, unknown>,
+): Promise<{
+  success: boolean;
+  errors?: FormErrorObject[];
+  error?: SubmitFormError;
+}> {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+
+  const { email, ...attributes } = values;
+
+  const participantAttributes: {
+    attributeId: number;
+    value: string | string[] | null;
+  }[] = [];
+
+  for (const [key, value] of Object.entries(attributes)) {
+    const attributeId = Number(key);
+    if (Number.isNaN(attributeId) || value === undefined) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      participantAttributes.push({
+        attributeId,
+        value: value.length === 0 ? null : value.map(String),
+      });
+    } else if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      participantAttributes.push({
+        attributeId,
+        value: value === "" ? null : String(value),
+      });
+    } else {
+      participantAttributes.push({ attributeId, value: null });
+    }
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/events/${eventId}/participants`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, participantAttributes }),
+    });
+
+    if (!response.ok) {
+      const errorData = (await response.json().catch(() => ({}))) as {
+        message?: string;
+        errors?: FormErrorObject[];
+      };
+
+      console.error(
+        `[createParticipant] Failed to create participant for event ${eventId}:`,
+        response,
+        errorData,
+      );
+
+      const errorMessages = [
+        errorData.message,
+        ...(errorData.errors?.map((error) => error.message) ?? []),
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      return {
+        success: false,
+        errors: errorData.errors,
+        error:
+          errorMessages === ""
+            ? {
+                key: "httpError" as EventDetailsKey,
+                values: {
+                  status: response.status,
+                  statusText: response.statusText,
+                },
+              }
+            : { message: errorMessages },
+      };
+    }
+  } catch (error) {
+    console.error("[createParticipant] Error when creating participant", error);
+    return { success: false };
+  }
+
   return { success: true };
 }
 

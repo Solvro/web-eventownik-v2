@@ -56,6 +56,14 @@ interface ParticipantFormProps {
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   editMode?: boolean;
+  /**
+   * Set to false for authenticated (dashboard) submissions which don't require hCaptcha
+   */
+  withCaptcha?: boolean;
+  /**
+   * Called after a successful submission instead of showing the success screen
+   */
+  onSuccess?: () => void;
 }
 
 export function ParticipantForm({
@@ -65,6 +73,8 @@ export function ParticipantForm({
   userData,
   eventBlocks = [],
   editMode = false,
+  withCaptcha = true,
+  onSuccess,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -133,12 +143,20 @@ export function ParticipantForm({
    */
   async function submitWithCaptcha(
     values: z.infer<typeof formSchema>,
-    token: string,
+    token?: string,
   ) {
     try {
-      const result = await onSubmit({ ...values, token }, files);
+      const result = await onSubmit(
+        token === undefined ? values : { ...values, token },
+        files,
+      );
       if (result.success) {
         setFiles([]);
+        if (onSuccess !== undefined) {
+          form.reset();
+          onSuccess();
+          return;
+        }
         if (editMode) {
           form.reset(values);
         }
@@ -269,6 +287,11 @@ export function ParticipantForm({
     }
 
     if (hasValidationErrors) {
+      return;
+    }
+
+    if (!withCaptcha) {
+      await submitWithCaptcha(values);
       return;
     }
 
@@ -411,23 +434,25 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        <HCaptcha
-          ref={hCaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-          size="invisible"
-          onVerify={handleCaptchaVerify}
-          onExpire={() => {
-            setHCaptchaToken(null);
-            setDidCaptchaFail(true);
-          }}
-          onClose={() => {
-            setDidCaptchaFail(true);
-          }}
-          onError={(captchaError) => {
-            console.error("Captcha error occurred:", captchaError);
-            setDidCaptchaFail(true);
-          }}
-        />
+        {withCaptcha ? (
+          <HCaptcha
+            ref={hCaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
+            size="invisible"
+            onVerify={handleCaptchaVerify}
+            onExpire={() => {
+              setHCaptchaToken(null);
+              setDidCaptchaFail(true);
+            }}
+            onClose={() => {
+              setDidCaptchaFail(true);
+            }}
+            onError={(captchaError) => {
+              console.error("Captcha error occurred:", captchaError);
+              setDidCaptchaFail(true);
+            }}
+          />
+        ) : null}
 
         {didCaptchaFail ? (
           <Button

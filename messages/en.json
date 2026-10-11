@@ -889,7 +889,15 @@
     "clearAllOptions": "Clear all options",
     "removeAdditionalOptions": "Remove additional options",
     "serverError": "The server is not working properly. Please try again later",
-    "unexpectedError": "An unexpected error occurred. Please try again"
+    "unexpectedError": "An unexpected error occurred. Please try again",
+    "addParticipantTrigger": "Add participant",
+    "addParticipantTitle": "Add participant",
+    "addParticipantDescription": "Fill out the registration form to manually add a participant to the event.",
+    "addParticipantSuccess": "Participant added",
+    "addParticipantSuccessDescription": "The participant has been successfully added to the event",
+    "addParticipantNoForm": "This event doesn't have a registration form yet.",
+    "addParticipantFormError": "Failed to load the registration form.",
+    "addParticipantSkippedAttributes": "File and drawing fields are not available when adding a participant manually."
   },
   "Themes": {
     "light": "Light",

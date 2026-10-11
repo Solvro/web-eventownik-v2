@@ -889,7 +889,15 @@
     "clearAllOptions": "Wyczyść wszystkie opcje",
     "removeAdditionalOptions": "Usuń dodatkowe opcje",
     "serverError": "Serwer nie działa poprawnie. Spróbuj ponownie później",
-    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie"
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    "addParticipantTrigger": "Dodaj uczestnika",
+    "addParticipantTitle": "Dodaj uczestnika",
+    "addParticipantDescription": "Wypełnij formularz rejestracyjny, aby ręcznie dodać uczestnika do wydarzenia.",
+    "addParticipantSuccess": "Dodano uczestnika",
+    "addParticipantSuccessDescription": "Uczestnik został pomyślnie dodany do wydarzenia",
+    "addParticipantNoForm": "To wydarzenie nie ma jeszcze formularza rejestracyjnego.",
+    "addParticipantFormError": "Nie udało się załadować formularza rejestracyjnego.",
+    "addParticipantSkippedAttributes": "Pola typu plik i rysunek nie są dostępne przy ręcznym dodawaniu uczestnika."
   },
   "Themes": {
     "light": "Jasny",
