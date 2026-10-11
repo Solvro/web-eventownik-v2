@@ -2,11 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
+import type { FlattenedParticipant } from "@/types/participant";
 
 import {
   getAttributes,
@@ -16,10 +18,13 @@ import {
 } from "./actions";
 import { TableMenu } from "./table/components/buttons/table-menu";
 import { HelpDialog } from "./table/components/dialogs/help-dialog";
+import { ParticipantDialog } from "./table/components/dialogs/participant-dialog";
 import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventId }: { eventId: string }) {
   const t = useTranslations("Table");
+  const [selectedParticipant, setSelectedParticipant] =
+    useState<FlattenedParticipant | null>(null);
 
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventId],
@@ -107,7 +112,18 @@ export function ParticipantsLoader({ eventId }: { eventId: string }) {
           deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
-      <ParticipantTable table={table} />
+      <ParticipantTable table={table} onRowClick={setSelectedParticipant} />
+      <ParticipantDialog
+        eventId={eventId}
+        blocks={blocks ?? []}
+        participant={selectedParticipant}
+        open={selectedParticipant !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedParticipant(null);
+          }
+        }}
+      />
       <UnsavedChangesAlert
         active={isGuardActive}
         onConfirm={onConfirm}

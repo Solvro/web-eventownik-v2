@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,8 +31,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
+import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
 import type { FormAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -56,6 +57,22 @@ interface ParticipantFormProps {
   userData?: PublicParticipant;
   eventBlocks?: PublicBlock[];
   editMode?: boolean;
+  /**
+   * Set to false for authenticated (dashboard) submissions which don't require hCaptcha
+   */
+  withCaptcha?: boolean;
+  /**
+   * Called after a successful submission instead of showing the success screen
+   */
+  onSuccess?: () => void;
+  /**
+   * Values that override the defaults derived from `userData`
+   */
+  initialValues?: Record<string, unknown>;
+  /**
+   * Content rendered at the top of the form, above the fields
+   */
+  header?: ReactNode;
 }
 
 export function ParticipantForm({
@@ -65,6 +82,10 @@ export function ParticipantForm({
   userData,
   eventBlocks = [],
   editMode = false,
+  withCaptcha = true,
+  onSuccess,
+  initialValues,
+  header,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -108,6 +129,7 @@ export function ParticipantForm({
           accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
           return accumulator;
         }, {}),
+      ...initialValues,
     },
   });
 
@@ -133,12 +155,20 @@ export function ParticipantForm({
    */
   async function submitWithCaptcha(
     values: z.infer<typeof formSchema>,
-    token: string,
+    token?: string,
   ) {
     try {
-      const result = await onSubmit({ ...values, token }, files);
+      const result = await onSubmit(
+        token === undefined ? values : { ...values, token },
+        files,
+      );
       if (result.success) {
         setFiles([]);
+        if (onSuccess !== undefined) {
+          form.reset();
+          onSuccess();
+          return;
+        }
         if (editMode) {
           form.reset(values);
         }
@@ -272,6 +302,11 @@ export function ParticipantForm({
       return;
     }
 
+    if (!withCaptcha) {
+      await submitWithCaptcha(values);
+      return;
+    }
+
     if (hCaptchaToken === null) {
       pendingFormData.current = values;
 
@@ -288,6 +323,8 @@ export function ParticipantForm({
         onSubmit={form.handleSubmit(handleFormSubmit)}
         className="w-full max-w-sm space-y-4"
       >
+        {header}
+
         {includeEmail ? (
           <FormField
             control={form.control}
@@ -411,23 +448,25 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        <HCaptcha
-          ref={hCaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-          size="invisible"
-          onVerify={handleCaptchaVerify}
-          onExpire={() => {
-            setHCaptchaToken(null);
-            setDidCaptchaFail(true);
-          }}
-          onClose={() => {
-            setDidCaptchaFail(true);
-          }}
-          onError={(captchaError) => {
-            console.error("Captcha error occurred:", captchaError);
-            setDidCaptchaFail(true);
-          }}
-        />
+        {withCaptcha ? (
+          <HCaptcha
+            ref={hCaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
+            size="invisible"
+            onVerify={handleCaptchaVerify}
+            onExpire={() => {
+              setHCaptchaToken(null);
+              setDidCaptchaFail(true);
+            }}
+            onClose={() => {
+              setDidCaptchaFail(true);
+            }}
+            onError={(captchaError) => {
+              console.error("Captcha error occurred:", captchaError);
+              setDidCaptchaFail(true);
+            }}
+          />
+        ) : null}
 
         {didCaptchaFail ? (
           <Button
