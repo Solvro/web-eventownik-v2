@@ -4,7 +4,28 @@ import type { PaginatedResponse } from "@/lib/api";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { GetAttributesResponse } from "@/types/attributes";
+import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
+
+async function getEvent(eventUuid: string) {
+  const session = await verifySession();
+  if (session == null) {
+    return null;
+  }
+
+  const response = await fetch(`${API_URL}/events/${eventUuid}`, {
+    headers: {
+      Authorization: `Bearer ${session.bearerToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error(`[getEvent] Failed to fetch event ${eventUuid}:`, response);
+    return null;
+  }
+
+  return (await response.json()) as Event;
+}
 
 async function getEventAttributes(eventUuid: string) {
   const session = await verifySession();
@@ -87,4 +108,4 @@ const getSingleEventForm = cache(
   },
 );
 
-export { getEventAttributes, getEventForms, getSingleEventForm };
+export { getEvent, getEventAttributes, getEventForms, getSingleEventForm };

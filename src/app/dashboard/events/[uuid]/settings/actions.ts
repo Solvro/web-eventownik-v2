@@ -71,6 +71,7 @@ export async function updateEvent(
       (event.participantsCount ?? 0).toString(),
     );
     formData.append("contactEmail", event.contactEmail ?? "");
+    formData.append("registerFormUuid", event.registerFormUuid);
 
     // Links
     const addLinkToFormData = (

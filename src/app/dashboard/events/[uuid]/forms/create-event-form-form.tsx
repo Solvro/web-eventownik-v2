@@ -78,7 +78,6 @@ function CreateEventFormForm({
       openDate: newEventForm.openDate,
       closeDate: newEventForm.closeDate,
       openCondition: newEventForm.openCondition,
-      isFirstForm: newEventForm.isFirstForm,
       isOpen: newEventForm.isOpen,
     },
   });
@@ -128,7 +127,6 @@ function CreateEventFormForm({
 
             setNewEventForm({
               isOpen: true,
-              isFirstForm: false,
               description: "",
               name: "",
               slug: "",

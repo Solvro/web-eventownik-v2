@@ -31,7 +31,6 @@ export async function createEventForm(
       openDate: resolveFormDateTime(form.openCondition, form.closeDate),
       closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
       attributes: form.attributes,
-      isFirstForm: form.isFirstForm,
       isOpen: form.isOpen,
       openCondition: form.openCondition,
     }),
@@ -100,7 +99,6 @@ export async function updateEventForm(
         openDate: resolveFormDateTime(form.openCondition, form.closeDate),
         closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
         attributes: form.attributes,
-        isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
         openCondition: form.openCondition,
       }),
@@ -136,6 +134,36 @@ export async function updateEventForm(
               statusText: response.statusText,
             },
           },
+    };
+  }
+
+  return { success: true };
+}
+
+export async function updateEventRegisterForm(
+  eventUuid: string,
+  registerFormUuid: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const formData = new FormData();
+  formData.append("registerFormUuid", registerFormUuid);
+
+  const response = await fetch(`${API_URL}/events/${eventUuid}`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = (await response.json()) as { message?: string };
+    return {
+      success: false,
+      error: error.message ?? response.statusText,
     };
   }
 

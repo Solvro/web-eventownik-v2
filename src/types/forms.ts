@@ -26,7 +26,6 @@ export interface CreateEventFormDto {
   openCondition?: OpenCondition;
   order?: number;
   attributes: FormAttribute[];
-  isFirstForm?: boolean;
   isOpen?: boolean;
 }
 
@@ -69,7 +68,6 @@ export interface FormErrorObject {
 export interface CompleteEventForm {
   name: string;
   description: string;
-  isFirstForm: boolean;
   isOpen: boolean;
   slug: string;
   openDate: Date;

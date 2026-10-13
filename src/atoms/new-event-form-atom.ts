@@ -13,7 +13,6 @@ export interface NewEventForm extends Omit<
 }
 
 export const newEventFormAtom = atom<NewEventForm>({
-  isFirstForm: false,
   description: "<p></p>",
   name: "",
   slug: "",

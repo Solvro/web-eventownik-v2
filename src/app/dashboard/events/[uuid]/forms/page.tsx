@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { CreateEventFormForm } from "./create-event-form-form";
-import { getEventAttributes, getEventForms } from "./data-access";
+import { getEvent, getEventAttributes, getEventForms } from "./data-access";
+import { RegistrationFormSelector } from "./registration-form-selector";
 import { SortableFormGrid } from "./sortable-form-grid";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,8 +21,11 @@ export default async function DashboardEventFormsPage({
   params: Promise<{ uuid: string }>;
 }) {
   const { uuid } = await params;
-  const forms = await getEventForms(uuid);
-  const attributes = await getEventAttributes(uuid);
+  const [event, forms, attributes] = await Promise.all([
+    getEvent(uuid),
+    getEventForms(uuid),
+    getEventAttributes(uuid),
+  ]);
   const t = await getTranslations("EventDetails");
 
   return (
@@ -33,6 +37,13 @@ export default async function DashboardEventFormsPage({
           attributes={attributes?.data ?? []}
         />
       </div>
+      {event != null && (
+        <RegistrationFormSelector
+          eventUuid={uuid}
+          forms={forms}
+          registerFormUuid={event.registerFormUuid}
+        />
+      )}
       {forms.length > 0 ? (
         <SortableFormGrid forms={forms} eventUuid={uuid} />
       ) : (

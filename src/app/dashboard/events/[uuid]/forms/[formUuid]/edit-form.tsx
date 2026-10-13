@@ -53,7 +53,6 @@ function EventFormEditForm({
         formToEdit.openDate === null ? null : new Date(formToEdit.openDate),
         formToEdit.closeDate === null ? null : new Date(formToEdit.closeDate),
       ),
-      isFirstForm: false,
       isOpen: formToEdit.isOpen,
       openCondition: formToEdit.openCondition,
     },

@@ -37,17 +37,12 @@ export const EventFormGeneralInfoSchema = z
     openDate: z.date(),
     closeDate: z.date(),
     openCondition: z.enum(["MANUAL", "ON_DATE"]),
-    isFirstForm: z.boolean().default(false),
     isOpen: z.boolean().default(true),
   })
-  .refine(
-    ({ isFirstForm, description }) =>
-      isFirstForm || description.trim() !== "<p></p>",
-    {
-      path: ["description"],
-      message: "descriptionRequired",
-    },
-  )
+  .refine(({ description }) => description.trim() !== "<p></p>", {
+    path: ["description"],
+    message: "descriptionRequired",
+  })
 
   .superRefine((schema, context) => {
     if (schema.openCondition === "MANUAL") {
@@ -198,34 +193,14 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
       )}
 
       <FormField
-        name="isFirstForm"
-        control={control}
-        render={({ field }) => (
-          <FormItem className="flex w-fit flex-col">
-            <FormLabel>{t("isRegistrationForm")}</FormLabel>
-            <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                className="m-0"
-                disabled={formState.isSubmitting ? true : undefined}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <FormField
         control={control}
         name="description"
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t("formDescr")}</FormLabel>
-            <FormDescription>{t("registrationFormDescr")}</FormDescription>
             <WysiwygEditor
               content={field.value}
               onChange={field.onChange}
-              disabled={watch("isFirstForm")}
               placeholder={t("enterFormDescr")}
             />
             <FormMessage className="text-sm text-red-500">
