@@ -4,23 +4,12 @@ import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
-import type { FormAttributeBase } from "@/types/attributes";
-import type { CompleteEventForm } from "@/types/forms";
+import type { CreateEventFormDto } from "@/types/forms";
 
-export type Payload = Omit<
-  CompleteEventForm,
-  | "eventUuid"
-  | "uuid"
-  | "slug"
-  | "attributes"
-  | "order"
-  | "createdAt"
-  | "updatedAt"
-> & {
-  attributes: FormAttributeBase[];
-};
-
-export async function createEventForm(eventUuid: string, form: Payload) {
+export async function createEventForm(
+  eventUuid: string,
+  form: CreateEventFormDto,
+) {
   const session = await verifySession();
 
   if (session == null) {
@@ -39,11 +28,10 @@ export async function createEventForm(eventUuid: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      openDate: resolveFormDateTime(form),
+      openDate: resolveFormDateTime(form.openCondition, form.closeDate),
+      closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
       attributes: form.attributes,
-      closeDate: resolveFormDateTime(form),
       isOpen: form.isOpen,
-      isFirstForm: form.isFirstForm,
       openCondition: form.openCondition,
     }),
   });
@@ -86,7 +74,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
 export async function updateEventForm(
   eventUuid: string,
   formUuid: string,
-  form: Payload,
+  form: Partial<CreateEventFormDto>,
 ) {
   const session = await verifySession();
 
@@ -108,10 +96,9 @@ export async function updateEventForm(
       body: JSON.stringify({
         name: form.name,
         description: form.description,
-        openDate: resolveFormDateTime(form),
+        openDate: resolveFormDateTime(form.openCondition, form.closeDate),
+        closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
         attributes: form.attributes,
-        closeDate: resolveFormDateTime(form),
-        isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
         openCondition: form.openCondition,
       }),
@@ -147,6 +134,36 @@ export async function updateEventForm(
               statusText: response.statusText,
             },
           },
+    };
+  }
+
+  return { success: true };
+}
+
+export async function updateEventRegisterForm(
+  eventUuid: string,
+  registerFormUuid: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const formData = new FormData();
+  formData.append("registerFormUuid", registerFormUuid);
+
+  const response = await fetch(`${API_URL}/events/${eventUuid}`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = (await response.json()) as { message?: string };
+    return {
+      success: false,
+      error: error.message ?? response.statusText,
     };
   }
 

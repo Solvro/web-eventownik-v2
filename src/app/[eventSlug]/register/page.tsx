@@ -11,7 +11,6 @@ import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL, PHOTO_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
-import type { PublicBlock } from "@/types/blocks";
 import type { Event } from "@/types/event";
 
 import { FormGenerator } from "../form-generator";
@@ -56,25 +55,25 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(
+  const eventResponse = await fetch(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
     {
       method: "GET",
     },
   );
 
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
+  if (!eventResponse.ok) {
+    const error = (await eventResponse.json()) as unknown;
     console.error(error);
     return <EventNotFound whatNotFound="event" />;
   }
 
-  const event = (await response.json()) as Event;
+  const event = (await eventResponse.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
   const form = event.registerForm;
 
-  if (form === null) {
+  if (form == null) {
     return <EventNotFound whatNotFound="form" />;
   }
 
@@ -82,18 +81,53 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
     return <FormClosedView event={event} form={form} />;
   }
 
-  const blockAttributesInForm = form.attributes.filter(
+  const attributes = form.formDefinitions.map((definition) => ({
+    ...definition.attribute,
+    config: {
+      ...definition.attribute.config,
+      isRequired: definition.isRequired,
+    },
+  }));
+
+  const blockAttributesInForm = attributes.filter(
     (attribute) => attribute.type === "block",
   );
 
-  const eventBlocks = await Promise.all(
+  const eventBlocksResponse = await Promise.all(
     blockAttributesInForm.map(async (attribute) =>
       getEventBlockAttributeBlocks(event.slug, attribute.uuid),
     ),
   );
 
-  if (eventBlocks.includes(null)) {
+  if (eventBlocksResponse.includes(null)) {
     return <EventNotFound whatNotFound="blocks" />;
+  }
+
+  const eventBlocks = eventBlocksResponse.filter((block) => block !== null);
+
+  if (!form.isOpen) {
+    return (
+      <EventPageLayout
+        event={event}
+        description={event.description ?? ""}
+        variant="form"
+      >
+        <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
+          <Info className="text-muted-foreground size-10" aria-hidden="true" />
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold">
+              {t("registrationDisabled")}
+            </h1>
+          </div>
+          <Link
+            href={`/${event.slug}`}
+            className="text-primary text-sm font-medium underline underline-offset-4"
+          >
+            {t("backToEventPage")}
+          </Link>
+        </div>
+      </EventPageLayout>
+    );
   }
 
   return (
@@ -108,8 +142,8 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <p className="mb-8">{t("fillForm")}</p>
 
       <FormGenerator
-        attributes={form.attributes}
-        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        formDefinitions={form.formDefinitions}
+        originalEventBlocks={eventBlocks}
         formUuid={form.uuid}
         eventSlug={eventSlug}
         editMode={false}

@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { ParticipantForm } from "@/components/participant-form";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
+import type { Block } from "@/types/blocks";
+import type { FormDefinition } from "@/types/forms";
+import type { Participant } from "@/types/participant";
 
 import { submitParticipantForm } from "./actions";
 
 export function FormGenerator({
-  attributes,
+  formDefinitions,
   userData,
   originalEventBlocks,
   formUuid,
@@ -19,40 +19,41 @@ export function FormGenerator({
   userSlug,
   editMode,
 }: {
-  attributes: FormAttribute[];
-  userData?: PublicParticipant;
-  originalEventBlocks: PublicBlock[];
+  formDefinitions: FormDefinition[];
+  userData?: Participant;
+  originalEventBlocks: Block[];
   formUuid: string;
   eventSlug: string;
   userSlug?: string;
   editMode: boolean;
 }) {
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
-  const currentBlocksRef = useRef<PublicBlock[]>(originalEventBlocks); // used to prevent unnecessary re-renders
+  const currentBlocksRef = useRef<Block[]>(originalEventBlocks);
   const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
 
     async function updateBlocksData() {
-      const blockAttributes = attributes.filter(
-        (attribute) => attribute.type === "block",
-      );
+      const blockAttributes = formDefinitions
+        .map((definition) => definition.attribute)
+        .filter((attribute) => attribute.type === "block");
       if (blockAttributes.length === 0) {
         return;
       }
 
       try {
-        const updatedBlocks = (await Promise.all(
+        const blocks = await Promise.all(
           blockAttributes.map(async (attribute) =>
             getEventBlockAttributeBlocks(eventSlug, attribute.uuid),
           ),
-        )) as unknown as PublicBlock[];
+        );
+
+        const updatedBlocks = blocks.filter((block) => block != null);
 
         if (
           isMounted.current &&
-          JSON.stringify(currentBlocksRef.current) !==
-            JSON.stringify(updatedBlocks)
+          JSON.stringify(currentBlocksRef.current) !== JSON.stringify(blocks)
         ) {
           currentBlocksRef.current = updatedBlocks;
           setEventBlocks(updatedBlocks);
@@ -69,11 +70,11 @@ export function FormGenerator({
     return () => {
       isMounted.current = false;
     };
-  }, [eventSlug, attributes]);
+  }, [eventSlug, formDefinitions]);
 
   return (
     <ParticipantForm
-      attributes={attributes}
+      formDefinitions={formDefinitions}
       onSubmit={async (values, files) =>
         submitParticipantForm({
           values,
