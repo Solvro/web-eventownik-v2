@@ -88,6 +88,7 @@
     "invalidLoginCredentials": "Nieprawidłowe dane logowania."
   },
   "Dashboard": {
+    "event": "Wydarzenie",
     "organizerPanel": "Panel organizatora",
     "logout": "Wyloguj się",
     "login": "Zaloguj się",
@@ -174,6 +175,10 @@
     "unnamedEmail": "maila",
     "backToTemplates": "Wróć do szablonów",
     "editEmailTemplate": "Edytuj szablon maila",
+    "duplicate": "Duplikuj",
+    "resourceDuplicated": "{resourceType} został zduplikowany",
+    "resourceDuplicatedWithName": "Utworzono kopię: {resourceType} ''{resourceName}''",
+    "resourceDuplicateFailed": "Nie udało się zduplikować: {resourceType}!",
     "resourceDeleted": "{resourceType} został usunięty",
     "resourceDeletedWithName": "{resourceType} ''{resourceName}'' został usunięty",
     "resourceDeleteFailed": "Nie udało się usunąć {resourceType}!",

@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
+import { getNextCopyName } from "@/lib/utils";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
-import { getSingleEventEmail } from "./data-access";
+import { getEventEmails, getSingleEventEmail } from "./data-access";
 
 export async function getSingleEventEmailAction(
   eventUuid: string,
@@ -186,6 +187,46 @@ export async function deleteEventMail(eventUuid: string, mailUuid: string) {
         },
       },
     };
+  }
+
+  return { success: true };
+}
+
+export async function duplicateEventEmail(
+  eventUuid: string,
+  mailUuid: string,
+  sourceName: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false };
+  }
+
+  const existing = (await getEventEmails(eventUuid)) ?? [];
+  const newName = getNextCopyName(
+    sourceName,
+    existing.map((item) => item.name),
+  );
+
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/emails/${mailUuid}/duplicate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateEventEmail action] Failed to duplicate email ${mailUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
   }
 
   return { success: true };

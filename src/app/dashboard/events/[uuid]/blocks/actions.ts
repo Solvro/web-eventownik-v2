@@ -6,6 +6,8 @@ import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
+import { getNextCopyName } from "@/lib/utils";
+import { Block } from "@/types/blocks";
 
 export async function reorderBlockAttributes(
   eventUuid: string,
@@ -302,6 +304,53 @@ export async function deleteBlock(
         },
       },
     };
+  }
+
+  return { success: true };
+}
+
+export async function duplicateBlock(
+  eventUuid: string,
+  attributeUuid: string,
+  blockUuid: string,
+  sourceName: string,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    return { success: false };
+  }
+
+  const blocksUrl = `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`;
+  const headers = {
+    Authorization: `Bearer ${session.bearerToken}`,
+    "Content-Type": "application/json",
+  };
+
+  const treeResponse = await fetch(blocksUrl, { headers });
+  const rootBlock = treeResponse.ok
+    ? ((await treeResponse.json()) as Block | [])
+    : [];
+  const siblingNames = Array.isArray(rootBlock)
+    ? []
+    : rootBlock.children.map((block) => block.name);
+
+  const response = await fetch(
+    `${blocksUrl}/${encodeURIComponent(blockUuid)}/duplicate`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        name: getNextCopyName(sourceName, siblingNames),
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateBlock action] Failed to duplicate block ${blockUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
   }
 
   return { success: true };

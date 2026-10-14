@@ -88,6 +88,7 @@
     "invalidLoginCredentials": "Invalid sign in credentials."
   },
   "Dashboard": {
+    "event": "Event",
     "organizerPanel": "Organizer panel",
     "logout": "Sign out",
     "login": "Sign in",
@@ -174,6 +175,10 @@
     "unnamedEmail": "email",
     "backToTemplates": "Back to templates",
     "editEmailTemplate": "Edit email template",
+    "duplicate": "Duplicate",
+    "resourceDuplicated": "{resourceType} has been duplicated",
+    "resourceDuplicatedWithName": "Created a copy of {resourceType} ''{resourceName}''",
+    "resourceDuplicateFailed": "Failed to duplicate {resourceType}!",
     "resourceDeleted": "{resourceType} has been deleted",
     "resourceDeletedWithName": "{resourceType} ''{resourceName}'' has been deleted",
     "resourceDeleteFailed": "Failed to delete {resourceType}!",
