@@ -12,12 +12,16 @@ interface DuplicateResourceButtonProps {
   resourceName: string;
   resourceType: string;
   onDuplicate: () => Promise<{ success: boolean }>;
+  variant?: "eventGhost" | "ghost";
+  className?: string;
 }
 
 function DuplicateResourceButton({
   resourceName,
   resourceType,
   onDuplicate,
+  variant = "eventGhost",
+  className,
 }: DuplicateResourceButtonProps) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
@@ -37,7 +41,6 @@ function DuplicateResourceButton({
           resourceName,
         }),
       });
-      router.refresh();
     } else {
       toast({
         title: t("resourceDuplicateFailed", {
@@ -46,17 +49,17 @@ function DuplicateResourceButton({
         variant: "destructive",
       });
     }
+    router.refresh();
   }
 
   return (
     <Button
-      variant="eventGhost"
+      variant={variant}
       size="icon"
+      className={className}
       title={`${t("duplicate")} ${resourceType.toLowerCase()}`}
       disabled={isPending}
-      onClick={() => {
-        void onSubmit();
-      }}
+      onClick={() => onSubmit()}
     >
       {isPending ? <Loader className="animate-spin" /> : <Copy />}
       <span className="sr-only">
