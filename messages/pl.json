@@ -88,6 +88,7 @@
     "invalidLoginCredentials": "Nieprawidłowe dane logowania."
   },
   "Dashboard": {
+    "event": "Wydarzenie",
     "organizerPanel": "Panel organizatora",
     "logout": "Wyloguj się",
     "login": "Zaloguj się",
