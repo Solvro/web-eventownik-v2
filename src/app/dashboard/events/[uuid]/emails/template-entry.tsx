@@ -41,7 +41,7 @@ function EmailTemplateEntry({
             duplicateEventEmail(
               eventUuid,
               emailTemplate.uuid,
-              `${emailTemplate.name} (1)`,
+              emailTemplate.name,
             )
           }
         />

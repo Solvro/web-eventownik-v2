@@ -160,3 +160,22 @@ export function getAttributeLabel(name: string, language: string) {
     return name;
   }
 }
+
+export function getNextCopyName(name: string, existingNames: string[]) {
+  const baseName = name.replace(/ \(\d+\)$/, "");
+  let highestNumber = 0;
+
+  for (const existingName of existingNames) {
+    if (
+      existingName.startsWith(`${baseName} (`) &&
+      existingName.endsWith(")")
+    ) {
+      const copyNumber = Number(existingName.slice(baseName.length + 2, -1));
+      if (Number.isInteger(copyNumber) && copyNumber > highestNumber) {
+        highestNumber = copyNumber;
+      }
+    }
+  }
+
+  return `${baseName} (${(highestNumber + 1).toString()})`;
+}

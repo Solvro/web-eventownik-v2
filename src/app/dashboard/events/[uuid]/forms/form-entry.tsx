@@ -26,7 +26,7 @@ function FormEntry({
           resourceName={form.name}
           resourceType={t("form")}
           onDuplicate={async () =>
-            duplicateEventForm(eventUuid, form.uuid, `${form.name} (1)`)
+            duplicateEventForm(eventUuid, form.uuid, form.name)
           }
         />
         <div className="flex items-center">
