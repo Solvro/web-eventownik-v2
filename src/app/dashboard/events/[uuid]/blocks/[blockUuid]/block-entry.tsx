@@ -3,7 +3,9 @@ import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
+import { duplicateBlock } from "@/app/dashboard/events/[uuid]/blocks/actions";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 import type { Block } from "@/types/blocks";
@@ -40,19 +42,28 @@ function BlockEntry({
       key={block.uuid}
       className="flex h-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
-      <div className="flex justify-end gap-2">
-        <EditBlockEntry
-          blockToEdit={block}
-          eventUuid={eventUuid}
-          attributeUuid={attributeUuid}
-          parentUuid={block.uuid}
+      <div className="flex justify-between gap-2">
+        <DuplicateResourceButton
+          resourceName={block.name}
+          resourceType={t("block")}
+          onDuplicate={async () =>
+            duplicateBlock(eventUuid, attributeUuid, block.uuid, block.name)
+          }
         />
-        <DeleteBlockPopup
-          eventUuid={eventUuid}
-          blockUuid={block.uuid}
-          blockName={block.name}
-          attributeUuid={attributeUuid}
-        />
+        <div className="flex gap-2">
+          <EditBlockEntry
+            blockToEdit={block}
+            eventUuid={eventUuid}
+            attributeUuid={attributeUuid}
+            parentUuid={block.uuid}
+          />
+          <DeleteBlockPopup
+            eventUuid={eventUuid}
+            blockUuid={block.uuid}
+            blockName={block.name}
+            attributeUuid={attributeUuid}
+          />
+        </div>
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4">
         <p className="text-center text-2xl font-bold">{block.name}</p>
