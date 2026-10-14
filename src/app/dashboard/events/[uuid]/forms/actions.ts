@@ -234,3 +234,37 @@ export async function deleteEventForm(eventUuid: string, formUuid: string) {
 
   return { success: true };
 }
+
+export async function duplicateEventForm(
+  eventUuid: string,
+  formUuid: string,
+  newName: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/forms/${formUuid}/duplicate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateEventForm action] Failed to duplicate form ${formUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
+  }
+
+  return { success: true };
+}

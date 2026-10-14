@@ -190,3 +190,37 @@ export async function deleteEventMail(eventUuid: string, mailUuid: string) {
 
   return { success: true };
 }
+
+export async function duplicateEventEmail(
+  eventUuid: string,
+  mailUuid: string,
+  newName: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/emails/${mailUuid}/duplicate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateEventEmail action] Failed to duplicate email ${mailUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
+  }
+
+  return { success: true };
+}

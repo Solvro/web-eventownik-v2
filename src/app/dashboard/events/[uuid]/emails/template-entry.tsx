@@ -2,10 +2,12 @@ import { SquarePen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventEmail } from "@/types/emails";
 
+import { duplicateEventEmail } from "./actions";
 import { DeleteEmailPopup } from "./delete-email-popup";
 import { MailHistoryPopup } from "./mail-history-popup";
 
@@ -31,27 +33,40 @@ function EmailTemplateEntry({
 
   return (
     <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
-      <div className="flex items-center justify-end">
-        <Button
-          variant="eventGhost"
-          size="icon"
-          title={t("editTemplate")}
-          asChild
-        >
-          <Link href={`emails/${emailTemplate.uuid}`}>
-            <SquarePen />
-            <span className="sr-only">{t("editTemplate")}</span>
-          </Link>
-        </Button>
-        <MailHistoryPopup
-          eventUuid={eventUuid}
-          emailUuid={emailTemplate.uuid}
+      <div className="flex items-center justify-between">
+        <DuplicateResourceButton
+          resourceName={emailTemplate.name}
+          resourceType={t("template")}
+          onDuplicate={async () =>
+            duplicateEventEmail(
+              eventUuid,
+              emailTemplate.uuid,
+              `${emailTemplate.name} (1)`,
+            )
+          }
         />
-        <DeleteEmailPopup
-          eventUuid={eventUuid}
-          mailUuid={emailTemplate.uuid}
-          mailName={emailTemplate.name}
-        />
+        <div className="flex items-center">
+          <Button
+            variant="eventGhost"
+            size="icon"
+            title={t("editTemplate")}
+            asChild
+          >
+            <Link href={`emails/${emailTemplate.uuid}`}>
+              <SquarePen />
+              <span className="sr-only">{t("editTemplate")}</span>
+            </Link>
+          </Button>
+          <MailHistoryPopup
+            eventUuid={eventUuid}
+            emailUuid={emailTemplate.uuid}
+          />
+          <DeleteEmailPopup
+            eventUuid={eventUuid}
+            mailUuid={emailTemplate.uuid}
+            mailName={emailTemplate.name}
+          />
+        </div>
       </div>
       <div className="flex grow flex-col items-center justify-center gap-2 text-center">
         <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
