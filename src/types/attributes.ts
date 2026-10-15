@@ -15,8 +15,6 @@ export interface EventAttribute {
   order: number | null;
   createdAt: string;
   updatedAt: string;
-  isSensitiveData: boolean;
-  reason: string | null;
   isMultiple: boolean;
   maxSelections: number | null;
 }

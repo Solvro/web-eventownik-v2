@@ -60,8 +60,6 @@ export function AttributesForm({
       options: [],
       showInList: true,
       order: fields.length,
-      isSensitiveData: false,
-      reason: null,
       isMultiple: false,
       maxSelections: null,
     };
