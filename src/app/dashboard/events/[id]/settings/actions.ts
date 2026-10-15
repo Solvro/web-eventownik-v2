@@ -290,8 +290,6 @@ export async function updateEvent(
                   (change.data.options ?? []).length > 0
                     ? change.data.options
                     : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
                 isMultiple: change.data.isMultiple,
                 maxSelections: change.data.maxSelections,
               }),
@@ -305,31 +303,16 @@ export async function updateEvent(
               change.data,
             );
 
-            if (
-              change.data.isSensitiveData &&
-              (change.data.reason == null || change.data.reason.trim() === "")
-            ) {
-              result.errors.push({
-                message: {
-                  key: "sensitiveAttributeMissingPurpose",
-                  values: {
-                    name: change.data.name,
-                  },
+            result.errors.push({
+              message: {
+                key: "failedToAddAttribute",
+                values: {
+                  name: change.data.name,
+                  errorData: JSON.stringify(errorData),
                 },
-                section: "attributes",
-              });
-            } else {
-              result.errors.push({
-                message: {
-                  key: "failedToAddAttribute",
-                  values: {
-                    name: change.data.name,
-                    errorData: JSON.stringify(errorData),
-                  },
-                },
-                section: "attributes",
-              });
-            }
+              },
+              section: "attributes",
+            });
             continue;
           }
           result.processedChanges.attributes++;
@@ -359,8 +342,6 @@ export async function updateEvent(
                   (change.data.options ?? []).length > 0
                     ? change.data.options
                     : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
                 isMultiple: change.data.isMultiple,
                 maxSelections: change.data.maxSelections,
               }),
@@ -375,31 +356,16 @@ export async function updateEvent(
               errorData,
             );
 
-            if (
-              change.data.isSensitiveData &&
-              (change.data.reason == null || change.data.reason.trim() === "")
-            ) {
-              result.errors.push({
-                message: {
-                  key: "sensitiveAttributeMissingPurpose",
-                  values: {
-                    name: change.data.name,
-                  },
+            result.errors.push({
+              message: {
+                key: "failedToUpdateAttribute",
+                values: {
+                  name: change.data.name,
+                  errorData: JSON.stringify(errorData),
                 },
-                section: "attributes",
-              });
-            } else {
-              result.errors.push({
-                message: {
-                  key: "failedToUpdateAttribute",
-                  values: {
-                    name: change.data.name,
-                    errorData: JSON.stringify(errorData),
-                  },
-                },
-                section: "attributes",
-              });
-            }
+              },
+              section: "attributes",
+            });
             continue;
           }
           result.processedChanges.attributes++;

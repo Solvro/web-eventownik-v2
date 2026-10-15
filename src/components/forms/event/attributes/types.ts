@@ -11,8 +11,6 @@ export type NewEventAttribute = Pick<
   | "options"
   | "showInList"
   | "order"
-  | "isSensitiveData"
-  | "reason"
   | "isMultiple"
   | "maxSelections"
 > & { id?: number };

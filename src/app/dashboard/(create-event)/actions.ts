@@ -183,8 +183,6 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
                 ? attribute.options
                 : undefined,
             order: attribute.order,
-            isSensitiveData: false,
-            reason: null,
           }),
         },
       );

@@ -12,8 +12,6 @@ type AttributeFormData = Pick<
   | "options"
   | "showInList"
   | "order"
-  | "isSensitiveData"
-  | "reason"
   | "isMultiple"
   | "maxSelections"
 > & { id?: number };
@@ -30,10 +28,6 @@ const toChangeData = (
   options: attribute.options ?? original?.options ?? null,
   showInList: attribute.showInList,
   order: attribute.order ?? original?.order ?? null,
-  isSensitiveData: attribute.isSensitiveData,
-  reason: attribute.isSensitiveData
-    ? (attribute.reason ?? original?.reason ?? null)
-    : null,
   isMultiple: attribute.isMultiple ?? original?.isMultiple ?? null,
   maxSelections: attribute.maxSelections ?? original?.maxSelections ?? null,
 });

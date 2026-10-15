@@ -3,9 +3,7 @@ import { z } from "zod";
 import type { NewEventAttribute } from "./types";
 
 export type EventAttributesFormErrors =
-  | "attributeNameRequired"
-  | "attributeNameExists"
-  | "sensitiveDataReasonRequired";
+  "attributeNameRequired" | "attributeNameExists";
 
 export const EventAttributesFormSchema = z.object({
   attributes: z
@@ -39,17 +37,6 @@ export const EventAttributesFormSchema = z.object({
           });
         }
         nameSet.add(normalizedName);
-
-        if (
-          attribute.isSensitiveData &&
-          (attribute.reason == null || attribute.reason.trim() === "")
-        ) {
-          context.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: [index, "reason"],
-            message: "sensitiveDataReasonRequired",
-          });
-        }
       }
     }),
 });

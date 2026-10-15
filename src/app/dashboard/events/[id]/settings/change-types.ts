@@ -9,8 +9,6 @@ export type AttributeChangeData = Pick<
   | "options"
   | "showInList"
   | "order"
-  | "isSensitiveData"
-  | "reason"
   | "isMultiple"
   | "maxSelections"
 > & { id?: number };

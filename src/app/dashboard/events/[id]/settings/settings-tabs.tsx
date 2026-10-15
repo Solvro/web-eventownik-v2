@@ -161,8 +161,6 @@ export function EventSettingsTabs({
         type: attribute.type,
         options: attribute.options ?? [],
         showInList: attribute.showInList,
-        isSensitiveData: attribute.isSensitiveData,
-        reason: attribute.reason ?? "",
         order: attribute.order ?? 0,
         isMultiple: attribute.isMultiple,
         maxSelections: attribute.maxSelections,
