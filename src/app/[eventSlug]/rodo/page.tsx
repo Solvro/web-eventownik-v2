@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { API_URL } from "@/lib/api";
@@ -13,7 +14,9 @@ interface GdprPageProps {
 
 function DataRecipients({ dataRecipients }: { dataRecipients: string | null }) {
   return dataRecipients == null ? (
-    <span className="font-medium italic">brak zewnętrznych odbiorców</span>
+    <span className="font-medium italic">
+      brak dodatkowych zewnętrznych odbiorców specyficznych dla tego wydarzenia
+    </span>
   ) : (
     <ul className="font-medium">
       {dataRecipients.split(",").map((recipient) => (
@@ -43,7 +46,13 @@ export default async function GdprPage({ params }: GdprPageProps) {
       description={event.description ?? ""}
       variant="form"
     >
-      <article className="px-6 py-10 sm:px-10">
+      <Link
+        href={`/${event.slug}`}
+        className="flex items-center gap-2 underline"
+      >
+        <ArrowLeft className="h-4 w-4" /> Wróć do strony wydarzenia
+      </Link>
+      <article className="px-6 py-5 sm:px-10">
         <header className="mb-8 text-center">
           <h1 className="text-xl font-semibold">
             Informacja dotycząca przetwarzania danych osobowych dla osoby
