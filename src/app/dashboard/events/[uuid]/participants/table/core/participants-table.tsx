@@ -15,8 +15,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantSelection,
+} from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { TableColumnHeader } from "../components/table-ui/table-column-header";
 
@@ -32,6 +35,10 @@ declare module "@tanstack/react-table" {
 
   interface TableMeta<TData extends RowData> {
     eventUuid: string;
+    totalParticipants?: number;
+    rowOffset?: number;
+    isBusy?: boolean;
+    selection?: ParticipantSelection;
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
     setRowLoading: (rowIndex: number, isLoading: boolean) => void;

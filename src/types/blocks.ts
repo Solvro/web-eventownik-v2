@@ -1,37 +1,8 @@
-import type { FormAttribute } from "./attributes";
+import type { V3Block } from "./v3";
 
-// TODO(refactor): Make this interface extend an attribute type from `./attributes.ts`
-export interface Block {
-  uuid: string;
-  name: string;
-  description: string | null;
-  capacity: number | null;
-  parentUuid: string | null;
-  attributeUuid: string;
-  attribute: FormAttribute;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  isRootBlock: boolean;
-  children: Block[];
-  isMultiple: boolean;
-  maxSelections: number | null;
-  meta: {
-    participants: BlockParticipant[];
-    participantsInBlockCount: number | undefined;
-  };
-}
-
+export type Block = V3Block;
+export type PublicBlock = V3Block;
 export interface BlockParticipant {
   uuid: string;
   email: string;
-  name?: string;
-}
-
-export interface PublicBlock extends Block {
-  children: PublicBlock[];
-  meta: {
-    participantsInBlockCount: number | undefined;
-    participants: BlockParticipant[];
-  };
 }

@@ -2,7 +2,7 @@ import { cleanup, screen } from "@testing-library/react";
 import { format } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import {
   numberCaseData,
@@ -20,7 +20,7 @@ import { renderTable } from "./utils";
 interface ParticipantForSortingTest {
   createdAt: string;
   attributes: {
-    value?: string | string[] | number | Date | null | undefined;
+    value?: import("@/types/v3").JsonValue;
   }[];
 }
 
@@ -35,18 +35,31 @@ function getDisplayedAttributeValue(
   }
 
   if (Array.isArray(value)) {
-    return attributeType === "multiselect" ? value.join(", ") : value.join(",");
+    return attributeType === "multiSelect"
+      ? value
+          .map((item) =>
+            typeof item === "string" ? item : JSON.stringify(item),
+          )
+          .join(", ")
+      : value
+          .map((item) =>
+            typeof item === "string" ? item : JSON.stringify(item),
+          )
+          .join(",");
   }
 
   if (attributeType === "date") {
-    return format(new Date(value), "dd-MM-yyyy");
+    return format(
+      new Date(typeof value === "string" ? value : JSON.stringify(value)),
+      "dd-MM-yyyy",
+    );
   }
 
-  if (attributeType === "multiselect") {
+  if (attributeType === "multiSelect") {
     return typeof value === "string" ? value.split(",").join(", ") : "";
   }
 
-  return String(value);
+  return typeof value === "string" ? value : JSON.stringify(value);
 }
 
 function getCreatedAtSortedOrder(

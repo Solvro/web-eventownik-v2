@@ -3,8 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { API_URL } from "@/lib/api";
+import { getReferenceCollection } from "@/lib/backend";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute } from "@/types/v3";
 
 import { SortableBlockAttributeGrid } from "./sortable-block-attribute-grid";
 
@@ -29,20 +30,13 @@ export default async function DashboardEventBlocksPage({
   const { bearerToken } = session;
   const { uuid } = await params;
 
-  const response = await fetch(
+  const attributes = await getReferenceCollection<V3Attribute>(
     `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  if (!response.ok) {
+    { headers: { Authorization: `Bearer ${bearerToken}` } },
+  ).catch(() => null);
+  if (attributes === null) {
     notFound();
   }
-
-  const attributes = ((await response.json()) as { data: Attribute[] }).data;
 
   const blocks = attributes.filter(
     (attribute: { type: string }) => attribute.type === "block",

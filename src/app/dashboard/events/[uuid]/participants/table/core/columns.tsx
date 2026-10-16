@@ -2,14 +2,17 @@ import type { Row } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { useTranslations as UseTranslations } from "next-intl";
 
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { Checkbox } from "@/components/ui/checkbox";
+import { attributeOptions } from "@/lib/attribute-config";
+import { multiValues } from "@/lib/multi-values";
 import { getAttributeLabel } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
   FlattenedParticipant,
   ParticipantAttributeValueType,
 } from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { EditParticipantButton } from "../components/buttons/edit-button";
 import { FilterButton } from "../components/buttons/filter-button";
@@ -34,18 +37,22 @@ function getBaseColumns(t: TableTranslator) {
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
+            table.options.meta?.selection?.onClear();
             table.toggleAllPageRowsSelected(Boolean(value));
           }}
           aria-label={t("selectAllPageRows")}
+          disabled={table.options.meta?.isBusy === true}
         />
       ),
-      cell: ({ row }) => (
+      cell: ({ row, table }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
+            table.options.meta?.selection?.onClear();
             row.toggleSelected(Boolean(value));
           }}
           aria-label={t("selectRow")}
+          disabled={table.options.meta?.isBusy === true}
         ></Checkbox>
       ),
       enableSorting: false,
@@ -58,8 +65,8 @@ function getBaseColumns(t: TableTranslator) {
       minSize: 52,
       maxSize: 52,
       header: t("rowNumberTitle"),
-      cell: ({ row }) => {
-        return row.index + 1;
+      cell: ({ row, table }) => {
+        return (table.options.meta?.rowOffset ?? 0) + row.index + 1;
       },
       enableSorting: false,
       enableHiding: false,
@@ -81,7 +88,12 @@ function getBaseColumns(t: TableTranslator) {
       header: (info) => (
         <SortHeader info={info} name={t("columnCreatedAtTitle")} />
       ),
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <ClientFormattedDate
+          date={info.getValue()}
+          formatStr="yyyy-MM-dd HH:mm:ss"
+        />
+      ),
     }),
   ];
 }
@@ -101,7 +113,7 @@ export function createColumns(
           name: attribute.name,
           showInTable: attribute.showInList,
         },
-        ...(["multiselect", "block"].includes(attribute.type)
+        ...(["multiSelect", "block"].includes(attribute.type)
           ? { minSize: 240 }
           : {}),
         filterFn: (
@@ -116,14 +128,8 @@ export function createColumns(
 
           // Multiselect case has to be handled separately
           // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
-          if (rowValue !== null && attribute.type === "multiselect") {
-            const rawValue = String(row.original[columnId]);
-            const normalized = rawValue
-              .replaceAll(/^{|}$/g, "")
-              .replaceAll('"', "");
-            const values = new Set(
-              normalized === "" ? [] : normalized.split(","),
-            );
+          if (rowValue !== null && attribute.type === "multiSelect") {
+            const values = new Set(multiValues(String(row.original[columnId])));
             return filterValue.some((value) => values.has(value as string));
           }
 
@@ -133,13 +139,17 @@ export function createColumns(
             return true;
           }
 
-          return filterValue.includes(rowValue);
+          return (
+            filterValue.includes(rowValue) ||
+            (attribute.type === "checkbox" &&
+              filterValue.some((value) => String(value) === String(rowValue)))
+          );
         },
         header: (info) => (
           <div className="flex items-center gap-1">
             <FilterButton
               attributeType={attribute.type}
-              options_={attribute.options}
+              options_={attributeOptions(attribute)}
               blocks={blocks}
               column={info.column}
               attributeUuid={attribute.uuid}

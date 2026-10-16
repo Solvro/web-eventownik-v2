@@ -1,48 +1,38 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
 import { API_URL } from "@/lib/api";
+import { getBackend, getReferenceCollection } from "@/lib/backend";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
-import type { Event } from "@/types/event";
+import type { V3Attribute, V3Event } from "@/types/v3";
 
-async function fetchEventAndAttributes(eventUuid: string) {
+const fetchEventAndAttributes = cache(async (eventUuid: string) => {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
   }
   const { bearerToken } = session;
 
-  const attributesResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  const eventResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  if (!eventResponse.ok || !attributesResponse.ok) {
+  try {
+    const options = { headers: { Authorization: `Bearer ${bearerToken}` } };
+    const [event, attributes] = await Promise.all([
+      getBackend<V3Event>(
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
+        options,
+      ),
+      getReferenceCollection<V3Attribute>(
+        `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
+        options,
+      ),
+    ]);
+    return { event, attributes };
+  } catch {
     notFound();
   }
-
-  const event = (await eventResponse.json()) as Event;
-  const attributes = (
-    (await attributesResponse.json()) as { data: Attribute[] }
-  ).data;
-  return { event, attributes };
-}
+});
 
 export async function generateMetadata({
   params,

@@ -78,8 +78,8 @@ function MessageContentForm({
   setCurrentStep,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;

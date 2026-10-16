@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 interface NotFoundProps {
+  status?: number;
   whatNotFound: "event" | "form" | "user" | "blocks";
 }
 
-export function EventNotFound({ whatNotFound }: NotFoundProps) {
+export function EventNotFound({ whatNotFound, status }: NotFoundProps) {
   const t = useTranslations("Event");
 
+  const unavailable = status !== undefined && status >= 500;
   const messages = {
     event: t("notFound"),
     form: t("formNotFound"),
@@ -20,8 +22,14 @@ export function EventNotFound({ whatNotFound }: NotFoundProps) {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">{messages[whatNotFound]}</h1>
-        <p className="text-lg">{t("checkLinkOrContactOrganizer")}</p>
+        <h1 className="mb-4 text-4xl font-bold">
+          {unavailable ? t("serviceUnavailable") : messages[whatNotFound]}
+        </h1>
+        <p className="text-lg">
+          {unavailable
+            ? t("serviceUnavailableDescription")
+            : t("checkLinkOrContactOrganizer")}
+        </p>
         <Link href="/">
           <Button variant="default" className="mt-6">
             {t("backToHome")}

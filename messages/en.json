@@ -113,7 +113,7 @@
     "eventActivatedSuccess": "The event has been successfully activated",
     "eventDeactivatedSuccess": "The event has been successfully deactivated",
     "superadminPanelInfo": "You are in the superadmin panel",
-    "superadminEventsDescr": "Below is a list of <strong>all events</strong> in the database — not just the ones created by you. There are probably quite a few of them, so for now you can use <strong>CTRL+F</strong> to search. A proper search feature is coming #someday.",
+    "superadminEventsDescr": "Below is a list of <strong>all events</strong> in the database. Search by event name, slug, organizer or location.",
     "page": "Page",
     "superadminEventsFetchError": "An error occurred while fetching data. The backend verified the superadmin identity, but no events were returned. Message us in the #backend channel.",
     "general": "General",
@@ -200,7 +200,13 @@
     "from": "From",
     "to": "to",
     "acceptingSubmissions": "Accepting submissions",
-    "notAcceptingSubmissions": "Not accepting submissions"
+    "notAcceptingSubmissions": "Not accepting submissions",
+    "searchEvents": "Search events",
+    "searchEventsPlaceholder": "Name, slug, organizer or location…",
+    "clearSearch": "Clear search",
+    "noMatchingEvents": "No events match your search.",
+    "eventSearchCount": "{count} events",
+    "reorderError": "Could not save the order. Reload the list and try again."
   },
   "Editor": {
     "loadingMenu": "Loading menu...",
@@ -380,7 +386,9 @@
     "formWasAvailable": "The form was available",
     "periodLabel": "{label} from <strong>{openDate}</strong> to <strong>{closeDate}</strong>",
     "registrationUnavailable": "Registration for <strong>{name}</strong> is currently unavailable",
-    "formUnavailable": "The form <strong>{name}</strong> is currently unavailable"
+    "formUnavailable": "The form <strong>{name}</strong> is currently unavailable",
+    "serviceUnavailable": "The event is temporarily unavailable",
+    "serviceUnavailableDescription": "We could not connect to the server. Please try again later."
   },
   "EventDetails": {
     "step": "Step {number}",
@@ -615,7 +623,8 @@
     "fieldNumber": "Field {name} must be a number",
     "fieldDate": "Field {name} must be a date",
     "fieldRequiredChecked": "Field {name} must be selected",
-    "fieldPhone": "Field {name} must be a valid phone number"
+    "fieldPhone": "Field {name} must be a valid phone number",
+    "loadingBlocks": "Loading participants…"
   },
   "Homepage": {
     "HighlightedEvents": {
@@ -717,11 +726,12 @@
     "formsAndReservations": "Forms and event registration",
     "formsAndReservationsDescr": "Create forms with selected attributes, generate registration links, and automatically share second-stage forms — including real-time registration updates.",
     "registrationManagement": "Registration management",
-    "registrationManagementDescr": "Choose how registered participants are displayed\u00A0— anonymously, by full name, or using a custom attribute.",
+    "registrationManagementDescr": "Choose how registered participants are displayed — anonymously, by full name, or using a custom attribute.",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "alertLink": "Alert link",
-    "dismissAlert": "Dismiss alert"
+    "dismissAlert": "Dismiss alert",
+    "loadMoreEvents": "Load more events"
   },
   "MainMetadata": {
     "title": "Eventownik - event organization",
@@ -914,11 +924,20 @@
     "removeAdditionalOptions": "Remove additional options",
     "serverError": "The server is not working properly. Please try again later",
     "unexpectedError": "An unexpected error occurred. Please try again",
-    "invalidUuid": "Invalid resource UUID"
+    "invalidUuid": "Invalid resource UUID",
+    "selectionError": "Could not select all participants. Refresh the list and try again.",
+    "clearSelection": "Clear selection"
   },
   "Themes": {
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "info": "Page {page} of {pages} · {total} items",
+    "pageSize": "Rows per page"
   }
 }

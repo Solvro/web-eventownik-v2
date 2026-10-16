@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
 import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
@@ -16,13 +16,13 @@ import {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string; emailUuid: string }>;
+  params: Promise<{ uuid: string; emailId: string }>;
 }): Promise<Metadata> {
   const t = await getTranslations("Dashboard");
 
-  const { id, emailUuid } = await params;
+  const { uuid, emailId } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailUuid);
+  const emailToEdit = await getSingleEventEmail(uuid, emailId);
 
   return {
     title: t("editing", { name: emailToEdit?.name ?? t("unnamedEmail") }),
@@ -32,22 +32,26 @@ export async function generateMetadata({
 export default async function EventMailEditPage({
   params,
 }: {
-  params: Promise<{ id: string; emailUuid: string }>;
+  params: Promise<{ uuid: string; emailId: string }>;
 }) {
   const t = await getTranslations("Editor");
   const tMessageTags = await getTranslations("MessageTags");
 
-  const { id, emailUuid } = await params;
+  const { uuid, emailId } = await params;
 
-  const emailToEdit = await getSingleEventEmail(id, emailUuid);
+  const emailToEdit = await getSingleEventEmail(uuid, emailId);
 
-  if (emailToEdit?.schema == null) {
-    redirect(`/dashboard/events/${id}/emails/${emailUuid}`);
+  if (emailToEdit == null) {
+    notFound();
   }
 
-  const attributes = await getEventAttributes(id);
-  const forms = await getEventForms(id);
-  const event = await getEmailEventInfo(id);
+  if (emailToEdit.schema == null) {
+    redirect(`/dashboard/events/${uuid}/emails/${emailId}`);
+  }
+
+  const attributes = await getEventAttributes(uuid);
+  const forms = await getEventForms(uuid);
+  const event = await getEmailEventInfo(uuid);
 
   return (
     <Editor
@@ -57,10 +61,10 @@ export default async function EventMailEditPage({
       ]}
       forms={forms}
       attributes={attributes}
-      initialData={JSON.parse(emailToEdit.schema) as PuckData}
+      initialData={emailToEdit.schema as unknown as PuckData}
       mutationData={{
-        emailUuid: emailToEdit.uuid,
-        eventUuid: id,
+        emailUuid: emailToEdit.id,
+        eventUuid: uuid,
         mode: "update",
       }}
       eventData={{

@@ -14,24 +14,25 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getAttributeLabel } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
+import type { FormControlAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeBlocksWrapper } from "./attribute-blocks-wrapper";
 
 export function AttributeInput({
   attribute,
-  userData,
   eventBlocks,
   field,
-  shouldCheckUserData = false,
+  requireSelectionState = false,
+  selectedBlockUuids,
+  eventSlug,
 }: {
-  attribute: FormAttribute;
-  userData?: PublicParticipant;
+  attribute: FormControlAttribute;
   eventBlocks?: PublicBlock[];
   field: ControllerRenderProps<FieldValues, string>;
-  shouldCheckUserData?: boolean;
+  requireSelectionState?: boolean;
+  selectedBlockUuids?: string[];
+  eventSlug?: string;
 }) {
   const locale = useLocale();
   const t = useTranslations("Form");
@@ -90,6 +91,7 @@ export function AttributeInput({
         </Select>
       );
     }
+    case "multiSelect":
     case "multiselect": {
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
@@ -105,7 +107,14 @@ export function AttributeInput({
               >
                 <Checkbox
                   id={`${attribute.uuid}-${optionValue}`}
-                  disabled={field.disabled}
+                  disabled={
+                    field.disabled === true ||
+                    (attribute.maxSelections !== null &&
+                      attribute.maxSelections > 0 &&
+                      ((field.value ?? []) as string[]).length >=
+                        attribute.maxSelections &&
+                      !((field.value ?? []) as string[]).includes(optionValue))
+                  }
                   checked={((field.value ?? []) as string[]).includes(
                     optionValue,
                   )}
@@ -170,6 +179,7 @@ export function AttributeInput({
         />
       );
     }
+    case "textArea":
     case "textarea": {
       return <Textarea rows={3} id={attribute.uuid} {...field} />;
     }
@@ -209,7 +219,7 @@ export function AttributeInput({
     case "block": {
       if (
         eventBlocks === undefined ||
-        (shouldCheckUserData && userData === undefined)
+        (requireSelectionState && selectedBlockUuids === undefined)
       ) {
         return <div>{t("blockDataFetchFailed")} </div>;
       }
@@ -219,7 +229,8 @@ export function AttributeInput({
             <AttributeBlocksWrapper
               key={rootBlock.uuid}
               field={field}
-              userData={userData}
+              selectedBlockUuids={selectedBlockUuids}
+              eventSlug={eventSlug}
               eventBlocks={rootBlock.children}
               isMultiple={attribute.isMultiple}
               maxSelections={attribute.maxSelections}

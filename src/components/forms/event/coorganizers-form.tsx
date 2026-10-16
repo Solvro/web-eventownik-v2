@@ -11,7 +11,6 @@ import type { Permission, PermissionType } from "@/types/co-organizer";
 import { AddCoOrganizerInput } from "./coorganizers/add-coorganizer-input";
 import { CoOrganizerItem } from "./coorganizers/coorganizer-item";
 import type { EventCoorganizersFormSchema } from "./coorganizers/schema";
-import { PERMISSIONS_CONFIG } from "./coorganizers/types";
 
 export { EventCoorganizersFormSchema } from "./coorganizers/schema";
 
@@ -57,15 +56,7 @@ export function CoorganizersForm({
     email: string,
     permissionsIds: PermissionType[],
   ) => {
-    const permissions = permissionsIds
-      .map(
-        (id) =>
-          PERMISSIONS_CONFIG.find((config) => config.permission.id === id)
-            ?.permission,
-      )
-      .filter(
-        (permission): permission is Permission => permission !== undefined,
-      );
+    const permissions = permissionsIds;
 
     append({ id: "", email, permissions });
     onAdd?.({ id: "", email, permissions });
@@ -91,11 +82,9 @@ export function CoorganizersForm({
         return;
       }
       const currentPermissions = current[index].permissions;
-      const exists = currentPermissions.some(
-        (p: Permission) => p.id === permission.id,
-      );
+      const exists = currentPermissions.includes(permission);
       const updated = exists
-        ? currentPermissions.filter((p: Permission) => p.id !== permission.id)
+        ? currentPermissions.filter((p: Permission) => p !== permission)
         : [...currentPermissions, permission];
       const updatedCoorganizers = current.map((org, index_) =>
         index_ === index ? { ...org, permissions: updated } : org,

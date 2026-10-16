@@ -11,7 +11,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Permission } from "@/types/co-organizer";
 
 import { PERMISSIONS_CONFIG } from "./types";
 import type { CoOrganizerItemProps } from "./types";
@@ -29,9 +28,7 @@ export const CoOrganizerItem = memo(
     const tEventPermissions = useTranslations("EventPermissions");
 
     const avatarUrl = useMemo(() => generateAvatarUrl(email), [email]);
-    const permissionIdsSet = new Set<number>(
-      permissions.map((p: Permission) => p.id),
-    );
+    const permissionIdsSet = new Set(permissions);
 
     return (
       <div className="flex w-full items-center gap-2">
@@ -67,14 +64,14 @@ export const CoOrganizerItem = memo(
               </span>
               {PERMISSIONS_CONFIG.map(({ permission, label }) => (
                 <div
-                  key={permission.id}
+                  key={permission}
                   className="mb-2 flex items-center space-x-2"
                 >
                   <Checkbox
-                    id={`permission-${permission.id.toString()}`}
+                    id={`permission-${permission}`}
                     checked={
-                      permissionIdsSet.has(permission.id) ||
-                      permissionIdsSet.has(1)
+                      permissionIdsSet.has(permission) ||
+                      permissionIdsSet.has("MANAGE_ALL")
                     }
                     onCheckedChange={() => {
                       onPermissionToggle(permission);
@@ -82,7 +79,7 @@ export const CoOrganizerItem = memo(
                     disabled={true} // temporary disabled
                   />
                   <Label
-                    htmlFor={`permission-${permission.id.toString()}`}
+                    htmlFor={`permission-${permission}`}
                     className="cursor-pointer"
                   >
                     {tEventPermissions(label)}

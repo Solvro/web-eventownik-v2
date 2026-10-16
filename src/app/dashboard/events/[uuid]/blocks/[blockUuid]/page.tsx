@@ -28,7 +28,8 @@ async function getRootBlock(
   );
 
   if (response.ok) {
-    return (await response.json()) as Block;
+    const tree = (await response.json()) as Block | [];
+    return Array.isArray(tree) ? null : tree;
   } else {
     const error = (await response.json()) as unknown;
     console.error(
@@ -119,7 +120,7 @@ export default async function EventBlockEditPage({
             <span className="text-muted-foreground text-lg">
               {t("totalParticipants", {
                 count: rootBlock.children
-                  .map((block) => block.meta.participantsInBlockCount ?? 0)
+                  .map((block) => block.blockParticipantCount)
                   .reduce((a, b) => a + b, 0),
               })}
             </span>

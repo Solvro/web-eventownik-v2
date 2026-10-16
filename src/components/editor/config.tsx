@@ -23,7 +23,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import type { CSSProperties } from "react";
 
-import { PHOTO_URL } from "@/lib/api";
+import { photoUrl } from "@/lib/api";
 import {
   appearanceDefaults,
   containerDefaults,
@@ -1166,7 +1166,7 @@ export const getPuckConfig = ({
         const eventImageUrl =
           eventData.photoUrl === ""
             ? "/event-photo-placeholder.png"
-            : `${PHOTO_URL}/${eventData.photoUrl}`;
+            : photoUrl(eventData.photoUrl);
         return (
           <div
             id="editor-root"

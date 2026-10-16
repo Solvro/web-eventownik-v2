@@ -15,8 +15,7 @@ import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-// TODO: Fix participant table tests after migrating to V3
-describe.skip("Removing participant", () => {
+describe("Removing participant", () => {
   beforeEach(() => {
     server.use(mockParticipantGet(deleteParticipantCaseData.participants));
     server.use(mockParticipantsGet(deleteParticipantCaseData.participants));
@@ -51,15 +50,15 @@ describe.skip("Removing participant", () => {
 
     await user.click(confirmDeletion);
 
-    expect(getDataRows()).toHaveLength(0);
+    expect(await screen.findByText(/^Usunięto uczestników$/i)).toBeVisible();
   });
 
   it("should correctly handle server error when removing many participants", async () => {
     const { participants, attributes } = deleteParticipantCaseData;
     const { user, getDataRows } = renderTable(participants, attributes);
     server.use(
-      http.delete<{ eventUuid: string }>(
-        `${API_URL}/events/:eventUuid/participants`,
+      http.post<{ eventUuid: string }>(
+        `${API_URL}/events/:eventUuid/participants/unregister-many`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },
@@ -86,6 +85,9 @@ describe.skip("Removing participant", () => {
     });
     await user.click(confirmDeletion);
 
+    expect(
+      await screen.findByText(/nie udało się grupowo usunąć/i),
+    ).toBeVisible();
     expect(getDataRows()).toHaveLength(participants.length);
   });
 });

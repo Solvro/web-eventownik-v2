@@ -202,6 +202,7 @@ function Toolbar() {
           <TooltipTrigger asChild>
             <Button
               variant="eventGhost"
+              aria-label={leftVisible ? t("hideLeftPanel") : t("showLeftPanel")}
               onClick={() => {
                 dispatch({
                   type: "setUi",
@@ -222,6 +223,9 @@ function Toolbar() {
           <TooltipTrigger asChild>
             <Button
               variant="eventGhost"
+              aria-label={
+                rightVisible ? t("hideRightPanel") : t("showRightPanel")
+              }
               onClick={() => {
                 dispatch({
                   type: "setUi",
@@ -242,7 +246,12 @@ function Toolbar() {
       <div className="flex justify-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="eventGhost" onClick={back} disabled={!hasPast}>
+            <Button
+              variant="eventGhost"
+              aria-label={t("undo")}
+              onClick={back}
+              disabled={!hasPast}
+            >
               <Undo2 />
             </Button>
           </TooltipTrigger>
@@ -252,6 +261,7 @@ function Toolbar() {
           <TooltipTrigger asChild>
             <Button
               variant="eventGhost"
+              aria-label={t("redo")}
               onClick={forward}
               disabled={!hasFuture}
             >
@@ -274,7 +284,7 @@ function BlocksAndSchemaSidebar() {
   return (
     <ScrollArea
       className={cn(
-        "max-h-181 w-58.5 border-r border-(--event-primary-color)/50",
+        "max-h-72 w-full border-r border-(--event-primary-color)/50 md:max-h-181 md:w-58.5",
         isVisible ? "block" : "hidden",
       )}
     >
@@ -347,11 +357,11 @@ function FieldsPanel() {
   return (
     <ScrollArea
       className={cn(
-        "max-h-181 w-58.5 border-l border-(--event-primary-color)/50",
+        "max-h-72 w-full border-l border-(--event-primary-color)/50 md:max-h-181 md:w-58.5",
         isVisible ? "block" : "hidden",
       )}
     >
-      <div className="overflow-y-auto [&_.tiptap]:bg-transparent! [&>form]:w-58.5">
+      <div className="overflow-y-auto [&_.tiptap]:bg-transparent! [&>form]:w-full md:[&>form]:w-58.5">
         <Puck.Fields />
       </div>
     </ScrollArea>
@@ -382,16 +392,16 @@ function PuckComposition({ mutationData }: { mutationData: PuckMutationData }) {
         >
           <ArrowLeft className="h-4 w-4" /> {t("backToTemplates")}
         </Link>
-        <div className="mb-2 flex justify-between">
+        <div className="mb-2 flex flex-wrap justify-between gap-2">
           <h1 className="mb-4 text-3xl font-bold">{t("templateEditor")}</h1>
           <SaveButton mutationData={mutationData} />
         </div>
       </div>
       <div className="flex h-208.75 grow flex-col rounded-xl border border-(--event-primary-color)/50 bg-(--event-primary-color)/5">
         <Toolbar />
-        <div className="flex max-h-181 grow">
+        <div className="flex grow flex-col md:max-h-181 md:flex-row">
           <BlocksAndSchemaSidebar />
-          <div className="grow">
+          <div className="min-h-80 min-w-0 grow">
             <Puck.Preview />
           </div>
           <FieldsPanel />

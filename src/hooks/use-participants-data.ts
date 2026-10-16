@@ -1,11 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import {
-  deleteManyParticipants,
-  getParticipants,
-} from "@/app/dashboard/events/[uuid]/participants/actions";
+import { deleteManyParticipants } from "@/app/dashboard/events/[uuid]/participants/actions";
 import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/table/core/data";
 import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
@@ -18,24 +15,26 @@ export function useParticipantsData(
   const { toast } = useToast();
   const t = useTranslations("Table");
 
-  const { data: participants, isFetching } = useQuery({
-    queryKey: ["participants", eventUuid],
-    queryFn: async () => getParticipants(eventUuid),
-    initialData: initialParticipants,
-  });
-
   const [flattenedData, setFlattenedData] = useState<FlattenedParticipant[]>(
     () => flattenParticipants(initialParticipants),
   );
 
   useEffect(() => {
-    if (participants != null) {
-      setFlattenedData(flattenParticipants(participants));
-    }
-  }, [participants]);
+    setFlattenedData((previous) =>
+      previous.some((row) => row.mode === "edit")
+        ? previous
+        : flattenParticipants(initialParticipants),
+    );
+  }, [initialParticipants]);
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventUuid, ids),
+    mutationFn: async (ids: string[]) => {
+      const result = await deleteManyParticipants(eventUuid, ids);
+      if (!result.success) {
+        throw new Error(t("deleteParticipantsErrorDescription"));
+      }
+      return result;
+    },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventUuid],
@@ -59,7 +58,7 @@ export function useParticipantsData(
   return {
     data: flattenedData,
     setData: setFlattenedData,
-    isLoading: isFetching || bulkDeleteMutation.isPending,
+    isLoading: bulkDeleteMutation.isPending,
     deleteManyParticipants: bulkDeleteMutation.mutateAsync,
   };
 }

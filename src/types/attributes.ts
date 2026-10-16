@@ -1,9 +1,8 @@
 import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
 
-// TODO(refactor): Refactor types across this entire file.
 export type AttributeOption = string | { label: string; value: string };
-
 export interface EventAttribute {
+  config?: Record<string, unknown> | null;
   uuid: string;
   name: string;
   slug: string | null;
@@ -20,17 +19,12 @@ export interface EventAttribute {
   isMultiple: boolean;
   maxSelections: number | null;
 }
-
-/**
- * @param value - Data returned from API is always a string (even numbers, booleans are in string format - "true", "123")
- */
 export interface AttributeBase {
   uuid: string;
   name: string;
   value: string | string[];
   slug: string | null;
 }
-
 export interface Attribute extends Omit<AttributeBase, "value"> {
   eventUuid: string;
   showInList: boolean;
@@ -39,13 +33,11 @@ export interface Attribute extends Omit<AttributeBase, "value"> {
   order: number | null;
   createdAt: string;
   updatedAt: string;
-  // TODO(refactor): Cleanup type definitions. Added here for now to implement multiselect blocks.
   isRequired: boolean;
   isEditable: boolean;
   isMultiple: boolean;
   maxSelections: number | null;
 }
-
 export interface FormAttribute extends Attribute {
   uuid: string;
   order: number | null;
@@ -54,25 +46,24 @@ export interface FormAttribute extends Attribute {
   isMultiple: boolean;
   maxSelections: number | null;
 }
-
+/** Participant form control state, separate from API responses. */
+export interface FormControlAttribute extends Pick<
+  FormAttribute,
+  | "uuid"
+  | "name"
+  | "order"
+  | "isRequired"
+  | "isEditable"
+  | "options"
+  | "isMultiple"
+  | "maxSelections"
+> {
+  type: AttributeType | "textArea" | "multiSelect";
+}
 export interface FormAttributeBase {
   uuid: string;
   order?: number | null;
   isRequired: boolean;
   isEditable: boolean;
 }
-
-/**
- * The attribute type that is returned by the API in the public participant endpoint
- */
-export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
-  meta: {
-    pivot_value: string;
-    pivot_created_at: string;
-    pivot_participant_id: string;
-    pivot_attribute_id: string;
-    pivot_updated_at: string;
-  };
-}
-
 export type AttributeType = (typeof AttributeTypes)[number];

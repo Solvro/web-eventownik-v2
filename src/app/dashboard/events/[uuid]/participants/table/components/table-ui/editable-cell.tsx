@@ -6,19 +6,19 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
   FlattenedParticipant,
   ParticipantAttributeValueType,
 } from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { formatAttributeValue } from "../../core/utils";
 import { DownloadAttributeFileButton } from "../buttons/download-file-attribute-button";
 import { DrawingPreviewButton } from "../buttons/drawing-preview-button";
 import { AttributeValueInput } from "../inputs/attribute-value-input";
 
-const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiselect", "block"]);
+const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiSelect", "block"]);
 
 interface EditableCellProps {
   info: CellContext<FlattenedParticipant, ParticipantAttributeValueType>;
@@ -125,6 +125,7 @@ function EditableCellInput({
     >
       {attribute == null ? (
         <Input
+          aria-label={info.column.id}
           value={localValue}
           onChange={(e) => {
             handleChange(e.target.value);

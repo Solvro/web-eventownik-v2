@@ -6,14 +6,22 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import type {
+  ColumnFiltersState,
+  OnChangeFn,
+  SortingState,
+} from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import { createColumns } from "@/app/dashboard/events/[uuid]/participants/table/core/columns";
 import { useToast } from "@/hooks/use-toast";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantSelection,
+} from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
   return typeof structuredClone === "function"
@@ -21,7 +29,21 @@ function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
     : { ...row };
 }
 
+export interface ParticipantTableState {
+  globalFilter: string;
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  onGlobalFilterChange: OnChangeFn<string>;
+  onSortingChange: OnChangeFn<SortingState>;
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
+  total: number;
+  page: number;
+  take: number;
+  busy: boolean;
+  selection?: ParticipantSelection;
+}
 interface UseParticipantTableProps {
+  serverState?: ParticipantTableState;
   data: FlattenedParticipant[];
   attributes: Attribute[];
   blocks: (Block | null)[] | null;
@@ -35,6 +57,7 @@ export function useParticipantsTable({
   blocks,
   onUpdateData,
   eventUuid,
+  serverState,
 }: UseParticipantTableProps) {
   const storageKey = `column-order-${eventUuid}`;
   const t = useTranslations("Table");
@@ -76,10 +99,26 @@ export function useParticipantsTable({
       maxSize: 300,
     },
     state: {
-      globalFilter,
+      globalFilter: serverState?.globalFilter ?? globalFilter,
+      ...(serverState == null
+        ? {}
+        : {
+            sorting: serverState.sorting,
+            columnFilters: serverState.columnFilters,
+          }),
       columnOrder,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: serverState?.onGlobalFilterChange ?? setGlobalFilter,
+    ...(serverState == null
+      ? {}
+      : {
+          onSortingChange: serverState.onSortingChange,
+          onColumnFiltersChange: serverState.onColumnFiltersChange,
+        }),
+    manualFiltering: serverState != null,
+    manualSorting: serverState != null,
+    getRowId: (row) => row.uuid,
+    enableRowSelection: serverState?.busy !== true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -99,7 +138,12 @@ export function useParticipantsTable({
     },
 
     meta: {
-      eventUuid: eventUuid,
+      eventUuid,
+      totalParticipants: serverState?.total,
+      rowOffset:
+        serverState == null ? 0 : (serverState.page - 1) * serverState.take,
+      isBusy: serverState?.busy,
+      selection: serverState?.selection,
       updateData: onUpdateData,
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {
@@ -132,5 +176,5 @@ export function useParticipantsTable({
     enableMultiSort: true,
   });
 
-  return { table, globalFilter };
+  return { table, globalFilter: serverState?.globalFilter ?? globalFilter };
 }

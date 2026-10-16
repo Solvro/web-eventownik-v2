@@ -2,17 +2,17 @@ import { User } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import { getPublicEvent, getPublicForm } from "@/app/[eventSlug]/data-access";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { EventInfoDiv } from "@/components/event-info-div";
 import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL } from "@/lib/api";
+import { BackendError, getBackend } from "@/lib/backend";
 import { isFormOpen } from "@/lib/event-form-utils";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
-import type { Event } from "@/types/event";
-import type { EventForm } from "@/types/forms";
-import type { PublicParticipant } from "@/types/participant";
+import { formControls } from "@/lib/form-controls";
+import type { FormControlAttribute } from "@/types/attributes";
+import type { V3PublicParticipant } from "@/types/v3";
 
 import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "../../form-generator";
@@ -26,61 +26,26 @@ interface FormPageProps {
   }>;
 }
 
-async function getEvent(eventSlug: string) {
-  const eventResponse = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!eventResponse.ok) {
-    const error = (await eventResponse.json()) as unknown;
-    console.error(error);
-    return null;
-  }
-  const event = (await eventResponse.json()) as Event;
-  return event;
-}
-
-async function getForm(eventSlug: string, formSlug: string) {
-  const formResponse = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!formResponse.ok) {
-    const error = (await formResponse.json()) as unknown;
-    console.error(error);
-    return null;
-  }
-  const form = (await formResponse.json()) as EventForm;
-  return form;
-}
-
 async function getUserData(
-  formAttributes: FormAttribute[],
+  formAttributes: FormControlAttribute[],
   eventSlug: string,
   userSlug: string,
+  formUuid: string,
 ) {
   const attributesUrl = new URL(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/participants/${encodeURIComponent(userSlug)}`,
   );
+  attributesUrl.searchParams.set("formUuid", formUuid);
 
   for (const attribute of formAttributes) {
-    attributesUrl.searchParams.append("attributes[]", attribute.uuid);
+    attributesUrl.searchParams.append("attributes", attribute.uuid);
   }
 
-  const userDataResponse = await fetch(attributesUrl, {
-    method: "GET",
-  });
-
-  if (!userDataResponse.ok) {
-    const error = (await userDataResponse.json()) as unknown;
-    console.error(error);
-    return null;
+  try {
+    return { data: await getBackend<V3PublicParticipant>(attributesUrl) };
+  } catch (error) {
+    return { status: error instanceof BackendError ? error.status : 503 };
   }
-  return (await userDataResponse.json()) as PublicParticipant;
 }
 
 export async function generateMetadata({
@@ -89,36 +54,44 @@ export async function generateMetadata({
   const t = await getTranslations("Dashboard");
   const { eventSlug, formSlug } = await params;
 
-  const form = await getForm(eventSlug, formSlug);
+  const form = await getPublicForm(eventSlug, formSlug);
 
   return {
-    title: form === null ? t("form") : form.name,
+    title: form.data === undefined ? t("form") : form.data.name,
   };
 }
 
 export default async function FormPage({ params }: FormPageProps) {
   const { eventSlug, formSlug, userSlug } = await params;
 
-  const event = await getEvent(eventSlug);
-  if (event === null) {
-    return <EventNotFound whatNotFound="event" />;
+  const eventResult = await getPublicEvent(eventSlug);
+  if (eventResult.data === undefined) {
+    return <EventNotFound whatNotFound="event" status={eventResult.status} />;
   }
 
-  const form = await getForm(eventSlug, formSlug);
-  if (form === null) {
-    return <EventNotFound whatNotFound="form" />;
+  const event = eventResult.data;
+  const formResult = await getPublicForm(eventSlug, formSlug);
+  if (formResult.data === undefined) {
+    return <EventNotFound whatNotFound="form" status={formResult.status} />;
   }
 
+  const form = formResult.data;
+  const attributes = formControls(form);
   if (!isFormOpen(form)) {
     return <FormClosedView event={event} form={form} isRegistration={false} />;
   }
 
-  const userData = await getUserData(form.attributes, event.slug, userSlug);
-  if (userData === null) {
-    return <EventNotFound whatNotFound="user" />;
+  const userData = await getUserData(
+    attributes,
+    event.slug,
+    userSlug,
+    form.uuid,
+  );
+  if (userData.data === undefined) {
+    return <EventNotFound whatNotFound="user" status={userData.status} />;
   }
 
-  const blockAttributesInForm = form.attributes.filter(
+  const blockAttributesInForm = attributes.filter(
     (attribute) => attribute.type === "block",
   );
 
@@ -135,7 +108,7 @@ export default async function FormPage({ params }: FormPageProps) {
   return (
     <EventPageLayout
       event={event}
-      description={form.description}
+      description={form.description ?? ""}
       variant="form"
     >
       <h2 className="text-center text-3xl font-bold md:text-4xl">
@@ -144,13 +117,13 @@ export default async function FormPage({ params }: FormPageProps) {
 
       <EventInfoDiv className="bg-accent mt-2 font-medium shadow">
         <User className="size-4" strokeWidth={2.5} />
-        {userData.email}
+        {userData.data.email}
       </EventInfoDiv>
 
       <FormGenerator
-        attributes={form.attributes}
-        userData={userData}
-        originalEventBlocks={eventBlocks as unknown as PublicBlock[]}
+        form={form}
+        userData={userData.data}
+        originalEventBlocks={eventBlocks.filter((block) => block !== null)}
         formUuid={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}

@@ -13,9 +13,7 @@ export function flattenParticipant(
   const flattenedParticipant: FlattenedParticipant = {
     uuid: participant.uuid,
     email: participant.email,
-    slug: participant.slug,
     createdAt: participant.createdAt,
-    updatedAt: participant.updatedAt,
     mode: "view",
     wasExpanded,
   };
@@ -26,8 +24,10 @@ export function flattenParticipant(
     //(not slug for example)
     // TODO there we can add converting value from string to whatever we want
     flattenedParticipant[attribute.uuid] = Array.isArray(attribute.value)
-      ? attribute.value.join(",")
-      : attribute.value;
+      ? JSON.stringify(attribute.value)
+      : typeof attribute.value === "object" && attribute.value !== null
+        ? JSON.stringify(attribute.value)
+        : attribute.value;
   }
   return flattenedParticipant;
 }

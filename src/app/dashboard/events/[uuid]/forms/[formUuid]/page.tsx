@@ -4,7 +4,11 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getEventAttributes, getSingleEventForm } from "../data-access";
+import {
+  getEventAttributes,
+  getRegistrationFormUuid,
+  getSingleEventForm,
+} from "../data-access";
 import { EventFormEditForm } from "./edit-form";
 
 export async function generateMetadata({
@@ -32,6 +36,7 @@ export default async function EventFormEditPage({
 
   const formToEdit = await getSingleEventForm(uuid, formUuid);
   const eventAttributes = await getEventAttributes(uuid);
+  const registrationFormUuid = await getRegistrationFormUuid(uuid);
 
   if (formToEdit == null) {
     notFound();
@@ -49,6 +54,7 @@ export default async function EventFormEditPage({
           eventUuid={uuid}
           formToEdit={formToEdit}
           eventAttributes={eventAttributes}
+          isRegistration={registrationFormUuid === formUuid}
         />
       </div>
     );

@@ -37,8 +37,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
-import type { EventEmail } from "@/types/emails";
-import type { FlattenedParticipant } from "@/types/participant";
+import type { ParticipantIdentity } from "@/types/participant";
+import type { V3EmailSummary as EventEmail } from "@/types/v3";
 
 import { sendMail } from "../../../actions";
 
@@ -49,7 +49,7 @@ function SendMailForm({
 }: {
   eventUuid: string;
   emails: EventEmail[] | null;
-  targetParticipants: FlattenedParticipant[];
+  targetParticipants: ParticipantIdentity[];
 }) {
   const t = useTranslations("SendMail");
   const { toast } = useToast();
@@ -162,7 +162,7 @@ function SendMailForm({
                         </FormControl>
                         <SelectContent>
                           {emails.map((email) => (
-                            <SelectItem key={email.uuid} value={email.uuid}>
+                            <SelectItem key={email.id} value={email.id}>
                               {email.name}
                             </SelectItem>
                           ))}

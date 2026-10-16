@@ -4,12 +4,11 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
-import type { Event } from "@/types/event";
-import type { EventForm } from "@/types/forms";
+import type { V3Event, V3FormSummary } from "@/types/v3";
 
 interface FormClosedViewProps {
-  event: Event;
-  form: EventForm;
+  event: V3Event;
+  form: V3FormSummary;
   isRegistration?: boolean;
 }
 
@@ -55,7 +54,7 @@ export function FormClosedView({
   return (
     <EventPageLayout
       event={event}
-      description={form.description}
+      description={form.description ?? ""}
       variant="form"
     >
       <div

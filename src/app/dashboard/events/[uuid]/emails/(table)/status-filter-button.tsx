@@ -12,13 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EMAIL_HISTORY_STATUS_FILTER_VALUES } from "@/lib/emails";
-import type { EventEmailParticipantData } from "@/types/emails";
+import type { V3EmailDelivery } from "@/types/v3";
 
-function StatusFilterButton({
-  column,
-}: {
-  column: Column<EventEmailParticipantData>;
-}) {
+function StatusFilterButton({ column }: { column: Column<V3EmailDelivery> }) {
   const t = useTranslations("EmailHistoryTable");
   const filterValues = (column.getFilterValue() as string[] | undefined) ?? [];
 

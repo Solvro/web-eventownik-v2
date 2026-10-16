@@ -6,6 +6,8 @@ import "server-only";
 
 import type { SessionPayload } from "@/types/auth";
 
+import { API_URL } from "./api";
+
 const SECRET_KEY = process.env.SESSION_SECRET ?? "";
 if (SECRET_KEY === "") {
   throw new Error("SECRET_KEY env variable is not set!!!");
@@ -41,7 +43,7 @@ export async function createSession(sessionPayload: SessionPayload) {
 
   cookieStore.set("session", session, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     expires: expiresAt,
     sameSite: "lax",
     path: "/",
@@ -50,6 +52,18 @@ export async function createSession(sessionPayload: SessionPayload) {
 
 export async function deleteSession() {
   const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("backend-refresh")?.value;
+  if (refreshToken !== undefined && refreshToken !== "") {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: { Cookie: `refresh_token=${refreshToken}` },
+      });
+    } catch {
+      // Local logout must still work when the backend is unavailable.
+    }
+  }
+  cookieStore.delete("backend-refresh");
   cookieStore.delete("session");
   redirect("/");
 }
@@ -67,3 +81,27 @@ export const verifySession = cache(async () => {
   }
   return null;
 });
+
+export async function saveAuthResponse(
+  response: Response,
+  accessToken: string,
+) {
+  const refreshCookie = response.headers
+    .getSetCookie()
+    .find((value) => value.startsWith("refresh_token="));
+  const refreshToken = refreshCookie
+    ?.split(";")[0]
+    ?.slice("refresh_token=".length);
+  if (refreshToken === undefined || refreshToken === "") {
+    throw new Error("Backend did not return a refresh token");
+  }
+  const cookieStore = await cookies();
+  cookieStore.set("backend-refresh", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60,
+  });
+  await createSession({ bearerToken: accessToken });
+}

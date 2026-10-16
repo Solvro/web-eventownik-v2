@@ -1,13 +1,20 @@
 import { z } from "zod";
 
-import type { Permission } from "@/types/co-organizer";
-
 export const EventCoorganizersFormSchema = z.object({
   coorganizers: z.array(
     z.object({
       id: z.string(),
       email: z.string().email(),
-      permissions: z.array(z.custom<Permission>()),
+      permissions: z.array(
+        z.enum([
+          "MANAGE_ALL",
+          "MANAGE_EVENT",
+          "MANAGE_SETTINGS",
+          "MANAGE_FORM",
+          "MANAGE_PARTICIPANT",
+          "MANAGE_EMAIL",
+        ]),
+      ),
     }),
   ),
 });

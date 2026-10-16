@@ -1,8 +1,13 @@
+import {
+  attributeIsMultiple,
+  attributeMaxSelections,
+  attributeOptions,
+} from "@/lib/attribute-config";
 import { getAttributeLabel, getSchemaObjectForAttribute } from "@/lib/utils";
-import type { Attribute, AttributeOption } from "@/types/attributes";
+import type { AttributeOption } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
-import { getAttributeTarget } from "./mapping";
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
 import type {
   CsvData,
@@ -77,7 +82,14 @@ function getSharedValidationError(
   value: unknown,
   attribute: Attribute,
 ): ImportValidationKey | null {
-  const result = getSchemaObjectForAttribute(attribute).safeParse(value);
+  const result = getSchemaObjectForAttribute({
+    ...attribute,
+    isRequired: false,
+    isEditable: true,
+    options: attributeOptions(attribute),
+    isMultiple: attributeIsMultiple(attribute),
+    maxSelections: attributeMaxSelections(attribute),
+  }).safeParse(value);
   if (result.success) {
     return null;
   }
@@ -144,15 +156,12 @@ function validateAttributeValue(
         return { value: "true" };
       }
       if (falsy.includes(normalized)) {
-        if (attribute.isRequired) {
-          return { error: "validation.requiredChecked" };
-        }
         return { value: "false" };
       }
       return { error: "validation.boolean" };
     }
     case "select": {
-      const options = attribute.options ?? [];
+      const options = attributeOptions(attribute);
       const option = findMatchingOption(trimmed, options);
       if (option == null) {
         return {
@@ -162,8 +171,8 @@ function validateAttributeValue(
       }
       return { value: resolveAttributeOption(option).value };
     }
-    case "multiselect": {
-      const options = attribute.options ?? [];
+    case "multiSelect": {
+      const options = attributeOptions(attribute);
       const values = trimmed
         .split(MULTI_VALUE_SEPARATOR)
         .map((item) => item.trim())
@@ -178,19 +187,19 @@ function validateAttributeValue(
         };
       }
       if (
-        attribute.maxSelections != null &&
-        matchedValues.length > attribute.maxSelections
+        (attributeMaxSelections(attribute) ?? Infinity) < matchedValues.length
       ) {
         return {
           error: "validation.tooManyOptions",
-          values: { max: attribute.maxSelections },
+          values: { max: attributeMaxSelections(attribute) ?? 1 },
         };
       }
       return {
-        value: matchedValues
-          .filter((item) => item != null)
-          .map((item) => resolveAttributeOption(item).value)
-          .join(","),
+        value: JSON.stringify(
+          matchedValues
+            .filter((item) => item != null)
+            .map((item) => resolveAttributeOption(item).value),
+        ),
       };
     }
     case "date":
@@ -209,7 +218,7 @@ function validateAttributeValue(
       return { value: trimmed };
     }
     case "block": {
-      if (attribute.isMultiple) {
+      if (attributeIsMultiple(attribute)) {
         const values = trimmed
           .split(MULTI_VALUE_SEPARATOR)
           .map((item) => item.trim())
@@ -222,20 +231,20 @@ function validateAttributeValue(
           return { error: "validation.blockNotInList" };
         }
         if (
-          attribute.maxSelections != null &&
-          matchedBlocks.length > attribute.maxSelections
+          (attributeMaxSelections(attribute) ?? Infinity) < matchedBlocks.length
         ) {
           return {
             error: "validation.tooManyBlocks",
-            values: { max: attribute.maxSelections },
+            values: { max: attributeMaxSelections(attribute) ?? 1 },
           };
         }
 
         return {
-          value: matchedBlocks
-            .filter((item) => item != null)
-            .map((item) => item.uuid)
-            .join(","),
+          value: JSON.stringify(
+            matchedBlocks
+              .filter((item) => item != null)
+              .map((item) => item.uuid),
+          ),
         };
       }
 
@@ -246,7 +255,7 @@ function validateAttributeValue(
       return { value: matchingBlock.uuid };
     }
     case "text":
-    case "textarea":
+    case "textArea":
     case "time":
     case "tel": {
       const sharedError = getSharedValidationError(trimmed, attribute);
@@ -294,9 +303,6 @@ export function prepareImport({
   const mappedTargets = new Set(selectedTargets);
   const requiredTargets: Exclude<MappingTarget, typeof SKIP_TARGET>[] = [
     EMAIL_TARGET,
-    ...attributes
-      .filter((attribute) => attribute.isRequired)
-      .map((attribute) => getAttributeTarget(attribute.uuid)),
   ];
   const missingRequiredTargets = requiredTargets
     .filter((target) => !mappedTargets.has(target))
@@ -337,14 +343,6 @@ export function prepareImport({
       }
 
       const rawValue = row[Number(columnIndex)] ?? "";
-      if (attribute.isRequired && rawValue.trim() === "") {
-        issues.push({
-          rowIndex,
-          field: getAttributeLabel(attribute.name, locale),
-          message: "validation.required",
-        });
-        continue;
-      }
 
       const result = validateAttributeValue(rawValue, attribute, blocks);
       if ("error" in result) {

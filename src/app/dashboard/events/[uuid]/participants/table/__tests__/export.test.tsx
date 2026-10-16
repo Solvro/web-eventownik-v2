@@ -1,4 +1,4 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { describe } from "vitest";
 
@@ -17,8 +17,7 @@ describe("Export data", () => {
     cleanup();
   });
 
-  // TODO: Fix participant table tests after migrating to V3: 'AssertionError: expected "downloadFile" to be called once, but got 0 times'
-  it.skip("should download file with exported data", async () => {
+  it("should download file with exported data", async () => {
     // Why is that? -> check https://vitest.dev/guide/mocking.html#mock-an-exported-function
     const downloadFileSpy = vi
       .spyOn(utils, "downloadFile")
@@ -30,13 +29,15 @@ describe("Export data", () => {
 
     await user.click(exportButton);
 
-    expect(downloadFileSpy).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(downloadFileSpy).toHaveBeenCalledOnce();
+    });
   });
 
   it("should display informative error when server error occurs", async () => {
     server.use(
       http.get<{ eventUuid: string }>(
-        `${API_URL}/events/:eventUuid/participants/export`,
+        `${API_URL}/events/:eventUuid/import-export/participants`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },
@@ -48,7 +49,7 @@ describe("Export data", () => {
 
     await user.click(exportButton);
 
-    const toast = screen.getByText(/nie powiódł/i);
+    const toast = await screen.findByText(/nie powiódł/i);
     expect(toast).toBeVisible();
   });
 });

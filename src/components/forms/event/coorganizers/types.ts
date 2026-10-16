@@ -18,36 +18,8 @@ export const PERMISSIONS_CONFIG: {
   permission: Permission;
   label: EventPermissionsKey;
 }[] = [
-  {
-    permission: {
-      id: 3,
-      action: "manage",
-      subject: "setting",
-    },
-    label: "settings",
-  },
-  {
-    permission: {
-      id: 4,
-      action: "manage",
-      subject: "form",
-    },
-    label: "forms",
-  },
-  {
-    permission: {
-      id: 5,
-      action: "manage",
-      subject: "participant",
-    },
-    label: "participants",
-  },
-  {
-    permission: {
-      id: 6,
-      action: "manage",
-      subject: "email",
-    },
-    label: "emails",
-  },
+  { permission: "MANAGE_SETTINGS", label: "settings" },
+  { permission: "MANAGE_FORM", label: "forms" },
+  { permission: "MANAGE_PARTICIPANT", label: "participants" },
+  { permission: "MANAGE_EMAIL", label: "emails" },
 ];

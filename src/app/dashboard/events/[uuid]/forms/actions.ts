@@ -3,6 +3,7 @@
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
+import { reorderBackendPage } from "@/lib/reorder";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { CompleteEventForm } from "@/types/forms";
@@ -19,6 +20,21 @@ export type Payload = Omit<
 > & {
   attributes: FormAttributeBase[];
 };
+
+export async function reorderForms(
+  eventUuid: string,
+  orderedIds: string[],
+  originalIds: string[],
+  offset: number,
+) {
+  return reorderBackendPage(
+    eventUuid,
+    "forms",
+    orderedIds,
+    originalIds,
+    offset,
+  );
+}
 
 export async function createEventForm(eventUuid: string, form: Payload) {
   const session = await verifySession();
@@ -39,8 +55,13 @@ export async function createEventForm(eventUuid: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      openDate: resolveFormDateTime(form),
-      attributes: form.attributes,
+      openDate: resolveFormDateTime(form, "open"),
+      attributes: form.attributes.map(({ uuid, isRequired, order }) => ({
+        attributeUuid: uuid,
+        isRequired,
+        order: order ?? 0,
+      })),
+      isEditable: form.attributes.some((attribute) => attribute.isEditable),
       closeDate: resolveFormDateTime(form),
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
@@ -108,8 +129,13 @@ export async function updateEventForm(
       body: JSON.stringify({
         name: form.name,
         description: form.description,
-        openDate: resolveFormDateTime(form),
-        attributes: form.attributes,
+        openDate: resolveFormDateTime(form, "open"),
+        attributes: form.attributes.map(({ uuid, isRequired, order }) => ({
+          attributeUuid: uuid,
+          isRequired,
+          order: order ?? 0,
+        })),
+        isEditable: form.attributes.some((attribute) => attribute.isEditable),
         closeDate: resolveFormDateTime(form),
         isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
@@ -147,47 +173,6 @@ export async function updateEventForm(
               statusText: response.statusText,
             },
           },
-    };
-  }
-
-  return { success: true };
-}
-
-export async function reorderForms(eventUuid: string, orderedIds: string[]) {
-  const session = await verifySession();
-
-  if (session == null) {
-    return { success: false, error: { key: "unauthorized" } };
-  }
-
-  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
-  const results = await Promise.all(
-    orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventUuid}/forms/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.bearerToken}`,
-        },
-        body: JSON.stringify({ order: index }),
-      }),
-    ),
-  );
-
-  const failed = results.find((r) => !r.ok);
-  if (failed !== undefined) {
-    console.error(
-      `[reorderForms action] Failed to reorder forms for event ${eventUuid}`,
-    );
-    return {
-      success: false,
-      error: {
-        key: "httpError" as EventDetailsKey,
-        values: {
-          status: failed.status,
-          statusText: failed.statusText,
-        },
-      },
     };
   }
 

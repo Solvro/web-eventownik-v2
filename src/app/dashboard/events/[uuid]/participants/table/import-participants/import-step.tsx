@@ -2,7 +2,7 @@ import { ListChecks } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Ref } from "react";
 
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { ColumnMappingList } from "./column-mapping-list";
 import { CsvFileInput } from "./csv-file-input";

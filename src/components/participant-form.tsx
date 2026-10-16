@@ -5,14 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { SubmitFormError } from "@/app/[eventSlug]/actions";
 import { AttributeInput } from "@/components/attribute-input";
 import { AttributeInputDrawing } from "@/components/attribute-input-drawing";
-import { AttributeInputFile } from "@/components/attribute-input-file";
+import {
+  AttributeInputFile,
+  fileSchema,
+  parseFileValidationErrorMessage,
+} from "@/components/attribute-input-file";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,9 +40,8 @@ import {
   getSchemaObjectForAttributes,
 } from "@/lib/utils";
 import type { FormValidationErrors } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
+import type { FormControlAttribute } from "@/types/attributes";
 import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
 
 interface ErrorObject {
   rule: string;
@@ -47,7 +50,7 @@ interface ErrorObject {
 }
 
 interface ParticipantFormProps {
-  attributes: FormAttribute[];
+  attributes: FormControlAttribute[];
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
@@ -57,7 +60,10 @@ interface ParticipantFormProps {
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
-  userData?: PublicParticipant;
+  initialValues?: Record<string, unknown>;
+  lastUpdated?: Record<string, string>;
+  selectedBlockUuids?: string[];
+  eventSlug?: string;
   eventBlocks?: PublicBlock[];
   editMode?: boolean;
 }
@@ -66,7 +72,10 @@ export function ParticipantForm({
   attributes,
   onSubmit,
   includeEmail = false,
-  userData,
+  initialValues,
+  lastUpdated,
+  selectedBlockUuids,
+  eventSlug,
   eventBlocks = [],
   editMode = false,
 }: ParticipantFormProps) {
@@ -76,10 +85,14 @@ export function ParticipantForm({
   const locale = useLocale();
   const router = useRouter();
 
+  const captchaSitekey = process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY?.trim() ?? "";
   const [files, setFiles] = useState<File[]>([]);
   const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
+  const [isCaptchaReady, setIsCaptchaReady] = useState(false);
+  const [isCaptchaOpen, setIsCaptchaOpen] = useState(false);
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
   const [success, setSuccess] = useState<boolean>(false);
   const sortedAttributes = useMemo(
     () => attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
@@ -88,6 +101,23 @@ export function ParticipantForm({
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const hCaptchaRef = useRef<HCaptcha>(null);
+
+  useEffect(() => {
+    if (!isAwaitingCaptcha || isCaptchaOpen || hCaptchaToken !== null) {
+      return;
+    }
+    // The SDK can load its script but fail to initialize the widget without
+    // emitting onError. Recover if execution never opens or verifies it.
+    const timeout = window.setTimeout(() => {
+      pendingFormData.current = null;
+      setIsAwaitingCaptcha(false);
+      setIsCaptchaReady(false);
+      setDidCaptchaFail(true);
+    }, 15_000);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [isAwaitingCaptcha, isCaptchaOpen, hCaptchaToken]);
 
   const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
@@ -103,15 +133,7 @@ export function ParticipantForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...(includeEmail && { email: "" }),
-      ...userData?.attributes
-        .filter(
-          (attribute) =>
-            attribute.type !== "file" && attribute.type !== "drawing",
-        )
-        .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.uuid] = attribute.meta.pivot_value;
-          return accumulator;
-        }, {}),
+      ...initialValues,
     },
   });
 
@@ -249,15 +271,22 @@ export function ParticipantForm({
 
     let hasValidationErrors = false;
 
+    for (const file of files) {
+      const validation = fileSchema.safeParse(file);
+      if (!validation.success) {
+        const issue = validation.error.errors[0].message;
+        const parsed = parseFileValidationErrorMessage(issue);
+        form.setError(file.name, {
+          message:
+            parsed === null ? issue : tEventDetails(parsed.key, parsed.values),
+        });
+        hasValidationErrors = true;
+      }
+    }
+
     for (const attribute of requiredFileDrawingAttributes) {
       const hasFile = files.some((file) => file.name === attribute.uuid);
-      const hasExistingValue =
-        userData?.attributes.some(
-          (userAttribute) =>
-            userAttribute.uuid === attribute.uuid &&
-            userAttribute.meta.pivot_value !== "" &&
-            userAttribute.meta.pivot_value.length > 0,
-        ) ?? false;
+      const hasExistingValue = lastUpdated?.[attribute.uuid] !== undefined;
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
@@ -274,11 +303,24 @@ export function ParticipantForm({
       return;
     }
 
+    if (hCaptchaToken === null && !isCaptchaReady) {
+      setDidCaptchaFail(true);
+      setIsAwaitingCaptcha(false);
+      return;
+    }
+
     if (hCaptchaToken === null) {
       pendingFormData.current = values;
 
       setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
+      try {
+        hCaptchaRef.current?.execute();
+      } catch {
+        pendingFormData.current = null;
+        setIsAwaitingCaptcha(false);
+        setIsCaptchaReady(false);
+        setDidCaptchaFail(true);
+      }
     } else {
       await submitWithCaptcha(values, hCaptchaToken);
     }
@@ -358,11 +400,7 @@ export function ParticipantForm({
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.uuid === attribute.uuid,
-                          )?.meta.pivot_updated_at ?? null
-                        }
+                        lastUpdate={lastUpdated?.[attribute.uuid] ?? null}
                       />
                     ) : attribute.type === "drawing" ? (
                       <AttributeInputDrawing
@@ -371,30 +409,30 @@ export function ParticipantForm({
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={
-                          userData?.attributes.find(
-                            (attribute_) => attribute_.uuid === attribute.uuid,
-                          )?.meta.pivot_updated_at ?? null
-                        }
+                        lastUpdate={lastUpdated?.[attribute.uuid] ?? null}
                       />
                     ) : (
                       <AttributeInput
                         attribute={attribute}
-                        userData={userData}
+                        selectedBlockUuids={selectedBlockUuids}
+                        eventSlug={eventSlug}
                         eventBlocks={eventBlocks.filter(
                           (block) => block.attributeUuid === attribute.uuid,
                         )}
                         field={field}
-                        shouldCheckUserData={editMode}
+                        requireSelectionState={editMode}
                       />
                     )}
                   </FormControl>
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                      (form.formState.errors as any)[attribute.uuid]
-                        ?.message as FormValidationErrors,
+                      (
+                        form.formState.errors as Record<
+                          string,
+                          { message?: string } | undefined
+                        >
+                      )[attribute.uuid]?.message as FormValidationErrors,
                       { name: getAttributeLabel(attribute.name, "pl") },
                     )}
                   </FormMessage>
@@ -410,23 +448,42 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        <HCaptcha
-          ref={hCaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-          size="invisible"
-          onVerify={handleCaptchaVerify}
-          onExpire={() => {
-            setHCaptchaToken(null);
-            setDidCaptchaFail(true);
-          }}
-          onClose={() => {
-            setDidCaptchaFail(true);
-          }}
-          onError={(captchaError) => {
-            console.error("Captcha error occurred:", captchaError);
-            setDidCaptchaFail(true);
-          }}
-        />
+        {captchaSitekey !== "" && (
+          <HCaptcha
+            key={captchaAttempt}
+            onLoad={() => {
+              setIsCaptchaReady(true);
+            }}
+            ref={hCaptchaRef}
+            sitekey={captchaSitekey}
+            size="invisible"
+            onVerify={handleCaptchaVerify}
+            onOpen={() => {
+              setIsCaptchaOpen(true);
+            }}
+            onExpire={() => {
+              setHCaptchaToken(null);
+              setDidCaptchaFail(true);
+              setIsAwaitingCaptcha(false);
+              pendingFormData.current = null;
+            }}
+            onClose={() => {
+              setIsCaptchaOpen(false);
+              setDidCaptchaFail(true);
+              setIsAwaitingCaptcha(false);
+              pendingFormData.current = null;
+            }}
+            onError={(captchaError) => {
+              setIsCaptchaOpen(false);
+              console.error("Captcha error occurred:", captchaError);
+              setIsCaptchaReady(false);
+              setHCaptchaToken(null);
+              setDidCaptchaFail(true);
+              setIsAwaitingCaptcha(false);
+              pendingFormData.current = null;
+            }}
+          />
+        )}
 
         {didCaptchaFail ? (
           <Button
@@ -435,7 +492,11 @@ export function ParticipantForm({
             className="sticky bottom-4 w-full shadow-lg md:bottom-0"
             onClick={() => {
               setDidCaptchaFail(false);
-              hCaptchaRef.current?.execute();
+              setIsAwaitingCaptcha(false);
+              setIsCaptchaReady(false);
+              setHCaptchaToken(null);
+              pendingFormData.current = null;
+              setCaptchaAttempt((attempt) => attempt + 1);
             }}
           >
             <Ban className="size-8" />

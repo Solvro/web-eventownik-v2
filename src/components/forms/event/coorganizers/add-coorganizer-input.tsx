@@ -60,7 +60,7 @@ export function AddCoOrganizerInput({
             className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
             disabled={!isEmailValid || emailAlreadyExists}
             onClick={() => {
-              setSelectedPermissions([6, 5, 4, 3]);
+              setSelectedPermissions(["MANAGE_ALL"]);
             }}
           >
             <Plus className="h-4 w-4" />
@@ -72,26 +72,29 @@ export function AddCoOrganizerInput({
               {t("permissionsTemporarilyUnavailable")}
             </span>
             {PERMISSIONS_CONFIG.map(({ permission, label }) => (
-              <div key={permission.id} className="flex items-center space-x-2">
+              <div key={permission} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`permission-${permission.id.toString()}-new`}
-                  checked={selectedPermissions.includes(permission.id)}
+                  id={`permission-${permission}-new`}
+                  checked={
+                    selectedPermissions.includes(permission) ||
+                    selectedPermissions.includes("MANAGE_ALL")
+                  }
                   onCheckedChange={(checked) => {
                     if (checked === true) {
                       setSelectedPermissions((previous) => [
                         ...previous,
-                        permission.id,
+                        permission,
                       ]);
                     } else {
                       setSelectedPermissions((previous) =>
-                        previous.filter((p) => p !== permission.id),
+                        previous.filter((p) => p !== permission),
                       );
                     }
                   }}
                   disabled={true} // temporary disabled
                 />
                 <Label
-                  htmlFor={`permission-${permission.id.toString()}-new`}
+                  htmlFor={`permission-${permission}-new`}
                   className="cursor-pointer"
                 >
                   {tEventPermissions(label)}
