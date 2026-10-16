@@ -1,130 +1,82 @@
-import {
-  cleanup,
-  getAllByRole,
-  getByRole,
-  getByText,
-  screen,
-} from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
-import assert from "node:assert";
 import { describe, it } from "vitest";
 
 import { API_URL } from "@/lib/api";
 import { server } from "@/tests/msw/node";
 
-import { mockParticipantGet, mockVerifySession } from "./mocks/mocks";
-import {
-  editParticipantDetailsTestCaseData,
-  editParticipantTestCaseData,
-} from "./mocks/test-cases-data";
+import { mockVerifySession } from "./mocks/mocks";
+import { editParticipantTestCaseData } from "./mocks/test-cases-data";
 import { renderTable } from "./utils";
 
 vi.mock("@/lib/session", () => mockVerifySession());
 
-// TODO: Fix participant table tests after migrating to V3
-describe.skip("Editing participant", () => {
-  const rowIndexForEditing = 0;
+function renderEditor() {
+  const fixture = editParticipantTestCaseData;
+  const rendered = renderTable(
+    fixture.participants,
+    fixture.attributes.map((attribute) => ({ ...attribute, showInList: true })),
+  );
+  const row = rendered.getDataRow(0);
+  return {
+    ...rendered,
+    row,
+    fixture,
+    edit: within(row).getByRole("button", { name: "Edytuj" }),
+  };
+}
 
-  beforeEach(() => {
+describe("native participant editing", () => {
+  beforeEach(cleanup);
+  it("saves changed text and number zero without sending immutable metadata", async () => {
+    let payload: unknown;
     server.use(
-      mockParticipantGet(editParticipantDetailsTestCaseData.participants),
-    );
-    cleanup();
-  });
-
-  it.skip("should correctly update participant data", async () => {
-    // Test case data contains only attributes of type 'text' and 'number' for simplicity
-    // Testing different types of attributes should happen in the AttributeInput's tests
-    const { participants, attributes } = editParticipantTestCaseData;
-    const editedParticipant = {
-      ...editParticipantDetailsTestCaseData.participants[0],
-    };
-    const { user, getDataRow } = renderTable(participants, attributes);
-
-    const firstRow = getDataRow(rowIndexForEditing);
-
-    const editButton = getByRole(firstRow, "button", { name: /edytuj/i });
-    expect(editButton).toBeVisible();
-
-    await user.click(editButton);
-
-    const getTextInput = () => getAllByRole(firstRow, "textbox")[1];
-    const getNumberInput = () => getByRole(firstRow, "spinbutton");
-
-    expect(getTextInput()).toHaveValue(editedParticipant.attributes[0].value);
-    expect(getNumberInput()).toHaveValue(
-      Number(editedParticipant.attributes[1].value),
-    );
-
-    const newText = "Testowy text";
-    const newNumber = "2137";
-    const textInput = getTextInput();
-    const numberInput = getNumberInput();
-
-    await user.clear(textInput);
-    await user.type(textInput, newText);
-
-    // workaround for number input couldn't be cleared for some reason
-    await user.click(numberInput);
-    await user.keyboard("{Control>}a{/Control}");
-    await user.type(numberInput, newNumber);
-
-    const saveButton = getByRole(firstRow, "button", {
-      name: /zapisz/i,
-    });
-    await user.click(saveButton);
-    const toast = screen.getByRole("region");
-    expect(toast).toBeVisible();
-
-    expect(getByText(getDataRow(rowIndexForEditing), newText)).toBeVisible();
-  });
-
-  // Skipped due to mock strange behavior. Adding mockParticipantsGet will make cells not switch into edit mode.
-  // Also mocked error does not appear and edit succeeds
-  it.skip("should correctly handle server error when updating participant data", async () => {
-    // Test case data contains only attributes of type 'text' and 'number' for simplicity
-    // Testing different types of attributes should happen in the AttributeInput's tests
-    const { participants, attributes } = editParticipantTestCaseData;
-    const { user, getDataRow } = renderTable(participants, attributes);
-    server.use(
-      http.patch<{ eventUuid: string; participantId: string }>(
-        `${API_URL}/events/:eventUuid/participants/:participantId`,
-        () => {
-          return HttpResponse.json({}, { status: 500 });
+      http.patch(
+        `${API_URL}/events/:eventUuid/participants/:participantUuid`,
+        async ({ request }) => {
+          payload = await request.json();
+          return HttpResponse.json({});
         },
       ),
     );
-
-    // Step 1: Expand row
-    const firstRow = getDataRow(rowIndexForEditing);
-
-    // Step 2: Switch to edit mode
-    const editButton = getByRole(firstRow, "button", { name: /edit/i });
-    expect(editButton).toBeVisible();
-    await user.click(editButton);
-
-    // Step 3: Edit participant
-    const getTextInput = () => getAllByRole(firstRow, "textbox")[1];
-    const textInput = getTextInput();
-    const oldText = textInput.getAttribute("value");
-
-    assert.ok(oldText !== null, "Value of input cannot be null!");
-
-    await user.click(textInput);
-    await user.keyboard("{Control>}a{/Control}");
-    await user.type(textInput, "Nowy tekst");
-
-    // Step 3: Try to save changes
-    const saveButton = getByRole(firstRow, "button", {
-      name: /save/i,
+    const { user, row, edit, fixture, getDataRow } = renderEditor();
+    await user.click(edit);
+    const text = within(row).getAllByRole("textbox")[1];
+    const number = within(row).getByRole("spinbutton");
+    await user.clear(text);
+    await user.type(text, "Updated name");
+    await user.clear(number);
+    await user.type(number, "0");
+    await user.click(within(row).getByRole("button", { name: "Zapisz" }));
+    expect(await screen.findByText("Updated name")).toBeVisible();
+    expect(payload).toEqual({
+      participantAttributes: [
+        { attributeUuid: fixture.attributes[0].uuid, value: 0 },
+        { attributeUuid: fixture.attributes[1].uuid, value: "Updated name" },
+      ],
     });
-    await user.click(saveButton);
-    const toast = screen.getByRole("region");
-    screen.debug(toast);
-    const errorMessage = screen.getByText(/nie udało/i);
-    expect(errorMessage).toBeVisible();
-
-    await user.keyboard("{Escape}");
-    expect(getByText(getDataRow(rowIndexForEditing), oldText)).toBeVisible();
+    expect(
+      within(getDataRow(0)).getByRole("button", { name: "Edytuj" }),
+    ).toBeEnabled();
+  });
+  it("retains unsaved input and enables retry after a failed save", async () => {
+    server.use(
+      http.patch(
+        `${API_URL}/events/:eventUuid/participants/:participantUuid`,
+        () => HttpResponse.json({}, { status: 500 }),
+      ),
+    );
+    const { user, row, edit } = renderEditor();
+    await user.click(edit);
+    const text = within(row).getAllByRole("textbox")[1];
+    await user.clear(text);
+    await user.type(text, "Unsaved name");
+    const save = within(row).getByRole("button", { name: "Zapisz" });
+    await user.click(save);
+    expect(
+      await screen.findByText(/nie udało się zapisać zmian/i),
+    ).toBeVisible();
+    expect(text).toHaveValue("Unsaved name");
+    expect(save).toBeEnabled();
   });
 });

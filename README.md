@@ -118,11 +118,15 @@ refactor(mail): simplify editor logic
 test(events): add missing unit tests
 ```
 
+## Backend v3
+
+Konfiguracja, zmiany kontraktu API i zakres weryfikacji: [V3_MIGRATION.md](V3_MIGRATION.md).
+
 ## Zgłaszanie problemów
 
 - Problemy dotyczące **frontendu** zgłaszaj w tym repozytorium.
 - Problemy dotyczące **backendu** (API, logika serwera, baza danych) zgłaszaj w repozytorium backendu:
-  [https://github.com/Solvro/backend-eventownik-v2](https://github.com/Solvro/backend-eventownik-v2)
+  [https://github.com/Solvro/backend-eventownik-v3](https://github.com/Solvro/backend-eventownik-v3)
 
 ## Aktualny zespół
 

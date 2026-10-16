@@ -36,6 +36,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/password-reset",
+        destination: "/auth/password-reset",
+        permanent: false,
+      },
+      {
         source: "/regulamin",
         destination:
           "https://drive.google.com/file/d/1wr-MYjUZRggLmLFBxBLNDfZ1fA5XbN5C/view",

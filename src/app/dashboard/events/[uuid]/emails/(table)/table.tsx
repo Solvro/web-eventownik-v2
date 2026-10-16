@@ -12,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SingleEventEmail } from "@/types/emails";
+import type { V3EmailDelivery } from "@/types/v3";
 
 import { EmailHistoryToolbar } from "./email-history-toolbar";
+import type { EmailHistoryState } from "./use-email-history-table";
 import { useEmailHistoryTable } from "./use-email-history-table";
 
 function getAriaSort(
@@ -29,20 +30,28 @@ function getAriaSort(
   return "descending";
 }
 
-function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
+function EmailHistoryTable({
+  data,
+  total,
+  state,
+}: {
+  data: V3EmailDelivery[];
+  total: number;
+  state: EmailHistoryState;
+}) {
   const t = useTranslations("EmailHistoryTable");
-  const { table, globalFilter } = useEmailHistoryTable(email);
-  const filteredCount = table.getFilteredRowModel().rows.length;
+  const table = useEmailHistoryTable(data, state);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <EmailHistoryToolbar
-        globalFilter={globalFilter}
+        globalFilter={state.globalFilter}
         onGlobalFilterChange={(value) => {
           table.setGlobalFilter(value);
         }}
         onResetFilters={() => {
           table.resetColumnFilters();
+          table.setGlobalFilter("");
         }}
         onResetSorting={() => {
           table.resetSorting();
@@ -111,7 +120,7 @@ function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
       </ScrollArea>
 
       <p className="text-muted-foreground pt-2 text-sm" aria-live="polite">
-        {t("recipientsCount", { count: filteredCount })}
+        {t("recipientsCount", { count: total })}
       </p>
     </div>
   );

@@ -29,8 +29,8 @@ function CreateEmailTemplateForm({
   eventForms,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
 }) {
   const t = useTranslations("Email");
   const router = useRouter();

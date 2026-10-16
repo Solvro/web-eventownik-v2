@@ -1,20 +1,16 @@
 import { API_URL } from "@/lib/api";
-import type { PublicBlock } from "@/types/blocks";
+import { getBackend } from "@/lib/backend";
+import type { V3Block } from "@/types/v3";
 
 export async function getEventBlockAttributeBlocks(
   eventSlug: string,
   attributeUuid: string,
 ) {
-  const blocksResponse = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
-    {
-      method: "GET",
-    },
-  );
-  if (!blocksResponse.ok) {
-    const error = (await blocksResponse.json()) as unknown;
-    console.error(error);
+  try {
+    return await getBackend<V3Block>(
+      `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
+    );
+  } catch {
     return null;
   }
-  return (await blocksResponse.json()) as PublicBlock[];
 }

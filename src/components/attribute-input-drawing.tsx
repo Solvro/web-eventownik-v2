@@ -13,7 +13,7 @@ import type { ReactSketchCanvasRef } from "react-sketch-canvas";
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import type { FormAttribute } from "@/types/attributes";
+import type { FormControlAttribute } from "@/types/attributes";
 
 export function AttributeInputDrawing({
   field,
@@ -24,7 +24,7 @@ export function AttributeInputDrawing({
   lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  attribute: FormAttribute;
+  attribute: FormControlAttribute;
   setError: UseFormSetError<FieldValues>;
   resetField: UseFormResetField<FieldValues>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;

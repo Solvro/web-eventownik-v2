@@ -5,12 +5,21 @@ import { redirect } from "next/navigation";
 
 import type { ExportKey, SendMailKey, TableKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import type { PaginatedResponse } from "@/lib/api";
+import { attributeValue } from "@/lib/api-v3";
+import {
+  getBackend,
+  getReferenceCollection,
+  paginatedUrl,
+} from "@/lib/backend";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { EventEmail } from "@/types/emails";
-import type { Participant } from "@/types/participant";
+import type { Participant, ParticipantIdentity } from "@/types/participant";
+import type {
+  V3Attribute as Attribute,
+  V3EmailSummary as EventEmail,
+} from "@/types/v3";
 
 export interface ImportedParticipant {
   email: string;
@@ -80,7 +89,24 @@ function formatSkippedParticipants(
   }`;
 }
 
-export async function getParticipants(eventUuid: string) {
+export interface ParticipantPageQuery {
+  page: number;
+  take: number;
+  search: string;
+  sort: string;
+  columnFilters: Record<string, unknown[]>;
+}
+const INITIAL_PARTICIPANT_QUERY: ParticipantPageQuery = {
+  page: 1,
+  take: 20,
+  search: "",
+  sort: "createdAt:asc",
+  columnFilters: {},
+};
+export async function getParticipants(
+  eventUuid: string,
+  query: ParticipantPageQuery = INITIAL_PARTICIPANT_QUERY,
+) {
   const session = await verifySession();
   if (session === null) {
     redirect("/auth/login");
@@ -91,22 +117,20 @@ export async function getParticipants(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
+  const url = paginatedUrl(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${session.bearerToken}` },
-    },
+    query.page,
+    query.take,
   );
-  if (!response.ok) {
-    console.error("Failed to fetch participants", response);
-    return null;
+  if (query.search !== "") {
+    url.searchParams.set("search", query.search);
   }
-  const participants = ((await response.json()) as { data: Participant[] })
-    .data;
-  return participants.toSorted(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
+  url.searchParams.set("sort", query.sort);
+  url.searchParams.set("columnFilters", JSON.stringify(query.columnFilters));
+  return getBackend<PaginatedResponse<Participant>>(url, {
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
+    cache: "no-store",
+  });
 }
 
 export async function getParticipant(
@@ -140,6 +164,31 @@ export async function getParticipant(
   return participant;
 }
 
+export async function getParticipantSelectionPage(
+  eventUuid: string,
+  query: ParticipantPageQuery,
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+  if (!isValidUuid(eventUuid)) {
+    throw new Error("Invalid event UUID");
+  }
+  const url = paginatedUrl(
+    `${API_URL}/events/${eventUuid}/participants/selection`,
+    query.page,
+    query.take,
+  );
+  url.searchParams.set("search", query.search);
+  url.searchParams.set("sort", query.sort);
+  url.searchParams.set("columnFilters", JSON.stringify(query.columnFilters));
+  return getBackend<PaginatedResponse<ParticipantIdentity>>(url, {
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
+    cache: "no-store",
+  });
+}
+
 export async function getAttributes(eventUuid: string) {
   const session = await verifySession();
   if (session === null) {
@@ -151,19 +200,13 @@ export async function getAttributes(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
+  return getReferenceCollection<Attribute>(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
     {
-      method: "GET",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
+      cache: "no-store",
     },
   );
-  if (!response.ok) {
-    console.error("Failed to fetch attributes", response);
-    return null;
-  }
-  const attributes = ((await response.json()) as { data: Attribute[] }).data;
-  return attributes;
 }
 
 async function getBlockData(
@@ -187,7 +230,8 @@ async function getBlockData(
     );
     return null;
   }
-  return response.json() as Promise<Block>;
+  const block = (await response.json()) as Block | [];
+  return Array.isArray(block) ? null : block;
 }
 
 export async function getBlocks(eventUuid: string, attributes: Attribute[]) {
@@ -234,33 +278,37 @@ export async function deleteManyParticipants(
     };
   }
 
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
-        "Content-Type": "application/json",
+  for (let offset = 0; offset < participants.length; offset += 500) {
+    const response = await fetch(
+      `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/unregister-many`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          participantsToUnregisterIds: participants.slice(offset, offset + 500),
+        }),
       },
-      body: JSON.stringify({ participantsToUnregisterIds: participants }),
-    },
-  );
-
-  if (!response.ok) {
-    console.error(
-      `[deleteManyParticipants] Failed to delete many participants for event ${eventUuid}:`,
-      response,
     );
-    if (response.status === 500) {
+
+    if (!response.ok) {
+      console.error(
+        `[deleteManyParticipants] Failed to delete many participants for event ${eventUuid}:`,
+        response,
+      );
+      if (response.status === 500) {
+        return {
+          success: false,
+          error: { key: "serverError" as TableKey },
+        };
+      }
       return {
         success: false,
-        error: { key: "serverError" as TableKey },
+        error: { key: "unexpectedError" as TableKey },
       };
     }
-    return {
-      success: false,
-      error: { key: "unexpectedError" as TableKey },
-    };
   }
   return { success: true };
 }
@@ -316,6 +364,10 @@ export async function updateParticipant(
   }
 
   const { participantAttributes, ...baseFields } = payload;
+  const attributes = await getAttributes(eventUuid);
+  if (attributes === null) {
+    return { success: false };
+  }
 
   const response = await fetch(
     `${API_URL}/events/${eventUuid}/participants/${participantUuid}`,
@@ -330,7 +382,14 @@ export async function updateParticipant(
         ...(participantAttributes != null && {
           participantAttributes: Object.entries(participantAttributes).map(
             ([key, value]) => {
-              return { attributeUuid: key, value: value === "" ? null : value };
+              return {
+                attributeUuid: key,
+                value: attributeValue(
+                  attributes.find((attribute) => attribute.uuid === key)
+                    ?.type ?? "text",
+                  value,
+                ),
+              };
             },
           ),
         }),
@@ -356,14 +415,120 @@ async function createImportedParticipants(
   participants: ImportedParticipant[],
   bearerToken: string,
 ) {
-  return await fetch(`${API_URL}/events/${eventUuid}/participants/import`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ participants }),
-  });
+  const attributes = await getAttributes(eventUuid);
+  if (attributes === null) {
+    return Response.json(
+      { message: "Could not load attributes" },
+      { status: 502 },
+    );
+  }
+  const skippedParticipants: NonNullable<
+    ImportParticipantsResponse["skippedParticipants"]
+  > = [];
+  let imported = 0;
+  const seen = new Set<string>();
+  for (const participant of participants) {
+    if (seen.has(participant.email)) {
+      skippedParticipants.push({
+        email: participant.email,
+        reason: "duplicate_in_file",
+      });
+      continue;
+    }
+    seen.add(participant.email);
+    try {
+      const response = await fetch(
+        `${API_URL}/events/${eventUuid}/participants`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...participant,
+            participantAttributes: participant.participantAttributes.map(
+              (item) => ({
+                ...item,
+                value: attributeValue(
+                  attributes.find(
+                    (attribute) => attribute.uuid === item.attributeUuid,
+                  )?.type ?? "text",
+                  item.value,
+                ),
+              }),
+            ),
+          }),
+        },
+      );
+      if (response.ok) {
+        imported++;
+      } else {
+        skippedParticipants.push({
+          email: participant.email,
+          reason: response.status === 409 ? "already_exists" : "failed",
+          message: await response.text(),
+        });
+      }
+    } catch {
+      skippedParticipants.push({ email: participant.email, reason: "failed" });
+    }
+  }
+  return Response.json(
+    { skippedParticipants },
+    { status: imported > 0 ? 200 : 400 },
+  );
+}
+
+export async function bulkUpdateParticipantAttribute(
+  eventUuid: string,
+  participantIds: string[],
+  attributeUuid: string,
+  value: string,
+) {
+  const ids = [...new Set(participantIds)];
+  const session = await verifySession();
+  if (
+    session === null ||
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    ids.some((id) => !isValidUuid(id))
+  ) {
+    return { failedCount: ids.length };
+  }
+  const attributes = await getAttributes(eventUuid);
+  const attribute = attributes?.find((item) => item.uuid === attributeUuid);
+  if (
+    attribute === undefined ||
+    attribute.type === "file" ||
+    attribute.type === "drawing"
+  ) {
+    return { failedCount: ids.length };
+  }
+  const newValue = attributeValue(attribute.type, value);
+  let failedCount = 0;
+  for (let offset = 0; offset < ids.length; offset += 500) {
+    const batchIds = ids.slice(offset, offset + 500);
+    try {
+      const response = await fetch(
+        `${API_URL}/events/${eventUuid}/participants/attributes/${attributeUuid}/bulk-update`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${session.bearerToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ participantIds: batchIds, newValue }),
+        },
+      );
+      if (!response.ok) {
+        failedCount += batchIds.length;
+      }
+    } catch {
+      failedCount += batchIds.length;
+    }
+  }
+  return { failedCount };
 }
 
 export async function importParticipants(
@@ -472,22 +637,13 @@ export async function getEmails(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
+  return getReferenceCollection<EventEmail>(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails`,
     {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
-      },
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+      cache: "no-store",
     },
   );
-
-  if (!response.ok) {
-    console.error("Failed to fetch mails", response);
-    return null;
-  }
-  const mails = ((await response.json()) as { data: EventEmail[] }).data;
-  return mails;
 }
 
 export async function exportData(eventUuid: string) {
@@ -505,7 +661,7 @@ export async function exportData(eventUuid: string) {
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/export`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/import-export/participants`,
     {
       method: "GET",
       headers: {
@@ -557,7 +713,7 @@ export async function sendMail(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/send/${encodeURIComponent(emailUuid)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/${encodeURIComponent(emailUuid)}/send`,
     {
       method: "POST",
       headers: {
@@ -565,7 +721,7 @@ export async function sendMail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        participants,
+        participantUuids: participants,
       }),
     },
   );
@@ -610,7 +766,7 @@ export async function downloadAttributeFile(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}/attributes/${encodeURIComponent(attributeUuid)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}/attributes/${encodeURIComponent(attributeUuid)}/download`,
     {
       method: "GET",
       headers: {

@@ -55,6 +55,9 @@ function WysiwygEditor({
     },
     editorProps: {
       attributes: {
+        role: "textbox",
+        "aria-label": placeholder,
+        "aria-multiline": "true",
         class: cn(
           "pb-4 focus:outline-none cursor-text leading-relaxed",
           editorClassName,
@@ -78,7 +81,7 @@ function WysiwygEditor({
   // this is needed to reset the editor content when form.reset() is called
   useEffect(() => {
     if (editor != null && content !== editor.getHTML()) {
-      editor.commands.setContent(content);
+      editor.commands.setContent(content, { emitUpdate: false });
     }
   }, [content, editor]);
 

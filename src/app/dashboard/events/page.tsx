@@ -1,15 +1,18 @@
 import { AlertCircleIcon, CalendarDays, Shield } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-form";
 import { EventCard } from "@/components/event-card";
+import { PageNavigation } from "@/components/page-navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import type { PaginatedResponse } from "@/lib/api";
 import { API_URL } from "@/lib/api";
+import { getBackend, pageNumber, pageSize, paginatedUrl } from "@/lib/backend";
 import { verifySession } from "@/lib/session";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import { checkIfSuperAdmin } from "../admin/actions";
 import { FetchErrorAlert } from "../fetch-error-alert";
@@ -22,7 +25,14 @@ export async function generateMetadata() {
   };
 }
 
-export default async function EventListPage() {
+export default async function EventListPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const query = await searchParams;
+  const page = pageNumber(query.page);
+  const take = pageSize(query.take);
   const session = await verifySession();
   const t = await getTranslations("Dashboard");
 
@@ -30,22 +40,22 @@ export default async function EventListPage() {
     notFound();
   }
   const { bearerToken } = session;
-  const response = await fetch(`${API_URL}/events`, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
+  let result: PaginatedResponse<V3Event>;
+  try {
+    const url = paginatedUrl(`${API_URL}/events`, page, take);
+    url.searchParams.set("sort", "createdAt:desc");
+    result = await getBackend<PaginatedResponse<V3Event>>(url, {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+    });
+  } catch {
     return <FetchErrorAlert />;
   }
-
-  // NOTE: Response structure refactor
-  const events = ((await response.json()) as { data: Event[] }).data.toSorted(
-    (a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    },
-  );
+  if (page > Math.max(result.meta.pageCount, 1)) {
+    redirect(
+      `/dashboard/events?page=${String(Math.max(result.meta.pageCount, 1))}&take=${String(take)}`,
+    );
+  }
+  const events = result.data;
 
   const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
 
@@ -105,6 +115,12 @@ export default async function EventListPage() {
           )}
         </div>
       </div>
+      <PageNavigation
+        meta={result.meta}
+        href={(nextPage) =>
+          `/dashboard/events?page=${String(nextPage)}&take=${String(take)}`
+        }
+      />
     </div>
   );
 }

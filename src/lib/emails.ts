@@ -26,12 +26,11 @@ export const EMAIL_TRIGGERS: readonly EmailTrigger[] = [
     description: "formSubmissionDesc",
     value: "form_filled",
   },
-  // NOTE: Commented out because this trigger is not yet implemented on the backend.
-  // {
-  //   name: "attributeChange",
-  //   description: "attributeChangeDesc",
-  //   value: "attribute_changed",
-  // },
+  {
+    name: "attributeChange",
+    description: "attributeChangeDesc",
+    value: "attribute_changed",
+  },
   {
     name: "manual",
     description: "manualDesc",
@@ -39,7 +38,7 @@ export const EMAIL_TRIGGERS: readonly EmailTrigger[] = [
   },
 ];
 
-/** Values used for pivot_status in email send history filters (API + UI). */
+/** Native delivery statuses used in email history filters. */
 export const EMAIL_HISTORY_STATUS_FILTER_VALUES = [
   "sent",
   "pending",

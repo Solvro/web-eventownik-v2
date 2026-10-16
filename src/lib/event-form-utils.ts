@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 
 import type { Payload } from "@/app/dashboard/events/[uuid]/forms/actions";
-import type { EventForm } from "@/types/forms";
 
 /**
  * Combines a date with a time and returns a new Date object.
@@ -19,7 +18,12 @@ export function combineDateAndTime(date: Date, time: string) {
   return result;
 }
 
-export function isFormOpen(form: EventForm): boolean {
+export function isFormOpen(form: {
+  openCondition: "MANUAL" | "ON_DATE";
+  isOpen: boolean;
+  openDate: string | Date | null;
+  closeDate: string | Date | null;
+}): boolean {
   if (form.openCondition === "MANUAL") {
     return form.isOpen;
   }
@@ -39,9 +43,15 @@ export function isFormOpen(form: EventForm): boolean {
  *
  * @returns The ISO string representation of the combined close date and time if the open condition is "ON_DATE", otherwise null
  */
-export function resolveFormDateTime(form: Payload): string | null {
+export function resolveFormDateTime(
+  form: Payload,
+  boundary: "open" | "close" = "close",
+): string | null {
   return form.openCondition === "ON_DATE"
-    ? combineDateAndTime(form.closeDate, form.closeTime).toISOString()
+    ? combineDateAndTime(
+        boundary === "open" ? form.openDate : form.closeDate,
+        boundary === "open" ? form.openTime : form.closeTime,
+      ).toISOString()
     : null;
 }
 

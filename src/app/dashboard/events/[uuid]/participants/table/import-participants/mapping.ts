@@ -1,5 +1,5 @@
 import { getAttributeLabel } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
 import type { MappingTarget } from "./types";
@@ -61,7 +61,7 @@ function getAttributeMatchKeys(attribute: Attribute) {
     [
       getAttributeLabel(attribute.name, "pl"),
       getAttributeLabel(attribute.name, "en"),
-      attribute.slug ?? "",
+      attribute.uuid,
     ]
       .filter((value) => value !== "")
       .map((value) => getMatchKey(value)),

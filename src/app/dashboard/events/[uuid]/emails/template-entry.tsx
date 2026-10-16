@@ -4,13 +4,13 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import type { EventEmail } from "@/types/emails";
+import type { V3EmailSummary } from "@/types/v3";
 
 import { DeleteEmailPopup } from "./delete-email-popup";
 import { MailHistoryPopup } from "./mail-history-popup";
 
 function EmailTriggerLabel({ trigger }: { trigger: string }) {
-  const target = EMAIL_TRIGGERS.find((t) => t.value === trigger);
+  const target = EMAIL_TRIGGERS.find((t) => t.value.toUpperCase() === trigger);
   const t = useTranslations("EmailTriggers");
 
   if (target === undefined) {
@@ -24,13 +24,13 @@ function EmailTemplateEntry({
   eventUuid,
   emailTemplate,
 }: {
-  emailTemplate: EventEmail;
+  emailTemplate: V3EmailSummary;
   eventUuid: string;
 }) {
   const t = useTranslations("Dashboard");
 
   return (
-    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
+    <div className="bg-background flex h-64 w-full min-w-0 flex-col justify-between rounded-md border border-slate-500 p-4">
       <div className="flex items-center justify-end">
         <Button
           variant="eventGhost"
@@ -38,18 +38,15 @@ function EmailTemplateEntry({
           title={t("editTemplate")}
           asChild
         >
-          <Link href={`emails/${emailTemplate.uuid}`}>
+          <Link href={`emails/${emailTemplate.id}`}>
             <SquarePen />
             <span className="sr-only">{t("editTemplate")}</span>
           </Link>
         </Button>
-        <MailHistoryPopup
-          eventUuid={eventUuid}
-          emailUuid={emailTemplate.uuid}
-        />
+        <MailHistoryPopup eventUuid={eventUuid} emailUuid={emailTemplate.id} />
         <DeleteEmailPopup
           eventUuid={eventUuid}
-          mailUuid={emailTemplate.uuid}
+          mailUuid={emailTemplate.id}
           mailName={emailTemplate.name}
         />
       </div>

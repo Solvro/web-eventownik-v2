@@ -10,11 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAttributeLabel } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { EMAIL_TARGET, SKIP_TARGET } from "./types";
 import type { MappingTarget } from "./types";
-import { getAttributeTarget, getMappedAttribute } from "./utils";
+import { getAttributeTarget } from "./utils";
 
 interface ColumnMappingListProps {
   headers: string[];
@@ -44,7 +44,6 @@ export function ColumnMappingList({
         <div className="grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,1fr)] gap-x-2 gap-y-2 p-px pb-1">
           {headers.map((header, index) => {
             const target = mappings[index] ?? SKIP_TARGET;
-            const mappedAttribute = getMappedAttribute(target, attributes);
 
             return (
               <div key={`${header}-${index.toString()}`} className="contents">
@@ -80,8 +79,7 @@ export function ColumnMappingList({
                     ))}
                   </SelectContent>
                 </Select>
-                {mappedAttribute?.isRequired === true ||
-                target === EMAIL_TARGET ? (
+                {target === EMAIL_TARGET ? (
                   <span className="sr-only">{t("required")}</span>
                 ) : null}
               </div>

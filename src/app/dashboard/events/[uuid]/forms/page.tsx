@@ -1,10 +1,15 @@
 import { FileText } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+
+import { FetchErrorAlert } from "@/app/dashboard/fetch-error-alert";
+import { PageNavigation } from "@/components/page-navigation";
+import { pageNumber, pageSize } from "@/lib/backend";
 
 import { CreateEventFormForm } from "./create-event-form-form";
 import { getEventAttributes, getEventForms } from "./data-access";
-import { SortableFormGrid } from "./sortable-form-grid";
+import { FormGrid } from "./form-grid";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Sidebar");
@@ -16,12 +21,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function DashboardEventFormsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ uuid: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { uuid } = await params;
-  const forms = await getEventForms(uuid);
-  const attributes = await getEventAttributes(uuid);
+  const query = await searchParams;
+  const page = pageNumber(query.page);
+  const take = pageSize(query.take);
+  const [result, attributes] = await Promise.all([
+    getEventForms(uuid, page, take),
+    getEventAttributes(uuid),
+  ]);
+  if (result === null) {
+    return <FetchErrorAlert />;
+  }
+  if (page > Math.max(result.meta.pageCount, 1)) {
+    redirect(
+      `/dashboard/events/${uuid}/forms?page=${String(Math.max(result.meta.pageCount, 1))}&take=${String(take)}`,
+    );
+  }
+  const forms = result.data;
   const t = await getTranslations("EventDetails");
 
   return (
@@ -31,7 +52,7 @@ export default async function DashboardEventFormsPage({
         <CreateEventFormForm eventUuid={uuid} attributes={attributes} />
       </div>
       {forms.length > 0 ? (
-        <SortableFormGrid forms={forms} eventUuid={uuid} />
+        <FormGrid forms={forms} eventUuid={uuid} offset={(page - 1) * take} />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">
@@ -40,6 +61,12 @@ export default async function DashboardEventFormsPage({
           </div>
         </div>
       )}
+      <PageNavigation
+        meta={result.meta}
+        href={(nextPage) =>
+          `/dashboard/events/${uuid}/forms?page=${String(nextPage)}&take=${String(take)}`
+        }
+      />
     </div>
   );
 }

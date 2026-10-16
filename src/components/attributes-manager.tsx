@@ -10,20 +10,25 @@ import { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import type { FormAttributeBase } from "@/types/attributes";
+
+interface AttributeChoice {
+  uuid: string;
+  name: string;
+}
 
 export interface AttributeItemProps {
   uuid: string;
   index: number;
-  attribute: EventAttribute;
+  attribute: AttributeChoice;
   isIncluded: boolean;
   isRequired: boolean;
-  handleIncludeToggle: (attribute: EventAttribute) => void;
-  handleRequiredToggle: (attribute: EventAttribute) => void;
+  handleIncludeToggle: (attribute: AttributeChoice) => void;
+  handleRequiredToggle: (attribute: AttributeChoice) => void;
 }
 
 export interface AttributesReorderProps {
-  attributes: EventAttribute[];
+  attributes: AttributeChoice[];
   includedAttributes: FormAttributeBase[];
   setIncludedAttributes: React.Dispatch<
     React.SetStateAction<FormAttributeBase[]>
@@ -40,7 +45,6 @@ function AttributeItem({
   handleRequiredToggle,
 }: AttributeItemProps) {
   const { ref, handleRef, isDragSource } = useSortable({ id: uuid, index });
-  const t = useTranslations("EventDetails");
 
   return (
     <div
@@ -102,7 +106,7 @@ function AttributesReorder({
     );
   };
 
-  const handleIncludeToggle = (attribute: EventAttribute) => {
+  const handleIncludeToggle = (attribute: AttributeChoice) => {
     if (isIncluded(attribute.uuid)) {
       setIncludedAttributes((previous) =>
         previous.filter((attribute_) => attribute_.uuid !== attribute.uuid),
@@ -120,7 +124,7 @@ function AttributesReorder({
     }
   };
 
-  const handleRequiredToggle = (attribute: EventAttribute) => {
+  const handleRequiredToggle = (attribute: AttributeChoice) => {
     setIncludedAttributes((previous) =>
       previous.map((attribute_) =>
         attribute_.uuid === attribute.uuid

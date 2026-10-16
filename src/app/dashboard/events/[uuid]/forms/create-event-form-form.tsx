@@ -51,7 +51,7 @@ function CreateEventFormForm({
   attributes,
 }: {
   eventUuid: string;
-  attributes: EventAttribute[];
+  attributes: Pick<EventAttribute, "uuid" | "name">[];
 }) {
   const t = useTranslations("EventDetails");
   const router = useRouter();

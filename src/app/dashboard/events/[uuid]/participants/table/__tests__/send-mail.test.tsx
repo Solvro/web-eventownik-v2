@@ -40,22 +40,7 @@ async function selectUsers(
   }
 }
 
-// TODO: Fix participant table tests after migrating to V3
-describe.skip("Send mails", () => {
-  beforeAll(() => {
-    const mockLocation = {
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
-      ...window.location,
-      reload: vi.fn(),
-      assign: vi.fn(),
-      replace: vi.fn(),
-    };
-
-    Object.defineProperty(window, "location", {
-      value: mockLocation,
-      writable: true,
-    });
-  });
+describe("Send mails", () => {
   beforeEach(() => {
     cleanup();
   });
@@ -107,7 +92,7 @@ describe.skip("Send mails", () => {
     // Step 5: Send mail
     await user.click(sendMailButton);
 
-    const toast = screen.getByText(/wysłano/i);
+    const toast = await screen.findByText(/wysłano/i);
     expect(toast).toBeVisible();
   });
 
@@ -122,7 +107,7 @@ describe.skip("Send mails", () => {
 
     server.use(
       http.post<{ eventUuid: string; emailUuid: string }>(
-        `${API_URL}/events/:eventUuid/emails/send/:emailUuid`,
+        `${API_URL}/events/:eventUuid/emails/:emailUuid/send`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },
@@ -155,7 +140,7 @@ describe.skip("Send mails", () => {
     // Step 4: Send mail
     await user.click(sendMailButton);
 
-    const toast = screen.getByText(/nie udało/i);
+    const toast = await screen.findByText(/nie udało/i);
     expect(toast).toBeVisible();
   });
 });

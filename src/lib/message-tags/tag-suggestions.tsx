@@ -184,7 +184,23 @@ export const setupSuggestions = (
   const allTags = [...getMessageTags(t), ...additionalTags];
 
   return [
-    Mention.configure({
+    Mention.extend({
+      parseHTML() {
+        return [{ tag: "span[data-id]" }];
+      },
+      addAttributes() {
+        return {
+          ...this.parent?.(),
+          label: {
+            default: null,
+            parseHTML: (element: HTMLElement) =>
+              allTags.find((tag) => tag.value === element.dataset.id)?.title ??
+              element.dataset.label ??
+              element.dataset.id,
+          },
+        };
+      },
+    }).configure({
       suggestion: {
         ...getSuggestionOptions(allTags),
       },
@@ -197,6 +213,8 @@ export const setupSuggestions = (
           "span",
           mergeAttributes(
             {
+              "data-id": node.attrs.id as string,
+              "data-type": "mention",
               style: getTagStyle(allTags, node.attrs.id as string),
             },
             options.HTMLAttributes,

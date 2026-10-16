@@ -1,143 +1,82 @@
+import { cache } from "react";
 import "server-only";
 
 import { API_URL } from "@/lib/api";
 import type { PaginatedResponse } from "@/lib/api";
+import {
+  getBackend,
+  getReferenceCollection,
+  paginatedUrl,
+} from "@/lib/backend";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
-import type { EventEmail, SingleEventEmail } from "@/types/emails";
-import type { Event } from "@/types/event";
-import type { EventForm } from "@/types/forms";
+import type {
+  V3Attribute,
+  V3Email,
+  V3EmailSummary,
+  V3Event,
+  V3FormSummary,
+} from "@/types/v3";
 
-export async function getEventEmails(eventUuid: string) {
+export async function getEventEmails(eventUuid: string, page = 1, take = 20) {
   const session = await verifySession();
-  if (session == null) {
+  if (session === null) {
     return null;
   }
-
-  const response = await fetch(`${API_URL}/events/${eventUuid}/emails`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    console.error(
-      `[getEventEmails] Failed to fetch available emails for event ${eventUuid}:`,
-      response,
+  try {
+    return await getBackend<PaginatedResponse<V3EmailSummary>>(
+      paginatedUrl(`${API_URL}/events/${eventUuid}/emails`, page, take),
+      { headers: { Authorization: `Bearer ${session.bearerToken}` } },
     );
+  } catch {
     return null;
   }
-
-  const emails = ((await response.json()) as { data: EventEmail[] }).data;
-
-  return emails;
 }
-
-export async function getSingleEventEmail(
-  eventUuid: string,
-  emailUuid: string,
-) {
-  const session = await verifySession();
-  if (session == null) {
-    return null;
-  }
-
-  const response = await fetch(
-    `${API_URL}/events/${eventUuid}/emails/${emailUuid}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    console.error(
-      `[getSingleEventEmail] Failed to fetch email ${emailUuid} for event ${eventUuid}:`,
-      response,
-    );
-    return null;
-  }
-
-  const email = (await response.json()) as SingleEventEmail;
-  return email;
-}
-
+export const getSingleEventEmail = cache(
+  async (eventUuid: string, emailUuid: string) => {
+    const session = await verifySession();
+    if (session === null) {
+      return null;
+    }
+    try {
+      return await getBackend<V3Email>(
+        `${API_URL}/events/${eventUuid}/emails/${emailUuid}`,
+        { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+      );
+    } catch {
+      return null;
+    }
+  },
+);
 export async function getEventAttributes(eventUuid: string) {
   const session = await verifySession();
-  if (session == null) {
+  if (session === null) {
     return [];
   }
-
-  const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    console.error(
-      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new email for event ${eventUuid}:`,
-      response,
-    );
-    return [];
-  }
-
-  const attributes = ((await response.json()) as { data: EventAttribute[] })
-    .data;
-
-  return attributes;
+  return getReferenceCollection<V3Attribute>(
+    `${API_URL}/events/${eventUuid}/attributes`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
 }
-
 export async function getEventForms(eventUuid: string) {
   const session = await verifySession();
-  if (session == null) {
+  if (session === null) {
     return [];
   }
-
-  const response = await fetch(`${API_URL}/events/${eventUuid}/forms`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    console.error(
-      `[getEventForms] Failed to fetch forms for event ${eventUuid}:`,
-      response,
-    );
-    return [];
-  }
-
-  const parsed = (await response.json()) as PaginatedResponse<EventForm>;
-  return parsed.data;
+  return getReferenceCollection<V3FormSummary>(
+    `${API_URL}/events/${eventUuid}/forms`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
 }
-
-export async function getEmailEventInfo(eventUuid: string) {
+export const getEmailEventInfo = cache(async (eventUuid: string) => {
   const session = await verifySession();
-  if (session == null) {
+  if (session === null) {
     return null;
   }
-
-  const response = await fetch(`${API_URL}/events/${eventUuid}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    console.error(
-      `[getEmailEventInfo] Failed to fetch event info for event ${eventUuid}:`,
-      response,
-    );
+  try {
+    return await getBackend<V3Event>(`${API_URL}/events/${eventUuid}`, {
+      headers: { Authorization: `Bearer ${session.bearerToken}` },
+    });
+  } catch {
     return null;
   }
-
-  const event = (await response.json()) as Event;
-  return event;
-}
+});

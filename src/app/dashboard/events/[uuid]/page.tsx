@@ -18,10 +18,10 @@ import { ShareButton } from "@/components/share-button";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { API_URL, photoUrl } from "@/lib/api";
 import { parseLinks } from "@/lib/links";
 import { verifySession } from "@/lib/session";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 export default async function DashboardEventPage({
   params,
@@ -50,17 +50,17 @@ export default async function DashboardEventPage({
     notFound();
   }
 
-  const event = (await response.json()) as Event;
+  const event = (await response.json()) as V3Event;
   const { generalLinks } = parseLinks(event.links);
   return (
     <div className="flex h-full flex-col-reverse gap-4 xl:max-h-[calc(100vh-12rem)] xl:flex-row xl:justify-between">
       <div className="flex min-h-0 flex-1 flex-col gap-6">
         <div className="shrink-0 space-y-4">
           <h1 className="text-3xl font-bold">{event.name}</h1>
-          {event.organizer != null && event.organizer.trim() !== "" ? (
+          {event.organizerName != null && event.organizerName.trim() !== "" ? (
             <div className="flex flex-row items-center gap-2">
               <User size={24} />
-              <p>{event.organizer}</p>
+              <p>{event.organizerName}</p>
             </div>
           ) : null}
           <div className="flex flex-row items-center gap-2">
@@ -75,10 +75,10 @@ export default async function DashboardEventPage({
               <ClientFormattedDate date={event.endDate} />
             </p>
           </div>
-          {event.participantsCount != null && (
+          {event.participantsLimit != null && (
             <div className="flex flex-row items-center gap-2">
               <Users size={24} />
-              <p>{event.participantsCount}</p>
+              <p>{event.participantsLimit}</p>
             </div>
           )}
           {event.location != null && event.location.trim() !== "" ? (
@@ -99,7 +99,7 @@ export default async function DashboardEventPage({
               </ScrollArea>
             </div>
           ) : null}
-          {generalLinks != null && generalLinks.length > 0 ? (
+          {generalLinks.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {generalLinks.map((link) => (
                 <SocialMediaLink
@@ -128,7 +128,7 @@ export default async function DashboardEventPage({
         src={
           event.photoUrl == null
             ? EventPhotoPlaceholder
-            : `${PHOTO_URL}/${event.photoUrl}`
+            : photoUrl(event.photoUrl)
         }
         width={400}
         height={400}

@@ -2,16 +2,16 @@
 
 import { ChevronRight, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
 
+import { PublicBlockOccupants } from "./public-block-occupants";
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { RadioGroupItem } from "./ui/radio-group";
-import { ScrollArea } from "./ui/scroll-area";
 
 const valueOrZero = (value: number | null | undefined) => {
   return value === null || value === undefined ? "0" : value.toString();
@@ -22,14 +22,16 @@ const valueOrZero = (value: number | null | undefined) => {
  */
 export function AttributeInputBlock({
   block,
-  userData,
+  selectedBlockUuids,
+  eventSlug,
   isMultiple,
   checked,
   onCheckedChange,
   disabled: disabledFromParent,
 }: {
   block: PublicBlock;
-  userData: PublicParticipant | undefined;
+  selectedBlockUuids?: string[];
+  eventSlug?: string;
   isMultiple: boolean;
   /**
    * Only required when isMultiple is true
@@ -39,32 +41,21 @@ export function AttributeInputBlock({
   disabled?: boolean;
 }) {
   const t = useTranslations("Form");
+  const [isOpen, setIsOpen] = useState(false);
   const isFull =
-    block.capacity !== null && block.meta.participants.length >= block.capacity;
+    block.capacity !== null && block.blockParticipantCount >= block.capacity;
 
-  const isRegistered =
-    userData === undefined
-      ? false
-      : userData.attributes.some((attribute) =>
-          attribute.type === "block" && attribute.isMultiple
-            ? attribute.meta.pivot_value.includes(block.uuid)
-            : attribute.meta.pivot_value === block.uuid,
-        );
-  const hasParticipants = block.meta.participants.length > 0;
-  const isAnonymousList =
-    hasParticipants &&
-    block.meta.participants.every(
-      (participant) =>
-        participant.name?.trim() === "" || participant.name === undefined,
-    );
+  const isRegistered = selectedBlockUuids?.includes(block.uuid) ?? false;
+  const hasParticipants = block.blockParticipantCount > 0;
 
-  const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
+  const isDisabled = disabledFromParent === true || (!isRegistered && isFull);
 
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
       <div className="flex items-start gap-4">
         {isMultiple ? (
           <Checkbox
+            aria-label={block.name}
             checked={checked}
             disabled={isDisabled}
             onCheckedChange={(innerChecked) =>
@@ -94,8 +85,8 @@ export function AttributeInputBlock({
               >
                 <Users className="size-4" />
                 {block.capacity === null
-                  ? valueOrZero(block.meta.participantsInBlockCount)
-                  : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+                  ? valueOrZero(block.blockParticipantCount)
+                  : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
               </div>
             </div>
           </div>
@@ -107,7 +98,7 @@ export function AttributeInputBlock({
         </p>
       ) : null}
       <div className="mt-auto">
-        <Popover>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger
             className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
             disabled={!hasParticipants}
@@ -115,41 +106,17 @@ export function AttributeInputBlock({
             {t("participants")}
             <ChevronRight className="size-4 transition-transform" />
           </PopoverTrigger>
-          <PopoverContent
-            className="w-(--radix-popover-trigger-width) p-2"
-            align="center"
-          >
-            {isAnonymousList ? (
-              <p className="text-muted-foreground px-3 text-sm">
+          <PopoverContent className="w-80 p-4" align="start">
+            {eventSlug === undefined ? (
+              <p className="text-muted-foreground text-sm">
                 {t("anonymousParticipantsList")}
               </p>
-            ) : hasParticipants ? (
-              <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
-                <ul className="divide-border/60 space-y-0.5 px-1">
-                  {block.meta.participants.map((occupant) => {
-                    const isAnonymous =
-                      occupant.name?.trim() === "" ||
-                      occupant.name === undefined;
-                    return (
-                      <li
-                        key={occupant.uuid}
-                        className={cn(
-                          "rounded-sm px-2 py-1.5 text-sm",
-                          isAnonymous && "text-muted-foreground italic",
-                        )}
-                      >
-                        {isAnonymous
-                          ? t("anonymousParticipant")
-                          : occupant.name}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </ScrollArea>
             ) : (
-              <p className="text-muted-foreground text-sm">
-                {t("noParticipants")}
-              </p>
+              <PublicBlockOccupants
+                block={block}
+                eventSlug={eventSlug}
+                enabled={isOpen}
+              />
             )}
           </PopoverContent>
         </Popover>

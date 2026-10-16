@@ -14,8 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Attribute, AttributeOption } from "@/types/attributes";
+import { attributeIsMultiple, attributeOptions } from "@/lib/attribute-config";
+import { multiValues } from "@/lib/multi-values";
+import type { AttributeOption } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 interface AttributeValueInputProps {
   attribute: Attribute;
@@ -50,8 +53,7 @@ export function AttributeValueInput({
   }
 
   function renderMultiOptions(options: MultiOption[] | undefined | null) {
-    const normalizedValue = value.replaceAll(/^{|}$/g, "").replaceAll('"', "");
-    const selected = normalizedValue === "" ? [] : normalizedValue.split(",");
+    const selected = multiValues(value);
     const resolvedOptions = (options ?? []).map((option) => {
       const resolved = resolveMultiOption(option);
       return { label: resolved.label, value: resolved.value };
@@ -63,7 +65,7 @@ export function AttributeValueInput({
         options={resolvedOptions}
         defaultValue={selected}
         onValueChange={(next) => {
-          onChange(next.join(","));
+          onChange(JSON.stringify(next));
         }}
       />
     );
@@ -73,6 +75,7 @@ export function AttributeValueInput({
     case "text": {
       return (
         <Input
+          aria-label={attribute.name}
           type="text"
           value={value}
           onChange={(event_) => {
@@ -85,6 +88,7 @@ export function AttributeValueInput({
     case "number": {
       return (
         <Input
+          aria-label={attribute.name}
           type="number"
           value={value}
           onChange={(event_) => {
@@ -100,6 +104,7 @@ export function AttributeValueInput({
     case "email": {
       return (
         <Input
+          aria-label={attribute.name}
           type="email"
           value={value}
           onChange={(event_) => {
@@ -112,6 +117,7 @@ export function AttributeValueInput({
     case "tel": {
       return (
         <Input
+          aria-label={attribute.name}
           type="tel"
           value={value}
           onChange={(event_) => {
@@ -127,6 +133,7 @@ export function AttributeValueInput({
         value === "" ? "" : format(new Date(value), "yyyy-MM-dd");
       return (
         <Input
+          aria-label={attribute.name}
           type="date"
           value={dateValue}
           onChange={(event_) => {
@@ -141,6 +148,7 @@ export function AttributeValueInput({
         value === "" ? "" : format(new Date(value), "yyyy-MM-dd'T'HH:mm");
       return (
         <Input
+          aria-label={attribute.name}
           type="datetime-local"
           value={datetimeValue}
           onChange={(event_) => {
@@ -153,6 +161,7 @@ export function AttributeValueInput({
     case "time": {
       return (
         <Input
+          aria-label={attribute.name}
           type="time"
           value={value}
           onChange={(event_) => {
@@ -165,6 +174,7 @@ export function AttributeValueInput({
     case "color": {
       return (
         <Input
+          aria-label={attribute.name}
           type="color"
           value={value === "" ? "#000000" : value}
           onChange={(event_) => {
@@ -174,9 +184,10 @@ export function AttributeValueInput({
       );
     }
 
-    case "textarea": {
+    case "textArea": {
       return (
         <Textarea
+          aria-label={attribute.name}
           value={value}
           onChange={(event_) => {
             onChange(event_.target.value);
@@ -189,6 +200,7 @@ export function AttributeValueInput({
     case "checkbox": {
       return (
         <Checkbox
+          aria-label={attribute.name}
           checked={value === "true"}
           onCheckedChange={(checked) => {
             onChange(String(checked));
@@ -198,8 +210,8 @@ export function AttributeValueInput({
     }
 
     case "select": {
-      if (attribute.isMultiple) {
-        return renderMultiOptions(attribute.options);
+      if (attributeIsMultiple(attribute)) {
+        return renderMultiOptions(attributeOptions(attribute));
       }
 
       return (
@@ -209,17 +221,14 @@ export function AttributeValueInput({
             onChange(value_);
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger aria-label={attribute.name}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value=" ">{t("none")}</SelectItem>
-            {attribute.options?.map((option) => (
-              <SelectItem
-                key={typeof option === "string" ? option : option.value}
-                value={typeof option === "string" ? option : option.value}
-              >
-                {typeof option === "string" ? option : option.value}
+            {attributeOptions(attribute).map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
               </SelectItem>
             ))}
           </SelectContent>
@@ -227,15 +236,15 @@ export function AttributeValueInput({
       );
     }
 
-    case "multiselect": {
-      return renderMultiOptions(attribute.options);
+    case "multiSelect": {
+      return renderMultiOptions(attributeOptions(attribute));
     }
 
     case "block": {
       const rootBlock =
         blocks.find((b) => b?.attributeUuid === attribute.uuid) ?? null;
 
-      if (rootBlock?.attribute.isMultiple ?? false) {
+      if (attributeIsMultiple(attribute)) {
         return renderMultiOptions(rootBlock?.children);
       }
 
@@ -245,12 +254,12 @@ export function AttributeValueInput({
 
       return (
         <Select
-          value={value}
+          value={multiValues(value)[0] ?? " "}
           onValueChange={(value_) => {
             onChange(value_);
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger aria-label={attribute.name}>
             <SelectValue>{selectedBlock?.name ?? t("none")}</SelectValue>
           </SelectTrigger>
           <SelectContent>

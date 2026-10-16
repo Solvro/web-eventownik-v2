@@ -3,9 +3,10 @@
 import type { SortDirection } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import type { Attribute } from "@/types/attributes";
+import { multiValues } from "@/lib/multi-values";
 import type { Block } from "@/types/blocks";
 import type { ParticipantAttributeValueType } from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 export function getAriaSort(
   sortDirection: SortDirection | false,
@@ -30,6 +31,8 @@ export function formatAttributeValue(
   }
 
   switch (type) {
+    case "checkbox":
+      return String(value);
     case "date":
       return format(new Date(value as string | number | Date), "dd-MM-yyyy");
     case "datetime":
@@ -40,48 +43,22 @@ export function formatAttributeValue(
     case "block": {
       const rootBlock = blocks.find((b) => b?.attributeUuid === attributeUuid);
 
-      if (
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-        rootBlock !== null &&
-        rootBlock !== undefined &&
-        rootBlock.attribute.isMultiple
-      ) {
-        const ids = (value as string).split(",").filter(Boolean);
-        return ids
-          .map((id) => rootBlock.children.find((b) => b.uuid === id)?.name)
-          .filter(Boolean)
-          .join(", ");
+      if (rootBlock === null || rootBlock === undefined) {
+        return value;
       }
-
-      return (
-        rootBlock?.children.find((b) => {
-          return b.uuid === value;
-        })?.name ?? value
-      );
+      const ids = multiValues(String(value));
+      return ids
+        .map(
+          (id) =>
+            rootBlock.children.find((block) => block.uuid === id)?.name ?? id,
+        )
+        .join(", ");
     }
-    case "multiselect": {
-      const items = parseMultiValue(String(value)).filter(Boolean);
+    case "multiSelect": {
+      const items = multiValues(String(value)).filter(Boolean);
       return items.join(", ");
     }
     default:
       return value;
   }
-}
-
-function parseMultiValue(raw: string): string[] {
-  const trimmed = raw.trim();
-  if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
-    return trimmed === "" ? [] : trimmed.split(",");
-  }
-  const inner = trimmed.slice(1, -1);
-  if (inner === "") {
-    return [];
-  }
-  const matches = [...inner.matchAll(/"((?:[^"\\]|\\.)*)"/g)];
-  if (matches.length > 0) {
-    return matches.map((match) =>
-      match[1].replaceAll(String.raw`\"`, '"').replaceAll("\\\\", "\\"),
-    );
-  }
-  return inner.split(",");
 }

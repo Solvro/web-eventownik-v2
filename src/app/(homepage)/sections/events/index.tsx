@@ -1,7 +1,7 @@
 "use client";
 
 import type { QueryFunctionContext } from "@tanstack/react-query";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import {
   addMonths,
   eachYearOfInterval,
@@ -17,6 +17,7 @@ import { useState } from "react";
 
 import { EventList } from "@/app/(homepage)/sections/events/event-list";
 import { Timeline } from "@/app/(homepage)/sections/events/timeline";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -24,8 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { PaginatedResponse } from "@/lib/api";
 import { API_URL } from "@/lib/api";
-import type { Event as EventType } from "@/types/event";
+import { getBackend, paginatedUrl } from "@/lib/backend";
+import type { V3Event } from "@/types/v3";
 
 /**
  * Generates an API URL for a specific month and year.
@@ -50,16 +53,12 @@ function getEventsUrl(year: number, month: number) {
 }
 
 async function fetchEvents(
-  context: QueryFunctionContext<[string, number, number]>,
-): Promise<EventType[]> {
+  context: QueryFunctionContext<readonly [string, number, number], number>,
+): Promise<PaginatedResponse<V3Event>> {
   const [_key, year, month] = context.queryKey;
-  const url = getEventsUrl(year, month);
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return ((await response.json()) as { data: EventType[] }).data;
+  const url = paginatedUrl(getEventsUrl(year, month), context.pageParam);
+  url.searchParams.set("sort", "startDate:asc");
+  return getBackend<PaginatedResponse<V3Event>>(url);
 }
 
 export function Events() {
@@ -71,13 +70,19 @@ export function Events() {
   });
 
   const {
-    data: events,
+    data: eventPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
     error,
-  } = useQuery({
+  } = useInfiniteQuery({
     // TODO: implement selecting year later
-    queryKey: ["events", filters.year, filters.month],
+    queryKey: ["events", filters.year, filters.month] as const,
     queryFn: fetchEvents,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
     placeholderData: keepPreviousData,
   });
 
@@ -130,7 +135,21 @@ export function Events() {
       </div>
       <div className="w-full overflow-hidden">
         <Timeline filters={filters} setFilters={setFilters} />
-        <EventList events={events} />
+        <EventList
+          events={eventPages?.pages.flatMap((result) => result.data)}
+        />
+        {hasNextPage ? (
+          <div className="flex justify-center py-4">
+            <Button
+              onClick={() => {
+                void fetchNextPage();
+              }}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? t("loadingEvents") : t("loadMoreEvents")}
+            </Button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

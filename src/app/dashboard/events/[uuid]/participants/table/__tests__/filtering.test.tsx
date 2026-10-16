@@ -40,7 +40,10 @@ describe("Filtering", () => {
     expect(getDataRows().length).toBe(participants.length);
 
     // Step 2: Enter value which is specific to only 1 row
-    await user.type(globalFilterInput, participants[0].attributes[0].value);
+    await user.type(
+      globalFilterInput,
+      JSON.stringify(participants[0].attributes[0].value).replaceAll('"', ""),
+    );
     expect(getDataRows().length).toBe(1);
 
     //Step 3: Clear global filter input - all rows should be visible
@@ -115,7 +118,10 @@ describe("Filtering", () => {
     "should correctly filter rows by empty values using header filter for $attributeType attribute",
     async ({ participants, attributes }) => {
       // Only one row will have empty values
-      const participantWithEmptyValues = { ...participants[0] };
+      const participantWithEmptyValues = {
+        ...participants[0],
+        uuid: crypto.randomUUID(),
+      };
       participantWithEmptyValues.attributes = [];
       participants = [...participants.slice(0, 2), participantWithEmptyValues];
       const numberOfRowsWithEmptyValues = 1;

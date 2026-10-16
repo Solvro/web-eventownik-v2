@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { ParticipantForm } from "@/components/participant-form";
-import type { FormAttribute } from "@/types/attributes";
+import { formControls, participantFormValues } from "@/lib/form-controls";
 import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
+import type { V3Form, V3PublicParticipant } from "@/types/v3";
 
 import { submitParticipantForm } from "./actions";
 
 export function FormGenerator({
-  attributes,
+  form,
   userData,
   originalEventBlocks,
   formUuid,
@@ -19,14 +19,32 @@ export function FormGenerator({
   userSlug,
   editMode,
 }: {
-  attributes: FormAttribute[];
-  userData?: PublicParticipant;
+  form: V3Form;
+  userData?: V3PublicParticipant;
   originalEventBlocks: PublicBlock[];
   formUuid: string;
   eventSlug: string;
   userSlug?: string;
   editMode: boolean;
 }) {
+  const attributes = useMemo(() => formControls(form), [form]);
+  const initialValues = participantFormValues(attributes, userData);
+  const lastUpdated = Object.fromEntries(
+    (userData?.attributes ?? [])
+      .filter((entry) => entry.value !== null && entry.value !== "")
+      .map((entry) => [entry.attributeUuid, entry.updatedAt]),
+  );
+  const selectedBlockUuids = (userData?.attributes ?? [])
+    .filter((entry) => entry.attribute.type === "block")
+    .flatMap((entry) =>
+      Array.isArray(entry.value)
+        ? entry.value.filter(
+            (value): value is string => typeof value === "string",
+          )
+        : typeof entry.value === "string"
+          ? [entry.value]
+          : [],
+    );
   const [eventBlocks, setEventBlocks] = useState(originalEventBlocks);
   const currentBlocksRef = useRef<PublicBlock[]>(originalEventBlocks); // used to prevent unnecessary re-renders
   const isMounted = useRef(true);
@@ -43,19 +61,22 @@ export function FormGenerator({
       }
 
       try {
-        const updatedBlocks = (await Promise.all(
+        const updatedBlocks = await Promise.all(
           blockAttributes.map(async (attribute) =>
             getEventBlockAttributeBlocks(eventSlug, attribute.uuid),
           ),
-        )) as unknown as PublicBlock[];
+        );
 
         if (
           isMounted.current &&
+          !updatedBlocks.includes(null) &&
           JSON.stringify(currentBlocksRef.current) !==
             JSON.stringify(updatedBlocks)
         ) {
-          currentBlocksRef.current = updatedBlocks;
-          setEventBlocks(updatedBlocks);
+          currentBlocksRef.current = updatedBlocks.filter(
+            (block) => block !== null,
+          );
+          setEventBlocks(updatedBlocks.filter((block) => block !== null));
         }
       } finally {
         if (isMounted.current) {
@@ -83,8 +104,11 @@ export function FormGenerator({
           files,
         })
       }
-      userData={userData}
+      initialValues={initialValues}
+      lastUpdated={lastUpdated}
+      selectedBlockUuids={selectedBlockUuids}
       eventBlocks={eventBlocks}
+      eventSlug={eventSlug}
       editMode={editMode}
       includeEmail={!editMode}
     />

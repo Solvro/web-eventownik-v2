@@ -8,9 +8,9 @@ import Link from "next/link";
 import { SanitizedContent } from "@/components/sanitized-content";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PHOTO_URL } from "@/lib/api";
+import { photoUrl as resolvePhotoUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import type { Event as EventType } from "@/types/event";
+import type { V3Event as EventType } from "@/types/v3";
 
 function Event({
   name,
@@ -32,7 +32,7 @@ function Event({
   const eventPhoto =
     photoUrl === null
       ? "/assets/event-photo-placeholder.png"
-      : `${PHOTO_URL}/${photoUrl}`;
+      : resolvePhotoUrl(photoUrl);
 
   const t = useTranslations("Homepage");
 
@@ -185,7 +185,7 @@ export function EventList({ events }: { events: EventType[] | undefined }) {
               <Event
                 key={event.slug}
                 name={event.name}
-                organizer={event.organizer}
+                organizer={event.organizerName}
                 description={event.description}
                 startDate={new Date(event.startDate)}
                 endDate={new Date(event.endDate)}

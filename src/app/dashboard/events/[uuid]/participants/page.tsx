@@ -8,7 +8,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { verifySession } from "@/lib/session";
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import {
   getAttributes,
@@ -41,7 +41,17 @@ export default async function DashboardEventParticipantsPage({
 
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ["participants", uuid],
+      queryKey: [
+        "participants",
+        uuid,
+        {
+          page: 1,
+          take: 20,
+          search: "",
+          sort: "createdAt:asc",
+          columnFilters: {},
+        },
+      ],
       queryFn: async () => getParticipants(uuid),
     }),
     queryClient.prefetchQuery({

@@ -9,12 +9,14 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { AttributeType } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type {
   FlattenedParticipant,
   ParticipantAttributeValueType,
 } from "@/types/participant";
+import type { V3Attribute } from "@/types/v3";
+
+type AttributeType = V3Attribute["type"];
 
 export function FilterButton({
   attributeType,
@@ -34,7 +36,7 @@ export function FilterButton({
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||
-    (attributeType === "multiselect" && options_ !== null) ||
+    (attributeType === "multiSelect" && options_ !== null) ||
     attributeType === "block"
   ) {
     let options: {
@@ -49,10 +51,13 @@ export function FilterButton({
               : { label: option.label, value: option.value },
           );
 
-    if (attributeType === "checkbox" && options_ === null) {
+    if (
+      attributeType === "checkbox" &&
+      (options_ === null || options_.length === 0)
+    ) {
       options = [
-        { label: t("true"), value: "true" },
-        { label: t("false"), value: "false" },
+        { label: t("true"), value: true },
+        { label: t("false"), value: false },
       ];
     }
 

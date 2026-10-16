@@ -30,6 +30,7 @@ function EmailHistoryToolbar({
       <Input
         className="h-9 min-w-0 flex-1 text-sm sm:w-64 sm:flex-none"
         placeholder={t("searchPlaceholder")}
+        aria-label={t("searchPlaceholder")}
         value={globalFilter}
         onChange={(event) => {
           onGlobalFilterChange(event.target.value);

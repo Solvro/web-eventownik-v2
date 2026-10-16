@@ -5,11 +5,11 @@ import Link from "next/link";
 import React from "react";
 import sanitizeHtml from "sanitize-html";
 
+import { getPublicEvent } from "@/app/[eventSlug]/data-access";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { Button } from "@/components/ui/button";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { photoUrl } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
-import type { Event } from "@/types/event";
 
 import { EventNotFound } from "./event-not-found";
 
@@ -23,27 +23,22 @@ export async function generateMetadata({
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
-    console.error(error);
+  const response = await getPublicEvent(eventSlug);
+  if (response.data === undefined) {
     return {
       title: "Eventownik",
-      description: t("notFound"),
+      description: t(
+        response.status >= 500 ? "serviceUnavailable" : "notFound",
+      ),
     };
   }
-  const event = (await response.json()) as Event;
+  const event = response.data;
 
   return {
     title: event.name,
     description: `${event.description == null ? event.name : sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} })} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: [photoUrl(event.photoUrl ?? "")],
     },
   };
 }
@@ -51,18 +46,11 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug, locale } = await params;
 
-  const response = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
-    console.error(error);
-    return <EventNotFound whatNotFound="event" />;
+  const response = await getPublicEvent(eventSlug);
+  if (response.data === undefined) {
+    return <EventNotFound whatNotFound="event" status={response.status} />;
   }
-  const event = (await response.json()) as Event;
+  const event = response.data;
   const t = await getTranslations({ locale, namespace: "Event" });
 
   return (

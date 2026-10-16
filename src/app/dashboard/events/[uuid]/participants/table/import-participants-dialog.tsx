@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { DragOverlay } from "./import-participants/drag-overlay";
 import { ImportStep } from "./import-participants/import-step";

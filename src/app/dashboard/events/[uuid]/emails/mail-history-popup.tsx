@@ -1,10 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import type { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { History } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { ClientPageNavigation } from "@/components/client-page-navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +14,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { SingleEventEmail } from "@/types/emails";
+import type { V3EmailDelivery } from "@/types/v3";
 
 import { EmailHistoryTable } from "./(table)/table";
-import { getSingleEventEmailAction } from "./actions";
+import { getEmailHistoryAction } from "./actions";
 
 interface MailHistoryPopupProps {
   eventUuid: string;
@@ -25,15 +27,42 @@ interface MailHistoryPopupProps {
 function MailHistoryPopup({ eventUuid, emailUuid }: MailHistoryPopupProps) {
   const t = useTranslations("EmailHistoryTable");
   const [isOpen, setIsOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const statuses = columnFilters.find((filter) => filter.id === "status")
+    ?.value as V3EmailDelivery["status"][] | undefined;
+  const sort = sorting.at(0);
+  const sortField =
+    sort?.id === "date" || sort?.id === "time" ? "sendAt" : sort?.id;
+  const historyQuery = {
+    email: search,
+    status: statuses,
+    sort:
+      sortField === undefined
+        ? undefined
+        : `${sortField}:${sort === undefined ? "asc" : sort.desc ? "desc" : "asc"}`,
+  };
 
-  const { data, isLoading } = useQuery<SingleEventEmail | null>({
-    queryKey: ["email-history", eventUuid, emailUuid],
-    queryFn: async () => await getSingleEventEmailAction(eventUuid, emailUuid),
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["email-history", eventUuid, emailUuid, page, historyQuery],
+    queryFn: async () =>
+      getEmailHistoryAction(eventUuid, emailUuid, page, 10, historyQuery),
     enabled: isOpen,
+    placeholderData: keepPreviousData,
   });
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (open) {
+          setPage(1);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="eventGhost" size="icon" title={t("emailHistory")}>
           <History />
@@ -60,11 +89,40 @@ function MailHistoryPopup({ eventUuid, emailUuid }: MailHistoryPopupProps) {
                 {t("loadingHistory")}
               </p>
             </div>
-          ) : data !== null && data !== undefined ? (
-            <EmailHistoryTable email={data} />
+          ) : !isError && data !== undefined ? (
+            <>
+              <EmailHistoryTable
+                data={data.data}
+                total={data.meta.itemCount}
+                state={{
+                  globalFilter: search,
+                  sorting,
+                  columnFilters,
+                  onGlobalFilterChange: (update) => {
+                    setSearch((current) =>
+                      typeof update === "function" ? update(current) : update,
+                    );
+                    setPage(1);
+                  },
+                  onSortingChange: (update) => {
+                    setSorting(update);
+                    setPage(1);
+                  },
+                  onColumnFiltersChange: (update) => {
+                    setColumnFilters(update);
+                    setPage(1);
+                  },
+                }}
+              />
+              <ClientPageNavigation
+                meta={data.meta}
+                busy={isFetching}
+                onPageChange={setPage}
+              />
+            </>
           ) : (
             <div className="flex flex-1 items-start justify-center pt-12">
-              <p className="text-center text-sm text-red-500">
+              <p role="alert" className="text-center text-sm text-red-500">
                 {t("failedToLoadData")}
               </p>
             </div>
