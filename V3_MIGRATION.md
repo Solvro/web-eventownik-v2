@@ -1,5 +1,30 @@
 # Backend v3 migration
 
+## Review follow-up — 18 October 2026
+
+The current deployed backend differs from the local extensions described below.
+This follow-up changes the frontend only. See the dated section in
+[BROWSER_QA.md](./BROWSER_QA.md) for browser evidence and remaining backend issues.
+
+- Participants use native paginated responses through `useInfiniteQuery`, with a
+  continuous virtual table and no pagination controls. Sorting, search and
+  filters run over the complete loaded collection because deployed v3 does not
+  support those query parameters. Hidden-by-default columns remain toggleable.
+- Reordering serializes saves, rolls back on failure and preserves drop
+  animations. Form/email persistence still requires missing backend routes.
+- Form date/time values are resolved in the browser and sent as ISO instants,
+  preventing a UTC server from adding two hours on each save.
+- Event settings expose the existing `isPublic` field through a visibility switch.
+- Public forms use Turnstile and send `cf-turnstile-response`. Configure
+  `NEXT_PUBLIC_TURNSTILE_SITEKEY`; an actual Turnstile key under the old
+  `NEXT_PUBLIC_HCAPTCHA_SITEKEY` name is accepted as a deprecated fallback.
+  Missing/invalid configuration is visible and preserves entered values.
+- Backend occupancy/occupants and XLSX value formatting remain unresolved and
+  untouched. Local successful reorder QA does not prove deployed route support.
+
+The reports below describe historical migration work and checks, not a fresh
+backend/deployment acceptance run.
+
 The frontend targets `backend-eventownik-v3`. Local development uses
 `NEXT_PUBLIC_EVENTOWNIK_API=http://localhost:3334/api/v3`. Keep `SESSION_SECRET`
 stable across frontend instances. Absolute photo URLs are used directly;

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-import { SortableTileGrid } from "@/components/sortable-tile-grid";
+import {
+  SortableTileGrid,
+  TILE_GRID_CLASS_NAME,
+} from "@/components/sortable-tile-grid";
 import type { V3FormSummary } from "@/types/v3";
 
 import { reorderForms } from "./actions";
@@ -17,23 +18,13 @@ export function FormGrid({
   eventUuid: string;
   offset: number;
 }) {
-  const router = useRouter();
   return (
     <SortableTileGrid
       items={forms}
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
-      onReorder={async (ids) => {
-        try {
-          return await reorderForms(
-            eventUuid,
-            ids,
-            forms.map((form) => form.uuid),
-            offset,
-          );
-        } finally {
-          router.refresh();
-        }
-      }}
+      className={TILE_GRID_CLASS_NAME}
+      onReorder={async (orderedIds, previousIds) =>
+        reorderForms(eventUuid, orderedIds, previousIds, offset)
+      }
       renderItem={(form) => <FormEntry form={form} eventUuid={eventUuid} />}
     />
   );

@@ -22,6 +22,8 @@ interface FormDateTimeFieldProps<T extends FieldValues> {
   control: Control<T>;
   formState: FormState<T>;
   label: string;
+  /** Accessible name of the time input; defaults to "<label> – time". */
+  timeLabel?: string;
   dateName: Path<T>;
   timeName: Path<T>;
   className?: string;
@@ -32,6 +34,7 @@ export function FormDateTimeField<T extends FieldValues>({
   control,
   formState,
   label,
+  timeLabel,
   dateName,
   timeName,
   className = "",
@@ -89,6 +92,7 @@ export function FormDateTimeField<T extends FieldValues>({
             <FormItem className="flex flex-col">
               <FormControl>
                 <Input
+                  aria-label={timeLabel ?? t("timeFieldLabel", { label })}
                   disabled={formState.isSubmitting}
                   type="time"
                   {...field}

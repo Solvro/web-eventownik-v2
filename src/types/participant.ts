@@ -8,7 +8,7 @@ export interface ParticipantIdentity {
 export interface ParticipantSelection {
   participants: ParticipantIdentity[] | null;
   busy: boolean;
-  onSelectAll: () => Promise<void>;
+  onSelectAll: () => void;
   onClear: () => void;
 }
 

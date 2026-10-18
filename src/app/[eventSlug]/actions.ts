@@ -113,7 +113,8 @@ export async function submitParticipantForm({
         body: JSON.stringify({
           email,
           participantId: participantSlug,
-          "h-captcha-response": captchaToken,
+          // Read by the backend TurnstileGuard.
+          "cf-turnstile-response": captchaToken,
           // Uploaded files go last so their tokens override any placeholder values
           attributes: [...attributes, ...fileAttributes],
         }),

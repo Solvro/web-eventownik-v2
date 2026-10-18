@@ -14,13 +14,16 @@ import type { V3Block } from "@/types/v3";
 
 import messages from "../../../messages/pl.json";
 
+/** Cloudflare's documented always-passing Turnstile test site key. */
+const TEST_SITEKEY = "1x00000000000000000000AA";
+
 const captcha = vi.hoisted(() => ({
   verify: undefined as ((token: string) => void) | undefined,
   open: undefined as (() => void) | undefined,
   execute: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
-vi.mock("@hcaptcha/react-hcaptcha", () => {
+vi.mock("@/components/turnstile", () => {
   const CaptchaMock = forwardRef(
     (
       props: {
@@ -33,7 +36,7 @@ vi.mock("@hcaptcha/react-hcaptcha", () => {
       const { onLoad } = props;
       useImperativeHandle(ref, () => ({
         execute: captcha.execute,
-        resetCaptcha: vi.fn(),
+        reset: vi.fn(),
       }));
       // Simulate the external CAPTCHA SDK finishing its initial load.
       // eslint-disable-next-line react-you-might-not-need-an-effect/no-manage-parent
@@ -46,7 +49,7 @@ vi.mock("@hcaptcha/react-hcaptcha", () => {
     },
   );
   CaptchaMock.displayName = "CaptchaMock";
-  return { default: CaptchaMock };
+  return { Turnstile: CaptchaMock };
 });
 
 function field(overrides: Partial<FormAttribute> = {}): FormAttribute {
@@ -215,8 +218,12 @@ describe("browser QA regressions", () => {
     expect(gamma).toBeEnabled();
   });
   it("recovers from missing CAPTCHA configuration without submitting", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", "");
     vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", "");
     const { user, submit, onSubmit } = renderForm();
+    expect(
+      screen.getByRole("alert", { name: /CAPTCHA nie jest poprawnie/ }),
+    ).toBeInTheDocument();
     await user.click(submit);
     const retry = screen.getByRole("button", {
       name: "Błąd CAPTCHA. Spróbuj ponownie",
@@ -226,8 +233,37 @@ describe("browser QA regressions", () => {
     expect(screen.getByRole("button", { name: "Zapisz się" })).toBeEnabled();
     expect(onSubmit).not.toHaveBeenCalled();
   });
+  it("never hands a legacy hCaptcha key to Turnstile and keeps the answers", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", "");
+    vi.stubEnv(
+      "NEXT_PUBLIC_HCAPTCHA_SITEKEY",
+      "10000000-ffff-ffff-ffff-000000000001",
+    );
+    captcha.execute.mockClear();
+    const { user, submit, onSubmit } = renderForm([
+      field({ name: "Imię", type: "text" }),
+    ]);
+    const name = screen.getByLabelText("Imię");
+    await user.type(name, "Ala");
+    expect(
+      screen.getByRole("alert", { name: /CAPTCHA nie jest poprawnie/ }),
+    ).toBeInTheDocument();
+    await user.click(submit);
+    expect(captcha.execute).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(name).toHaveValue("Ala");
+  });
+  it("accepts a Turnstile key stored under the deprecated hCaptcha env name", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", "");
+    vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", TEST_SITEKEY);
+    captcha.execute.mockClear();
+    const { user, submit } = renderForm();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await user.click(submit);
+    expect(captcha.execute).toHaveBeenCalled();
+  });
   it("recovers if CAPTCHA execution never opens or verifies", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", "test-key");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);
     vi.useFakeTimers();
     const { submit, onSubmit } = renderForm();
     await act(async () => {
@@ -244,7 +280,7 @@ describe("browser QA regressions", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
   it("does not time out an open CAPTCHA challenge", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", "test-key");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);
     vi.useFakeTimers();
     const { submit, onSubmit } = renderForm();
     await act(async () => {
@@ -263,7 +299,7 @@ describe("browser QA regressions", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
   it("preserves the MIME type when renaming a file to its attribute UUID", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", "test-key");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);
     const attribute = field();
     const { user, submit, onSubmit } = renderForm([attribute]);
     await user.upload(
@@ -279,8 +315,26 @@ describe("browser QA regressions", () => {
     expect(uploaded.type).toBe("image/png");
     expect(uploaded.name).toBe(attribute.uuid);
   });
+  it("never reuses a single-use Turnstile token for a second submission", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);
+    captcha.execute.mockClear();
+    const { user, submit, onSubmit } = renderForm();
+    onSubmit.mockResolvedValueOnce({ success: false });
+    await user.click(submit);
+    await act(async () => {
+      captcha.verify?.("first-token");
+      await Promise.resolve();
+    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ token: "first-token" }),
+      [],
+    );
+    await user.click(screen.getByRole("button", { name: "Zapisz się" }));
+    expect(captcha.execute).toHaveBeenCalledTimes(2);
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
   it("blocks an invalid optional file when submitting and recovers after replacement", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", "test-key");
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);
     const { user, submit, onSubmit } = renderForm([field()]);
     const input = screen.getByLabelText("Attachment");
     await user.upload(

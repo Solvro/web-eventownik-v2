@@ -5,13 +5,20 @@ import { describe, expect, it, vi } from "vitest";
 import { submitParticipantForm } from "@/app/[eventSlug]/actions";
 import { login, register, resetPassword } from "@/app/auth/actions";
 import { updateEventEmail } from "@/app/dashboard/events/[uuid]/emails/actions";
-import { createEventForm } from "@/app/dashboard/events/[uuid]/forms/actions";
+import {
+  createEventForm,
+  updateEventForm,
+} from "@/app/dashboard/events/[uuid]/forms/actions";
 import type { Payload } from "@/app/dashboard/events/[uuid]/forms/actions";
 import {
   bulkUpdateParticipantAttribute,
   deleteManyParticipants,
 } from "@/app/dashboard/events/[uuid]/participants/actions";
 import { API_URL } from "@/lib/api";
+import {
+  getDefaultFormDates,
+  withResolvedFormDates,
+} from "@/lib/event-form-utils";
 import { saveAuthResponse } from "@/lib/session";
 
 import { server } from "../../../tests/msw/node";
@@ -47,7 +54,9 @@ describe("v3 server action requests", () => {
         { uuid: fieldUuid, isRequired: true, isEditable: true, order: 0 },
       ],
     };
-    expect(await createEventForm("event", form)).toEqual({ success: true });
+    expect(await createEventForm("event", withResolvedFormDates(form))).toEqual(
+      { success: true },
+    );
     expect(received).toMatchObject({
       openDate: new Date(2026, 9, 1, 10).toISOString(),
       closeDate: new Date(2026, 9, 2, 18).toISOString(),
@@ -56,7 +65,46 @@ describe("v3 server action requests", () => {
     });
   });
 
-  it("submits typed values with the hCaptcha token outside attributes", async () => {
+  it("forwards browser-resolved form dates verbatim so repeated saves do not drift", async () => {
+    const received: unknown[] = [];
+    server.use(
+      http.patch(
+        `${API_URL}/events/event/forms/${formUuid}`,
+        async ({ request }) => {
+          received.push(await request.json());
+          return HttpResponse.json({ uuid: formUuid });
+        },
+      ),
+    );
+    const openDate = "2026-11-02T11:00:00.000Z";
+    const closeDate = "2026-11-03T11:00:00.000Z";
+    const stored = {
+      openDate: new Date(openDate),
+      closeDate: new Date(closeDate),
+    };
+    // Simulate the edit page: reload stored values into the pickers, save, repeat.
+    for (let save = 0; save < 3; save++) {
+      const pickers = getDefaultFormDates(stored.openDate, stored.closeDate);
+      const resolved = withResolvedFormDates({
+        name: "Registration",
+        description: "",
+        isFirstForm: false,
+        isOpen: false,
+        openCondition: "ON_DATE",
+        ...pickers,
+        attributes: [],
+      });
+      await updateEventForm("event", formUuid, resolved);
+      stored.openDate = new Date(resolved.openDate ?? "");
+      stored.closeDate = new Date(resolved.closeDate ?? "");
+    }
+    expect(received).toHaveLength(3);
+    for (const body of received) {
+      expect(body).toMatchObject({ openDate, closeDate });
+    }
+  });
+
+  it("submits typed values with the Turnstile token outside attributes", async () => {
     let received: unknown;
     server.use(
       http.get(`${API_URL}/public/events/demo/forms/${formUuid}`, () =>
@@ -98,7 +146,7 @@ describe("v3 server action requests", () => {
     ).toEqual({ success: true });
     expect(received).toEqual({
       email: "test@example.com",
-      "h-captcha-response": "captcha",
+      "cf-turnstile-response": "captcha",
       attributes: [{ attributeUuid: fieldUuid, value: 0 }],
     });
   });

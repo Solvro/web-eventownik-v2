@@ -2,7 +2,6 @@
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
-import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { reorderBackendPage } from "@/lib/reorder";
 import { verifySession } from "@/lib/session";
 import type { FormAttributeBase } from "@/types/attributes";
@@ -21,6 +20,15 @@ export type Payload = Omit<
   attributes: FormAttributeBase[];
 };
 
+/** Payload with open/close already resolved to ISO instants in the browser (see `withResolvedFormDates`). */
+export type ResolvedPayload = Omit<
+  Payload,
+  "openDate" | "openTime" | "closeDate" | "closeTime"
+> & {
+  openDate: string | null;
+  closeDate: string | null;
+};
+
 export async function reorderForms(
   eventUuid: string,
   orderedIds: string[],
@@ -36,7 +44,10 @@ export async function reorderForms(
   );
 }
 
-export async function createEventForm(eventUuid: string, form: Payload) {
+export async function createEventForm(
+  eventUuid: string,
+  form: ResolvedPayload,
+) {
   const session = await verifySession();
 
   if (session == null) {
@@ -55,14 +66,14 @@ export async function createEventForm(eventUuid: string, form: Payload) {
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      openDate: resolveFormDateTime(form, "open"),
+      openDate: form.openDate,
       attributes: form.attributes.map(({ uuid, isRequired, order }) => ({
         attributeUuid: uuid,
         isRequired,
         order: order ?? 0,
       })),
       isEditable: form.attributes.some((attribute) => attribute.isEditable),
-      closeDate: resolveFormDateTime(form),
+      closeDate: form.closeDate,
       isOpen: form.isOpen,
       isFirstForm: form.isFirstForm,
       openCondition: form.openCondition,
@@ -107,7 +118,7 @@ export async function createEventForm(eventUuid: string, form: Payload) {
 export async function updateEventForm(
   eventUuid: string,
   formUuid: string,
-  form: Payload,
+  form: ResolvedPayload,
 ) {
   const session = await verifySession();
 
@@ -129,14 +140,14 @@ export async function updateEventForm(
       body: JSON.stringify({
         name: form.name,
         description: form.description,
-        openDate: resolveFormDateTime(form, "open"),
+        openDate: form.openDate,
         attributes: form.attributes.map(({ uuid, isRequired, order }) => ({
           attributeUuid: uuid,
           isRequired,
           order: order ?? 0,
         })),
         isEditable: form.attributes.some((attribute) => attribute.isEditable),
-        closeDate: resolveFormDateTime(form),
+        closeDate: form.closeDate,
         isFirstForm: form.isFirstForm,
         isOpen: form.isOpen,
         openCondition: form.openCondition,

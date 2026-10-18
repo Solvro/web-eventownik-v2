@@ -18,7 +18,10 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
-import { getDefaultFormDates } from "@/lib/event-form-utils";
+import {
+  getDefaultFormDates,
+  withResolvedFormDates,
+} from "@/lib/event-form-utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 import type { V3Form } from "@/types/v3";
 
@@ -79,11 +82,15 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
-      const result = await updateEventForm(eventUuid, formToEdit.uuid, {
-        ...formToEdit,
-        ...values,
-        attributes: includedAttributes,
-      });
+      const result = await updateEventForm(
+        eventUuid,
+        formToEdit.uuid,
+        withResolvedFormDates({
+          ...formToEdit,
+          ...values,
+          attributes: includedAttributes,
+        }),
+      );
 
       if (result.success) {
         toast({

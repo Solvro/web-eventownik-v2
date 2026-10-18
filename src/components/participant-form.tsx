@@ -1,6 +1,5 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -17,6 +16,8 @@ import {
   fileSchema,
   parseFileValidationErrorMessage,
 } from "@/components/attribute-input-file";
+import { Turnstile } from "@/components/turnstile";
+import type { TurnstileHandle } from "@/components/turnstile";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
+import { getTurnstileConfig } from "@/lib/turnstile-config";
 import {
   cn,
   getAttributeLabel,
@@ -85,9 +87,11 @@ export function ParticipantForm({
   const locale = useLocale();
   const router = useRouter();
 
-  const captchaSitekey = process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY?.trim() ?? "";
+  const captchaConfig = getTurnstileConfig();
+  const captchaSitekey =
+    captchaConfig.status === "ok" ? captchaConfig.sitekey : "";
   const [files, setFiles] = useState<File[]>([]);
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
   const [isCaptchaReady, setIsCaptchaReady] = useState(false);
@@ -100,10 +104,10 @@ export function ParticipantForm({
   );
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
-  const hCaptchaRef = useRef<HCaptcha>(null);
+  const captchaRef = useRef<TurnstileHandle>(null);
 
   useEffect(() => {
-    if (!isAwaitingCaptcha || isCaptchaOpen || hCaptchaToken !== null) {
+    if (!isAwaitingCaptcha || isCaptchaOpen || captchaToken !== null) {
       return;
     }
     // The SDK can load its script but fail to initialize the widget without
@@ -117,7 +121,7 @@ export function ParticipantForm({
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [isAwaitingCaptcha, isCaptchaOpen, hCaptchaToken]);
+  }, [isAwaitingCaptcha, isCaptchaOpen, captchaToken]);
 
   const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
@@ -144,7 +148,7 @@ export function ParticipantForm({
     setSuccess(false);
     setIsAwaitingCaptcha(false);
     setDidCaptchaFail(false);
-    setHCaptchaToken(null);
+    setCaptchaToken(null);
     pendingFormData.current = null;
   }
 
@@ -217,7 +221,9 @@ export function ParticipantForm({
         description: t("serverError"),
       });
     } finally {
-      hCaptchaRef.current?.resetCaptcha();
+      // Turnstile tokens are single-use: every attempt needs a fresh challenge.
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
       // We set it here instead of in `handleCaptchaVerify` to prevent submit button content flash
       setIsAwaitingCaptcha(false);
     }
@@ -244,7 +250,7 @@ export function ParticipantForm({
    * Calls submitWithCaptcha with the captcha token.
    */
   async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
+    setCaptchaToken(token);
     setDidCaptchaFail(false);
 
     if (pendingFormData.current !== null) {
@@ -303,18 +309,18 @@ export function ParticipantForm({
       return;
     }
 
-    if (hCaptchaToken === null && !isCaptchaReady) {
+    if (captchaToken === null && !isCaptchaReady) {
       setDidCaptchaFail(true);
       setIsAwaitingCaptcha(false);
       return;
     }
 
-    if (hCaptchaToken === null) {
+    if (captchaToken === null) {
       pendingFormData.current = values;
 
       setIsAwaitingCaptcha(true);
       try {
-        hCaptchaRef.current?.execute();
+        captchaRef.current?.execute();
       } catch {
         pendingFormData.current = null;
         setIsAwaitingCaptcha(false);
@@ -322,7 +328,7 @@ export function ParticipantForm({
         setDidCaptchaFail(true);
       }
     } else {
-      await submitWithCaptcha(values, hCaptchaToken);
+      await submitWithCaptcha(values, captchaToken);
     }
   }
 
@@ -448,36 +454,44 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
+        {captchaConfig.status === "ok" ? null : (
+          <p
+            role="alert"
+            aria-label={t("captchaMisconfigured")}
+            className="text-center text-sm text-red-500"
+          >
+            {t("captchaMisconfigured")}
+          </p>
+        )}
+
         {captchaSitekey !== "" && (
-          <HCaptcha
+          <Turnstile
             key={captchaAttempt}
             onLoad={() => {
               setIsCaptchaReady(true);
             }}
-            ref={hCaptchaRef}
+            ref={captchaRef}
             sitekey={captchaSitekey}
-            size="invisible"
+            language={locale}
             onVerify={handleCaptchaVerify}
             onOpen={() => {
               setIsCaptchaOpen(true);
             }}
             onExpire={() => {
-              setHCaptchaToken(null);
+              setCaptchaToken(null);
               setDidCaptchaFail(true);
               setIsAwaitingCaptcha(false);
               pendingFormData.current = null;
             }}
             onClose={() => {
+              // Turnstile hides the challenge once solved; the token follows via onVerify.
               setIsCaptchaOpen(false);
-              setDidCaptchaFail(true);
-              setIsAwaitingCaptcha(false);
-              pendingFormData.current = null;
             }}
             onError={(captchaError) => {
               setIsCaptchaOpen(false);
               console.error("Captcha error occurred:", captchaError);
               setIsCaptchaReady(false);
-              setHCaptchaToken(null);
+              setCaptchaToken(null);
               setDidCaptchaFail(true);
               setIsAwaitingCaptcha(false);
               pendingFormData.current = null;
@@ -494,7 +508,7 @@ export function ParticipantForm({
               setDidCaptchaFail(false);
               setIsAwaitingCaptcha(false);
               setIsCaptchaReady(false);
-              setHCaptchaToken(null);
+              setCaptchaToken(null);
               pendingFormData.current = null;
               setCaptchaAttempt((attempt) => attempt + 1);
             }}

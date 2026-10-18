@@ -15,11 +15,14 @@ import {
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import type { Block } from "@/types/blocks";
-import type { Participant, ParticipantIdentity } from "@/types/participant";
+import type { Participant } from "@/types/participant";
 import type {
   V3Attribute as Attribute,
   V3EmailSummary as EventEmail,
 } from "@/types/v3";
+
+import { PARTICIPANTS_PAGE_SIZE, bonusAttributesParameter } from "./query";
+import type { ParticipantPageQuery } from "./query";
 
 export interface ImportedParticipant {
   email: string;
@@ -89,23 +92,19 @@ function formatSkippedParticipants(
   }`;
 }
 
-export interface ParticipantPageQuery {
-  page: number;
-  take: number;
-  search: string;
-  sort: string;
-  columnFilters: Record<string, unknown[]>;
-}
-const INITIAL_PARTICIPANT_QUERY: ParticipantPageQuery = {
-  page: 1,
-  take: 20,
-  search: "",
-  sort: "createdAt:asc",
-  columnFilters: {},
-};
+/**
+ * The deployed participants listing only supports `page`, `take`,
+ * `bonusAttributes` and exact-match `filters`; it always orders by email.
+ * Search, sorting and column filters are therefore applied client-side over
+ * the complete list (see ParticipantsLoader).
+ */
 export async function getParticipants(
   eventUuid: string,
-  query: ParticipantPageQuery = INITIAL_PARTICIPANT_QUERY,
+  {
+    page = 1,
+    take = PARTICIPANTS_PAGE_SIZE,
+    bonusAttributes = [],
+  }: Partial<ParticipantPageQuery> = {},
 ) {
   const session = await verifySession();
   if (session === null) {
@@ -119,14 +118,13 @@ export async function getParticipants(
 
   const url = paginatedUrl(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
-    query.page,
-    query.take,
+    page,
+    take,
   );
-  if (query.search !== "") {
-    url.searchParams.set("search", query.search);
+  const bonus = bonusAttributesParameter(bonusAttributes);
+  if (bonus !== "") {
+    url.searchParams.set("bonusAttributes", bonus);
   }
-  url.searchParams.set("sort", query.sort);
-  url.searchParams.set("columnFilters", JSON.stringify(query.columnFilters));
   return getBackend<PaginatedResponse<Participant>>(url, {
     headers: { Authorization: `Bearer ${session.bearerToken}` },
     cache: "no-store",
@@ -162,31 +160,6 @@ export async function getParticipant(
   }
   const participant = (await response.json()) as Participant;
   return participant;
-}
-
-export async function getParticipantSelectionPage(
-  eventUuid: string,
-  query: ParticipantPageQuery,
-) {
-  const session = await verifySession();
-  if (session === null) {
-    redirect("/auth/login");
-  }
-  if (!isValidUuid(eventUuid)) {
-    throw new Error("Invalid event UUID");
-  }
-  const url = paginatedUrl(
-    `${API_URL}/events/${eventUuid}/participants/selection`,
-    query.page,
-    query.take,
-  );
-  url.searchParams.set("search", query.search);
-  url.searchParams.set("sort", query.sort);
-  url.searchParams.set("columnFilters", JSON.stringify(query.columnFilters));
-  return getBackend<PaginatedResponse<ParticipantIdentity>>(url, {
-    headers: { Authorization: `Bearer ${session.bearerToken}` },
-    cache: "no-store",
-  });
 }
 
 export async function getAttributes(eventUuid: string) {

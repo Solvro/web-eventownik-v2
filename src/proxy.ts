@@ -9,7 +9,14 @@ export async function proxy(request: NextRequest) {
   const session = await verifySession();
   const loginUrl = new URL("/auth/login", request.nextUrl);
   loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-  const login = () => NextResponse.redirect(loginUrl, 303);
+  const login = () => {
+    const response = NextResponse.redirect(loginUrl, 303);
+    // Drop the unusable session: the auth layout redirects any request that
+    // still carries one back to the dashboard, which would loop forever.
+    response.cookies.delete("session");
+    response.cookies.delete("backend-refresh");
+    return response;
+  };
   if (session === null || session.bearerToken.length === 0) {
     return login();
   }

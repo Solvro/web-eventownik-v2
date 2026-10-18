@@ -40,7 +40,16 @@ function getBaseColumns(t: TableTranslator) {
             table.options.meta?.selection?.onClear();
             table.toggleAllPageRowsSelected(Boolean(value));
           }}
-          aria-label={t("selectAllPageRows")}
+          aria-label={
+            table.options.meta?.isListComplete === false
+              ? t("selectLoadedRows", {
+                  count: table.getRowModel().rows.length,
+                  total:
+                    table.options.meta.totalParticipants ??
+                    table.getRowModel().rows.length,
+                })
+              : t("selectAllRows", { count: table.getRowModel().rows.length })
+          }
           disabled={table.options.meta?.isBusy === true}
         />
       ),
@@ -65,9 +74,10 @@ function getBaseColumns(t: TableTranslator) {
       minSize: 52,
       maxSize: 52,
       header: t("rowNumberTitle"),
-      cell: ({ row, table }) => {
-        return (table.options.meta?.rowOffset ?? 0) + row.index + 1;
-      },
+      // Number by displayed position: `row.index` is the position in the
+      // unsorted data, which differs once rows are sorted client-side.
+      cell: ({ row, table }) =>
+        table.getRowModel().rows.findIndex((item) => item.id === row.id) + 1,
       enableSorting: false,
       enableHiding: false,
       enableResizing: false,
@@ -104,70 +114,69 @@ export function createColumns(
   t: TableTranslator,
   locale: string,
 ) {
-  const attributeColumns = attributes
-    .filter((attribute) => attribute.showInList)
-    .map((attribute) =>
-      columnHelper.accessor(attribute.uuid, {
-        meta: {
-          attribute,
-          name: attribute.name,
-          showInTable: attribute.showInList,
-        },
-        ...(["multiSelect", "block"].includes(attribute.type)
-          ? { minSize: 240 }
-          : {}),
-        filterFn: (
-          row: Row<FlattenedParticipant>,
-          columnId: string,
-          filterValue: ParticipantAttributeValueType[],
-        ) => {
-          if (filterValue.length === 0) {
-            return true;
-          }
-          const rowValue = row.original[columnId] ?? null;
+  // Every attribute gets a column; `showInList` only sets its default visibility.
+  const attributeColumns = attributes.map((attribute) =>
+    columnHelper.accessor(attribute.uuid, {
+      meta: {
+        attribute,
+        name: attribute.name,
+        showInTable: attribute.showInList,
+      },
+      ...(["multiSelect", "block"].includes(attribute.type)
+        ? { minSize: 240 }
+        : {}),
+      filterFn: (
+        row: Row<FlattenedParticipant>,
+        columnId: string,
+        filterValue: ParticipantAttributeValueType[],
+      ) => {
+        if (filterValue.length === 0) {
+          return true;
+        }
+        const rowValue = row.original[columnId] ?? null;
 
-          // Multiselect case has to be handled separately
-          // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
-          if (rowValue !== null && attribute.type === "multiSelect") {
-            const values = new Set(multiValues(String(row.original[columnId])));
-            return filterValue.some((value) => values.has(value as string));
-          }
+        // Multiselect case has to be handled separately
+        // We need to unwrap multiselect value from "v1,v2" to ["v1","v2"]
+        if (rowValue !== null && attribute.type === "multiSelect") {
+          const values = new Set(multiValues(String(row.original[columnId])));
+          return filterValue.some((value) => values.has(value as string));
+        }
 
-          // Special case when attribute of single select type is set empty
-          // Check implementation of AttributeInput for explanation
-          if (rowValue === " " && filterValue.includes(null)) {
-            return true;
-          }
+        // Special case when attribute of single select type is set empty
+        // Check implementation of AttributeInput for explanation
+        if (rowValue === " " && filterValue.includes(null)) {
+          return true;
+        }
 
-          return (
-            filterValue.includes(rowValue) ||
-            (attribute.type === "checkbox" &&
-              filterValue.some((value) => String(value) === String(rowValue)))
-          );
-        },
-        header: (info) => (
-          <div className="flex items-center gap-1">
-            <FilterButton
-              attributeType={attribute.type}
-              options_={attributeOptions(attribute)}
-              blocks={blocks}
-              column={info.column}
-              attributeUuid={attribute.uuid}
+        return (
+          filterValue.includes(rowValue) ||
+          (attribute.type === "checkbox" &&
+            filterValue.some((value) => String(value) === String(rowValue)))
+        );
+      },
+      header: (info) => (
+        <div className="flex items-center gap-1">
+          <FilterButton
+            attributeType={attribute.type}
+            options_={attributeOptions(attribute)}
+            blocks={blocks}
+            column={info.column}
+            attributeUuid={attribute.uuid}
+          />
+          <div className="min-w-0 flex-1">
+            <SortHeader
+              info={info}
+              name={getAttributeLabel(attribute.name, locale)}
+              truncate
             />
-            <div className="min-w-0 flex-1">
-              <SortHeader
-                info={info}
-                name={getAttributeLabel(attribute.name, locale)}
-                truncate
-              />
-            </div>
           </div>
-        ),
-        cell: (info) => (
-          <EditableCell info={info} attribute={attribute} blocks={blocks} />
-        ),
-      }),
-    );
+        </div>
+      ),
+      cell: (info) => (
+        <EditableCell info={info} attribute={attribute} blocks={blocks} />
+      ),
+    }),
+  );
 
   const editColumn = columnHelper.display({
     id: "edit",

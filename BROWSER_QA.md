@@ -1,5 +1,79 @@
 # V3 migration browser QA
 
+## PR #431 review follow-up — 18 October 2026
+
+This section supersedes older runtime and validation claims below. Claude wrote
+the frontend patches; Codex reviewed them and performed Chrome QA. After Claude
+reached its account limit, the user authorized Codex to finish lint cleanup.
+Backend source changes present before this run were preserved: its tracked diff
+SHA-256 stayed `7c7b740825a19c48fc672e4ca79cedafaae710cdc72a7f65baf55ef713eaaa12`.
+No backend fixes, commits, pushes, deployments or email sends were made.
+
+### Observed browser results
+
+QA used the existing synthetic local event with 105 participants, 23 forms and
+23 email templates. Preview failures were reproduced against the deployed PR.
+Production was not changed. The local frontend ran with `TZ=UTC`; Chrome used
+Warsaw time. Existing local backend extensions are not deployed, so successful
+local ordering does not establish preview compatibility.
+
+| Case                        | Result                                                                                                                                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Form date/time drift        | Opening 19 October at 12:00 and closing 28 October at 12:00 survived repeated saves and reloads, crossing the DST boundary. The QA form was restored to manual opening/closing.                   |
+| Block drop animation        | Actual pointer drag settled with two aligned cards, no displaced ghost, opacity 1 and no residual transform. Order survived reload locally; the original order was restored.                      |
+| Event visibility            | Settings saved private, stayed private after reload, and the public event returned 404. Public visibility was restored.                                                                           |
+| Continuous participants     | Scrolled through row 105 with no pagination navigation or page-size selector.                                                                                                                     |
+| Global search and sorting   | Search found participant 104 beyond the first API page. Descending name sorting put participant 104 first.                                                                                        |
+| Filters                     | Checkbox filter returned the expected empty result; reset restored all 105 participants.                                                                                                          |
+| Hidden columns              | Hidden QA notes appeared in Columns and showed their fetched values when enabled.                                                                                                                 |
+| Selection                   | Header checkbox selected 105 of 105. Email dialog showed 105 recipients and was cancelled without sending. The final checkbox label describes all loaded rows correctly.                          |
+| Draft protection            | Changing the view prompted before discarding an edited participant. Cancel preserved the draft; the draft was then discarded without saving.                                                      |
+| Email/form tile sizes       | Both measured 285 by 256 pixels at the same desktop viewport.                                                                                                                                     |
+| Turnstile initialization    | Public site key found in the local environment. Official Cloudflare script and `cf-turnstile-response` input mounted; no hCaptcha script/input remained. No challenge or submission was executed. |
+| Preview form/email ordering | Both saves failed. Current remote backend controllers have no reorder endpoints.                                                                                                                  |
+| Preview block occupancy     | Reproduced NaN total, zero counts and occupants fetch error. Current remote backend omits occupancy counts and the expected occupants endpoint.                                                   |
+
+Retry after attribute-loading failure, failed later-page recovery, deferred
+select-all, mixed page totals and overlapping pages are covered by component
+tests. Those failure states were not injected into the real browser. Default
+oldest-first sorting is tested with 150 registrations whose dates differ from
+email page order; the local browser fixture has identical registration times.
+
+### Backend-related findings left untouched
+
+- Form/email ordering needs persisted reorder endpoints. Frontend queuing and
+  rollback are repaired, but preview order cannot persist without those routes.
+- Block counts and occupants need the corresponding API data/routes. Missing
+  totals now display a dash instead of NaN; this does not supply actual counts.
+- XLSX datetime formatting and block-name lookup happen in the backend export.
+- Deployed participants listing cannot sort/search/filter. The frontend loads
+  native API pages and applies these operations over the complete collection.
+  This requires loading all participants for a correct global view.
+- `bonusAttributes` has a backend limit of 1000 characters. The current request
+  helper caps the list at that limit, so more than approximately 27 simultaneously
+  revealed hidden non-block attributes remain a known limitation.
+
+### Verification limits and evidence
+
+Successful real CAPTCHA-backed registration remains unverified. The unchanged
+local backend still expects its older CAPTCHA contract, while remote develop
+uses Turnstile. Real email delivery, extra browser engines and broad permission
+coverage were not retested. Optional 320-pixel QA could not finish because the
+browser DOM/viewport controls timed out; native Chrome controls remained usable.
+
+Screenshots are stored in
+`/Users/antoniczaplicki/.codex/visualizations/2026/09/30/01a0f3f0-61b1-7f42-b7b9-7c8eab01f933/eventownik-review-2026-10-18/`:
+
+- `participants-last-row-no-pagination.jpg`
+- `blocks-after-drag.jpg`
+- `form-time-utc-dst.jpg`
+- `event-visibility-private.jpg`
+- `matching-email-tile-size.jpg`
+- `public-form-turnstile.jpg`
+
+Checks and final lint results are recorded in the follow-up validation entry
+at the end of this document.
+
 Run: 30 September–1 October 2026, local Next.js frontend on port 3000 and v3 backend on port 3334. Browser: Codex in-app Chromium browser. Branch: `refactor/backend-v3-migration` (from `develop`).
 
 ## Result
@@ -153,7 +227,7 @@ Command evidence: `/tmp/eventownik-native-full-tests.log`,
 
 ## Remaining release gates
 
-1. Configure the local hCaptcha site key and matching backend verification configuration, then complete successful registration and personalized update, duplicate registration, full-event limits, file-token persistence, retry after API validation, and concurrent last-place allocation. No CAPTCHA guard was bypassed.
+1. Configure the local Turnstile site key and matching backend verification configuration, then complete successful registration and personalized update, duplicate registration, full-event limits, file-token persistence, retry after API validation, and concurrent last-place allocation. No CAPTCHA guard was bypassed.
 2. Configure a local mail sink or working SMTP, then verify reset/registration emails, actual campaign sends, automatic triggers, worker retries, delivery history and personalization output. Placeholder SMTP prevents useful delivery evidence.
 3. Complete account registration and password reset/change with user-entered credentials. Browser automation requires user handoff for new credentials; these final flows were not performed.
 4. Use additional organizer accounts to verify every permission boundary, access revocation, invitation/grant, and unauthorized direct routes. Only owner/admin display was tested; granting new access requires confirmation under browser automation policy.
@@ -175,3 +249,24 @@ Saved screenshots are outside the source tree:
 - `settings-recovery.jpg`: settings value saved after outage recovery.
 
 Local command logs are in `/tmp/eventownik-qa-*-final.log`; focused lint is `/tmp/eventownik-qa-focused-lint.log`. No tokens or browser session data are included in the report or screenshots.
+
+## Follow-up validation — 18 October 2026
+
+- `npm run test -- --run`: **106 tests passed in 18 files**.
+- After the final selection callback cleanup, the five participant-loader tests
+  passed again.
+- `npm run typecheck`, `npm run format:check` and `git diff --check`: passed.
+- Fresh full lint (`npm run lint -- --no-cache`): **22 errors and 12 warnings**.
+  Every error is in unchanged shared UI, message-tag or editor-type files.
+  The changed participant loader has two effect-related warnings; one warning
+  is additional to the previous repository baseline. Changed source/tests have
+  no lint errors.
+- Backend tracked diff hash remained identical to the start of the review.
+- No production build or multi-browser E2E run was performed for this follow-up.
+
+Command evidence: `/tmp/eventownik-pr431-final-tests.log`,
+`/tmp/eventownik-pr431-final-typecheck.log`,
+`/tmp/eventownik-pr431-final-format.log`,
+`/tmp/eventownik-pr431-final-lint.log`,
+`/tmp/eventownik-pr431-selection-lint.log` and
+`/tmp/eventownik-pr431-selection-tests.log`.

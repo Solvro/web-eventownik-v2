@@ -47,7 +47,7 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
             if (selection === undefined) {
               table.toggleAllRowsSelected(true);
             } else {
-              void selection.onSelectAll();
+              selection.onSelectAll();
             }
           }}
         >

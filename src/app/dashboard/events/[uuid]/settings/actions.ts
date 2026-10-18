@@ -63,6 +63,7 @@ export async function updateEvent(
       location: event.location,
       primaryColor: event.primaryColor,
       participantsLimit: event.participantsLimit,
+      isPublic: event.isPublic,
       contactEmail: event.contactEmail === "" ? null : event.contactEmail,
       links: event.links
         .filter((link) => link.url.trim() !== "")

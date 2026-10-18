@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { verifySession } from "@/lib/session";
 
 export async function generateMetadata() {
   const t = await getTranslations("Auth");
@@ -13,10 +14,11 @@ export async function generateMetadata() {
 export default async function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // eslint-disable-next-line unicorn/no-await-expression-member
-  const session = (await cookies()).get("session");
+  // Only a session that still verifies counts; a stale or tampered cookie must
+  // not bounce the user back to the dashboard (which would send them here again).
+  const session = await verifySession();
 
-  if (session != null) {
+  if (session !== null && session.bearerToken.length > 0) {
     redirect("/dashboard/events");
   }
 

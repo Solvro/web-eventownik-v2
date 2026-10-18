@@ -10,6 +10,7 @@ import { verifySession } from "@/lib/session";
 import type { AttributeBase } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 
+import { totalBlockParticipants } from "./block-counts";
 import { SortableBlockGrid } from "./sortable-block-grid";
 
 async function getRootBlock(
@@ -119,9 +120,7 @@ export default async function EventBlockEditPage({
             <h1 className="text-3xl font-bold">{rootBlockName}</h1>
             <span className="text-muted-foreground text-lg">
               {t("totalParticipants", {
-                count: rootBlock.children
-                  .map((block) => block.blockParticipantCount)
-                  .reduce((a, b) => a + b, 0),
+                count: totalBlockParticipants(rootBlock.children),
               })}
             </span>
           </div>

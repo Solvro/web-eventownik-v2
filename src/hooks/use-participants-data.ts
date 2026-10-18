@@ -7,6 +7,23 @@ import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/
 import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
+/**
+ * Applies fresh server rows (e.g. a newly loaded page or a revalidation) while
+ * keeping rows that are being edited, so an open draft is never overwritten.
+ */
+export function mergeWithDrafts(
+  previous: FlattenedParticipant[],
+  next: FlattenedParticipant[],
+) {
+  const drafts = new Map(
+    previous.filter((row) => row.mode === "edit").map((row) => [row.uuid, row]),
+  );
+  if (drafts.size === 0) {
+    return next;
+  }
+  return next.map((row) => drafts.get(row.uuid) ?? row);
+}
+
 export function useParticipantsData(
   eventUuid: string,
   initialParticipants: Participant[] = [],
@@ -21,9 +38,7 @@ export function useParticipantsData(
 
   useEffect(() => {
     setFlattenedData((previous) =>
-      previous.some((row) => row.mode === "edit")
-        ? previous
-        : flattenParticipants(initialParticipants),
+      mergeWithDrafts(previous, flattenParticipants(initialParticipants)),
     );
   }, [initialParticipants]);
 

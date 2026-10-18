@@ -10,10 +10,12 @@ import type {
   ColumnFiltersState,
   OnChangeFn,
   SortingState,
+  VisibilityState,
 } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
+import { defaultColumnVisibility } from "@/app/dashboard/events/[uuid]/participants/query";
 import { createColumns } from "@/app/dashboard/events/[uuid]/participants/table/core/columns";
 import { useToast } from "@/hooks/use-toast";
 import type { Block } from "@/types/blocks";
@@ -29,16 +31,23 @@ function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
     : { ...row };
 }
 
+/**
+ * Controlled view state. Search, sorting and filters are still applied by the
+ * table itself (client-side), because the backend listing cannot do them.
+ */
 export interface ParticipantTableState {
   globalFilter: string;
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
+  columnVisibility: VisibilityState;
   onGlobalFilterChange: OnChangeFn<string>;
   onSortingChange: OnChangeFn<SortingState>;
   onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  total: number;
-  page: number;
-  take: number;
+  onColumnVisibilityChange: OnChangeFn<VisibilityState>;
+  /** Total participants on the server, when no search or filter narrows it down. */
+  total?: number;
+  /** Whether every server page is loaded into a consistent snapshot. */
+  isComplete: boolean;
   busy: boolean;
   selection?: ParticipantSelection;
 }
@@ -67,6 +76,12 @@ export function useParticipantsTable({
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [visibilityOverrides, setVisibilityOverrides] =
+    useState<VisibilityState>({});
+  const columnVisibility = serverState?.columnVisibility ?? {
+    ...defaultColumnVisibility(attributes),
+    ...visibilityOverrides,
+  };
   const [rowSnapshots, setRowSnapshots] = useState<
     Record<number, FlattenedParticipant>
   >({});
@@ -107,6 +122,7 @@ export function useParticipantsTable({
             columnFilters: serverState.columnFilters,
           }),
       columnOrder,
+      columnVisibility,
     },
     onGlobalFilterChange: serverState?.onGlobalFilterChange ?? setGlobalFilter,
     ...(serverState == null
@@ -115,8 +131,13 @@ export function useParticipantsTable({
           onSortingChange: serverState.onSortingChange,
           onColumnFiltersChange: serverState.onColumnFiltersChange,
         }),
-    manualFiltering: serverState != null,
-    manualSorting: serverState != null,
+    onColumnVisibilityChange:
+      serverState?.onColumnVisibilityChange ??
+      ((updater) => {
+        setVisibilityOverrides(
+          typeof updater === "function" ? updater(columnVisibility) : updater,
+        );
+      }),
     getRowId: (row) => row.uuid,
     enableRowSelection: serverState?.busy !== true,
     getCoreRowModel: getCoreRowModel(),
@@ -140,8 +161,7 @@ export function useParticipantsTable({
     meta: {
       eventUuid,
       totalParticipants: serverState?.total,
-      rowOffset:
-        serverState == null ? 0 : (serverState.page - 1) * serverState.take,
+      isListComplete: serverState?.isComplete ?? true,
       isBusy: serverState?.busy,
       selection: serverState?.selection,
       updateData: onUpdateData,
@@ -170,9 +190,6 @@ export function useParticipantsTable({
       },
     },
 
-    initialState: {
-      columnVisibility: { id: false },
-    },
     enableMultiSort: true,
   });
 

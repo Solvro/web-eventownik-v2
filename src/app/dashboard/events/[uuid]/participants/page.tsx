@@ -17,6 +17,7 @@ import {
   getParticipants,
 } from "./actions";
 import { ParticipantsLoader } from "./participants-loader";
+import { PARTICIPANTS_PAGE_SIZE, participantsQueryKey } from "./query";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Sidebar");
@@ -40,19 +41,12 @@ export default async function DashboardEventParticipantsPage({
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [
-        "participants",
-        uuid,
-        {
-          page: 1,
-          take: 20,
-          search: "",
-          sort: "createdAt:asc",
-          columnFilters: {},
-        },
-      ],
-      queryFn: async () => getParticipants(uuid),
+    // Same key as the client's default view (no hidden columns revealed).
+    queryClient.prefetchInfiniteQuery({
+      queryKey: participantsQueryKey(uuid, []),
+      queryFn: async () =>
+        getParticipants(uuid, { page: 1, take: PARTICIPANTS_PAGE_SIZE }),
+      initialPageParam: 1,
     }),
     queryClient.prefetchQuery({
       queryKey: ["attributes", uuid],

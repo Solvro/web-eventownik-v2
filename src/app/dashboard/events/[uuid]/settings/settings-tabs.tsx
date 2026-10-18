@@ -42,12 +42,12 @@ import { deleteEvent, updateEvent } from "./actions";
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
-import { General } from "./tabs/general-info";
+import { EventVisibilitySchema, General } from "./tabs/general-info";
 import { Personalization } from "./tabs/personalization";
 import type { TabProps } from "./tabs/tab-props";
 
 const EventSettingsSchema = z.intersection(
-  EventGeneralInfoSchema,
+  z.intersection(EventGeneralInfoSchema, EventVisibilitySchema),
   z.intersection(
     EventPersonalizationFormSchema,
     z.intersection(EventCoorganizersFormSchema, EventAttributesFormSchema),
@@ -130,6 +130,7 @@ export function EventSettingsTabs({
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizerName ?? "",
       termsLink: policyLink?.url ?? "",
+      isPublic: unmodifiedEvent.isPublic,
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
@@ -221,6 +222,7 @@ export function EventSettingsTabs({
       ],
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
+      isPublic: values.isPublic,
     };
 
     try {
