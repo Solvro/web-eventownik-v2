@@ -873,6 +873,8 @@
     "deleteParticipantsSuccessDescription": "Deleted {count, plural, =1 {1 participant} other {# participants}}",
     "deleteParticipantsError": "Failed to batch delete participants!",
     "deleteParticipantsErrorDescription": "An unexpected error occurred. Try again",
+    "participantQueriesUnavailable": "Search, sorting and filters are currently unavailable.",
+    "scrollForMoreParticipants": "Loaded {loaded} of {total}. Scroll to see more participants.",
     "participantsTableTitle": "Participants",
     "searchPlaceholder": "Search among {count} participants...",
     "resetFilters": "Reset filters",

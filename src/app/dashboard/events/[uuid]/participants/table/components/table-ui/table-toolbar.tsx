@@ -62,7 +62,7 @@ export function TableToolbar({
             count: participantsCount,
           })}
           value={globalFilter}
-          disabled={isQuerying}
+          disabled={isQuerying || table.options.enableGlobalFilter === false}
           onChange={(event) => {
             table.setGlobalFilter(event.target.value);
           }}
@@ -80,7 +80,7 @@ export function TableToolbar({
                 table.setGlobalFilter("");
               }}
               size="icon"
-              disabled={isQuerying}
+              disabled={isQuerying || table.options.enableFilters === false}
               variant="outline"
               aria-label={t("resetFilters")}
             >
@@ -96,7 +96,7 @@ export function TableToolbar({
                 table.resetSorting();
               }}
               size="icon"
-              disabled={isQuerying}
+              disabled={isQuerying || table.options.enableSorting === false}
               variant="outline"
               aria-label={t("resetSorting")}
             >

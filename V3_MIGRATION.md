@@ -6,19 +6,22 @@ The current deployed backend differs from the local extensions described below.
 This follow-up changes the frontend only. See the dated section in
 [BROWSER_QA.md](./BROWSER_QA.md) for browser evidence and remaining backend issues.
 
-- Participants use native paginated responses through `useInfiniteQuery`, with a
-  continuous virtual table and no pagination controls. Sorting, search and
-  filters run over the complete loaded collection because deployed v3 does not
-  support those query parameters. Hidden-by-default columns remain toggleable.
+- Participants use native pages through `useInfiniteQuery`, with a continuous
+  virtual table and no pagination controls. The frontend preserves server order.
+  Search, sorting and column filters are unfinished backend work tracked in
+  [backend #156](https://github.com/Solvro/backend-eventownik-v3/issues/156).
+  Their controls are disabled; there is no full-list client workaround.
+  Hidden-by-default columns remain toggleable through native `bonusAttributes`.
 - Reordering serializes saves, rolls back on failure and preserves drop
   animations. Form/email persistence still requires missing backend routes.
 - Form date/time values are resolved in the browser and sent as ISO instants,
   preventing a UTC server from adding two hours on each save.
 - Event settings expose the existing `isPublic` field through a visibility switch.
-- Public forms use Turnstile and send `cf-turnstile-response`. Configure
-  `NEXT_PUBLIC_TURNSTILE_SITEKEY`; an actual Turnstile key under the old
-  `NEXT_PUBLIC_HCAPTCHA_SITEKEY` name is accepted as a deprecated fallback.
-  Missing/invalid configuration is visible and preserves entered values.
+- Public forms use `@marsidev/react-turnstile` (aligned with PR #425) and send
+  `cf-turnstile-response`. Configure `NEXT_PUBLIC_TURNSTILE_SITEKEY` in the build
+  environment and the matching backend `TURNSTILE_SECRET`. No legacy key alias
+  or custom widget renderer is used. The existing Cloudflare widget now allows
+  the exact PR preview hostname in addition to production and localhost.
 - Backend occupancy/occupants and XLSX value formatting remain unresolved and
   untouched. Local successful reorder QA does not prove deployed route support.
 

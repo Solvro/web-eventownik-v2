@@ -18,7 +18,9 @@ export function TableSelectionInfo({ table }: TableSelectionInfoProps) {
   const totalFilteredCount =
     table.options.meta?.totalParticipants ?? filteredRows.length;
   const canSelectAllFiltered =
-    totalFilteredCount > 0 && selectedCount < totalFilteredCount;
+    totalFilteredCount > 0 &&
+    selectedCount < totalFilteredCount &&
+    table.options.meta?.isListComplete !== false;
   const isAllRowsSelected = selectedCount === totalFilteredCount;
 
   if (selectedCount === 0) {

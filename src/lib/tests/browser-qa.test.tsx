@@ -23,17 +23,17 @@ const captcha = vi.hoisted(() => ({
   execute: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
-vi.mock("@/components/turnstile", () => {
+vi.mock("@marsidev/react-turnstile", () => {
   const CaptchaMock = forwardRef(
     (
       props: {
-        onLoad: () => void;
-        onVerify: (token: string) => void;
-        onOpen: () => void;
+        onWidgetLoad: () => void;
+        onSuccess: (token: string) => void;
+        onBeforeInteractive: () => void;
       },
       ref,
     ) => {
-      const { onLoad } = props;
+      const { onWidgetLoad } = props;
       useImperativeHandle(ref, () => ({
         execute: captcha.execute,
         reset: vi.fn(),
@@ -41,10 +41,10 @@ vi.mock("@/components/turnstile", () => {
       // Simulate the external CAPTCHA SDK finishing its initial load.
       // eslint-disable-next-line react-you-might-not-need-an-effect/no-manage-parent
       useEffect(() => {
-        onLoad();
-      }, [onLoad]);
-      captcha.verify = props.onVerify;
-      captcha.open = props.onOpen;
+        onWidgetLoad();
+      }, [onWidgetLoad]);
+      captcha.verify = props.onSuccess;
+      captcha.open = props.onBeforeInteractive;
       return null;
     },
   );
@@ -253,14 +253,16 @@ describe("browser QA regressions", () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(name).toHaveValue("Ala");
   });
-  it("accepts a Turnstile key stored under the deprecated hCaptcha env name", async () => {
+  it("requires the proper Turnstile environment variable", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", "");
     vi.stubEnv("NEXT_PUBLIC_HCAPTCHA_SITEKEY", TEST_SITEKEY);
     captcha.execute.mockClear();
     const { user, submit } = renderForm();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("alert", { name: /CAPTCHA nie jest poprawnie/ }),
+    ).toBeInTheDocument();
     await user.click(submit);
-    expect(captcha.execute).toHaveBeenCalled();
+    expect(captcha.execute).not.toHaveBeenCalled();
   });
   it("recovers if CAPTCHA execution never opens or verifies", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITEKEY", TEST_SITEKEY);

@@ -95,8 +95,8 @@ function formatSkippedParticipants(
 /**
  * The deployed participants listing only supports `page`, `take`,
  * `bonusAttributes` and exact-match `filters`; it always orders by email.
- * Search, sorting and column filters are therefore applied client-side over
- * the complete list (see ParticipantsLoader).
+ * Missing query operations are tracked in backend issue #156. The frontend
+ * preserves the server order instead of downloading and processing every page.
  */
 export async function getParticipants(
   eventUuid: string,

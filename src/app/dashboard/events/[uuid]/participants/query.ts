@@ -1,8 +1,4 @@
-import type {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import type { VisibilityState } from "@tanstack/react-table";
 
 import type { PaginatedResponse } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
@@ -12,8 +8,7 @@ import type { V3Attribute as Attribute } from "@/types/v3";
 /**
  * The deployed participants listing only supports `page`, `take`,
  * `bonusAttributes` and exact-match `filters`, and always orders by email.
- * Search, sorting and column filters are applied client-side over the
- * complete list instead (see ParticipantsLoader).
+ * Query operations need backend support; the frontend preserves server order.
  */
 export interface ParticipantPageQuery {
   page: number;
@@ -23,9 +18,6 @@ export interface ParticipantPageQuery {
 }
 
 export const PARTICIPANTS_PAGE_SIZE = 100;
-/** Backend `bonusAttributes` is limited to 1000 characters (~27 UUIDs). */
-const BONUS_ATTRIBUTES_MAX_LENGTH = 1000;
-
 export function participantsQueryKey(
   eventUuid: string,
   bonusAttributes: string[],
@@ -37,23 +29,12 @@ export function participantsQueryKey(
   ] as const;
 }
 
-/** Oldest registration first. */
-export const DEFAULT_PARTICIPANT_SORTING: SortingState = [
-  { id: "createdAt", desc: false },
-];
-
 export function bonusAttributesParameter(uuids: string[]) {
-  const accepted: string[] = [];
-  for (const uuid of [...new Set(uuids)].toSorted()) {
-    if (!isValidUuid(uuid)) {
-      continue;
-    }
-    if ([...accepted, uuid].join(",").length > BONUS_ATTRIBUTES_MAX_LENGTH) {
-      break;
-    }
-    accepted.push(uuid);
-  }
-  return accepted.join(",");
+  // Preserve the full requested set. Let the backend validate its own limit.
+  return [...new Set(uuids)]
+    .filter((uuid) => isValidUuid(uuid))
+    .toSorted()
+    .join(",");
 }
 
 /** `showInList` only decides whether a column starts visible; every attribute stays toggleable. */
@@ -82,21 +63,6 @@ export function visibleBonusAttributes(
     )
     .map((attribute) => attribute.uuid)
     .toSorted();
-}
-
-/** Search, sorting and filtering are only correct once every page is loaded. */
-export function requiresCompleteList(view: {
-  search: string;
-  sorting: SortingState;
-  columnFilters: ColumnFiltersState;
-}) {
-  return (
-    view.search.trim() !== "" ||
-    view.sorting.length > 0 ||
-    view.columnFilters.some(
-      (filter) => !Array.isArray(filter.value) || filter.value.length > 0,
-    )
-  );
 }
 
 /** Concatenates server pages, dropping rows repeated after concurrent inserts/deletes shift offsets. */

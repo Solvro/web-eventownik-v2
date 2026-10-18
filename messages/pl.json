@@ -873,6 +873,8 @@
     "deleteParticipantsSuccessDescription": "Usunięto {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
     "deleteParticipantsError": "Nie udało się grupowo usunąć uczestników!",
     "deleteParticipantsErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    "participantQueriesUnavailable": "Wyszukiwanie, sortowanie i filtry są chwilowo niedostępne.",
+    "scrollForMoreParticipants": "Wczytano {loaded} z {total}. Przewiń, aby zobaczyć kolejnych uczestników.",
     "participantsTableTitle": "Lista uczestników",
     "searchPlaceholder": "Wyszukaj {count} uczestników...",
     "resetFilters": "Resetuj wszystkie filtry",

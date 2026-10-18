@@ -33,6 +33,10 @@ export function FilterButton({
 }) {
   const t = useTranslations("Table");
 
+  if (!column.getCanFilter()) {
+    return null;
+  }
+
   if (
     attributeType === "checkbox" ||
     attributeType === "select" ||

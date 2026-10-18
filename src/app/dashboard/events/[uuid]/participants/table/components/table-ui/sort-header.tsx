@@ -18,6 +18,7 @@ export function SortHeader<T>({ info, name, truncate }: SortHeaderProps<T>) {
       <Button
         variant={"eventGhost"}
         className="w-full justify-between gap-2"
+        disabled={!info.column.getCanSort()}
         onClick={(event) => {
           event.preventDefault();
           const toggleSorting = info.column.getToggleSortingHandler();

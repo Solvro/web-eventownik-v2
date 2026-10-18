@@ -32,17 +32,17 @@ function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
 }
 
 /**
- * Controlled view state. Search, sorting and filters are still applied by the
- * table itself (client-side), because the backend listing cannot do them.
+ * Paginated server data keeps its server order. Query operations stay disabled
+ * until the backend exposes them; never sort or filter a loaded subset.
  */
 export interface ParticipantTableState {
   globalFilter: string;
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   columnVisibility: VisibilityState;
-  onGlobalFilterChange: OnChangeFn<string>;
-  onSortingChange: OnChangeFn<SortingState>;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
+  onGlobalFilterChange?: OnChangeFn<string>;
+  onSortingChange?: OnChangeFn<SortingState>;
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
   onColumnVisibilityChange: OnChangeFn<VisibilityState>;
   /** Total participants on the server, when no search or filter narrows it down. */
   total?: number;
@@ -138,6 +138,11 @@ export function useParticipantsTable({
           typeof updater === "function" ? updater(columnVisibility) : updater,
         );
       }),
+    manualSorting: serverState != null,
+    manualFiltering: serverState != null,
+    enableSorting: serverState == null,
+    enableFilters: serverState == null,
+    enableGlobalFilter: serverState == null,
     getRowId: (row) => row.uuid,
     enableRowSelection: serverState?.busy !== true,
     getCoreRowModel: getCoreRowModel(),

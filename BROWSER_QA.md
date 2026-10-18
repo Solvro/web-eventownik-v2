@@ -1,5 +1,41 @@
 # V3 migration browser QA
 
+## Architecture audit — 18 October 2026 (latest)
+
+This supersedes the earlier participant-query and Turnstile implementation notes.
+
+- Removed the frontend workaround that downloaded every participant to search,
+  sort and filter. Unsupported controls are disabled; server order is preserved.
+  Native pages still load on scroll, without pagination controls. Selection
+  applies to loaded rows and does not trigger a full download.
+- Created [backend #156](https://github.com/Solvro/backend-eventownik-v3/issues/156).
+  Current develop only implements exact attribute filters and ignores `sort`.
+  A local unpublished implementation exists; no matching published PR or issue
+  was found. Backend source was left unchanged.
+- Removed silent truncation of hidden-column requests. The backend validates its
+  own `bonusAttributes` limit; the frontend no longer drops requested columns.
+- Replaced the custom Turnstile renderer and legacy environment alias with
+  `@marsidev/react-turnstile`, as used in frontend PR #425. Backend PR #150 is
+  already merged. The canonical public variable is `NEXT_PUBLIC_TURNSTILE_SITEKEY`.
+- Added the exact PR preview hostname to the existing Cloudflare widget. Retained
+  production and localhost hostnames, Managed mode and disabled pre-clearance.
+  Saved the public key under its canonical name in both Coolify build scopes.
+  No backend secret was inspected or changed.
+- Browser: verified 100/105 initially loaded, disabled unsupported query controls,
+  then a real scroll fetched the remaining page through participant 105. No page
+  controls appeared. Standard Turnstile script and response field mounted on the
+  local public form. CAPTCHA execution/submission remains unverified.
+- Shortened the nine review replies and linked the missing query operations to
+  the backend issue. The email-grid screenshot below records the verified Chrome layout.
+
+![Email templates](docs/qa/pr431/email-tiles.jpg)
+
+Validation: 97 tests in 16 files passed; TypeScript and formatting passed. Fresh
+full lint reports 22 existing errors and 10 warnings, with no errors in the changed
+source.
+Current command logs use `/tmp/eventownik-audit-*.log`. Earlier test counts below
+refer to the removed implementation and its tests.
+
 ## PR #431 review follow-up — 18 October 2026
 
 This section supersedes older runtime and validation claims below. Claude wrote

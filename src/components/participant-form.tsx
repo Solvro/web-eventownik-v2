@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -16,8 +18,6 @@ import {
   fileSchema,
   parseFileValidationErrorMessage,
 } from "@/components/attribute-input-file";
-import { Turnstile } from "@/components/turnstile";
-import type { TurnstileHandle } from "@/components/turnstile";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
-import { getTurnstileConfig } from "@/lib/turnstile-config";
 import {
   cn,
   getAttributeLabel,
@@ -87,9 +86,8 @@ export function ParticipantForm({
   const locale = useLocale();
   const router = useRouter();
 
-  const captchaConfig = getTurnstileConfig();
   const captchaSitekey =
-    captchaConfig.status === "ok" ? captchaConfig.sitekey : "";
+    process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY?.trim() ?? "";
   const [files, setFiles] = useState<File[]>([]);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
@@ -104,7 +102,7 @@ export function ParticipantForm({
   );
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
-  const captchaRef = useRef<TurnstileHandle>(null);
+  const captchaRef = useRef<TurnstileInstance>(null);
 
   useEffect(() => {
     if (!isAwaitingCaptcha || isCaptchaOpen || captchaToken !== null) {
@@ -454,7 +452,7 @@ export function ParticipantForm({
           </FormMessage>
         )}
 
-        {captchaConfig.status === "ok" ? null : (
+        {captchaSitekey === "" ? (
           <p
             role="alert"
             aria-label={t("captchaMisconfigured")}
@@ -462,19 +460,23 @@ export function ParticipantForm({
           >
             {t("captchaMisconfigured")}
           </p>
-        )}
+        ) : null}
 
         {captchaSitekey !== "" && (
           <Turnstile
             key={captchaAttempt}
-            onLoad={() => {
+            onWidgetLoad={() => {
               setIsCaptchaReady(true);
             }}
             ref={captchaRef}
-            sitekey={captchaSitekey}
-            language={locale}
-            onVerify={handleCaptchaVerify}
-            onOpen={() => {
+            siteKey={captchaSitekey}
+            options={{
+              language: locale,
+              execution: "execute",
+              appearance: "interaction-only",
+            }}
+            onSuccess={handleCaptchaVerify}
+            onBeforeInteractive={() => {
               setIsCaptchaOpen(true);
             }}
             onExpire={() => {
@@ -483,8 +485,8 @@ export function ParticipantForm({
               setIsAwaitingCaptcha(false);
               pendingFormData.current = null;
             }}
-            onClose={() => {
-              // Turnstile hides the challenge once solved; the token follows via onVerify.
+            onAfterInteractive={() => {
+              // Turnstile hides the challenge once solved; the token follows via onSuccess.
               setIsCaptchaOpen(false);
             }}
             onError={(captchaError) => {

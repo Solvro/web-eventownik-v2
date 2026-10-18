@@ -18,7 +18,6 @@ import {
   isConsistentSnapshot,
   mergeParticipantPages,
   nextParticipantsPage,
-  requiresCompleteList,
   visibleBonusAttributes,
 } from "../../query";
 import { EVENT_UUID, renderTable } from "./utils";
@@ -99,12 +98,10 @@ describe("participants listing contract", () => {
     });
   });
 
-  it("caps bonusAttributes to the backend 1000 character limit", () => {
+  it("does not silently truncate requested hidden columns", () => {
     const uuids = Array.from({ length: 40 }, () => faker.string.uuid());
-    const param = bonusAttributesParameter([...uuids, "not-a-uuid"]);
-    expect(param.length).toBeLessThanOrEqual(1000);
-    expect(param.split(",")).toHaveLength(27);
-    expect(param).not.toContain("not-a-uuid");
+    const param = bonusAttributesParameter([...uuids, uuids[0], "not-a-uuid"]);
+    expect(param.split(",")).toEqual(uuids.toSorted());
   });
 
   it("requests the next server page only while the backend reports more", () => {
@@ -152,30 +149,6 @@ describe("participants listing contract", () => {
         page([rows[2]], { page: 2, itemCount: 4 }),
       ]),
     ).toBe(false);
-  });
-
-  it("loads the whole list before searching, sorting or filtering", () => {
-    const empty = { search: "", sorting: [], columnFilters: [] };
-    expect(requiresCompleteList(empty)).toBe(false);
-    expect(requiresCompleteList({ ...empty, search: " a " })).toBe(true);
-    expect(
-      requiresCompleteList({
-        ...empty,
-        sorting: [{ id: "createdAt", desc: false }],
-      }),
-    ).toBe(true);
-    expect(
-      requiresCompleteList({
-        ...empty,
-        columnFilters: [{ id: "x", value: [] }],
-      }),
-    ).toBe(false);
-    expect(
-      requiresCompleteList({
-        ...empty,
-        columnFilters: [{ id: "x", value: ["VIP"] }],
-      }),
-    ).toBe(true);
   });
 });
 

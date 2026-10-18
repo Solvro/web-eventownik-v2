@@ -5,24 +5,17 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import type {
-  ColumnFiltersState,
-  OnChangeFn,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import type { OnChangeFn, VisibilityState } from "@tanstack/react-table";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
-import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import type { Block } from "@/types/blocks";
-import type { ParticipantIdentity } from "@/types/participant";
 
 import {
   getAttributes,
@@ -31,38 +24,24 @@ import {
   getParticipants,
 } from "./actions";
 import {
-  DEFAULT_PARTICIPANT_SORTING,
   PARTICIPANTS_PAGE_SIZE,
   defaultColumnVisibility,
   isConsistentSnapshot,
   mergeParticipantPages,
   nextParticipantsPage,
   participantsQueryKey,
-  requiresCompleteList,
   visibleBonusAttributes,
 } from "./query";
 import { TableMenu } from "./table/components/buttons/table-menu";
 import { HelpDialog } from "./table/components/dialogs/help-dialog";
-import { flattenParticipants } from "./table/core/data";
 import { ParticipantTable } from "./table/core/participants-table";
 
 const EMPTY_BLOCKS: (Block | null)[] = [];
 
 export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const t = useTranslations("Table");
-  const { toast } = useToast();
-  const [selectedParticipants, setSelectedParticipants] = useState<
-    ParticipantIdentity[] | null
-  >(null);
-  const [isSelectAllRequested, setIsSelectAllRequested] = useState(false);
-  const [search, setSearch] = useState("");
-  const [sorting, setSorting] = useState<SortingState>(
-    DEFAULT_PARTICIPANT_SORTING,
-  );
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [visibilityOverrides, setVisibilityOverrides] =
     useState<VisibilityState>({});
-  const [pendingChange, setPendingChange] = useState<(() => void) | null>(null);
 
   const {
     data: attributes,
@@ -129,14 +108,6 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const isSnapshotStale =
     areAllPagesLoaded && !isConsistentSnapshot(pages.pages);
   const isComplete = areAllPagesLoaded && !isSnapshotStale;
-  const isNarrowed =
-    search.trim() !== "" ||
-    columnFilters.some(
-      (filter) => !Array.isArray(filter.value) || filter.value.length > 0,
-    );
-  const needsCompleteList =
-    isSelectAllRequested ||
-    requiresCompleteList({ search, sorting, columnFilters });
   const canLoadMore =
     hasNextPage && !isFetchingNextPage && !isFetchNextPageError;
   // Scroll and auto-load may both ask for the same page; never cancel and
@@ -156,31 +127,6 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const { isGuardActive, onConfirm, onCancel } =
     useUnsavedForm(isAnyRowEditing);
 
-  // The backend cannot search, sort or filter, so those views are only
-  // correct over the whole list: keep loading pages until it is complete.
-  useEffect(() => {
-    if (needsCompleteList && canLoadMore) {
-      void loadNextPage();
-    }
-  }, [needsCompleteList, canLoadMore, loadNextPage]);
-
-  const changeSearch: OnChangeFn<string> = (updater) => {
-    changeView(() => {
-      setSearch(typeof updater === "function" ? updater(search) : updater);
-    });
-  };
-  const changeSorting: OnChangeFn<SortingState> = (updater) => {
-    changeView(() => {
-      setSorting(typeof updater === "function" ? updater(sorting) : updater);
-    });
-  };
-  const changeFilters: OnChangeFn<ColumnFiltersState> = (updater) => {
-    changeView(() => {
-      setColumnFilters(
-        typeof updater === "function" ? updater(columnFilters) : updater,
-      );
-    });
-  };
   const changeVisibility: OnChangeFn<VisibilityState> = (updater) => {
     setVisibilityOverrides(
       typeof updater === "function" ? updater(columnVisibility) : updater,
@@ -193,31 +139,14 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
     blocks: blocks ?? EMPTY_BLOCKS,
     eventUuid,
     serverState: {
-      globalFilter: search,
-      sorting,
-      columnFilters,
+      globalFilter: "",
+      sorting: [],
+      columnFilters: [],
       columnVisibility,
-      onGlobalFilterChange: changeSearch,
-      onSortingChange: changeSorting,
-      onColumnFiltersChange: changeFilters,
       onColumnVisibilityChange: changeVisibility,
-      // While narrowed, the matching count comes from the (complete) filtered rows.
-      total: isNarrowed ? undefined : serverTotal,
+      total: serverTotal,
       isComplete,
-      busy: isDeleting || isSelectAllRequested,
-      selection: {
-        participants: selectedParticipants,
-        busy: isSelectAllRequested,
-        onClear: () => {
-          setSelectedParticipants(null);
-        },
-        // Completed by the effect below once every page has loaded.
-        onSelectAll: () => {
-          if (!isAnyRowEditing && !isSelectAllRequested) {
-            setIsSelectAllRequested(true);
-          }
-        },
-      },
+      busy: isDeleting,
     },
     onUpdateData: (rowIndex, value) => {
       setData((previous) =>
@@ -225,73 +154,6 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
       );
     },
   });
-
-  // "Select all" targets every matching participant, not just loaded rows:
-  // wait until all pages are in, then select the whole filtered set.
-  useEffect(() => {
-    if (!isSelectAllRequested) {
-      return;
-    }
-    if (isFetching) {
-      return;
-    }
-    if (isFetchNextPageError || isParticipantsError || isSnapshotStale) {
-      // Never treat a partial or shifted snapshot as "all matching".
-      setIsSelectAllRequested(false);
-      toast({ variant: "destructive", title: t("selectionError") });
-      return;
-    }
-    // Table rows are synced from `participants` one render later; selecting
-    // before that would pick only the previously loaded rows.
-    if (!isComplete || data.length !== participants.length) {
-      return;
-    }
-    setSelectedParticipants(
-      table.getFilteredRowModel().rows.map(({ original }) => ({
-        uuid: original.uuid,
-        email: original.email,
-      })),
-    );
-    setIsSelectAllRequested(false);
-  }, [
-    isSelectAllRequested,
-    isComplete,
-    isFetching,
-    isFetchNextPageError,
-    isParticipantsError,
-    isSnapshotStale,
-    data.length,
-    participants.length,
-    table,
-    toast,
-    t,
-  ]);
-
-  function changeView(change: () => void) {
-    if (isSelectAllRequested) {
-      return;
-    }
-    if (isAnyRowEditing) {
-      setPendingChange(() => change);
-      return;
-    }
-    table.resetRowSelection();
-    setSelectedParticipants(null);
-    change();
-  }
-
-  useEffect(() => {
-    if (selectedParticipants !== null) {
-      const ids = new Set(selectedParticipants.map((item) => item.uuid));
-      table.setRowSelection(
-        Object.fromEntries(
-          data
-            .filter((row) => ids.has(row.uuid))
-            .map((row) => [row.uuid, true]),
-        ),
-      );
-    }
-  }, [data, selectedParticipants, table]);
 
   if (isAttributesError || (isParticipantsError && pages == null)) {
     return (
@@ -365,13 +227,15 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
     >
       {hasNextPage ? (
         <>
-          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-          {needsCompleteList
-            ? t("loadingAllParticipants", {
+          {isFetchingNextPage ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          ) : null}
+          {isFetchingNextPage
+            ? t("loadingMoreParticipants")
+            : t("scrollForMoreParticipants", {
                 loaded: participants.length,
                 total: serverTotal,
-              })
-            : t("loadingMoreParticipants")}
+              })}
         </>
       ) : participants.length > 0 ? (
         t("allParticipantsLoaded", { count: serverTotal })
@@ -386,18 +250,20 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
           <h1 className="text-3xl font-bold">{t("participantsTableTitle")}</h1>
           <HelpDialog />
         </div>
+        <p role="status" className="text-muted-foreground text-sm">
+          {t("participantQueriesUnavailable")}
+        </p>
         <TableMenu
           table={table}
           eventUuid={eventUuid}
           globalFilter={globalFilter}
-          isQuerying={isDeleting || isSelectAllRequested}
+          isQuerying={isDeleting}
           emails={emails ?? []}
           attributes={attributes}
           blocks={blocks ?? EMPTY_BLOCKS}
           deleteManyParticipants={async (ids) => {
             await deleteManyParticipants(ids);
             table.resetRowSelection();
-            setSelectedParticipants(null);
           }}
         />
       </div>
@@ -407,9 +273,12 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
       <ParticipantTable
         table={table}
         footer={footer}
-        scrollResetKey={JSON.stringify([search, sorting, columnFilters])}
         onEndReached={() => {
-          if (canLoadMore) {
+          if (
+            canLoadMore &&
+            data.length > 0 &&
+            data.length === participants.length
+          ) {
             void loadNextPage();
           }
         }}
@@ -418,19 +287,6 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
         active={isGuardActive}
         onConfirm={onConfirm}
         onCancel={onCancel}
-      />
-      <UnsavedChangesAlert
-        active={pendingChange !== null}
-        onCancel={() => {
-          setPendingChange(null);
-        }}
-        onConfirm={() => {
-          setData(flattenParticipants(participants));
-          table.resetRowSelection();
-          setSelectedParticipants(null);
-          pendingChange?.();
-          setPendingChange(null);
-        }}
       />
     </>
   );
