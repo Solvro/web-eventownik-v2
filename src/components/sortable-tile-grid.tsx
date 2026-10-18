@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 /** Shared layout for dashboard tile grids (forms, email templates) so tiles have identical dimensions. */
 export const TILE_GRID_CLASS_NAME =
-  "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4";
+  "flex flex-wrap justify-center gap-8 sm:justify-start";
 
 type Identified = { uuid: string } | { id: string };
 

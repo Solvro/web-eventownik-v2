@@ -1,5 +1,19 @@
 # V3 migration browser QA
 
+## Production tile layout — 18 October 2026
+
+Read-only Chrome measurements on production confirmed 256 × 256 px email cards,
+32 px gaps, 16 px padding and a wrapping flex layout. Restored those dimensions
+for both forms and email templates. Local browser measurements confirmed the
+same desktop dimensions and no horizontal overflow at a 390 px mobile viewport;
+the existing full-width mobile layout is preserved.
+
+![Square forms](docs/qa/pr431/forms-square.png)
+![Square email templates](docs/qa/pr431/emails-square.png)
+
+TypeScript, formatting and lint on the three changed components passed. Full
+lint retains the same 22 existing errors and 10 warnings. Production was unchanged.
+
 ## Architecture audit — 18 October 2026 (latest)
 
 This supersedes the earlier participant-query and Turnstile implementation notes.
