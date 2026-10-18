@@ -3,8 +3,7 @@
 import type { z } from "zod";
 
 import { API_URL } from "@/lib/api";
-import { createSession } from "@/lib/session";
-import type { AuthErrorResponse, AuthSuccessResponse } from "@/types/auth";
+import { saveAuthResponse } from "@/lib/session";
 import type {
   loginFormSchema,
   registerFormSchema,
@@ -12,91 +11,61 @@ import type {
   sendPasswordResetTokenSchema,
 } from "@/types/schemas";
 
-export async function register(
-  values: z.infer<typeof registerFormSchema> & { token: string },
-) {
-  const data = await fetch(`${API_URL}/auth/register`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+export async function register(values: z.infer<typeof registerFormSchema>) {
+  const response = await fetch(`${API_URL}/auth/register`, {
+    headers: { "Content-Type": "application/json" },
     method: "POST",
     body: JSON.stringify({
       email: values.email,
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
-      token: values.token,
     }),
-  }).then(async (response) => {
-    if (response.status === 200) {
-      return response.json() as Promise<AuthSuccessResponse>;
-    }
-    console.error("Error when registering", response);
-    return response.json() as Promise<AuthErrorResponse>;
   });
-  if ("token" in data) {
-    try {
-      await createSession({ bearerToken: data.token });
-    } catch (error) {
-      console.error("Error when creating session", error);
-      return { errors: ["Internal server error"] };
-    }
+  if (!response.ok) {
+    return { errors: [{ message: "Registration failed" }] };
   }
-  return data;
+  const result = await login(values);
+  return result.success
+    ? { success: true }
+    : { errors: [{ message: result.error }] };
 }
 
-export async function login(
-  values: z.infer<typeof loginFormSchema> & { token: string },
-) {
+export async function login(values: z.infer<typeof loginFormSchema>) {
   try {
-    const user = await fetch(`${API_URL}/auth/login`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await fetch(`${API_URL}/auth/login`, {
+      headers: { "Content-Type": "application/json" },
       method: "POST",
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-        rememberMe: true,
-        token: values.token,
-      }),
-    }).then(async (response) => {
-      switch (response.status) {
-        case 200: {
-          return response.json() as Promise<AuthSuccessResponse>;
-        }
-        case 400: {
-          return { error: "invalidLoginCredentials" };
-        }
-        default: {
-          return { error: "serverErrorTryLater" };
-        }
-      }
+      body: JSON.stringify({ email: values.email, password: values.password }),
     });
-    if ("error" in user) {
-      return { success: false, error: user.error };
+    if (!response.ok) {
+      return {
+        success: false,
+        error:
+          response.status === 401
+            ? "invalidLoginCredentials"
+            : "serverErrorTryLater",
+      };
     }
-    await createSession({ bearerToken: user.token });
-    //return user;
-  } catch (error) {
-    console.error("Error during logging in", error);
+    const user = (await response.json()) as { access_token: string };
+    await saveAuthResponse(response, user.access_token);
+    return { success: true };
+  } catch {
     return { success: false, error: "serverErrorTryLater" };
   }
-  return { success: true };
 }
 
 export async function sendPasswordResetToken(
-  values: z.infer<typeof sendPasswordResetTokenSchema> & { token: string },
+  values: z.infer<typeof sendPasswordResetTokenSchema>,
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/sendPasswordResetToken`, {
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
         email: values.email,
-        token: values.token,
       }),
     });
 
@@ -122,14 +91,14 @@ export async function resetPassword(
   values: z.infer<typeof resetPasswordSchema>,
 ) {
   try {
-    const response = await fetch(`${API_URL}/auth/resetPassword`, {
+    const response = await fetch(`${API_URL}/auth/reset-password`, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
         token: values.token,
-        newPassword: values.newPassword,
+        password: values.newPassword,
       }),
     });
 
@@ -137,7 +106,7 @@ export async function resetPassword(
       return { success: true };
     }
 
-    if (response.status === 401) {
+    if (response.status === 400 || response.status === 401) {
       return {
         success: false,
         error: "tokenInvalidOrExpired",

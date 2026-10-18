@@ -151,6 +151,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
             control={control}
             formState={formState}
             label={t("openingDateTime")}
+            timeLabel={t("openingTime")}
             dateName={"openDate"}
             timeName={"openTime"}
             className="flex-1 md:min-w-84"
@@ -160,6 +161,7 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
             control={control}
             formState={formState}
             label={t("closingDateTime")}
+            timeLabel={t("closingTime")}
             dateName={"closeDate"}
             timeName={"closeTime"}
             className="flex-1 md:min-w-84"

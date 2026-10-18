@@ -15,8 +15,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantSelection,
+} from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { TableColumnHeader } from "../components/table-ui/table-column-header";
 
@@ -32,6 +35,11 @@ declare module "@tanstack/react-table" {
 
   interface TableMeta<TData extends RowData> {
     eventUuid: string;
+    totalParticipants?: number;
+    /** False while only some server pages are loaded (or the snapshot is inconsistent). */
+    isListComplete?: boolean;
+    isBusy?: boolean;
+    selection?: ParticipantSelection;
     updateData: (rowIndex: number, value: TData) => void;
     isRowLoading: (rowIndex: number) => boolean;
     setRowLoading: (rowIndex: number, isLoading: boolean) => void;
@@ -41,11 +49,25 @@ declare module "@tanstack/react-table" {
   }
 }
 
+/** How many rows before the end of the loaded list the next page is requested. */
+const LOAD_MORE_THRESHOLD = 15;
+
 interface ParticipantTableProps {
   table: TanstackTable<FlattenedParticipant>;
+  /** Called when the user scrolls near the end of the loaded rows. */
+  onEndReached?: () => void;
+  /** Rendered below the rows inside the scroll area (loading / end / error states). */
+  footer?: React.ReactNode;
+  /** Changing this value scrolls back to the top (e.g. new sort or filter). */
+  scrollResetKey?: string;
 }
 
-export function ParticipantTable({ table }: ParticipantTableProps) {
+export function ParticipantTable({
+  table,
+  onEndReached,
+  footer,
+  scrollResetKey,
+}: ParticipantTableProps) {
   const t = useTranslations("Table");
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
     null,
@@ -80,6 +102,21 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
   const lastVirtualRow = virtualRows.at(-1);
   const bottomPaddingHeight =
     virtualRows.length > 0 ? totalHeight - (lastVirtualRow?.end ?? 0) : 0;
+  const lastVisibleIndex = lastVirtualRow?.index ?? -1;
+  const isNearEnd =
+    rows.length === 0 || lastVisibleIndex >= rows.length - LOAD_MORE_THRESHOLD;
+
+  useEffect(() => {
+    if (isNearEnd) {
+      onEndReached?.();
+    }
+  }, [isNearEnd, onEndReached, rows.length]);
+
+  useEffect(() => {
+    if (scrollElement !== null && scrollResetKey !== undefined) {
+      scrollElement.scrollTop = 0;
+    }
+  }, [scrollElement, scrollResetKey]);
 
   useEffect(() => {
     const isResizingRow = resizingRowId !== null;
@@ -258,6 +295,8 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
             ) : null}
           </TableBody>
         </Table>
+
+        {footer}
 
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

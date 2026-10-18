@@ -9,7 +9,7 @@ export async function activateEvent(
   bearerToken: string,
 ) {
   const formData = new FormData();
-  formData.append("isActive", (!wasActive).toString());
+  formData.append("isVerified", (!wasActive).toString());
 
   if (!isValidUuid(eventUuid)) {
     console.error(`[activateEvent action] Invalid event UUID: ${eventUuid}`);
@@ -19,9 +19,9 @@ export async function activateEvent(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/activate`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${bearerToken}`,
       },

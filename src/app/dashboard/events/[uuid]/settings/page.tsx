@@ -4,10 +4,9 @@ import { notFound, redirect } from "next/navigation";
 
 import { EventSettingsTabs } from "@/app/dashboard/events/[uuid]/settings/settings-tabs";
 import { API_URL } from "@/lib/api";
+import { getBackend, getReferenceCollection } from "@/lib/backend";
 import { verifySession } from "@/lib/session";
-import type { EventAttribute } from "@/types/attributes";
-import type { CoOrganizer } from "@/types/co-organizer";
-import type { Event } from "@/types/event";
+import type { V3Attribute, V3Event, V3Organizer } from "@/types/v3";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Sidebar");
@@ -30,49 +29,26 @@ export default async function DashboardEventSettingsPage({
   const { bearerToken } = session;
   const { uuid } = await params;
 
-  const eventResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(uuid)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-  if (!eventResponse.ok) {
+  const options = { headers: { Authorization: `Bearer ${bearerToken}` } };
+  const result = await Promise.all([
+    getBackend<V3Event>(
+      `${API_URL}/events/${encodeURIComponent(uuid)}`,
+      options,
+    ),
+    getReferenceCollection<V3Organizer>(
+      `${API_URL}/events/${encodeURIComponent(uuid)}/organizers`,
+      options,
+    ),
+    getReferenceCollection<V3Attribute>(
+      `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
+      options,
+    ),
+  ]).catch(() => null);
+  if (result === null) {
     notFound();
   }
-  const event = (await eventResponse.json()) as Event;
-
-  const coOrganizersResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(uuid)}/organizers`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-  if (!coOrganizersResponse.ok) {
-    notFound();
-  }
-  const coOrganizers = (
-    (await coOrganizersResponse.json()) as { data: CoOrganizer[] }
-  ).data;
-
-  const attributesResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-  if (!attributesResponse.ok) {
-    notFound();
-  }
-  const attributes = (
-    (await attributesResponse.json()) as { data: EventAttribute[] }
-  ).data;
-  attributes.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const [event, coOrganizers, attributes] = result;
+  attributes.sort((a, b) => a.order - b.order);
 
   return (
     <>

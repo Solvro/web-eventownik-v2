@@ -71,30 +71,42 @@ export function EditParticipantButton({
       return;
     }
 
+    const snapshot = table.options.meta?.getRowSnapshot(row.index);
     const attributeValues: Record<string, string> = {};
     const baseUpdates: Record<string, unknown> = {};
 
     for (const column of table.getAllColumns()) {
       const attribute = column.columnDef.meta?.attribute;
       if (attribute != null) {
+        if (
+          snapshot != null &&
+          participant[attribute.uuid] === snapshot[attribute.uuid]
+        ) {
+          continue;
+        }
         const value = participant[attribute.uuid];
         attributeValues[attribute.uuid] = value == null ? "" : String(value);
       } else if (
-        column.id !== "select" &&
-        column.id !== "no" &&
-        column.id !== "edit"
+        column.id === "email" &&
+        participant.email !== snapshot?.email
       ) {
-        // Collect basic fields, assuming column.id corresponds to participant keys like 'email'
-        baseUpdates[column.id] = participant[column.id];
+        baseUpdates.email = participant.email;
       }
     }
 
     setIsSaving(true);
-    const { success } = await updateParticipant(eventUuid, participant.uuid, {
-      participantAttributes: attributeValues,
-      ...baseUpdates,
-    });
-    setIsSaving(false);
+    let success = false;
+    try {
+      const result = await updateParticipant(eventUuid, participant.uuid, {
+        participantAttributes: attributeValues,
+        ...baseUpdates,
+      });
+      success = result.success;
+    } catch {
+      success = false;
+    } finally {
+      setIsSaving(false);
+    }
 
     if (success) {
       toast({
@@ -169,6 +181,7 @@ export function EditParticipantButton({
         className="bg-background text-foreground p-3 hover:bg-(--event-primary-color) hover:text-(--event-primary-foreground-color)"
         type="button"
         aria-label={t("edit")}
+        disabled={table.options.meta?.isBusy}
         onClick={enterEditMode}
       >
         <Pencil />

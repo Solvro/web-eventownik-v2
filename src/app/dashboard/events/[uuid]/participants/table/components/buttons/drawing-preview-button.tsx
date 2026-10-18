@@ -13,8 +13,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
 import { downloadFile } from "@/lib/utils";
-import type { Attribute } from "@/types/attributes";
 import type { FlattenedParticipant } from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 import { downloadAttributeFile as downloadAttributeFileAction } from "../../../actions";
 
@@ -89,7 +89,7 @@ export function DrawingPreviewButton({
         const fileExtension = file.type.split("/")[1];
         downloadFile(
           file,
-          `${participant.email}-${attribute.slug ?? attribute.name}.${fileExtension}`,
+          `${participant.email}-${attribute.name}.${fileExtension}`,
         );
       }
     } catch (error) {

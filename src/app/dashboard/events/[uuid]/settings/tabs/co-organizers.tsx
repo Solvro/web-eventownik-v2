@@ -62,6 +62,11 @@ export function CoOrganizers({
     }
 
     setCoOrganizersChanges((previous: CoOrganizerChange[]) => {
+      if (original.id === null) {
+        return previous.filter(
+          (change) => change.data.email !== original.email,
+        );
+      }
       const newChange: CoOrganizerChange = {
         type: "delete",
         data: original,

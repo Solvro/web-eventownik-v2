@@ -1,19 +1,9 @@
-import type { EventAttribute } from "@/types/attributes";
+import type { NewEventAttribute } from "@/components/forms/event/attributes/types";
 import type { CoOrganizer } from "@/types/co-organizer";
 
-export type AttributeChangeData = Pick<
-  EventAttribute,
-  | "name"
-  | "slug"
-  | "type"
-  | "options"
-  | "showInList"
-  | "order"
-  | "isSensitiveData"
-  | "reason"
-  | "isMultiple"
-  | "maxSelections"
-> & { uuid?: string };
+export type AttributeChangeData = NewEventAttribute & {
+  config?: Record<string, unknown> | null;
+};
 
 export interface AttributeChange {
   type: "add" | "update" | "delete";

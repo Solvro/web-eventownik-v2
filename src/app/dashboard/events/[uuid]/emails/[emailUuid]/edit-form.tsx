@@ -34,11 +34,12 @@ import { EMAIL_TRIGGERS } from "@/lib/emails";
 import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { EventAttribute } from "@/types/attributes";
-import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
+import type { V3Email } from "@/types/v3";
 
 import { getTitlePlaceholder } from "../(steps)/message-content";
 import { updateEventEmail } from "../actions";
+import { AttributeTriggerInputs } from "../attribute-trigger-inputs";
 
 const EventEmailEditFormSchema = z
   .object({
@@ -57,14 +58,9 @@ const EventEmailEditFormSchema = z
       if (data.trigger === "form_filled") {
         return data.triggerValue !== undefined && data.triggerValue !== "";
       }
-      // NOTE: Commented out because this trigger is not yet implemented on the backend.
-      // Uncomment when the backend supports this feature.
-      // if (data.trigger === "attribute_changed") {
-      //   return (
-      //     (data.triggerValue !== undefined && data.triggerValue !== "") ||
-      //     (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
-      //   );
-      // }
+      if (data.trigger === "attribute_changed") {
+        return data.triggerValue !== undefined && data.triggerValue !== "";
+      }
       return true;
     },
     {
@@ -76,15 +72,13 @@ const EventEmailEditFormSchema = z
 type EventEmailEditFormErrors = "subjectRequired" | "bodyRequired";
 
 function TriggerConfigurationInputs({
-  // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
-  // which uses it is not yet implemented on the backend. Rename back when the backend supports this feature.
-  eventAttributes: _eventAttributes,
+  eventAttributes,
   eventForms,
   trigger,
   form,
 }: {
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
   trigger: string;
   form: ReturnType<typeof useForm<z.infer<typeof EventEmailEditFormSchema>>>;
 }) {
@@ -137,57 +131,9 @@ function TriggerConfigurationInputs({
         </div>
       );
     }
-    // NOTE: Commented out because this trigger is not yet implemented on the backend.
-    // Uncomment when the backend supports this feature.
-    // case "attribute_changed": {
-    //   return null;
-    // return (
-    //   <div className="flex flex-col gap-2">
-    //     <FormField
-    //       control={form.control}
-    //       name="triggerValue"
-    //       render={({ field }) => (
-    //         <FormItem className="space-y-3">
-    //           <FormLabel>Atrybut</FormLabel>
-    //           <Select
-    //             onValueChange={field.onChange}
-    //             defaultValue={field.value}
-    //           >
-    //             <FormControl>
-    //               <SelectTrigger>
-    //                 <SelectValue placeholder="Wybierz atrybut" />
-    //               </SelectTrigger>
-    //             </FormControl>
-    //             <SelectContent>
-    //               {eventAttributes.map((attribute) => (
-    //                 <SelectItem
-    //                   key={attribute.uuid}
-    //                   value={String(attribute.uuid)}
-    //                 >
-    //                   {attribute.name}
-    //                 </SelectItem>
-    //               ))}
-    //             </SelectContent>
-    //           </Select>
-    //           <FormMessage />
-    //         </FormItem>
-    //       )}
-    //     />
-    //     <FormField
-    //       control={form.control}
-    //       name="triggerValue2"
-    //       render={({ field }) => (
-    //         <FormItem className="space-y-3">
-    //           <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
-    //           <FormControl>
-    //             <Input type="text" placeholder="tak" {...field} />
-    //           </FormControl>
-    //           <FormMessage />
-    //         </FormItem>
-    //       )}
-    //     />
-    //   </div>
-    // );
+    case "attribute_changed": {
+      return <AttributeTriggerInputs attributes={eventAttributes} />;
+    }
   }
 }
 
@@ -198,9 +144,9 @@ function EventEmailEditForm({
   emailToEdit,
 }: {
   eventUuid: string;
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
-  emailToEdit: SingleEventEmail;
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
+  emailToEdit: V3Email;
 }) {
   const t = useTranslations("EventDetails");
   const tEmailTr = useTranslations("EmailTriggers");
@@ -209,9 +155,15 @@ function EventEmailEditForm({
   const form = useForm<z.infer<typeof EventEmailEditFormSchema>>({
     resolver: zodResolver(EventEmailEditFormSchema),
     defaultValues: {
-      trigger: emailToEdit.trigger,
-      triggerValue: emailToEdit.triggerValue ?? "",
-      triggerValue2: emailToEdit.triggerValue2 ?? "",
+      trigger: emailToEdit.trigger.toLowerCase(),
+      triggerValue:
+        emailToEdit.triggerConfig?.formUuid ??
+        emailToEdit.triggerConfig?.attributeUuid ??
+        "",
+      triggerValue2:
+        typeof emailToEdit.triggerConfig?.expectedValue === "object"
+          ? JSON.stringify(emailToEdit.triggerConfig.expectedValue)
+          : String(emailToEdit.triggerConfig?.expectedValue ?? ""),
       name: emailToEdit.name,
       content: emailToEdit.content,
     },
@@ -234,7 +186,7 @@ function EventEmailEditForm({
     };
     const result = await updateEventEmail({
       eventUuid,
-      mailUuid: emailToEdit.uuid,
+      mailUuid: emailToEdit.id,
       emailTemplate: updatedMail,
     });
 

@@ -4,6 +4,7 @@ import { formatISO } from "date-fns";
 
 import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import { attributePayload } from "@/lib/api-v3";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 
@@ -40,7 +41,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
-  formData.append("organizer", event.organizer ?? "");
+  formData.append("organizerName", event.organizer ?? "");
   if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
     formData.append("contactEmail", event.contactEmail);
   }
@@ -49,7 +50,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
-  formData.append("participantsCount", event.participantsNumber.toString());
+  formData.append("participantsLimit", event.participantsNumber.toString());
+  // The event page is only reachable when the event is public
+  formData.append("isPublic", "true");
 
   const addLinkToFormData = (
     url: string,
@@ -140,7 +143,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           },
           body: JSON.stringify({
             email: coorganizer.email,
-            permissionsIds: [1],
+            permissions: ["MANAGE_ALL"],
           }),
         },
       );
@@ -188,7 +191,11 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
-  for (const attribute of event.attributes) {
+  const attributeReferences = new Map<string, string>();
+  const orderedAttributes = event.attributes.toSorted(
+    (a, b) => Number(a.type === "block") - Number(b.type === "block"),
+  );
+  for (const attribute of orderedAttributes) {
     try {
       const attributeResponse = await fetch(
         `${API_URL}/events/${eventUuid}/attributes`,
@@ -198,23 +205,17 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
             Authorization: `Bearer ${bearerToken}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name: attribute.name,
-            type: attribute.type,
-            slug: attribute.slug,
-            showInList: attribute.showInList,
-            options:
-              (attribute.options ?? []).length > 0
-                ? attribute.options
-                : undefined,
-            order: attribute.order,
-            isSensitiveData: false,
-            reason: null,
-          }),
+          body: JSON.stringify(
+            attributePayload({ ...attribute }, attributeReferences),
+          ),
         },
       );
 
       if (attributeResponse.ok) {
+        const created = (await attributeResponse.json()) as { uuid: string };
+        if (attribute.slug != null) {
+          attributeReferences.set(attribute.slug, created.uuid);
+        }
         attributesAdded++;
       } else {
         const errorData = (await attributeResponse.json()) as {

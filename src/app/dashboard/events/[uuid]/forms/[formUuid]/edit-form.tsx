@@ -18,33 +18,56 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
-import { getDefaultFormDates } from "@/lib/event-form-utils";
+import {
+  getDefaultFormDates,
+  withResolvedFormDates,
+} from "@/lib/event-form-utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { V3Form } from "@/types/v3";
 
 import { updateEventForm } from "../actions";
 
 interface EventFormEditFormProps {
   eventUuid: string;
-  formToEdit: EventForm;
-  eventAttributes: EventAttribute[];
+  formToEdit: V3Form;
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  isRegistration: boolean;
 }
 
 function EventFormEditForm({
   eventUuid,
   formToEdit,
   eventAttributes,
+  isRegistration,
 }: EventFormEditFormProps) {
   const [includedAttributes, setIncludedAttributes] = useState<
     FormAttributeBase[]
-  >(formToEdit.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+  >(
+    formToEdit.formDefinitions
+      .flatMap((definition) =>
+        definition.attributeUuid === null
+          ? []
+          : [
+              {
+                uuid: definition.attributeUuid,
+                isRequired: definition.isRequired,
+                isEditable: formToEdit.isEditable,
+                order: definition.order,
+              },
+            ],
+      )
+      .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  );
   const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({
     resolver: zodResolver(EventFormGeneralInfoSchema),
     defaultValues: {
       name: formToEdit.name,
-      description: formToEdit.description,
-      ...getDefaultFormDates(formToEdit.openDate, formToEdit.closeDate),
-      isFirstForm: formToEdit.isFirstForm,
+      description: formToEdit.description ?? "",
+      ...getDefaultFormDates(
+        formToEdit.openDate === null ? null : new Date(formToEdit.openDate),
+        formToEdit.closeDate === null ? null : new Date(formToEdit.closeDate),
+      ),
+      isFirstForm: isRegistration,
       isOpen: formToEdit.isOpen,
       openCondition: formToEdit.openCondition,
     },
@@ -59,11 +82,15 @@ function EventFormEditForm({
 
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
-      const result = await updateEventForm(eventUuid, formToEdit.uuid, {
-        ...formToEdit,
-        ...values,
-        attributes: includedAttributes,
-      });
+      const result = await updateEventForm(
+        eventUuid,
+        formToEdit.uuid,
+        withResolvedFormDates({
+          ...formToEdit,
+          ...values,
+          attributes: includedAttributes,
+        }),
+      );
 
       if (result.success) {
         toast({

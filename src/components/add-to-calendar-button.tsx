@@ -13,11 +13,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { addToGoogleCalendar, downloadICSFile } from "@/lib/calendar";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import { Button } from "./ui/button";
 
-export function AddToCalendarButton({ event }: { event: Event }) {
+type CalendarEvent = Pick<
+  V3Event,
+  "name" | "description" | "startDate" | "endDate" | "location" | "slug"
+>;
+
+export function AddToCalendarButton({ event }: { event: CalendarEvent }) {
   const t = useTranslations("Event");
   return (
     <Dialog>

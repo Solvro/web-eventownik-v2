@@ -1,6 +1,7 @@
 "use client";
 
 /* eslint-disable unicorn/prevent-abbreviations */
+import { useQueryClient } from "@tanstack/react-query";
 import type { Table } from "@tanstack/react-table";
 import { Loader, PencilLine } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -31,11 +32,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
-import { updateParticipant } from "../../../actions";
+import { bulkUpdateParticipantAttribute } from "../../../actions";
 import { AttributeValueInput } from "../inputs/attribute-value-input";
 
 interface BulkEditDialogProps {
@@ -52,6 +53,7 @@ export function BulkEditDialog({
   eventUuid,
 }: BulkEditDialogProps) {
   const t = useTranslations("Table");
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedattributeUuid, setSelectedattributeUuid] =
@@ -59,7 +61,9 @@ export function BulkEditDialog({
   const [value, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const selectedRows = table.getSelectedRowModel().rows;
+  const selectedParticipants =
+    table.options.meta?.selection?.participants ??
+    table.getFilteredSelectedRowModel().rows.map((row) => row.original);
   const editableAttributes = attributes.filter(
     (a) => a.type !== "file" && a.type !== "drawing",
   );
@@ -77,41 +81,41 @@ export function BulkEditDialog({
 
   function handleAttributeChange(attributeUuid: string) {
     setSelectedattributeUuid(attributeUuid);
-    setValue("");
+    setValue(
+      editableAttributes.find((attribute) => attribute.uuid === attributeUuid)
+        ?.type === "checkbox"
+        ? "false"
+        : "",
+    );
   }
 
   async function handleSave() {
-    if (selectedAttribute == null || selectedRows.length === 0) {
+    if (selectedAttribute == null || selectedParticipants.length === 0) {
       return;
     }
 
     setIsSaving(true);
 
-    const results = await Promise.allSettled(
-      selectedRows.map(async (row) => {
-        const attributeValues: Record<number, string> = {
-          [selectedAttribute.uuid]: value,
-        };
-        return updateParticipant(eventUuid, row.original.uuid, {
-          participantAttributes: attributeValues,
-        });
-      }),
-    );
-
-    const failedCount = results.filter(
-      (r) => r.status === "rejected" || !r.value.success,
-    ).length;
-
-    setIsSaving(false);
+    let failedCount = selectedParticipants.length;
+    try {
+      const result = await bulkUpdateParticipantAttribute(
+        eventUuid,
+        selectedParticipants.map((participant) => participant.uuid),
+        selectedAttribute.uuid,
+        value,
+      );
+      failedCount = result.failedCount;
+      await queryClient.invalidateQueries({
+        queryKey: ["participants", eventUuid],
+      });
+    } catch {
+      failedCount = selectedParticipants.length;
+    } finally {
+      setIsSaving(false);
+    }
 
     if (failedCount === 0) {
       toast({ title: t("bulkEditSuccess") });
-      for (const row of selectedRows) {
-        table.options.meta?.updateData(row.index, {
-          ...row.original,
-          [selectedAttribute.uuid]: value,
-        });
-      }
       setOpen(false);
       setSelectedattributeUuid("");
       setValue("");
@@ -123,7 +127,7 @@ export function BulkEditDialog({
     }
   }
 
-  if (selectedRows.length === 0) {
+  if (selectedParticipants.length === 0) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -157,7 +161,7 @@ export function BulkEditDialog({
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
-          {t("bulkEditSelectedTooltip", { count: selectedRows.length })}
+          {t("bulkEditSelectedTooltip", { count: selectedParticipants.length })}
         </TooltipContent>
       </Tooltip>
 
@@ -165,7 +169,7 @@ export function BulkEditDialog({
         <DialogHeader>
           <DialogTitle>{t("bulkEditTitle")}</DialogTitle>
           <DialogDescription>
-            {t("bulkEditDescription", { count: selectedRows.length })}
+            {t("bulkEditDescription", { count: selectedParticipants.length })}
           </DialogDescription>
         </DialogHeader>
 

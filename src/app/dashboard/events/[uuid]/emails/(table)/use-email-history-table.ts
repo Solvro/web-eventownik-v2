@@ -1,52 +1,47 @@
 "use client";
 
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import type { Table } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
-
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import type {
-  EventEmailParticipantData,
-  SingleEventEmail,
-} from "@/types/emails";
+  ColumnFiltersState,
+  OnChangeFn,
+  SortingState,
+} from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+
+import type { V3EmailDelivery } from "@/types/v3";
 
 import { getColumns } from "./columns";
 
-interface UseEmailHistoryTableResult {
-  table: Table<EventEmailParticipantData>;
+export interface EmailHistoryState {
   globalFilter: string;
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  onGlobalFilterChange: OnChangeFn<string>;
+  onSortingChange: OnChangeFn<SortingState>;
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
 }
 
-function useEmailHistoryTable(
-  email: SingleEventEmail,
-): UseEmailHistoryTableResult {
-  const [globalFilter, setGlobalFilter] = useState("");
-
+export function useEmailHistoryTable(
+  data: V3EmailDelivery[],
+  state: EmailHistoryState,
+) {
   const t = useTranslations("EmailHistoryTable");
   const columns = useMemo(() => getColumns(t), [t]);
-
-  const table = useReactTable({
-    data: email.participants,
+  return useReactTable({
+    data,
     columns,
     state: {
-      globalFilter,
+      globalFilter: state.globalFilter,
+      sorting: state.sorting,
+      columnFilters: state.columnFilters,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: state.onGlobalFilterChange,
+    onSortingChange: state.onSortingChange,
+    onColumnFiltersChange: state.onColumnFiltersChange,
+    manualFiltering: true,
+    manualSorting: true,
+    enableMultiSort: false,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
   });
-
-  return {
-    table,
-    globalFilter,
-  };
 }
-
-export { useEmailHistoryTable };

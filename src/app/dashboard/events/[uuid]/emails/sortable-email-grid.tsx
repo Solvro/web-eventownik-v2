@@ -1,27 +1,33 @@
 "use client";
 
-import { SortableTileGrid } from "@/components/sortable-tile-grid";
-import type { EventEmail } from "@/types/emails";
+import {
+  SortableTileGrid,
+  TILE_GRID_CLASS_NAME,
+} from "@/components/sortable-tile-grid";
+import type { V3EmailSummary } from "@/types/v3";
 
 import { reorderEmails } from "./actions";
 import { EmailTemplateEntry } from "./template-entry";
 
-function SortableEmailGrid({
+export function SortableEmailGrid({
   templates,
   eventUuid,
+  offset,
 }: {
-  templates: EventEmail[];
+  templates: V3EmailSummary[];
   eventUuid: string;
+  offset: number;
 }) {
   return (
     <SortableTileGrid
       items={templates}
-      onReorder={async (orderedIds) => reorderEmails(eventUuid, orderedIds)}
+      className={TILE_GRID_CLASS_NAME}
+      onReorder={async (orderedIds, previousIds) =>
+        reorderEmails(eventUuid, orderedIds, previousIds, offset)
+      }
       renderItem={(template) => (
         <EmailTemplateEntry emailTemplate={template} eventUuid={eventUuid} />
       )}
     />
   );
 }
-
-export { SortableEmailGrid };

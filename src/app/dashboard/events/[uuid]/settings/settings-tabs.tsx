@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { setEventPrimaryColors } from "@/components/event-primary-color";
+import { attributeDraft } from "@/components/forms/event/attributes/attribute-draft";
 import { EventAttributesFormSchema } from "@/components/forms/event/attributes/schema";
 import { EventCoorganizersFormSchema } from "@/components/forms/event/coorganizers/schema";
 import { EventGeneralInfoSchema } from "@/components/forms/event/general-info-form";
@@ -34,20 +35,19 @@ import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
 import { parseLinks } from "@/lib/links";
 import { getBase64FromUrl } from "@/lib/utils";
-import type { EventAttribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
-import type { Event } from "@/types/event";
+import type { V3Attribute, V3Event, V3Organizer } from "@/types/v3";
 
 import { deleteEvent, updateEvent } from "./actions";
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
-import { General } from "./tabs/general-info";
+import { EventVisibilitySchema, General } from "./tabs/general-info";
 import { Personalization } from "./tabs/personalization";
 import type { TabProps } from "./tabs/tab-props";
 
 const EventSettingsSchema = z.intersection(
-  EventGeneralInfoSchema,
+  z.intersection(EventGeneralInfoSchema, EventVisibilitySchema),
   z.intersection(
     EventPersonalizationFormSchema,
     z.intersection(EventCoorganizersFormSchema, EventAttributesFormSchema),
@@ -57,9 +57,9 @@ const EventSettingsSchema = z.intersection(
 type TabComponent = (props: TabProps) => JSX.Element;
 
 interface TabsProps {
-  unmodifiedEvent: Event;
-  unmodifiedCoOrganizers: CoOrganizer[];
-  unmodifiedAttributes: EventAttribute[];
+  unmodifiedEvent: V3Event;
+  unmodifiedCoOrganizers: V3Organizer[];
+  unmodifiedAttributes: V3Attribute[];
 }
 
 export function EventSettingsTabs({
@@ -92,7 +92,13 @@ export function EventSettingsTabs({
     },
   ];
 
-  const [coOrganizers, setCoOrganizers] = useState(unmodifiedCoOrganizers);
+  const [coOrganizers, setCoOrganizers] = useState<CoOrganizer[]>(
+    unmodifiedCoOrganizers.map((organizer) => ({
+      id: organizer.uuid,
+      email: organizer.email,
+      permissions: organizer.permissions.map((entry) => entry.permission),
+    })),
+  );
   const [coOrganizersChanges, setCoOrganizersChanges] = useState<
     CoOrganizerChange[]
   >([]);
@@ -122,12 +128,13 @@ export function EventSettingsTabs({
       endDate: new Date(unmodifiedEvent.endDate),
       endTime: `${getHours(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}`,
       location: unmodifiedEvent.location ?? "",
-      organizer: unmodifiedEvent.organizer ?? "",
+      organizer: unmodifiedEvent.organizerName ?? "",
       termsLink: policyLink?.url ?? "",
+      isPublic: unmodifiedEvent.isPublic,
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
-      participantsNumber: unmodifiedEvent.participantsCount ?? 100,
+      participantsNumber: unmodifiedEvent.participantsLimit ?? 100,
       socialMediaLinks: generalLinks as {
         label?: string;
         url: string;
@@ -137,24 +144,14 @@ export function EventSettingsTabs({
       contactEmail: unmodifiedEvent.contactEmail ?? undefined,
       // Co-organizers fields
       coorganizers: unmodifiedCoOrganizers.map((coOrganizer) => ({
-        id: coOrganizer.id?.toString() ?? "",
+        id: coOrganizer.uuid,
         email: coOrganizer.email,
-        permissions: coOrganizer.permissions,
+        permissions: coOrganizer.permissions.map((entry) => entry.permission),
       })),
       // Attributes fields
-      attributes: unmodifiedAttributes.map((attribute) => ({
-        uuid: attribute.uuid,
-        name: attribute.name,
-        slug: attribute.slug ?? "",
-        type: attribute.type,
-        options: attribute.options ?? [],
-        showInList: attribute.showInList,
-        isSensitiveData: attribute.isSensitiveData,
-        reason: attribute.reason ?? "",
-        order: attribute.order ?? 0,
-        isMultiple: attribute.isMultiple,
-        maxSelections: attribute.maxSelections,
-      })),
+      attributes: unmodifiedAttributes.map((attribute) =>
+        attributeDraft(attribute),
+      ),
     },
   });
 
@@ -200,17 +197,17 @@ export function EventSettingsTabs({
     values.endDate.setHours(Number.parseInt(values.endTime.split(":")[0]));
     values.endDate.setMinutes(Number.parseInt(values.endTime.split(":")[1]));
 
-    const newEvent: Event = {
+    const newEvent: V3Event = {
       ...unmodifiedEvent,
       name: values.name,
       description: values.description ?? "",
       startDate: formatISO(values.startDate, { representation: "complete" }),
       endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
-      organizer: values.organizer ?? "",
+      organizerName: values.organizer ?? "",
       photoUrl: values.photoUrl ?? null,
       primaryColor: values.primaryColor,
-      participantsCount: values.participantsNumber,
+      participantsLimit: values.participantsNumber,
       links: [
         ...(values.termsLink == null
           ? []
@@ -225,6 +222,7 @@ export function EventSettingsTabs({
       ],
       slug: values.slug,
       contactEmail: values.contactEmail ?? null,
+      isPublic: values.isPublic,
     };
 
     try {

@@ -5,15 +5,11 @@ import { format } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import type { EventEmailParticipantData } from "@/types/emails";
+import type { V3EmailDelivery } from "@/types/v3";
 
 import { StatusFilterButton } from "./status-filter-button";
 
-function StatusColumnHeader({
-  column,
-}: {
-  column: Column<EventEmailParticipantData>;
-}) {
+function StatusColumnHeader({ column }: { column: Column<V3EmailDelivery> }) {
   return (
     <div className="flex items-center gap-1">
       <StatusFilterButton column={column} />
@@ -59,7 +55,7 @@ type EmailStatus = "sent" | "pending" | "failed";
 
 export const getColumns = (
   t: ReturnType<typeof useTranslations>,
-): ColumnDef<EventEmailParticipantData>[] => [
+): ColumnDef<V3EmailDelivery>[] => [
   {
     accessorKey: "email",
     header: ({ column }) => (
@@ -69,9 +65,9 @@ export const getColumns = (
   {
     id: "date",
     accessorFn: (row) => {
-      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+      const value = format(row.sendAt, "dd.MM.yyyy");
 
-      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
+      if (row.status === "pending" && value === "01.01.1970") {
         return "-";
       }
       return value;
@@ -81,20 +77,20 @@ export const getColumns = (
   {
     id: "time",
     accessorFn: (row) => {
-      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
+      const value = format(row.sendAt, "dd.MM.yyyy");
 
-      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
+      if (row.status === "pending" && value === "01.01.1970") {
         return "-";
       }
 
-      return format(row.meta.pivot_send_at, "HH:mm");
+      return format(row.sendAt, "HH:mm");
     },
     header: ({ column }) => <SortableHeader column={column} title="time" />,
   },
   {
     id: "status",
     accessorFn: (row) => {
-      return t(row.meta.pivot_status as EmailStatus);
+      return t(row.status as EmailStatus);
     },
     header: ({ column }) => <StatusColumnHeader column={column} />,
     filterFn: (row, _columnId, filterValue) => {
@@ -102,7 +98,7 @@ export const getColumns = (
       if (values === undefined || values.length === 0) {
         return true;
       }
-      return values.includes(row.original.meta.pivot_status);
+      return values.includes(row.original.status);
     },
   },
 ];

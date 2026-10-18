@@ -4,9 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import { attributePayload } from "@/lib/api-v3";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
 
@@ -20,7 +21,7 @@ interface ErrorResponse {
 }
 
 interface UpdateResult {
-  event?: Event;
+  event?: V3Event;
   errors: {
     message: ErrorMessage;
     section: "event" | "coOrganizers" | "attributes";
@@ -32,11 +33,11 @@ interface UpdateResult {
 }
 
 export async function updateEvent(
-  unmodifiedEvent: Event,
-  event: Event,
+  unmodifiedEvent: V3Event,
+  event: V3Event,
   coOrganizersChanges: CoOrganizerChange[],
   attributesChanges: AttributeChange[],
-): Promise<Event | ErrorResponse> {
+): Promise<V3Event | ErrorResponse> {
   const session = await verifySession();
   if (session?.bearerToken == null) {
     throw new Error("Invalid session");
@@ -52,72 +53,53 @@ export async function updateEvent(
   };
 
   try {
-    const formData = new FormData();
-
-    // Basic fields
-    formData.append("name", event.name);
-    formData.append("startDate", event.startDate);
-    formData.append("endDate", event.endDate);
-    formData.append("description", event.description ?? "");
-    formData.append("organizer", event.organizer ?? "");
-    if (event.slug !== unmodifiedEvent.slug) {
-      formData.append("slug", event.slug);
-    }
-    formData.append("location", event.location ?? "");
-    formData.append("primaryColor", event.primaryColor ?? "#3672fd");
-    formData.append(
-      "participantsCount",
-      (event.participantsCount ?? 0).toString(),
-    );
-    formData.append("contactEmail", event.contactEmail ?? "");
-
-    // Links
-    const addLinkToFormData = (
-      url: string,
-      type: string,
-      label: string,
-      index: string,
-    ) => {
-      formData.append(`links[${index}][url]`, url);
-      formData.append(`links[${index}][type]`, type);
-      formData.append(`links[${index}][label]`, label);
+    const payload = {
+      name: event.name,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      description: event.description,
+      organizerName: event.organizerName,
+      slug: event.slug,
+      location: event.location,
+      primaryColor: event.primaryColor,
+      participantsLimit: event.participantsLimit,
+      isPublic: event.isPublic,
+      contactEmail: event.contactEmail === "" ? null : event.contactEmail,
+      links: event.links
+        .filter((link) => link.url.trim() !== "")
+        .map((link) => ({
+          url: link.url.trim(),
+          label: link.label.trim(),
+          type: link.type,
+        })),
+      ...(event.photoUrl === null || event.photoUrl === ""
+        ? { photoUrl: null }
+        : {}),
     };
-    const validLinks = event.links
-      .map((item) => ({
-        ...item,
-        url: item.url.trim(),
-        label: item.label.trim(),
-      }))
-      .filter((item) => item.url);
-    if (validLinks.length > 0) {
-      for (const [index, item] of validLinks.entries()) {
-        addLinkToFormData(item.url, item.type, item.label, index.toString());
-      }
-    }
-
-    // Handle photo upload
     if (
-      event.photoUrl != null &&
+      event.photoUrl !== null &&
       event.photoUrl !== "" &&
       event.photoUrl !== unmodifiedEvent.photoUrl
     ) {
-      try {
-        const photoFile = generateFileFromDataUrl(event.photoUrl);
-        formData.append("photo", photoFile);
-      } catch (error) {
-        console.error("[updateEvent] Error processing photo:", error);
-        result.errors.push({
-          message: { key: "failedToProcessEventPhoto" },
-          section: "event",
-        });
-        return { errors: result.errors };
+      const photoData = new FormData();
+      photoData.append("photo", generateFileFromDataUrl(event.photoUrl));
+      const upload = await fetch(`${API_URL}/events/${event.uuid}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${bearerToken}` },
+        body: photoData,
+      });
+      if (!upload.ok) {
+        return { errors: [{ message: { key: "failedToProcessEventPhoto" } }] };
       }
     }
 
     const response = await fetch(`${API_URL}/events/${event.uuid}`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      body: formData,
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -127,13 +109,13 @@ export async function updateEvent(
         error: errorData,
       });
       result.errors.push({
-        message: errorData.errors[0]?.message ?? "failedToUpdateEvent",
+        message: { key: "failedToUpdateEvent" },
         section: "event",
       });
       return { errors: result.errors };
     }
 
-    result.event = (await response.json()) as Event;
+    result.event = (await response.json()) as V3Event;
   } catch (error) {
     console.error("[updateEvent] Network error updating event:", error);
     result.errors.push({
@@ -157,7 +139,7 @@ export async function updateEvent(
               },
               body: JSON.stringify({
                 email: change.data.email,
-                permissionsIds: [1],
+                permissions: ["MANAGE_ALL"],
               }),
             },
           );
@@ -197,7 +179,7 @@ export async function updateEvent(
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                permissionsIds: change.data.permissions.map((perm) => perm.id),
+                permissions: change.data.permissions,
               }),
             },
           );
@@ -276,7 +258,11 @@ export async function updateEvent(
     }
   }
 
-  for (const change of attributesChanges) {
+  const attributeReferences = new Map<string, string>();
+  const orderedAttributeChanges = attributesChanges.toSorted(
+    (a, b) => Number(a.data.type === "block") - Number(b.data.type === "block"),
+  );
+  for (const change of orderedAttributeChanges) {
     try {
       switch (change.type) {
         case "add": {
@@ -290,21 +276,9 @@ export async function updateEvent(
               },
               // NOTE: This payload should probably be inferred entirely from the `change.data` object,
               // so that manual changes after adding new attribute field in `attribute-item` are not required here
-              body: JSON.stringify({
-                name: change.data.name,
-                type: change.data.type,
-                slug: change.data.slug,
-                showInList: change.data.showInList,
-                order: change.data.order,
-                options:
-                  (change.data.options ?? []).length > 0
-                    ? change.data.options
-                    : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
-                isMultiple: change.data.isMultiple,
-                maxSelections: change.data.maxSelections,
-              }),
+              body: JSON.stringify(
+                attributePayload({ ...change.data }, attributeReferences),
+              ),
             },
           );
 
@@ -342,6 +316,10 @@ export async function updateEvent(
             }
             continue;
           }
+          const created = (await response.json()) as { uuid: string };
+          if (change.data.slug != null) {
+            attributeReferences.set(change.data.slug, created.uuid);
+          }
           result.processedChanges.attributes++;
           break;
         }
@@ -359,21 +337,9 @@ export async function updateEvent(
                 "Content-Type": "application/json",
               },
               // NOTE: Duplicate of the note comment above
-              body: JSON.stringify({
-                name: change.data.name,
-                type: change.data.type,
-                slug: change.data.slug,
-                showInList: change.data.showInList,
-                order: change.data.order,
-                options:
-                  (change.data.options ?? []).length > 0
-                    ? change.data.options
-                    : undefined,
-                isSensitiveData: change.data.isSensitiveData,
-                reason: change.data.reason,
-                isMultiple: change.data.isMultiple,
-                maxSelections: change.data.maxSelections,
-              }),
+              body: JSON.stringify(
+                attributePayload({ ...change.data }, attributeReferences),
+              ),
             },
           );
 
@@ -496,7 +462,7 @@ export async function deleteEvent(
         status: response.status,
         error: errorData,
       });
-      return { errors: errorData.errors };
+      return { errors: [{ message: { key: "networkError" } }] };
     }
   } catch (error) {
     console.error("[deleteEvent] Network Error:", error);

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { translateOrFallback } from "@/i18n/utils";
+import { photoUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 // Required for usage of useFieldArray hook
@@ -94,7 +95,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                     src={
                       imageValue.startsWith("blob:")
                         ? imageValue
-                        : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${imageValue}`
+                        : photoUrl(imageValue)
                     }
                     alt={t("eventImagePreview")}
                     width={1080}
@@ -105,6 +106,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
               </FormLabel>
               <Input
                 id={fileInputId}
+                aria-label="Choose event photo"
                 className="hidden"
                 type="file"
                 accept="image/png, image/gif, image/jpeg"
@@ -230,6 +232,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                     <div className="flex items-center gap-2">
                       <FormControl>
                         <Input
+                          aria-label={`Link label ${index + 1}`}
                           placeholder="Facebook"
                           {...register(
                             `socialMediaLinks.${index}.label` as const,
@@ -239,6 +242,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                       <FormControl>
                         <Input
                           type="url"
+                          aria-label={`Link URL ${index + 1}`}
                           placeholder="https://fb.me/knsolvro"
                           {...register(
                             `socialMediaLinks.${index}.url` as const,
@@ -249,6 +253,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         type="button"
                         variant="outline"
                         size="icon"
+                        aria-label={`Remove link ${index + 1}`}
                         className="shrink-0 hover:bg-red-500/90 hover:text-white"
                         onClick={() => {
                           remove(index);

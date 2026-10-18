@@ -9,7 +9,7 @@ import type {
 import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
-import type { FormAttribute } from "@/types/attributes";
+import type { FormControlAttribute } from "@/types/attributes";
 
 const EXTENSION_TO_MIME_TYPE = {
   png: "image/png",
@@ -20,7 +20,7 @@ const EXTENSION_TO_MIME_TYPE = {
 
 const MAX_FILE_SIZE_MB = 10 * 1024 * 1024;
 
-const fileSchema = z
+export const fileSchema = z
   .instanceof(File)
   .refine(
     (file: File) => {
@@ -54,7 +54,7 @@ interface FileValidationErrorMessage {
   values: Record<string, string | number>;
 }
 
-function parseFileValidationErrorMessage(
+export function parseFileValidationErrorMessage(
   message: string,
 ): FileValidationErrorMessage | null {
   try {
@@ -73,7 +73,7 @@ export function AttributeInputFile({
   lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  attribute: FormAttribute;
+  attribute: FormControlAttribute;
   setError: UseFormSetError<FieldValues>;
   resetField: UseFormResetField<FieldValues>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
@@ -94,16 +94,16 @@ export function AttributeInputFile({
       return;
     }
 
-    if (validateFile(file)) {
-      const fileWithattributeUuidAsName = new File([file], attribute.uuid);
-      setFiles((previousFiles) => {
-        const filtered = previousFiles.filter(
-          (existingFile) =>
-            existingFile.name !== fileWithattributeUuidAsName.name,
-        );
-        return [...filtered, fileWithattributeUuidAsName];
-      });
-    }
+    validateFile(file);
+    const fileWithAttributeUuidAsName = new File([file], attribute.uuid, {
+      type: file.type,
+    });
+    setFiles((previousFiles) => [
+      ...previousFiles.filter(
+        (existingFile) => existingFile.name !== attribute.uuid,
+      ),
+      fileWithAttributeUuidAsName,
+    ]);
   }
 
   function validateFile(file: File) {

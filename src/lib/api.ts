@@ -7,21 +7,23 @@ if (API_URL === "") {
   );
 }
 
-if (PHOTO_URL === "") {
-  throw new Error("NEXT_PUBLIC_PHOTO_URL was not set in enviroment variables!");
-}
-
 export interface PaginatedResponse<T> {
   meta: {
-    total: number;
-    perPage: number;
-    currentPage: number;
-    lastPage: number;
-    firstPage: number;
-    firstPageUrl: string;
-    lastPageUrl: string;
-    nextPageUrl: string | null;
-    previousPageUrl: string | null;
+    page: number;
+    take: number;
+    itemCount: number;
+    pageCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
   };
   data: T[];
+}
+
+export function photoUrl(value: string | null): string {
+  if (value === null || value === "") {
+    return "";
+  }
+  return /^(https?:|data:|blob:)/u.test(value)
+    ? value
+    : `${PHOTO_URL}/${value}`;
 }

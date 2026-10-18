@@ -13,10 +13,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  V3Attribute as Attribute,
+  V3EmailSummary as EventEmail,
+} from "@/types/v3";
 
 import { ExportButton } from "../buttons/export-button";
 import { BulkEditDialog } from "../dialogs/bulk-edit-dialog";
@@ -45,7 +47,12 @@ export function TableToolbar({
   deleteManyParticipants,
 }: TableToolbarProps) {
   const t = useTranslations("Table");
-  const participantsCount = table.getFilteredRowModel().rows.length;
+  const participantsCount =
+    table.options.meta?.totalParticipants ??
+    table.getFilteredRowModel().rows.length;
+  const selectedParticipants =
+    table.options.meta?.selection?.participants ??
+    table.getFilteredSelectedRowModel().rows.map((row) => row.original);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -55,6 +62,7 @@ export function TableToolbar({
             count: participantsCount,
           })}
           value={globalFilter}
+          disabled={isQuerying || table.options.enableGlobalFilter === false}
           onChange={(event) => {
             table.setGlobalFilter(event.target.value);
           }}
@@ -63,14 +71,16 @@ export function TableToolbar({
           <SearchIcon />
         </InputGroupAddon>
       </InputGroup>
-      <div className="flex gap-4 max-md:w-full">
+      <div className="flex gap-2 max-md:w-full md:gap-4">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={() => {
                 table.resetColumnFilters();
+                table.setGlobalFilter("");
               }}
               size="icon"
+              disabled={isQuerying || table.options.enableFilters === false}
               variant="outline"
               aria-label={t("resetFilters")}
             >
@@ -86,6 +96,7 @@ export function TableToolbar({
                 table.resetSorting();
               }}
               size="icon"
+              disabled={isQuerying || table.options.enableSorting === false}
               variant="outline"
               aria-label={t("resetSorting")}
             >
@@ -96,9 +107,7 @@ export function TableToolbar({
         </Tooltip>
         <SendMailForm
           eventUuid={eventUuid}
-          targetParticipants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original)}
+          targetParticipants={selectedParticipants}
           emails={emails}
         />
         <ExportButton eventUuid={eventUuid} />
@@ -110,9 +119,9 @@ export function TableToolbar({
         />
         <DeleteManyParticipantsDialog
           isQuerying={isQuerying}
-          participants={table
-            .getSelectedRowModel()
-            .rows.map((row) => row.original.uuid)}
+          participants={selectedParticipants.map(
+            (participant) => participant.uuid,
+          )}
           deleteManyParticipants={deleteManyParticipants}
         />
       </div>

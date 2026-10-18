@@ -4,8 +4,11 @@ import { redirect } from "next/navigation";
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import type { PaginatedResponse } from "@/lib/api";
+import { getBackend, paginatedUrl } from "@/lib/backend";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
+import type { BlockParticipant } from "@/types/blocks";
 
 export async function reorderBlockAttributes(
   eventUuid: string,
@@ -305,4 +308,24 @@ export async function deleteBlock(
   }
 
   return { success: true };
+}
+
+export async function getBlockParticipantsPage(
+  eventUuid: string,
+  attributeUuid: string,
+  blockUuid: string,
+  page = 1,
+) {
+  const session = await verifySession();
+  if (session === null) {
+    redirect("/auth/login");
+  }
+  return getBackend<PaginatedResponse<BlockParticipant>>(
+    paginatedUrl(
+      `${API_URL}/events/${eventUuid}/attributes/${attributeUuid}/blocks/${blockUuid}/participants`,
+      page,
+      10,
+    ),
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
 }

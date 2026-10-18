@@ -113,10 +113,12 @@
     "eventActivatedSuccess": "Wydarzenie zostało pomyślnie aktywowane",
     "eventDeactivatedSuccess": "Wydarzenie zostało pomyślnie dezaktywowane",
     "superadminPanelInfo": "Znajdujesz się w panelu superadmina",
-    "superadminEventsDescr": "Poniżej znajduje się lista <strong>wszystkich wydarzeń</strong> w bazie — nie tylko tych, które zostały utworzone przez ciebie. Jest ich tu pewnie sporo więc szukaj przez <strong>CTRL+F</strong> jakieś wyszukiwanie zrobi się #kiedyś.",
+    "superadminEventsDescr": "Poniżej znajduje się lista <strong>wszystkich wydarzeń</strong> w bazie. Wyszukaj po nazwie, slugu, organizatorze lub lokalizacji.",
     "page": "Strona",
     "superadminEventsFetchError": "Wystąpił błąd podczas pobierania danych. Backend zweryfikował tożsamość superadmina, jednak nie zwrócił żadnych wydarzeń. Pisz na #backend",
     "general": "Ogólne",
+    "eventVisibility": "Wydarzenie publiczne",
+    "eventVisibilityDescription": "Tylko publiczne wydarzenia mają ogólnodostępną stronę i rejestrację, a po weryfikacji pojawiają się na liście wydarzeń.",
     "personalization": "Personalizacja",
     "coOrganizers": "Współorganizatorzy",
     "attributes": "Atrybuty",
@@ -200,7 +202,13 @@
     "from": "Od",
     "to": "do",
     "acceptingSubmissions": "Przyjmuje zgłoszenia",
-    "notAcceptingSubmissions": "Nie przyjmuje zgłoszeń"
+    "notAcceptingSubmissions": "Nie przyjmuje zgłoszeń",
+    "searchEvents": "Szukaj wydarzeń",
+    "searchEventsPlaceholder": "Nazwa, slug, organizator lub lokalizacja…",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "noMatchingEvents": "Brak wydarzeń pasujących do wyszukiwania.",
+    "eventSearchCount": "Liczba wydarzeń: {count}",
+    "reorderError": "Nie udało się zapisać kolejności. Odśwież listę i spróbuj ponownie."
   },
   "Editor": {
     "loadingMenu": "Ładowanie menu...",
@@ -380,7 +388,9 @@
     "formWasAvailable": "Formularz był dostępny",
     "periodLabel": "{label} od <strong>{openDate}</strong> do <strong>{closeDate}</strong>",
     "registrationUnavailable": "Rejestracja na <strong>{name}</strong> jest teraz niedostępna",
-    "formUnavailable": "Formularz <strong>{name}</strong> jest teraz niedostępny"
+    "formUnavailable": "Formularz <strong>{name}</strong> jest teraz niedostępny",
+    "serviceUnavailable": "Wydarzenie jest chwilowo niedostępne",
+    "serviceUnavailableDescription": "Nie udało się połączyć z serwerem. Spróbuj ponownie później."
   },
   "EventDetails": {
     "step": "Krok {number}",
@@ -536,6 +546,9 @@
     "automaticDateTime": "Automatycznie (data i godzina)",
     "openingDateTime": "Data i godzina otwarcia",
     "closingDateTime": "Data i godzina zamknięcia",
+    "openingTime": "Godzina otwarcia",
+    "closingTime": "Godzina zamknięcia",
+    "timeFieldLabel": "{label} – godzina",
     "openTimeRequired": "Godzina otwarcia nie może być pusta",
     "closeTimeRequired": "Godzina zamknięcia nie może być pusta",
     "closeDateMustBeAfterOpenDate": "Data zamknięcia musi być po dacie otwarcia"
@@ -587,6 +600,7 @@
     "editYourResponse": "Edytuj swoją odpowiedź",
     "captchaInProgress": "Weryfikacja CAPTCHA...",
     "captchaFailed": "Błąd CAPTCHA. Spróbuj ponownie",
+    "captchaMisconfigured": "Weryfikacja CAPTCHA nie jest poprawnie skonfigurowana, więc formularza nie można teraz wysłać. Twoje odpowiedzi zostaną zachowane – skontaktuj się z organizatorem.",
     "emailIsRequiredTooltip": "Musisz podać adres e-mail, aby zarejestrować się na to wydarzenie.",
     "attributeIsRequiredTooltip": "To pole jest wymagane.",
     "searchBlocksLabel": "Wyszukaj bloki",
@@ -615,7 +629,8 @@
     "fieldNumber": "Pole {name} musi być liczbą",
     "fieldDate": "Pole {name} musi być datą",
     "fieldRequiredChecked": "Pole {name} musi być zaznaczone",
-    "fieldPhone": "Pole {name} musi być numerem telefonu"
+    "fieldPhone": "Pole {name} musi być numerem telefonu",
+    "loadingBlocks": "Ładowanie uczestników…"
   },
   "Homepage": {
     "HighlightedEvents": {
@@ -717,11 +732,12 @@
     "formsAndReservations": "Formularze i zapisy na miejsca",
     "formsAndReservationsDescr": "Tworzenie formularzy z wybranymi atrybutami, generowanie linków rejestracyjnych i automatyczne udostępnianie formularzy II etapu — w tym zapisy na miejsca aktualizowane w czasie rzeczywistym.",
     "registrationManagement": "Zarządzanie zapisami",
-    "registrationManagementDescr": "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca\u00A0— anonimowo, imię i nazwisko, a może nawet inny atrybut.",
+    "registrationManagementDescr": "Ustaw w jaki sposób będą pokazywać się osoby zapisane na poszczególne miejsca — anonimowo, imię i nazwisko, a może nawet inny atrybut.",
     "openMenu": "Otwórz menu",
     "closeMenu": "Zamknij menu",
     "alertLink": "Link w alercie",
-    "dismissAlert": "Zamknij alert"
+    "dismissAlert": "Zamknij alert",
+    "loadMoreEvents": "Pokaż więcej wydarzeń"
   },
   "MainMetadata": {
     "title": "Eventownik - organizacja wydarzeń",
@@ -842,6 +858,13 @@
   },
   "Table": {
     "participantsError": "Nie udało się załadować danych o uczestnikach",
+    "loadingMoreParticipants": "Wczytywanie kolejnych uczestników…",
+    "loadingAllParticipants": "Wczytywanie wszystkich uczestników ({loaded} z {total}), aby wyszukiwanie, sortowanie i filtry obejmowały całą listę…",
+    "allParticipantsLoaded": "Wczytano wszystkich uczestników ({count})",
+    "loadMoreParticipantsError": "Nie udało się wczytać kolejnych uczestników.",
+    "retryLoading": "Spróbuj ponownie",
+    "participantsChangedWhileLoading": "Lista uczestników zmieniła się podczas wczytywania, więc wyniki mogą być niepełne. Odśwież listę, zanim zaznaczysz wszystkich.",
+    "refreshParticipants": "Odśwież listę",
     "participantsNotFound": "Nie znaleziono żadnych pasujących wyników",
     "deleteParticipantError": "Nie udało się usunąć uczestnika!",
     "deleteParticipantSuccess": "Pomyślnie usunięto uczestnika",
@@ -850,6 +873,8 @@
     "deleteParticipantsSuccessDescription": "Usunięto {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}",
     "deleteParticipantsError": "Nie udało się grupowo usunąć uczestników!",
     "deleteParticipantsErrorDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
+    "participantQueriesUnavailable": "Wyszukiwanie, sortowanie i filtry są chwilowo niedostępne.",
+    "scrollForMoreParticipants": "Wczytano {loaded} z {total}. Przewiń, aby zobaczyć kolejnych uczestników.",
     "participantsTableTitle": "Lista uczestników",
     "searchPlaceholder": "Wyszukaj {count} uczestników...",
     "resetFilters": "Resetuj wszystkie filtry",
@@ -877,7 +902,8 @@
     "deleteManyConfirmDescription": "Zamierzasz jednocześnie usunąć {count, plural, =1 {1 uczestnika} =2 {2 uczestników} =3 {3 uczestników} =4 {4 uczestników} other {# uczestników}}. Tej operacji nie będzie można cofnąć",
     "deleteSingleConfirmDescription": "Na pewno chcesz usunąć tego uczestnika? Tej operacji nie będzie można cofnąć",
     "rowNumberTitle": "Lp.",
-    "selectAllPageRows": "Wybierz wszystkie na stronie",
+    "selectAllRows": "Zaznacz wszystkie wiersze ({count})",
+    "selectLoadedRows": "Zaznacz wczytane wiersze ({count} z {total})",
     "selectRow": "Wybierz wiersz",
     "columnEmailTitle": "Email",
     "columnCreatedAtTitle": "Data rejestracji",
@@ -914,11 +940,20 @@
     "removeAdditionalOptions": "Usuń dodatkowe opcje",
     "serverError": "Serwer nie działa poprawnie. Spróbuj ponownie później",
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie",
-    "invalidUuid": "Nieprawidłowe UUID zasobu"
+    "invalidUuid": "Nieprawidłowe UUID zasobu",
+    "selectionError": "Nie udało się zaznaczyć wszystkich uczestników. Odśwież listę i spróbuj ponownie.",
+    "clearSelection": "Wyczyść zaznaczenie"
   },
   "Themes": {
     "light": "Jasny",
     "dark": "Ciemny",
     "system": "System"
+  },
+  "Pagination": {
+    "label": "Paginacja",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "info": "Strona {page} z {pages} · {total} elementów",
+    "pageSize": "Wiersze na stronę"
   }
 }

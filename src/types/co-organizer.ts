@@ -1,18 +1,11 @@
-export type PermissionType =
-  | 6 // "email"
-  | 5 // "participant"
-  | 4 // "form"
-  | 3 // "setting"
-  | 1; // "all"
+import type { V3Permission } from "./v3";
 
-export interface Permission {
-  id: PermissionType;
-  action: string;
-  subject: string;
-}
+export type PermissionType = V3Permission;
+export type Permission = V3Permission;
 
+/** Editable organizer form state. */
 export interface CoOrganizer {
   id: string | null;
   email: string;
-  permissions: Permission[];
+  permissions: V3Permission[];
 }

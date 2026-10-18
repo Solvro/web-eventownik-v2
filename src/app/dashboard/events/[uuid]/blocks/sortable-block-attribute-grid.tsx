@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { SortableTileGrid } from "@/components/sortable-tile-grid";
 import { Button } from "@/components/ui/button";
-import type { Attribute } from "@/types/attributes";
+import type { V3Attribute } from "@/types/v3";
 
 import { reorderBlockAttributes } from "./actions";
 
@@ -14,7 +14,7 @@ function SortableBlockAttributeGrid({
   blocks,
   eventUuid,
 }: {
-  blocks: Attribute[];
+  blocks: V3Attribute[];
   eventUuid: string;
 }) {
   const t = useTranslations("Dashboard");

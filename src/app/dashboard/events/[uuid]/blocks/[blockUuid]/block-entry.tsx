@@ -30,8 +30,7 @@ function BlockEntry({
     block.capacity == null
       ? 0
       : Math.round(
-          (Number(valueOrZero(block.meta.participantsInBlockCount)) /
-            block.capacity) *
+          (Number(valueOrZero(block.blockParticipantCount)) / block.capacity) *
             100,
         );
 
@@ -59,8 +58,8 @@ function BlockEntry({
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
-            ? valueOrZero(block.meta.participantsInBlockCount)
-            : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+            ? valueOrZero(block.blockParticipantCount)
+            : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
         </div>
         <Field className="w-full max-w-sm">
           <Progress
@@ -77,7 +76,11 @@ function BlockEntry({
           </FieldLabel>
         </Field>
         {areParticipantsVisible ? (
-          <BlockParticipantsList participants={block.meta.participants} />
+          <BlockParticipantsList
+            eventUuid={eventUuid}
+            attributeUuid={attributeUuid}
+            blockUuid={block.uuid}
+          />
         ) : null}
       </div>
     </div>

@@ -35,6 +35,8 @@ import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { EventAttribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
 
+import { AttributeTriggerInputs } from "../attribute-trigger-inputs";
+
 const EventEmailTemplateTriggerTypeSchema = z
   .object({
     trigger: z.enum(
@@ -48,14 +50,9 @@ const EventEmailTemplateTriggerTypeSchema = z
       if (data.trigger === "form_filled") {
         return data.triggerValue !== undefined && data.triggerValue !== "";
       }
-      // NOTE: Commented out because this trigger is not yet implemented on the backend.
-      // Uncomment when the backend supports this feature.
-      // if (data.trigger === "attribute_changed") {
-      //   return (
-      //     (data.triggerValue !== undefined && data.triggerValue !== "") ||
-      //     (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
-      //   );
-      // }
+      if (data.trigger === "attribute_changed") {
+        return data.triggerValue !== undefined && data.triggerValue !== "";
+      }
       return true;
     },
     {
@@ -64,15 +61,13 @@ const EventEmailTemplateTriggerTypeSchema = z
   );
 
 function TriggerConfigurationInputs({
-  // NOTE: eventAttributes is prefixed with underscore because the attribute_changed trigger
-  // which uses it is not yet implemented on the backend. Rename back when the backend supports this feature.
-  eventAttributes: _eventAttributes,
+  eventAttributes,
   eventForms,
   trigger,
   form,
 }: {
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
   trigger: string;
   form: ReturnType<
     typeof useForm<z.infer<typeof EventEmailTemplateTriggerTypeSchema>>
@@ -125,54 +120,9 @@ function TriggerConfigurationInputs({
         </div>
       );
     }
-    // NOTE: Commented out because this trigger is not yet implemented on the backend.
-    // Uncomment when the backend supports this feature.
-    // case "attribute_changed": {
-    //   return (
-    //     <div className="flex flex-col gap-2">
-    //       <FormField
-    //         control={form.control}
-    //         name="triggerValue"
-    //         render={({ field }) => (
-    //           <FormItem className="space-y-3">
-    //             <FormLabel>Atrybut</FormLabel>
-    //             <Select onValueChange={field.onChange}>
-    //               <FormControl>
-    //                 <SelectTrigger>
-    //                   <SelectValue placeholder="Wybierz atrybut" />
-    //                 </SelectTrigger>
-    //               </FormControl>
-    //               <SelectContent>
-    //                 {eventAttributes.map((attribute) => (
-    //                   <SelectItem
-    //                     key={attribute.uuid}
-    //                     value={String(attribute.uuid)}
-    //                   >
-    //                     {attribute.name}
-    //                   </SelectItem>
-    //                 ))}
-    //               </SelectContent>
-    //             </Select>
-    //             <FormMessage />
-    //           </FormItem>
-    //         )}
-    //       />
-    //       <FormField
-    //         control={form.control}
-    //         name="triggerValue2"
-    //         render={({ field }) => (
-    //           <FormItem className="space-y-3">
-    //             <FormLabel>Wyzwalająca wartość atrybutu</FormLabel>
-    //             <FormControl>
-    //               <Input type="text" placeholder="tak" {...field} />
-    //             </FormControl>
-    //             <FormMessage />
-    //           </FormItem>
-    //         )}
-    //       />
-    //     </div>
-    //   );
-    // }
+    case "attribute_changed": {
+      return <AttributeTriggerInputs attributes={eventAttributes} />;
+    }
   }
 }
 
@@ -181,8 +131,8 @@ function TriggerTypeForm({
   eventForms,
   goToNextStep,
 }: {
-  eventAttributes: EventAttribute[];
-  eventForms: EventForm[];
+  eventAttributes: Pick<EventAttribute, "uuid" | "name">[];
+  eventForms: Pick<EventForm, "uuid" | "name">[];
   goToNextStep: () => void;
 }) {
   const t = useTranslations("EventDetails");

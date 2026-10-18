@@ -1,9 +1,11 @@
 import type { Table } from "@tanstack/react-table";
 
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { EventEmail } from "@/types/emails";
 import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  V3Attribute as Attribute,
+  V3EmailSummary as EventEmail,
+} from "@/types/v3";
 
 import { ImportParticipantsDialog } from "../../import-participants-dialog";
 import { ColumnSettingsDropdown } from "../table-ui/column-settings-dropdown";

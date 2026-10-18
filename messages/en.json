@@ -113,10 +113,12 @@
     "eventActivatedSuccess": "The event has been successfully activated",
     "eventDeactivatedSuccess": "The event has been successfully deactivated",
     "superadminPanelInfo": "You are in the superadmin panel",
-    "superadminEventsDescr": "Below is a list of <strong>all events</strong> in the database — not just the ones created by you. There are probably quite a few of them, so for now you can use <strong>CTRL+F</strong> to search. A proper search feature is coming #someday.",
+    "superadminEventsDescr": "Below is a list of <strong>all events</strong> in the database. Search by event name, slug, organizer or location.",
     "page": "Page",
     "superadminEventsFetchError": "An error occurred while fetching data. The backend verified the superadmin identity, but no events were returned. Message us in the #backend channel.",
     "general": "General",
+    "eventVisibility": "Public event",
+    "eventVisibilityDescription": "Only public events have a publicly accessible page and registration; once verified they are also listed among events.",
     "personalization": "Personalization",
     "coOrganizers": "Co-organizers",
     "attributes": "Attributes",
@@ -200,7 +202,13 @@
     "from": "From",
     "to": "to",
     "acceptingSubmissions": "Accepting submissions",
-    "notAcceptingSubmissions": "Not accepting submissions"
+    "notAcceptingSubmissions": "Not accepting submissions",
+    "searchEvents": "Search events",
+    "searchEventsPlaceholder": "Name, slug, organizer or location…",
+    "clearSearch": "Clear search",
+    "noMatchingEvents": "No events match your search.",
+    "eventSearchCount": "{count} events",
+    "reorderError": "Could not save the order. Reload the list and try again."
   },
   "Editor": {
     "loadingMenu": "Loading menu...",
@@ -380,7 +388,9 @@
     "formWasAvailable": "The form was available",
     "periodLabel": "{label} from <strong>{openDate}</strong> to <strong>{closeDate}</strong>",
     "registrationUnavailable": "Registration for <strong>{name}</strong> is currently unavailable",
-    "formUnavailable": "The form <strong>{name}</strong> is currently unavailable"
+    "formUnavailable": "The form <strong>{name}</strong> is currently unavailable",
+    "serviceUnavailable": "The event is temporarily unavailable",
+    "serviceUnavailableDescription": "We could not connect to the server. Please try again later."
   },
   "EventDetails": {
     "step": "Step {number}",
@@ -536,6 +546,9 @@
     "automaticDateTime": "Auto (date and time)",
     "openingDateTime": "Opening date and time",
     "closingDateTime": "Closing date and time",
+    "openingTime": "Opening time",
+    "closingTime": "Closing time",
+    "timeFieldLabel": "{label} – time",
     "openTimeRequired": "Opening time cannot be empty",
     "closeTimeRequired": "Closing time cannot be empty",
     "closeDateMustBeAfterOpenDate": "Closing date must be after the opening date"
@@ -587,6 +600,7 @@
     "editYourResponse": "Edit your response",
     "captchaInProgress": "CAPTCHA verification...",
     "captchaFailed": "CAPTCHA error. Try again",
+    "captchaMisconfigured": "CAPTCHA verification is not configured correctly, so the form cannot be submitted right now. Your answers are kept – please contact the organizer.",
     "emailIsRequiredTooltip": "You must provide an email address to register for this event.",
     "attributeIsRequiredTooltip": "This field is required.",
     "searchBlocksLabel": "Search blocks",
@@ -615,7 +629,8 @@
     "fieldNumber": "Field {name} must be a number",
     "fieldDate": "Field {name} must be a date",
     "fieldRequiredChecked": "Field {name} must be selected",
-    "fieldPhone": "Field {name} must be a valid phone number"
+    "fieldPhone": "Field {name} must be a valid phone number",
+    "loadingBlocks": "Loading participants…"
   },
   "Homepage": {
     "HighlightedEvents": {
@@ -717,11 +732,12 @@
     "formsAndReservations": "Forms and event registration",
     "formsAndReservationsDescr": "Create forms with selected attributes, generate registration links, and automatically share second-stage forms — including real-time registration updates.",
     "registrationManagement": "Registration management",
-    "registrationManagementDescr": "Choose how registered participants are displayed\u00A0— anonymously, by full name, or using a custom attribute.",
+    "registrationManagementDescr": "Choose how registered participants are displayed — anonymously, by full name, or using a custom attribute.",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "alertLink": "Alert link",
-    "dismissAlert": "Dismiss alert"
+    "dismissAlert": "Dismiss alert",
+    "loadMoreEvents": "Load more events"
   },
   "MainMetadata": {
     "title": "Eventownik - event organization",
@@ -842,6 +858,13 @@
   },
   "Table": {
     "participantsError": "Error while loading participant data",
+    "loadingMoreParticipants": "Loading more participants…",
+    "loadingAllParticipants": "Loading all participants ({loaded} of {total}) so search, sorting and filters cover the whole list…",
+    "allParticipantsLoaded": "All participants loaded ({count})",
+    "loadMoreParticipantsError": "Could not load more participants.",
+    "retryLoading": "Try again",
+    "participantsChangedWhileLoading": "The participant list changed while loading, so results may be incomplete. Refresh the list before selecting everyone.",
+    "refreshParticipants": "Refresh list",
     "participantsNotFound": "No results found",
     "deleteParticipantError": "Failed to delete participant!",
     "deleteParticipantSuccess": "Participant deleted successfully",
@@ -850,6 +873,8 @@
     "deleteParticipantsSuccessDescription": "Deleted {count, plural, =1 {1 participant} other {# participants}}",
     "deleteParticipantsError": "Failed to batch delete participants!",
     "deleteParticipantsErrorDescription": "An unexpected error occurred. Try again",
+    "participantQueriesUnavailable": "Search, sorting and filters are currently unavailable.",
+    "scrollForMoreParticipants": "Loaded {loaded} of {total}. Scroll to see more participants.",
     "participantsTableTitle": "Participants",
     "searchPlaceholder": "Search among {count} participants...",
     "resetFilters": "Reset filters",
@@ -877,7 +902,8 @@
     "deleteManyConfirmDescription": "You are about to delete {count, plural, =1 {1 participant} other {# participants}} at once. This operation cannot be undone",
     "deleteSingleConfirmDescription": "Are you sure you want to delete this participant? This operation cannot be undone",
     "rowNumberTitle": "No.",
-    "selectAllPageRows": "Select all on page",
+    "selectAllRows": "Select all rows ({count})",
+    "selectLoadedRows": "Select loaded rows ({count} of {total})",
     "selectRow": "Select row",
     "columnEmailTitle": "Email",
     "columnCreatedAtTitle": "Date of registration",
@@ -914,11 +940,20 @@
     "removeAdditionalOptions": "Remove additional options",
     "serverError": "The server is not working properly. Please try again later",
     "unexpectedError": "An unexpected error occurred. Please try again",
-    "invalidUuid": "Invalid resource UUID"
+    "invalidUuid": "Invalid resource UUID",
+    "selectionError": "Could not select all participants. Refresh the list and try again.",
+    "clearSelection": "Clear selection"
   },
   "Themes": {
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "info": "Page {page} of {pages} · {total} items",
+    "pageSize": "Rows per page"
   }
 }

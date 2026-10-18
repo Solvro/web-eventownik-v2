@@ -1,11 +1,10 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Ban, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -33,15 +32,6 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [emailSent, setEmailSent] = useState(false);
 
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
-  const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
-  const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
-
-  const pendingFormData = useRef<z.infer<
-    typeof sendPasswordResetTokenSchema
-  > | null>(null);
-  const hCaptchaRef = useRef<HCaptcha>(null);
-
   const form = useForm<z.infer<typeof sendPasswordResetTokenSchema>>({
     resolver: zodResolver(sendPasswordResetTokenSchema),
     defaultValues: {
@@ -50,14 +40,13 @@ export default function ForgotPasswordPage() {
   });
 
   /**
-   * Final stage of form submission with captcha token
+   * Submit validated credentials using the v3 authentication contract
    */
-  async function submitWithCaptcha(
+  async function handleFormSubmit(
     values: z.infer<typeof sendPasswordResetTokenSchema>,
-    token: string,
   ) {
     try {
-      const result = await sendPasswordResetToken({ ...values, token });
+      const result = await sendPasswordResetToken(values);
       if (result.success) {
         setEmailSent(true);
         toast({
@@ -82,37 +71,6 @@ export default function ForgotPasswordPage() {
         title: t("somethingWentWrong"),
         description: t("serverErrorTryLater"),
       });
-    } finally {
-      hCaptchaRef.current?.resetCaptcha();
-      setIsAwaitingCaptcha(false);
-    }
-  }
-
-  /**
-   * Triggered upon captcha verification
-   */
-  async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
-    setDidCaptchaFail(false);
-
-    if (pendingFormData.current !== null) {
-      await submitWithCaptcha(pendingFormData.current, token);
-      pendingFormData.current = null;
-    }
-  }
-
-  /**
-   * Form submission after Zod validation
-   */
-  async function handleFormSubmit(
-    values: z.infer<typeof sendPasswordResetTokenSchema>,
-  ) {
-    if (hCaptchaToken === null) {
-      pendingFormData.current = values;
-      setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
-    } else {
-      await submitWithCaptcha(values, hCaptchaToken);
     }
   }
 
@@ -155,7 +113,7 @@ export default function ForgotPasswordPage() {
                 <FormControl>
                   <Input
                     type="email"
-                    disabled={form.formState.isSubmitting || isAwaitingCaptcha}
+                    disabled={form.formState.isSubmitting}
                     placeholder={t("email")}
                     {...field}
                   />
@@ -170,56 +128,19 @@ export default function ForgotPasswordPage() {
             )}
           />
 
-          <HCaptcha
-            ref={hCaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-            size="invisible"
-            onVerify={handleCaptchaVerify}
-            onExpire={() => {
-              setHCaptchaToken(null);
-              setDidCaptchaFail(true);
-            }}
-            onClose={() => {
-              setDidCaptchaFail(true);
-            }}
-            onError={(captchaError) => {
-              console.error("Captcha error occurred:", captchaError);
-              setDidCaptchaFail(true);
-            }}
-          />
-
-          {didCaptchaFail ? (
-            <Button
-              type="button"
-              variant="destructive"
-              className="w-full"
-              onClick={() => {
-                setDidCaptchaFail(false);
-                hCaptchaRef.current?.execute();
-              }}
-            >
-              <Ban className="size-8" />
-              <span>{t("captchaFailed")}</span>
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-              className="w-full"
-            >
-              {form.formState.isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" /> {t("sending")}
-                </>
-              ) : isAwaitingCaptcha ? (
-                <>
-                  <Loader2 className="animate-spin" /> {t("captchaInProgress")}
-                </>
-              ) : (
-                t("sendResetLink")
-              )}
-            </Button>
-          )}
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="w-full"
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" /> {t("sending")}
+              </>
+            ) : (
+              t("sendResetLink")
+            )}
+          </Button>
 
           <Link
             href="/auth/login"

@@ -7,7 +7,6 @@ import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import type { PublicBlock } from "@/types/blocks";
-import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Checkbox } from "./ui/checkbox";
@@ -27,7 +26,7 @@ function includeBlock(
   const isBlockNotFull =
     !hideFullBlocks ||
     block.capacity === null ||
-    (block.meta.participantsInBlockCount ?? 0) < block.capacity;
+    block.blockParticipantCount < block.capacity;
   return doesBlockIncludeSearchText && isBlockNotFull;
 }
 
@@ -38,13 +37,15 @@ function includeBlock(
  */
 export function AttributeBlocksWrapper({
   field,
-  userData,
+  selectedBlockUuids,
+  eventSlug,
   eventBlocks,
   isMultiple = false,
   maxSelections = null,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  userData: PublicParticipant | undefined;
+  selectedBlockUuids?: string[];
+  eventSlug?: string;
   eventBlocks: PublicBlock[];
   isMultiple?: boolean;
   maxSelections?: number | null;
@@ -55,7 +56,9 @@ export function AttributeBlocksWrapper({
   });
   const [hideFullBlocks, setHideFullBlocks] = useState(false);
 
-  const sortedBlocks = eventBlocks.toSorted((a, b) => a.order - b.order);
+  const sortedBlocks = eventBlocks.toSorted(
+    (a, b) => (a.order ?? 0) - (b.order ?? 0),
+  );
 
   const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),
@@ -159,7 +162,8 @@ export function AttributeBlocksWrapper({
           {filteredBlocks.map((childBlock) => (
             <AttributeInputBlock
               key={childBlock.uuid}
-              userData={userData}
+              selectedBlockUuids={selectedBlockUuids}
+              eventSlug={eventSlug}
               block={childBlock}
               isMultiple={true}
               checked={selectedValues?.includes(childBlock.uuid)}
@@ -205,7 +209,8 @@ export function AttributeBlocksWrapper({
           {filteredBlocks.map((childBlock) => (
             <AttributeInputBlock
               key={childBlock.uuid}
-              userData={userData}
+              selectedBlockUuids={selectedBlockUuids}
+              eventSlug={eventSlug}
               block={childBlock}
               isMultiple={false}
             />

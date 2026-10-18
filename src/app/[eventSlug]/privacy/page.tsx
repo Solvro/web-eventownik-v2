@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import React from "react";
 
+import {
+  getPublicEvent,
+  getPublicPrivacyAttributes,
+} from "@/app/[eventSlug]/data-access";
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { photoUrl } from "@/lib/api";
 import { getAttributeLabel } from "@/lib/utils";
-import type { Event } from "@/types/event";
 
 import { EventPageLayout } from "../event-page-layout";
 
@@ -19,27 +22,22 @@ export async function generateMetadata({
   const t = await getTranslations("Event");
   const { eventSlug } = await params;
 
-  const response = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!response.ok) {
-    const error = (await response.json()) as unknown;
-    console.error(error);
+  const response = await getPublicEvent(eventSlug);
+  if (response.data === undefined) {
     return {
       title: "Eventownik",
-      description: t("notFound"),
+      description: t(
+        response.status >= 500 ? "serviceUnavailable" : "notFound",
+      ),
     };
   }
-  const event = (await response.json()) as Event;
+  const event = response.data;
 
   return {
     title: t("privacyPolicyTitle", { name: event.name }),
     description: t("eventPrivacyPolicy", { name: event.name }),
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: [photoUrl(event.photoUrl ?? "")],
     },
   };
 }
@@ -47,19 +45,17 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
 
-  const eventResponse = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
-    {
-      method: "GET",
-    },
-  );
-  if (!eventResponse.ok) {
-    const error = (await eventResponse.json()) as unknown;
-    console.error(error);
-    return <EventNotFound whatNotFound="event" />;
+  const eventResponse = await getPublicEvent(eventSlug);
+  if (eventResponse.data === undefined) {
+    return <EventNotFound whatNotFound="event" status={eventResponse.status} />;
   }
 
-  const event = (await eventResponse.json()) as Event;
+  const event = eventResponse.data;
+  const result = await getPublicPrivacyAttributes(eventSlug);
+  if (result.data === undefined) {
+    return <EventNotFound whatNotFound="form" status={result.status} />;
+  }
+  const policyAttributes = result.data;
 
   return (
     <EventPageLayout
@@ -112,7 +108,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 dane dotyczące urządzenia tj. adres IP, dane sesji,
                 identyfikator użytkownika
               </li>
-              {event.attributes.map((attribute) => {
+              {policyAttributes.map((attribute) => {
                 return (
                   <li key={attribute.uuid}>
                     {getAttributeLabel(attribute.name, "pl")}

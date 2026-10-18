@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import type { EventForm } from "@/types/forms";
+import type { V3FormSummary } from "@/types/v3";
 
 import { DeleteFormPopup } from "./delete-form-popup";
 
@@ -12,13 +12,13 @@ function FormEntry({
   form,
   eventUuid,
 }: {
-  form: EventForm;
+  form: V3FormSummary;
   eventUuid: string;
 }) {
   const t = useTranslations("Dashboard");
 
   return (
-    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
+    <div className="bg-background flex h-64 w-full min-w-0 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
         <Button variant="eventGhost" size="icon" asChild>
           <Link href={`forms/${form.uuid}`}>

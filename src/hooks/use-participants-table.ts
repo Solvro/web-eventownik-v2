@@ -6,14 +6,24 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import type {
+  ColumnFiltersState,
+  OnChangeFn,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
+import { defaultColumnVisibility } from "@/app/dashboard/events/[uuid]/participants/query";
 import { createColumns } from "@/app/dashboard/events/[uuid]/participants/table/core/columns";
 import { useToast } from "@/hooks/use-toast";
-import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantSelection,
+} from "@/types/participant";
+import type { V3Attribute as Attribute } from "@/types/v3";
 
 function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
   return typeof structuredClone === "function"
@@ -21,7 +31,28 @@ function cloneParticipantRow(row: FlattenedParticipant): FlattenedParticipant {
     : { ...row };
 }
 
+/**
+ * Paginated server data keeps its server order. Query operations stay disabled
+ * until the backend exposes them; never sort or filter a loaded subset.
+ */
+export interface ParticipantTableState {
+  globalFilter: string;
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  columnVisibility: VisibilityState;
+  onGlobalFilterChange?: OnChangeFn<string>;
+  onSortingChange?: OnChangeFn<SortingState>;
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
+  onColumnVisibilityChange: OnChangeFn<VisibilityState>;
+  /** Total participants on the server, when no search or filter narrows it down. */
+  total?: number;
+  /** Whether every server page is loaded into a consistent snapshot. */
+  isComplete: boolean;
+  busy: boolean;
+  selection?: ParticipantSelection;
+}
 interface UseParticipantTableProps {
+  serverState?: ParticipantTableState;
   data: FlattenedParticipant[];
   attributes: Attribute[];
   blocks: (Block | null)[] | null;
@@ -35,6 +66,7 @@ export function useParticipantsTable({
   blocks,
   onUpdateData,
   eventUuid,
+  serverState,
 }: UseParticipantTableProps) {
   const storageKey = `column-order-${eventUuid}`;
   const t = useTranslations("Table");
@@ -44,6 +76,12 @@ export function useParticipantsTable({
   const [globalFilter, setGlobalFilter] = useState("");
   const [loadingRows, setLoadingRows] = useState<Record<number, boolean>>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [visibilityOverrides, setVisibilityOverrides] =
+    useState<VisibilityState>({});
+  const columnVisibility = serverState?.columnVisibility ?? {
+    ...defaultColumnVisibility(attributes),
+    ...visibilityOverrides,
+  };
   const [rowSnapshots, setRowSnapshots] = useState<
     Record<number, FlattenedParticipant>
   >({});
@@ -76,10 +114,37 @@ export function useParticipantsTable({
       maxSize: 300,
     },
     state: {
-      globalFilter,
+      globalFilter: serverState?.globalFilter ?? globalFilter,
+      ...(serverState == null
+        ? {}
+        : {
+            sorting: serverState.sorting,
+            columnFilters: serverState.columnFilters,
+          }),
       columnOrder,
+      columnVisibility,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: serverState?.onGlobalFilterChange ?? setGlobalFilter,
+    ...(serverState == null
+      ? {}
+      : {
+          onSortingChange: serverState.onSortingChange,
+          onColumnFiltersChange: serverState.onColumnFiltersChange,
+        }),
+    onColumnVisibilityChange:
+      serverState?.onColumnVisibilityChange ??
+      ((updater) => {
+        setVisibilityOverrides(
+          typeof updater === "function" ? updater(columnVisibility) : updater,
+        );
+      }),
+    manualSorting: serverState != null,
+    manualFiltering: serverState != null,
+    enableSorting: serverState == null,
+    enableFilters: serverState == null,
+    enableGlobalFilter: serverState == null,
+    getRowId: (row) => row.uuid,
+    enableRowSelection: serverState?.busy !== true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -99,7 +164,11 @@ export function useParticipantsTable({
     },
 
     meta: {
-      eventUuid: eventUuid,
+      eventUuid,
+      totalParticipants: serverState?.total,
+      isListComplete: serverState?.isComplete ?? true,
+      isBusy: serverState?.busy,
+      selection: serverState?.selection,
       updateData: onUpdateData,
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {
@@ -126,11 +195,8 @@ export function useParticipantsTable({
       },
     },
 
-    initialState: {
-      columnVisibility: { id: false },
-    },
     enableMultiSort: true,
   });
 
-  return { table, globalFilter };
+  return { table, globalFilter: serverState?.globalFilter ?? globalFilter };
 }

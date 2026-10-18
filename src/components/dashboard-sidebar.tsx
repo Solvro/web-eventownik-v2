@@ -14,8 +14,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import type { Attribute } from "@/types/attributes";
-import type { Event } from "@/types/event";
+import type { V3Attribute, V3Event } from "@/types/v3";
 
 interface SidebarSection {
   title: string;
@@ -32,8 +31,8 @@ export function DashboardSidebar({
   event,
   attributes,
 }: {
-  event: Event;
-  attributes: Attribute[];
+  event: Pick<V3Event, "uuid">;
+  attributes: Pick<V3Attribute, "uuid" | "name" | "type">[];
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar");

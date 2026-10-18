@@ -14,9 +14,9 @@ import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
-import { PHOTO_URL } from "@/lib/api";
+import { photoUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import { ActivateEvent } from "../app/dashboard/admin/activate-event";
 
@@ -24,8 +24,10 @@ export function EventCardBase({
   event,
   children,
   className,
+  participantsLimit,
 }: {
-  event: Event;
+  event: Pick<V3Event, "uuid" | "name" | "photoUrl" | "startDate">;
+  participantsLimit: number | null;
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -43,7 +45,7 @@ export function EventCardBase({
           src={
             event.photoUrl == null
               ? EventPhotoPlaceholder
-              : `${PHOTO_URL}/${event.photoUrl}`
+              : photoUrl(event.photoUrl)
           }
           width="500"
           height="500"
@@ -59,7 +61,7 @@ export function EventCardBase({
               </p>
             </EventInfoBlock>
             <EventInfoBlock>
-              <p className="text-sm">{event.participantsCount}</p>
+              <p className="text-sm">{participantsLimit}</p>
               <Users size={16} />
             </EventInfoBlock>
           </div>
@@ -75,11 +77,15 @@ export function EventCardBase({
   );
 }
 
-export function EventCard({ event }: { event: Event }) {
+export function EventCard({ event }: { event: V3Event }) {
   const t = useTranslations("Dashboard");
 
   return (
-    <EventCardBase event={event} className="border-muted border">
+    <EventCardBase
+      event={event}
+      participantsLimit={event.participantsLimit}
+      className="border-muted border"
+    >
       <div className="flex w-full items-center justify-between">
         <Button asChild variant="ghost" className="flex-1 justify-start">
           <Link href={`/dashboard/events/${event.uuid}`}>
@@ -104,7 +110,7 @@ export function EventCardForSuperadmin({
   event,
   bearerToken,
 }: {
-  event: Event;
+  event: V3Event;
   bearerToken: string;
 }) {
   const t = useTranslations("Dashboard");
@@ -112,9 +118,10 @@ export function EventCardForSuperadmin({
   return (
     <EventCardBase
       event={event}
+      participantsLimit={event.participantsLimit}
       className={cn(
         "border-2",
-        event.isActive ? "border-green-400" : "border-red-400",
+        event.isVerified ? "border-green-400" : "border-red-400",
       )}
     >
       <div className="flex w-full flex-col gap-2">
@@ -133,7 +140,7 @@ export function EventCardForSuperadmin({
         <ActivateEvent
           bearerToken={bearerToken}
           eventUuid={event.uuid}
-          isActive={event.isActive}
+          isActive={event.isVerified}
         />
       </div>
     </EventCardBase>

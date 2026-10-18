@@ -1,6 +1,10 @@
 import { Mail } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+
+import { PageNavigation } from "@/components/page-navigation";
+import { pageNumber, pageSize } from "@/lib/backend";
 
 import { CreateEmailTemplateForm } from "./create-email-template-form";
 import {
@@ -20,14 +24,27 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function DashboardEventEmailTemplatesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ uuid: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const t = await getTranslations("Dashboard");
   const { uuid } = await params;
-  const templates = await getEventEmails(uuid);
-  const attributes = await getEventAttributes(uuid);
-  const forms = await getEventForms(uuid);
+  const query = await searchParams;
+  const page = pageNumber(query.page);
+  const take = pageSize(query.take);
+  const [result, attributes, forms] = await Promise.all([
+    getEventEmails(uuid, page, take),
+    getEventAttributes(uuid),
+    getEventForms(uuid),
+  ]);
+  if (result !== null && page > Math.max(result.meta.pageCount, 1)) {
+    redirect(
+      `/dashboard/events/${uuid}/emails?page=${String(Math.max(result.meta.pageCount, 1))}&take=${String(take)}`,
+    );
+  }
+  const templates = result?.data ?? null;
 
   return (
     <div className="flex flex-col gap-8">
@@ -44,7 +61,11 @@ export default async function DashboardEventEmailTemplatesPage({
           <p className="text-red-600">{t("templatesLoadError")}</p>
         </div>
       ) : templates.length > 0 ? (
-        <SortableEmailGrid templates={templates} eventUuid={uuid} />
+        <SortableEmailGrid
+          templates={templates}
+          eventUuid={uuid}
+          offset={(page - 1) * take}
+        />
       ) : (
         <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
           <div className="flex w-full flex-col items-center justify-center py-12 text-center">
@@ -54,6 +75,14 @@ export default async function DashboardEventEmailTemplatesPage({
             </h3>
           </div>
         </div>
+      )}
+      {result === null ? null : (
+        <PageNavigation
+          meta={result.meta}
+          href={(nextPage) =>
+            `/dashboard/events/${uuid}/emails?page=${String(nextPage)}&take=${String(take)}`
+          }
+        />
       )}
     </div>
   );

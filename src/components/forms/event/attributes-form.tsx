@@ -54,6 +54,7 @@ export function AttributesForm({
     }
 
     const newAttribute: NewEventAttribute = {
+      uuid: `-${crypto.randomUUID()}`,
       name: label,
       type: "text",
       slug: crypto.randomUUID(),

@@ -38,7 +38,10 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
-import { getDefaultFormDates } from "@/lib/event-form-utils";
+import {
+  getDefaultFormDates,
+  withResolvedFormDates,
+} from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
 import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
 
@@ -51,7 +54,7 @@ function CreateEventFormForm({
   attributes,
 }: {
   eventUuid: string;
-  attributes: EventAttribute[];
+  attributes: Pick<EventAttribute, "uuid" | "name">[];
 }) {
   const t = useTranslations("EventDetails");
   const router = useRouter();
@@ -120,7 +123,10 @@ function CreateEventFormForm({
             attributes: includedAttributes,
           };
 
-          const result = await createEventForm(eventUuid, newForm);
+          const result = await createEventForm(
+            eventUuid,
+            withResolvedFormDates(newForm),
+          );
 
           if (result.success) {
             toast({

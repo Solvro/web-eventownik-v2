@@ -12,14 +12,14 @@ import { SanitizedContent } from "@/components/sanitized-content";
 import { SocialMediaLink } from "@/components/social-media-link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PHOTO_URL } from "@/lib/api";
+import { photoUrl } from "@/lib/api";
 import { parseLinks } from "@/lib/links";
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import EventPhotoPlaceholder from "../../../public/event-photo-placeholder.png";
 
 interface EventPageLayoutProps {
-  event: Event;
+  event: V3Event;
   description: string;
   children?: React.ReactNode;
   variant?: "landing" | "form";
@@ -47,7 +47,7 @@ export function EventPageLayout({
             backgroundImage: `${showForm ? "linear-gradient(to bottom, #1F1F1F40, #000000)" : "linear-gradient(to bottom, #1F1F1F40, #00000096, #000000b5)"}, url(${
               event.photoUrl == null
                 ? EventPhotoPlaceholder.src
-                : `${PHOTO_URL}/${event.photoUrl}`
+                : photoUrl(event.photoUrl)
             })`,
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -127,15 +127,15 @@ export function EventPageLayout({
                         </EventInfoDiv>
                       </Link>
                     ) : null}
-                    {event.organizer != null &&
-                    event.organizer.trim() !== "" ? (
+                    {event.organizerName != null &&
+                    event.organizerName.trim() !== "" ? (
                       <EventInfoDiv>
-                        <Building2 size={20} /> {event.organizer}
+                        <Building2 size={20} /> {event.organizerName}
                       </EventInfoDiv>
                     ) : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {generalLinks != null && generalLinks.length > 0
+                    {generalLinks.length > 0
                       ? generalLinks.map((link) => (
                           <SocialMediaLink link={link} key={link.url} />
                         ))

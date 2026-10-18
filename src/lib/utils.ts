@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import type { FormAttribute } from "@/types/attributes";
+import type { FormControlAttribute } from "@/types/attributes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,10 +58,13 @@ const requiredString = z
     message: "fieldRequired",
   });
 
-const validationRules: Record<FormAttribute["type"], z.ZodType> = {
+const validationRules: Record<FormControlAttribute["type"], z.ZodType> = {
   select: requiredString,
   text: requiredString,
   time: requiredString,
+  multiSelect: z
+    .array(z.string(), { required_error: "fieldMinSelect" })
+    .nonempty({ message: "fieldMinSelect" }),
   multiselect: z
     .array(z.string(), {
       required_error: "fieldMinSelect",
@@ -76,6 +79,7 @@ const validationRules: Record<FormAttribute["type"], z.ZodType> = {
     required_error: "fieldColorRequired",
   }),
   textarea: requiredString,
+  textArea: requiredString,
   number: z.coerce.number({
     required_error: "fieldRequired",
     invalid_type_error: "fieldNumber",
@@ -103,12 +107,23 @@ const validationRules: Record<FormAttribute["type"], z.ZodType> = {
   block: z.any(),
 };
 
-export function getSchemaObjectForAttribute(attribute: FormAttribute) {
+export function getSchemaObjectForAttribute(attribute: FormControlAttribute) {
   const baseRule = validationRules[attribute.type];
-  return attribute.isRequired ? baseRule : baseRule.optional();
+  if (attribute.isRequired) {
+    return baseRule;
+  }
+  if (attribute.type === "checkbox") {
+    return z.boolean().optional();
+  }
+  if (attribute.type === "multiselect" || attribute.type === "multiSelect") {
+    return z.array(z.string()).optional();
+  }
+  return z.union([baseRule, z.literal("")]).optional();
 }
 
-export function getSchemaObjectForAttributes(attributes: FormAttribute[]) {
+export function getSchemaObjectForAttributes(
+  attributes: FormControlAttribute[],
+) {
   return Object.fromEntries(
     attributes.map((attribute) => [
       attribute.uuid,

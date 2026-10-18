@@ -2,12 +2,14 @@
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
+import { attributeValue } from "@/lib/api-v3";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import type { FormErrorObject } from "@/types/forms";
+import type { V3Form } from "@/types/v3";
 
 interface ErrorResponse {
-  errors: FormErrorObject[];
-  message: string | undefined;
+  errors?: FormErrorObject[];
+  message?: string | string[];
 }
 
 interface SubmitFormOptions {
@@ -34,6 +36,28 @@ interface SubmitFormResult {
 }
 
 /**
+ * Uploads a file for a form and returns the token to submit as the attribute value
+ */
+async function uploadFormFile(eventSlug: string, formUuid: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(formUuid)}/files`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to upload file for attribute ${file.name}`);
+  }
+
+  const { fileToken } = (await response.json()) as { fileToken: string };
+  return fileToken;
+}
+
+/**
  * Server action for both register and 2nd stage participant form submissions.
  */
 export async function submitParticipantForm({
@@ -43,44 +67,57 @@ export async function submitParticipantForm({
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
-  if (!isValidUuid(eventUuid) || !isValidUuid(formUuid)) {
+  if (!isValidUuid(formUuid)) {
     return { success: false, error: { message: "Invalid form identifier" } };
   }
 
   try {
-    const formData = new FormData();
-
-    for (const file of files) {
-      // Filename of file is corresponding attribute id
-      formData.append(file.name, file);
+    const formResponse = await fetch(
+      `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${formUuid}`,
+    );
+    if (!formResponse.ok) {
+      return { success: false, error: { message: "Could not load form" } };
     }
+    const form = (await formResponse.json()) as V3Form;
+    // Filename of file is corresponding attribute id
+    const fileAttributes = await Promise.all(
+      files.map(async (file) => ({
+        attributeUuid: file.name,
+        value: await uploadFormFile(eventUuid, formUuid, file),
+      })),
+    );
 
-    if (participantSlug !== undefined) {
-      formData.append("participantSlug", participantSlug);
-    }
-
-    for (const [key, value] of Object.entries(values)) {
-      if (Array.isArray(value)) {
-        // Handle opting out
-        if (value.length === 0) {
-          formData.append(key, "null");
-          continue;
-        }
-
-        for (const item of value) {
-          formData.append(key, String(item));
-        }
-        continue;
-      }
-
-      formData.append(key, String(value));
-    }
+    const { email, token: captchaToken, ...attributeValues } = values;
+    const attributes = Object.entries(attributeValues)
+      .filter(
+        ([uuid, value]) =>
+          value !== undefined && !files.some((file) => file.name === uuid),
+      )
+      .map(([attributeUuid, value]) => ({
+        attributeUuid,
+        value: attributeValue(
+          form.formDefinitions.find(
+            (definition) => definition.attributeUuid === attributeUuid,
+          )?.attribute?.type ?? "text",
+          value,
+        ),
+      }));
 
     const response = await fetch(
-      `${API_URL}/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
+      `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          participantId: participantSlug,
+          // Read by the backend TurnstileGuard.
+          "cf-turnstile-response": captchaToken,
+          // Uploaded files go last so their tokens override any placeholder values
+          attributes: [...attributes, ...fileAttributes],
+        }),
       },
     );
 
@@ -94,10 +131,10 @@ export async function submitParticipantForm({
       );
 
       const errorMessages = [
-        errorData.message,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        ...(errorData.errors.map((error) => error.message) ?? []),
+        errorData.message ?? [],
+        (errorData.errors ?? []).map((error) => error.message),
       ]
+        .flat()
         .filter(Boolean)
         .join("\n");
 

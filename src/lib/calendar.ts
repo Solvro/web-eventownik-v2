@@ -1,11 +1,16 @@
 import { createEvent } from "ics";
 import sanitize from "sanitize-html";
 
-import type { Event } from "@/types/event";
+import type { V3Event } from "@/types/v3";
 
 import { downloadFile } from "./utils";
 
-export function downloadICSFile(event: Event) {
+type CalendarEvent = Pick<
+  V3Event,
+  "name" | "description" | "startDate" | "endDate" | "location" | "slug"
+>;
+
+export function downloadICSFile(event: CalendarEvent) {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
   const { error, value } = createEvent({
@@ -44,7 +49,7 @@ export function downloadICSFile(event: Event) {
   );
 }
 
-export function addToGoogleCalendar(event: Event) {
+export function addToGoogleCalendar(event: CalendarEvent) {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
 

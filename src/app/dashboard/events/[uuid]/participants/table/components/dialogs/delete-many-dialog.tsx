@@ -80,7 +80,11 @@ export function DeleteManyParticipantsDialog({
           <AlertDialogFooter className="flex gap-x-4">
             <AlertDialogAction
               onClick={async () => {
-                await deleteManyParticipants(participants);
+                try {
+                  await deleteManyParticipants(participants);
+                } catch {
+                  /* The mutation reports its error and retains the selection. */
+                }
               }}
               className={buttonVariants({
                 variant: "destructive",
