@@ -1,5 +1,6 @@
 import {
   cleanup,
+  findByText,
   getAllByRole,
   getByRole,
   getByText,
@@ -75,7 +76,9 @@ describe("Editing participant", () => {
     const toast = screen.getByRole("region");
     expect(toast).toBeVisible();
 
-    expect(getByText(getDataRow(rowIndexForEditing), newText)).toBeVisible();
+    expect(
+      await findByText(getDataRow(rowIndexForEditing), newText),
+    ).toBeVisible();
   });
 
   // Skipped due to mock strange behavior. Adding mockParticipantsGet will make cells not switch into edit mode.

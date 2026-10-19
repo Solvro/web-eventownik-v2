@@ -8,6 +8,7 @@ import sanitizeHtml from "sanitize-html";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { Button } from "@/components/ui/button";
 import { API_URL, PHOTO_URL } from "@/lib/api";
+import { legacyTranslate } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
 import { EventNotFound } from "./event-not-found";
@@ -37,7 +38,7 @@ export async function generateMetadata({
 
   return {
     title: event.name,
-    description: `${event.description == null ? event.name : sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} })} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
+    description: `${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")} | ${event.description == null ? event.name : legacyTranslate(sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} }), "pl")}`,
     openGraph: {
       images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
     },
