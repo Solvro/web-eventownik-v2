@@ -34,7 +34,8 @@ interface SubmitFormResult {
 }
 
 interface UploadFileResponse {
-  fileId: string;
+  fileToken: string;
+  expiresAt: string;
 }
 
 async function uploadFormFile(
@@ -79,7 +80,7 @@ export async function submitParticipantForm({
       const result = await uploadFormFile(eventUuid, formUuid, file);
       return {
         attributeUuid: file.name,
-        value: result.fileId,
+        value: result.fileToken,
       };
     });
 
@@ -97,6 +98,7 @@ export async function submitParticipantForm({
 
     const payload = {
       email,
+      "h-captcha-response": token,
       ...(participantSlug != null && { participantId: participantSlug }),
       attributes,
     };
