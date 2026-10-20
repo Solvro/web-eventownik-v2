@@ -12,6 +12,7 @@ import { API_URL, PHOTO_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
+import type { EventForm, FormDefinition, PublicEventForm } from "@/types/forms";
 
 import { FormGenerator } from "../form-generator";
 import { getEventBlockAttributeBlocks } from "../utils";
@@ -71,17 +72,30 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const event = (await eventResponse.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
-  const form = event.registerForm;
+  const formResponse = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(event.registerFormUuid)}`,
+    {
+      method: "GET",
+    },
+  );
 
-  if (form == null) {
+  if (!formResponse.ok) {
+    const error = (await formResponse.json()) as unknown;
+    console.error(error);
     return <EventNotFound whatNotFound="form" />;
   }
 
+  const publicForm = (await formResponse.json()) as PublicEventForm;
+
+  const formDefinitions = publicForm.formDefinitions.filter(
+    (definition): definition is FormDefinition => definition.attribute !== null,
+  );
+  const form: EventForm = { ...publicForm, formDefinitions };
   if (!isFormOpen(form)) {
     return <FormClosedView event={event} form={form} />;
   }
 
-  const attributes = form.formDefinitions.map((definition) => ({
+  const attributes = formDefinitions.map((definition) => ({
     ...definition.attribute,
     config: {
       ...definition.attribute.config,
@@ -142,7 +156,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
       <p className="mb-8">{t("fillForm")}</p>
 
       <FormGenerator
-        formDefinitions={form.formDefinitions}
+        formDefinitions={formDefinitions}
         originalEventBlocks={eventBlocks}
         formUuid={form.uuid}
         eventSlug={eventSlug}

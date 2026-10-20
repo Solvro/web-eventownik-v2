@@ -43,6 +43,14 @@ export interface FormDefinition {
   attribute: PublicFormAttribute;
 }
 
+export type PublicFormDefinition = Omit<FormDefinition, "attribute"> & {
+  attribute: PublicFormAttribute | null;
+};
+
+export type PublicEventForm = Omit<EventForm, "formDefinitions"> & {
+  formDefinitions: PublicFormDefinition[];
+};
+
 export interface GetPublicFormResponse {
   uuid: string;
   name: string;
