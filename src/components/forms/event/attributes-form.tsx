@@ -61,7 +61,7 @@ export function AttributesForm({
       config: {
         options: [],
         isSensitiveData: false,
-        isMultiple: false,
+        maxSelections: 1,
       },
     };
 

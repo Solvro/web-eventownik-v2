@@ -198,10 +198,6 @@ export function AttributeValueInput({
     }
 
     case "select": {
-      if (attribute.config.isMultiple ?? false) {
-        return renderMultiOptions(attribute.config.options);
-      }
-
       return (
         <Select
           value={value}

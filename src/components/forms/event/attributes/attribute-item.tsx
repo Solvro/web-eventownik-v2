@@ -333,57 +333,41 @@ export function AttributeItem({
           <p className="text-muted-foreground text-sm">
             {t("anonymousRegistrationsInfo")}
           </p>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id={`isMultiple-${index.toString()}`}
-              onCheckedChange={(checked) => {
-                setValue(
-                  `attributes.${index}.config.isMultiple`,
-                  checked === true,
-                );
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              defaultChecked={attribute.config.isMultiple}
-            />
-            <Label htmlFor={`isMultiple-${index.toString()}`}>
-              {t("allowMultipleSelection")}
-            </Label>
-          </div>
         </div>
       )}
 
-      {watch(`attributes.${index}.config.isMultiple`) === true &&
-        watch(`attributes.${index}.type`) === "block" && (
-          <div className="space-y-2">
-            <Label htmlFor={`maxSelections-${index.toString()}`}>
-              {t("maxSelectedBlocks")}
-            </Label>
-            <Input
-              id={`maxSelections-${index.toString()}`}
-              defaultValue={attribute.config.maxSelections ?? ""}
-              onChange={(event_) => {
-                setValue(
-                  `attributes.${index}.config.maxSelections`,
-                  Number.parseInt(event_.target.value),
-                );
-              }}
-              placeholder={t("example3")}
-              onBlur={() => {
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              type="number"
-              className="[appearance:textfield]"
-            />
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
+      {watch(`attributes.${index}.type`) === "block" && (
+        <div className="space-y-2">
+          <Label htmlFor={`maxSelections-${index.toString()}`}>
+            {t("maxSelectedBlocks")}
+          </Label>
+          <Input
+            id={`maxSelections-${index.toString()}`}
+            defaultValue={attribute.config.maxSelections ?? 1}
+            onChange={(event_) => {
+              setValue(
+                `attributes.${index}.config.maxSelections`,
+                Math.max(Number.parseInt(event_.target.value, 10) || 1, 1),
+              );
+            }}
+            placeholder={t("example3")}
+            onBlur={() => {
+              onUpdateItem?.(index, getValues(`attributes.${index}`));
+            }}
+            type="number"
+            min={1}
+            className="[appearance:textfield]"
+          />
+          <FormMessage className="text-sm text-red-500">
+            {translateOrFallback(
+              t,
 
-                formState.errors.attributes?.[index]?.config?.maxSelections
-                  ?.message as EventAttributesFormErrors,
-              )}
-            </FormMessage>
-          </div>
-        )}
+              formState.errors.attributes?.[index]?.config?.maxSelections
+                ?.message as EventAttributesFormErrors,
+            )}
+          </FormMessage>
+        </div>
+      )}
     </div>
   );
 }

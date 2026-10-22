@@ -223,8 +223,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
                 (attribute.config.isSensitiveData ?? false)
                   ? (attribute.config.reason ?? null)
                   : null,
-              isMultiple: attribute.config.isMultiple ?? false,
-              maxSelections: attribute.config.maxSelections ?? null,
+              maxSelections: attribute.config.maxSelections ?? 1,
             },
           }),
         },

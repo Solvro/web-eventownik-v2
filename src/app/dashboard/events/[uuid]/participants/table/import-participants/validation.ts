@@ -209,7 +209,7 @@ function validateAttributeValue(
       return { value: trimmed };
     }
     case "block": {
-      if (attribute.config.isMultiple ?? false) {
+      if ((attribute.config.maxSelections ?? 1) > 1) {
         const values = trimmed
           .split(MULTI_VALUE_SEPARATOR)
           .map((item) => item.trim())

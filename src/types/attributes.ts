@@ -5,7 +5,6 @@ export interface AttributeConfig {
   isSensitiveData?: boolean;
   reason?: string;
   allowOther?: boolean;
-  isMultiple?: boolean;
   isRequired?: boolean;
   maxSelections?: number;
 }

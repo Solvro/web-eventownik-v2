@@ -40,14 +40,12 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
-  isMultiple = false,
-  maxSelections = null,
+  maxSelections = 1,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
   userData?: Participant;
   eventBlocks: Block[];
-  isMultiple?: boolean;
-  maxSelections?: number | null;
+  maxSelections?: number;
 }) {
   const t = useTranslations("Form");
   const [searchText, setSearchText] = useDebouncedState("", {
@@ -61,6 +59,7 @@ export function AttributeBlocksWrapper({
     includeBlock(block, searchText, hideFullBlocks),
   );
 
+  const isMultiple = maxSelections > 1;
   const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
 
   const handleMultiChange = (blockUuid: string, checked: boolean) => {
@@ -118,11 +117,9 @@ export function AttributeBlocksWrapper({
           </Activity>
         </FieldGroup>
       )}
-      {maxSelections !== null && (
-        <p className="self-start text-sm">
-          {t("maxBlockSelections", { count: maxSelections })}
-        </p>
-      )}
+      <p className="self-start text-sm">
+        {t("maxBlockSelections", { count: maxSelections })}
+      </p>
       {isMultiple ? (
         <div
           className={cn(

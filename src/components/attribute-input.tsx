@@ -202,7 +202,6 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
-              isMultiple={attribute.config.isMultiple}
               maxSelections={attribute.config.maxSelections}
             />
           ))}

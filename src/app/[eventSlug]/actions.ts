@@ -90,7 +90,7 @@ export async function submitParticipantForm({
     const regularAttributes = Object.entries(attributeValues).map(
       ([attributeUuid, value]) => ({
         attributeUuid,
-        value: value ?? null,
+        value: value === "null" ? null : (value ?? null),
       }),
     );
 
