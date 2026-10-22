@@ -23,6 +23,8 @@ export interface CreateEventFormDto {
   description?: string;
   openDate: Date | null;
   closeDate: Date | null;
+  openTime: string;
+  closeTime: string;
   openCondition?: OpenCondition;
   order?: number;
   attributes: FormAttribute[];

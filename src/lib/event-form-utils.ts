@@ -77,11 +77,13 @@ export function getDefaultFormDates(
  */
 export function resolveFormDateTime(
   openCondition: CreateEventFormDto["openCondition"],
-  closeDate: CreateEventFormDto["closeDate"] | undefined,
+  date: CreateEventFormDto["openDate"] | undefined,
+  time: string | undefined,
 ): string | null {
   return openCondition === "ON_DATE" &&
-    closeDate !== null &&
-    closeDate !== undefined
-    ? closeDate.toISOString()
+    date !== null &&
+    date !== undefined &&
+    time !== undefined
+    ? combineDateAndTime(date, time).toISOString()
     : null;
 }
