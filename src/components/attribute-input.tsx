@@ -61,7 +61,7 @@ export function AttributeInput({
       return (
         <Select
           onValueChange={(val) => {
-            field.onChange(val === clearValue ? null : val);
+            field.onChange(val === clearValue ? undefined : val);
           }}
           defaultValue={field.value as string}
           {...field}
