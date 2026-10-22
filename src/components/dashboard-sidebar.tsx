@@ -180,7 +180,7 @@ export function DashboardSidebar({
   return (
     <>
       <nav
-        className={`easy-in border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-[width] duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
+        className={`border-muted hidden shrink-0 flex-col gap-3 overflow-hidden border-r transition-[width] duration-400 sm:flex ${isSideBarOpen ? "w-58" : "w-[60px]"}`}
       >
         {[
           ...sections,
