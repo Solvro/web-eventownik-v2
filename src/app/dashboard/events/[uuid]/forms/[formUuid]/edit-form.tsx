@@ -28,12 +28,14 @@ interface EventFormEditFormProps {
   eventUuid: string;
   formToEdit: EventForm;
   eventAttributes: Attribute[];
+  isFirstForm: boolean;
 }
 
 function EventFormEditForm({
   eventUuid,
   formToEdit,
   eventAttributes,
+  isFirstForm,
 }: EventFormEditFormProps) {
   const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
     formToEdit.formDefinitions
@@ -53,7 +55,7 @@ function EventFormEditForm({
         formToEdit.openDate === null ? null : new Date(formToEdit.openDate),
         formToEdit.closeDate === null ? null : new Date(formToEdit.closeDate),
       ),
-      isFirstForm: false,
+      isFirstForm,
       isOpen: formToEdit.isOpen,
       openCondition: formToEdit.openCondition,
     },
