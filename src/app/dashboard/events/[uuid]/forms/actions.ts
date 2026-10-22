@@ -28,7 +28,7 @@ export async function createEventForm(
     body: JSON.stringify({
       name: form.name,
       description: form.description,
-      openDate: resolveFormDateTime(form.openCondition, form.closeDate),
+      openDate: resolveFormDateTime(form.openCondition, form.openDate),
       closeDate: resolveFormDateTime(form.openCondition, form.closeDate),
       attributes: form.attributes,
       isFirstForm: form.isFirstForm,
