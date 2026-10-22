@@ -117,10 +117,14 @@ export function ParticipantForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...(includeEmail && { email: "" }),
-      ...userData?.attributes.reduce<Record<string, string>>((accumulator) => {
-        return accumulator;
-      }, {}),
+      ...(includeEmail && { email: userData?.email ?? "" }),
+      ...userData?.attributes.reduce<Record<string, string | number>>(
+        (accumulator, userAttribute) => {
+          accumulator[userAttribute.uuid] = userAttribute.value;
+          return accumulator;
+        },
+        {},
+      ),
     },
   });
 
