@@ -76,7 +76,7 @@ export default async function DashboardEventSettingsPage({
       <h1 className="mb-6 text-3xl font-bold">{t("editEvent")}</h1>
       <div className="flex flex-1 flex-col">
         <EventSettingsTabs
-          unmodifiedEvent={event}
+          unmodifiedEvent={{ ...event, attributes: attributes.data }}
           unmodifiedCoOrganizers={coOrganizers.data}
           unmodifiedAttributes={attributes.data}
         />
