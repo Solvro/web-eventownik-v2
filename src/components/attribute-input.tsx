@@ -26,12 +26,14 @@ export function AttributeInput({
   userData,
   eventBlocks,
   field,
+  isRequired = false,
   shouldCheckUserData = false,
 }: {
   attribute: PublicFormAttribute;
   userData?: Participant;
   eventBlocks?: Block[];
   field: ControllerRenderProps<FieldValues, string>;
+  isRequired?: boolean;
   shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
@@ -77,7 +79,7 @@ export function AttributeInput({
                 {option}
               </SelectItem>
             ))}
-            {!(attribute.config.isRequired ?? false) && (
+            {!isRequired && (
               <SelectItem value={clearValue}>{t("none")}</SelectItem>
             )}
           </SelectContent>

@@ -386,6 +386,7 @@ export function ParticipantForm({
                     ) : (
                       <AttributeInput
                         attribute={formDefinition.attribute}
+                        isRequired={formDefinition.isRequired}
                         userData={userData}
                         eventBlocks={eventBlocks.filter(
                           (block) =>
