@@ -39,7 +39,7 @@ export async function createSession(sessionPayload: SessionPayload) {
   const session = await encrypt(sessionPayload);
   const cookieStore = await cookies();
 
-  cookieStore.set("session", session, {
+  cookieStore.set("session-v3", session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -50,13 +50,13 @@ export async function createSession(sessionPayload: SessionPayload) {
 
 export async function deleteSession() {
   const cookieStore = await cookies();
-  cookieStore.delete("session");
+  cookieStore.delete("session-v3");
   redirect("/");
 }
 
 export const verifySession = cache(async () => {
   const cookie = await cookies();
-  const cookieSession = cookie.get("session")?.value;
+  const cookieSession = cookie.get("session-v3")?.value;
   if (cookieSession !== undefined) {
     const session = await decrypt(cookieSession);
 
