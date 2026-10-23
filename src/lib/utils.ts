@@ -161,21 +161,29 @@ export function getAttributeLabel(name: string, language: string) {
   }
 }
 
-export function getNextCopyName(name: string, existingNames: string[]) {
-  const baseName = name.replace(/ \(\d+\)$/, "");
+export function getNextCopyName(
+  name: string,
+  existingNames: string[],
+  english?: boolean,
+) {
+  const baseName = name.replace(/ \((?:copy|kopia) \d+\)$/, "");
   let highestNumber = 0;
 
   for (const existingName of existingNames) {
     if (
-      existingName.startsWith(`${baseName} (`) &&
+      existingName.startsWith(
+        `${baseName} (${english === true ? "copy" : "kopia"} `,
+      ) &&
       existingName.endsWith(")")
     ) {
-      const copyNumber = Number(existingName.slice(baseName.length + 2, -1));
+      const copyNumber = Number(
+        existingName.slice(baseName.length + (english === true ? 7 : 8), -1),
+      );
       if (Number.isInteger(copyNumber) && copyNumber > highestNumber) {
         highestNumber = copyNumber;
       }
     }
   }
 
-  return `${baseName} (${(highestNumber + 1).toString()})`;
+  return `${baseName} (${english === true ? "copy" : "kopia"} ${(highestNumber + 1).toString()})`;
 }

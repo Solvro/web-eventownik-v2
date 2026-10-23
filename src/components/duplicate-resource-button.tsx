@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { ErrorMessage } from "@/app/dashboard/(create-event)/actions";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface DuplicateResourceButtonProps {
   resourceName: string;
   resourceType: string;
-  onDuplicate: () => Promise<{ success: boolean }>;
+  onDuplicate: () => Promise<{ success: boolean; warnings?: ErrorMessage[] }>;
   variant?: "eventGhost" | "ghost";
   className?: string;
 }
@@ -30,16 +31,22 @@ function DuplicateResourceButton({
 
   async function onSubmit() {
     setIsPending(true);
-    const result = await onDuplicate();
-    setIsPending(false);
+    let result: { success: boolean; warnings?: ErrorMessage[] };
+    try {
+      result = await onDuplicate();
+    } catch {
+      result = { success: false };
+    } finally {
+      setIsPending(false);
+    }
 
     if (result.success) {
       toast({
         title: t("resourceDuplicated", { resourceType }),
-        description: t("resourceDuplicatedWithName", {
-          resourceType,
-          resourceName,
-        }),
+        description:
+          result.warnings === undefined
+            ? t("resourceDuplicatedWithName", { resourceType, resourceName })
+            : result.warnings.map((w) => t(w.key, w.values)).join("\n"),
       });
     } else {
       toast({
@@ -59,7 +66,7 @@ function DuplicateResourceButton({
       className={className}
       title={`${t("duplicate")} ${resourceType.toLowerCase()}`}
       disabled={isPending}
-      onClick={() => onSubmit()}
+      onClick={async () => onSubmit()}
     >
       {isPending ? <Loader className="animate-spin" /> : <Copy />}
       <span className="sr-only">

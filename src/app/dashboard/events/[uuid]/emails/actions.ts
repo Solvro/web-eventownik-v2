@@ -1,5 +1,6 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type { EventDetailsKey } from "@/i18n/utils";
@@ -8,7 +9,7 @@ import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
-import { getEventEmails, getSingleEventEmail } from "./data-access";
+import { getSingleEventEmail } from "./data-access";
 
 export async function getSingleEventEmailAction(
   eventUuid: string,
@@ -203,10 +204,18 @@ export async function duplicateEventEmail(
     return { success: false };
   }
 
-  const existing = (await getEventEmails(eventUuid)) ?? [];
+  const existingResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/emails?take=100`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
+  const existing = existingResponse.ok
+    ? ((await existingResponse.json()) as { data: { name: string }[] }).data
+    : [];
+
   const newName = getNextCopyName(
     sourceName,
     existing.map((item) => item.name),
+    (await getLocale()) === "en",
   );
 
   const response = await fetch(

@@ -1,5 +1,7 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
+
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
@@ -7,8 +9,6 @@ import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { CompleteEventForm } from "@/types/forms";
-
-import { getEventForms } from "./data-access";
 
 export type Payload = Omit<
   CompleteEventForm,
@@ -249,10 +249,21 @@ export async function duplicateEventForm(
     return { success: false };
   }
 
-  const existing = await getEventForms(eventUuid);
+  const existingResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/forms?name=${encodeURIComponent(sourceName.replace(/ \((?:copy|kopia) \d+\)$/, ""))}&take=100`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
+  const existing = existingResponse.ok
+    ? (
+        (await existingResponse.json()) as {
+          data: { name: string }[];
+        }
+      ).data
+    : [];
   const newName = getNextCopyName(
     sourceName,
     existing.map((item) => item.name),
+    (await getLocale()) === "en",
   );
 
   const response = await fetch(

@@ -1,5 +1,6 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type { EventDetailsKey } from "@/i18n/utils";
@@ -7,7 +8,7 @@ import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
-import { Block } from "@/types/blocks";
+import type { Block } from "@/types/blocks";
 
 export async function reorderBlockAttributes(
   eventUuid: string,
@@ -340,7 +341,11 @@ export async function duplicateBlock(
       method: "POST",
       headers,
       body: JSON.stringify({
-        name: getNextCopyName(sourceName, siblingNames),
+        name: getNextCopyName(
+          sourceName,
+          siblingNames,
+          (await getLocale()) === "en",
+        ),
       }),
     },
   );

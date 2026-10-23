@@ -1,25 +1,22 @@
 "use server";
 
 import { formatDate } from "date-fns";
+import { getLocale } from "next-intl/server";
 
-import { isSlugTaken, saveEvent } from "@/app/dashboard/(create-event)/actions";
+import type { ErrorMessage } from "@/app/dashboard/(create-event)/actions";
+import { saveEvent } from "@/app/dashboard/(create-event)/actions";
 import { createEventEmail } from "@/app/dashboard/events/[uuid]/emails/actions";
-import {
-  getEventEmails,
-  getSingleEventEmail,
-} from "@/app/dashboard/events/[uuid]/emails/data-access";
-import {
-  getEventAttributes,
-  getEventForms,
-  getSingleEventForm,
-} from "@/app/dashboard/events/[uuid]/forms/data-access";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { getSingleEventEmail } from "@/app/dashboard/events/[uuid]/emails/data-access";
+import { getSingleEventForm } from "@/app/dashboard/events/[uuid]/forms/data-access";
+import { API_URL } from "@/lib/api";
 import { getUser } from "@/lib/dal";
 import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
+import type { EventAttribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { CoOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
+import type { EventForm } from "@/types/forms";
 
 export async function duplicateEvent(eventUuid: string) {
   const session = await verifySession();
@@ -30,7 +27,7 @@ export async function duplicateEvent(eventUuid: string) {
     Authorization: `Bearer ${session.bearerToken}`,
     "Content-Type": "application/json",
   };
-  let hasErrors = false;
+  const warnings: ErrorMessage[] = [];
 
   // event
   const eventResponse = await fetch(`${API_URL}/events/${eventUuid}`, {
@@ -45,24 +42,24 @@ export async function duplicateEvent(eventUuid: string) {
   }
   const event = (await eventResponse.json()) as Event;
 
-  const eventsResponse = await fetch(`${API_URL}/events`, { headers });
+  const eventsResponse = await fetch(
+    `${API_URL}/events?name=${encodeURIComponent(event.name.replace(/ \((?:copy|kopia) \d+\)$/, ""))}&take=100`,
+    { headers },
+  );
   const myEvents = eventsResponse.ok
     ? ((await eventsResponse.json()) as { data: Event[] }).data
     : [];
   const newName = getNextCopyName(
     event.name,
     myEvents.map((myEvent) => myEvent.name),
+    (await getLocale()) === "en",
   );
 
-  const baseSlug = event.slug.replace(/-copy-\d+$/, "");
-  let slugNumber = 1;
-  while (await isSlugTaken(`${baseSlug}-copy-${slugNumber.toString()}`)) {
-    slugNumber++;
-  }
+  const baseSlug = event.slug.replace(/-copy-[\da-z]+$/, "");
 
   let photoDataUrl = "";
   if (event.photoUrl != null && event.photoUrl !== "") {
-    const photoResponse = await fetch(`${PHOTO_URL}/${event.photoUrl}`);
+    const photoResponse = await fetch(event.photoUrl);
     if (photoResponse.ok) {
       const contentType =
         photoResponse.headers.get("content-type") ?? "image/jpeg";
@@ -71,7 +68,7 @@ export async function duplicateEvent(eventUuid: string) {
       );
       photoDataUrl = `data:${contentType};base64,${base64}`;
     } else {
-      hasErrors = true;
+      warnings.push({ key: "eventPhotoCopyWarning" });
       console.error(`[duplicateEvent] Failed to fetch photo of ${eventUuid}`);
     }
   }
@@ -93,7 +90,7 @@ export async function duplicateEvent(eventUuid: string) {
     socialMediaLinks: event.links
       .filter((link) => link.type === "general")
       .map((link) => ({ label: link.label, url: link.url, type: link.type })),
-    slug: `${baseSlug}-kopia-${slugNumber.toString()}`,
+    slug: `${baseSlug}-copy-${Date.now().toString(36)}`,
     contactEmail: event.contactEmail ?? undefined,
     coorganizers: [],
     attributes: [],
@@ -111,8 +108,9 @@ export async function duplicateEvent(eventUuid: string) {
 
   // coorganizers
   const user = await getUser();
+  //TODO: pagination issue (applies to all GET fetches in this file)
   const organizersResponse = await fetch(
-    `${API_URL}/events/${eventUuid}/organizers`,
+    `${API_URL}/events/${eventUuid}/organizers?take=100`,
     { headers },
   );
   const coorganizers = organizersResponse.ok
@@ -136,7 +134,10 @@ export async function duplicateEvent(eventUuid: string) {
       },
     );
     if (!response.ok) {
-      hasErrors = true;
+      warnings.push({
+        key: "coOrganizerAddWarning",
+        values: { email: coorganizer.email },
+      });
       console.error(
         `[duplicateEvent] Failed to add co-organizer ${coorganizer.email}:`,
         await response.text(),
@@ -146,9 +147,27 @@ export async function duplicateEvent(eventUuid: string) {
 
   // attributes
   const attributeUuidMap = new Map<string, string>();
-  const attributes = (await getEventAttributes(eventUuid)).toSorted(
-    (a, b) => (a.order ?? 0) - (b.order ?? 0),
+  const attributeResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/attributes?take=100`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
   );
+
+  if (!attributeResponse.ok) {
+    warnings.push({ key: "attributesFetchWarning" });
+    console.warn(
+      `[duplicateEvent] Failed to fetch available attributes when attempting to duplicate event ${eventUuid}:`,
+      attributeResponse,
+    );
+  }
+
+  const attributes = attributeResponse.ok
+    ? ((await attributeResponse.json()) as { data: EventAttribute[] }).data
+    : [];
 
   for (const attribute of attributes) {
     const response = await fetch(
@@ -174,8 +193,11 @@ export async function duplicateEvent(eventUuid: string) {
       },
     );
     if (!response.ok) {
-      hasErrors = true;
-      console.error(
+      warnings.push({
+        key: "attributeAddWarning",
+        values: { name: attribute.name },
+      });
+      console.warn(
         `[duplicateEvent] Failed to copy attribute ${attribute.name}:`,
         await response.text(),
       );
@@ -224,8 +246,11 @@ export async function duplicateEvent(eventUuid: string) {
               },
             );
             if (!blockResponse.ok) {
-              hasErrors = true;
-              console.error(
+              warnings.push({
+                key: "blockCopyWarning",
+                values: { name: child.name },
+              });
+              console.warn(
                 `[duplicateEvent] Failed to copy block ${child.name}:`,
                 await blockResponse.text(),
               );
@@ -242,14 +267,35 @@ export async function duplicateEvent(eventUuid: string) {
 
   // forms
   const formUuidMap = new Map<string, string>();
-  const forms = (await getEventForms(eventUuid)).toSorted(
-    (a, b) => a.order - b.order,
+  const formsResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/forms?take=100`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
   );
+
+  if (!formsResponse.ok) {
+    warnings.push({ key: "formsFetchWarning" });
+    console.warn(
+      `[duplicateEvent] Failed to fetch forms for event ${eventUuid}:`,
+      formsResponse,
+    );
+  }
+
+  const forms = formsResponse.ok
+    ? ((await formsResponse.json()) as { data: EventForm[] }).data
+    : [];
 
   for (const formFromList of forms) {
     const form = await getSingleEventForm(eventUuid, formFromList.uuid);
     if (form === null) {
-      hasErrors = true;
+      warnings.push({
+        key: "formCopyWarning",
+        values: { name: formFromList.name },
+      });
       continue;
     }
     const response = await fetch(`${API_URL}/events/${newEventUuid}/forms`, {
@@ -279,8 +325,8 @@ export async function duplicateEvent(eventUuid: string) {
       }),
     });
     if (!response.ok) {
-      hasErrors = true;
-      console.error(
+      warnings.push({ key: "formCopyWarning", values: { name: form.name } });
+      console.warn(
         `[duplicateEvent] Failed to copy form ${form.name}:`,
         await response.text(),
       );
@@ -291,12 +337,34 @@ export async function duplicateEvent(eventUuid: string) {
   }
 
   // emails
-  const emails = (await getEventEmails(eventUuid)) ?? [];
+  const emailsResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/emails?take=100`,
+    { headers },
+  );
 
-  for (const emailFromList of emails.toSorted((a, b) => a.order - b.order)) {
-    const email = await getSingleEventEmail(eventUuid, emailFromList.uuid);
+  if (!emailsResponse.ok) {
+    warnings.push({ key: "emailsFetchWarning" });
+    console.warn(
+      `[duplicateEvent] Failed to fetch emails for event ${eventUuid}:`,
+      await emailsResponse.text(),
+    );
+  }
+
+  const emails = emailsResponse.ok
+    ? (
+        (await emailsResponse.json()) as {
+          data: { id: string; name: string }[];
+        }
+      ).data
+    : [];
+
+  for (const emailFromList of emails) {
+    const email = await getSingleEventEmail(eventUuid, emailFromList.id);
     if (email === null) {
-      hasErrors = true;
+      warnings.push({
+        key: "emailCopyWarning",
+        values: { name: emailFromList.name },
+      });
       continue;
     }
     const emailResult = await createEventEmail({
@@ -316,9 +384,12 @@ export async function duplicateEvent(eventUuid: string) {
       },
     });
     if (!emailResult.success) {
-      hasErrors = true;
+      warnings.push({ key: "emailCopyWarning", values: { name: email.name } });
     }
   }
 
-  return { success: !hasErrors };
+  return {
+    success: true,
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
 }

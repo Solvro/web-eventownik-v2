@@ -14,7 +14,7 @@ export async function isSlugTaken(slug: string) {
   return response.ok;
 }
 
-interface ErrorMessage {
+export interface ErrorMessage {
   key: DashboardKey;
   values?: Record<string, string | number | Date>;
 }
