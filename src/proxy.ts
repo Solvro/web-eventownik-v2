@@ -14,9 +14,12 @@ function redirectToLogin(request: NextRequest) {
   const response = NextResponse.redirect(loginUrl);
 
   response.cookies.delete("refresh_token");
-  response.cookies.delete("session-v3");
 
   return response;
+}
+
+function hasRefreshToken(request: NextRequest): boolean {
+  return Boolean(request.cookies.get("refresh_token")?.value);
 }
 
 export async function proxy(request: NextRequest) {
@@ -25,6 +28,14 @@ export async function proxy(request: NextRequest) {
   const initialSession = await verifySession();
 
   if (initialSession === null) {
+    if (!hasRefreshToken(request)) {
+      if (request.nextUrl.pathname.startsWith("/dashboard")) {
+        return redirectToLogin(request);
+      }
+
+      return response;
+    }
+
     try {
       const backendResponse = await fetch(`${API_URL}/auth/refresh`, {
         method: "POST",
@@ -35,9 +46,9 @@ export async function proxy(request: NextRequest) {
 
       if (backendResponse.ok) {
         const data = (await backendResponse.json()) as AuthSuccessResponse;
-        const setCookieHeader = backendResponse.headers.get("set-cookie");
+        const backendSetCookie = backendResponse.headers.getSetCookie();
 
-        if (setCookieHeader != null) {
+        for (const setCookieHeader of backendSetCookie) {
           response.cookies.set(parseSetCookieHeader(setCookieHeader));
         }
 
@@ -56,7 +67,6 @@ export async function proxy(request: NextRequest) {
         }
 
         response.cookies.delete("refresh_token");
-        response.cookies.delete("session-v3");
       }
     } catch (error) {
       console.error("[Middleware] Failed to refresh token:", error);
@@ -66,7 +76,6 @@ export async function proxy(request: NextRequest) {
       }
 
       response.cookies.delete("refresh_token");
-      response.cookies.delete("session-v3");
     }
   }
 
@@ -74,7 +83,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
+  matcher: ["/", "/auth/:path*", "/dashboard/:path*"],
 };

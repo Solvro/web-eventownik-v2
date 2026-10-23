@@ -51,7 +51,7 @@ async function decrypt(session: string | undefined = "") {
 
 export async function createSession(
   sessionPayload: SessionPayload,
-  backendSetCookie: string | null,
+  backendSetCookie: string[],
 ) {
   const expiresAt = new Date(Date.now() + sessionCookieMaxAge * 1000);
   const session = await encrypt(sessionPayload);
@@ -65,8 +65,8 @@ export async function createSession(
     path: "/",
   });
 
-  if (backendSetCookie !== null) {
-    cookieStore.set(parseSetCookieHeader(backendSetCookie));
+  for (const setCookieHeader of backendSetCookie) {
+    cookieStore.set(parseSetCookieHeader(setCookieHeader));
   }
 }
 

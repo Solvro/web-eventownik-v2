@@ -2,7 +2,6 @@ export interface CookieOptions {
   name: string;
   value: string;
   path?: string;
-  domain?: string;
   httpOnly?: boolean;
   secure?: boolean;
   maxAge?: number;
@@ -20,6 +19,7 @@ export function parseSetCookieHeader(setCookieHeader: string): CookieOptions {
   const cookieOptions: CookieOptions = {
     name: cookieName,
     value: cookieValue,
+    sameSite: "lax",
   };
 
   for (const attribute of attributes) {
@@ -29,9 +29,6 @@ export function parseSetCookieHeader(setCookieHeader: string): CookieOptions {
 
     if (key === "path") {
       cookieOptions.path = "/";
-    }
-    if (key === "domain") {
-      cookieOptions.domain = value;
     }
     if (key === "httponly") {
       cookieOptions.httpOnly = true;
@@ -44,9 +41,6 @@ export function parseSetCookieHeader(setCookieHeader: string): CookieOptions {
     }
     if (key === "expires") {
       cookieOptions.expires = new Date(value);
-    }
-    if (key === "samesite") {
-      cookieOptions.sameSite = value as "lax" | "strict" | "none";
     }
   }
 

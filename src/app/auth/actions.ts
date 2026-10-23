@@ -59,7 +59,7 @@ export async function login(
     }).then(async (response) => {
       switch (response.status) {
         case 201: {
-          const backendSetCookie = response.headers.get("set-cookie");
+          const backendSetCookie = response.headers.getSetCookie();
           const data = (await response.json()) as AuthSuccessResponse;
 
           return { ...data, backendSetCookie };
