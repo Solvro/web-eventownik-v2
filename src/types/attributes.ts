@@ -2,6 +2,7 @@ import type { PaginationMeta } from "./common";
 
 export interface AttributeConfig {
   options?: string[];
+  participantFields?: string[];
   isSensitiveData?: boolean;
   reason?: string;
   allowOther?: boolean;

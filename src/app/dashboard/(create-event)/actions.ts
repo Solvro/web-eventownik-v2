@@ -214,10 +214,16 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
             showInList: attribute.showInList,
             order: attribute.order,
             config: {
-              options:
-                (attribute.config.options ?? []).length > 0
-                  ? attribute.config.options
-                  : null,
+              ...(attribute.type === "block"
+                ? {
+                    participantFields: attribute.config.participantFields ?? [],
+                  }
+                : {
+                    options:
+                      (attribute.config.options ?? []).length > 0
+                        ? attribute.config.options
+                        : null,
+                  }),
               isSensitiveData: attribute.config.isSensitiveData,
               reason:
                 (attribute.config.isSensitiveData ?? false)

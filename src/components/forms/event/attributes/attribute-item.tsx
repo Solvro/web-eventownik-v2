@@ -235,7 +235,7 @@ export function AttributeItem({
         </div>
       </div>
 
-      {watch(`attributes.${index}.config.isSensitiveData`) ? (
+      {(watch(`attributes.${index}.config.isSensitiveData`) ?? false) ? (
         <div className="my-2 flex flex-col gap-2">
           <Label htmlFor={`reason-${index.toString()}`}>
             {t("sensitiveDataReason")}
@@ -322,12 +322,12 @@ export function AttributeItem({
                 .map((a) => ({ label: a.name, value: a.uuid })),
             ]}
             onValueChange={(values) => {
-              setValue(`attributes.${index}.config.options`, values);
+              setValue(`attributes.${index}.config.participantFields`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
             defaultValue={(
-              getValues(`attributes.${index}.config.options`) ?? []
-            ).map((option) => getOptionValue(option))}
+              getValues(`attributes.${index}.config.participantFields`) ?? []
+            ).map((field) => getOptionValue(field))}
             placeholder={t("selectAttributesToDisplay")}
           />
           <p className="text-muted-foreground text-sm">
