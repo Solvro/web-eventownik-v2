@@ -7,7 +7,7 @@ export interface AttributeConfig {
   reason?: string;
   allowOther?: boolean;
   isRequired?: boolean;
-  maxSelections?: number;
+  maxSelections?: number | null;
 }
 export type AttributeOption = string | { label: string; value: string };
 

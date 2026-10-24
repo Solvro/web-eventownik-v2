@@ -229,7 +229,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
                 (attribute.config.isSensitiveData ?? false)
                   ? (attribute.config.reason ?? null)
                   : null,
-              maxSelections: attribute.config.maxSelections ?? 1,
+              maxSelections:
+                attribute.type === "block"
+                  ? (attribute.config.maxSelections ?? 1)
+                  : null,
             },
           }),
         },

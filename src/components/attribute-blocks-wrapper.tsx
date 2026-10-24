@@ -45,7 +45,7 @@ export function AttributeBlocksWrapper({
   field: ControllerRenderProps<FieldValues, string>;
   userData?: Participant;
   eventBlocks: Block[];
-  maxSelections?: number;
+  maxSelections?: number | null;
 }) {
   const t = useTranslations("Form");
   const [searchText, setSearchText] = useDebouncedState("", {
@@ -59,13 +59,14 @@ export function AttributeBlocksWrapper({
     includeBlock(block, searchText, hideFullBlocks),
   );
 
-  const isMultiple = maxSelections > 1;
+  const resolvedMaxSelections = maxSelections ?? 1;
+  const isMultiple = resolvedMaxSelections > 1;
   const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
 
   const handleMultiChange = (blockUuid: string, checked: boolean) => {
     const current = (field.value ?? []) as string[];
     if (checked) {
-      if (maxSelections !== null && current.length >= maxSelections) {
+      if (current.length >= resolvedMaxSelections) {
         return;
       }
       field.onChange([...current, blockUuid]);
@@ -118,7 +119,7 @@ export function AttributeBlocksWrapper({
         </FieldGroup>
       )}
       <p className="self-start text-sm">
-        {t("maxBlockSelections", { count: maxSelections })}
+        {t("maxBlockSelections", { count: resolvedMaxSelections })}
       </p>
       {isMultiple ? (
         <div
@@ -165,8 +166,7 @@ export function AttributeBlocksWrapper({
               }}
               disabled={
                 !(selectedValues?.includes(childBlock.uuid) ?? false) &&
-                maxSelections !== null &&
-                (selectedValues?.length ?? 0) >= maxSelections
+                (selectedValues?.length ?? 0) >= resolvedMaxSelections
               }
             />
           ))}

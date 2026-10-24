@@ -611,6 +611,7 @@
     "drawingRequired": "Please draw something",
     "fieldRequired": "Field {name} cannot be empty",
     "fieldMinSelect": "Select at least one option for field {name}",
+    "fieldMaxSelect": "Selected too many options for field {name}",
     "fieldEmail": "Field {name} must be a valid email address",
     "fieldColorRequired": "Select a color for field {name}",
     "fieldNumber": "Field {name} must be a number",

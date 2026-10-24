@@ -43,6 +43,7 @@ export function nameToSlug(name: string): string {
 export type FormValidationErrors =
   | "fieldRequired"
   | "fieldMinSelect"
+  | "fieldMaxSelect"
   | "fieldEmail"
   | "fieldColorRequired"
   | "fieldNumber"
@@ -59,17 +60,19 @@ const requiredString = z
     message: "fieldRequired",
   });
 
+const multiSelectRule = z
+  .array(z.string(), {
+    required_error: "fieldMinSelect",
+  })
+  .nonempty({
+    message: "fieldMinSelect",
+  });
+
 const validationRules: Record<PublicFormAttribute["type"], z.ZodType> = {
   select: requiredString,
   text: requiredString,
   time: requiredString,
-  multiSelect: z
-    .array(z.string(), {
-      required_error: "fieldMinSelect",
-    })
-    .nonempty({
-      message: "fieldMinSelect",
-    }),
+  multiSelect: multiSelectRule,
   email: requiredString.email({
     message: "fieldEmail",
   }),
@@ -107,7 +110,13 @@ const validationRules: Record<PublicFormAttribute["type"], z.ZodType> = {
 export function getSchemaObjectForFormDefinition(
   formDefinition: FormDefinition,
 ) {
-  const baseRule = validationRules[formDefinition.attribute.type];
+  const baseRule =
+    formDefinition.attribute.type === "multiSelect" &&
+    formDefinition.attribute.config.maxSelections != null
+      ? multiSelectRule.max(formDefinition.attribute.config.maxSelections, {
+          message: "fieldMaxSelect",
+        })
+      : validationRules[formDefinition.attribute.type];
   return formDefinition.isRequired ? baseRule : baseRule.optional();
 }
 

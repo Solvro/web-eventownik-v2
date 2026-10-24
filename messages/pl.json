@@ -611,6 +611,7 @@
     "drawingRequired": "To pole wymaga narysowania czegoś",
     "fieldRequired": "Pole {name} nie może być puste",
     "fieldMinSelect": "Wybierz przynajmniej jedną opcję dla pola {name}",
+    "fieldMaxSelect": "Wybrano zbyt wiele opcji dla pola {name}",
     "fieldEmail": "Pole {name} musi być adresem email",
     "fieldColorRequired": "Wybierz kolor dla pola {name}",
     "fieldNumber": "Pole {name} musi być liczbą",
