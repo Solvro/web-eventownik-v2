@@ -14,7 +14,7 @@ export default async function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   // eslint-disable-next-line unicorn/no-await-expression-member
-  const session = (await cookies()).get("session");
+  const session = (await cookies()).get("session-v3");
 
   if (session != null) {
     redirect("/dashboard/events");

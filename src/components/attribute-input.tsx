@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import { format } from "date-fns";
 import { useLocale, useTranslations } from "next-intl";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
@@ -14,8 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getAttributeLabel } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
+import type { PublicFormAttribute } from "@/types/attributes";
+import type { Block } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeBlocksWrapper } from "./attribute-blocks-wrapper";
@@ -25,12 +26,14 @@ export function AttributeInput({
   userData,
   eventBlocks,
   field,
+  isRequired = false,
   shouldCheckUserData = false,
 }: {
-  attribute: FormAttribute;
+  attribute: PublicFormAttribute;
   userData?: PublicParticipant;
-  eventBlocks?: PublicBlock[];
+  eventBlocks?: Block[];
   field: ControllerRenderProps<FieldValues, string>;
+  isRequired?: boolean;
   shouldCheckUserData?: boolean;
 }) {
   const locale = useLocale();
@@ -53,9 +56,13 @@ export function AttributeInput({
       );
     }
     case "select": {
+      const clearValue = "__NONE__";
+
       return (
         <Select
-          onValueChange={field.onChange}
+          onValueChange={(val) => {
+            field.onChange(val === clearValue ? undefined : val);
+          }}
           defaultValue={field.value as string}
           {...field}
         >
@@ -67,69 +74,45 @@ export function AttributeInput({
             />
           </SelectTrigger>
           <SelectContent>
-            {attribute.options?.map((option) => {
-              const optionValue =
-                typeof option === "string" ? option : option.value;
-              const optionLabel =
-                typeof option === "string" ? option : option.label;
-              return (
-                <SelectItem key={optionValue} value={optionValue}>
-                  {optionLabel}
-                </SelectItem>
-              );
-            })}
-            {/* 
-            This hacky solution allows for setting "empty" option/ "unchecking" option
-            Filtering logic is based on this value (" ")
-            Feel free to propose better solution
-            */}
-            {!("isRequired" in attribute ? attribute.isRequired : false) && (
-              <SelectItem value={" "}>{t("none")}</SelectItem>
+            {attribute.config.options?.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+            {!isRequired && (
+              <SelectItem value={clearValue}>{t("none")}</SelectItem>
             )}
           </SelectContent>
         </Select>
       );
     }
-    case "multiselect": {
+    case "multiSelect": {
       return (
         <div className="border-input flex w-full flex-col rounded-xl border bg-transparent px-4 py-3 text-lg shadow-xs transition-colors">
-          {attribute.options?.map((option) => {
-            const optionValue =
-              typeof option === "string" ? option : option.value;
-            const optionLabel =
-              typeof option === "string" ? option : option.label;
-            return (
-              <div
-                key={optionValue}
-                className="mb-2 flex items-center space-x-2"
-              >
-                <Checkbox
-                  id={`${attribute.uuid}-${optionValue}`}
-                  disabled={field.disabled}
-                  checked={((field.value ?? []) as string[]).includes(
-                    optionValue,
-                  )}
-                  onCheckedChange={(checked) => {
-                    if (checked === true) {
-                      field.onChange([
-                        ...((field.value ?? []) as string[]),
-                        optionValue,
-                      ]);
-                    } else {
-                      field.onChange(
-                        ((field.value ?? []) as string[]).filter(
-                          (v: string) => v !== optionValue,
-                        ),
-                      );
-                    }
-                  }}
-                />
-                <Label htmlFor={`${attribute.uuid}-${optionValue}`}>
-                  {optionLabel}
-                </Label>
-              </div>
-            );
-          })}
+          {attribute.config.options?.map((option) => (
+            <div key={option} className="mb-2 flex items-center space-x-2">
+              <Checkbox
+                id={`${attribute.uuid}-${option}`}
+                disabled={field.disabled}
+                checked={((field.value ?? []) as string[]).includes(option)}
+                onCheckedChange={(checked) => {
+                  if (checked === true) {
+                    field.onChange([
+                      ...((field.value ?? []) as string[]),
+                      option,
+                    ]);
+                  } else {
+                    field.onChange(
+                      ((field.value ?? []) as string[]).filter(
+                        (value: string) => value !== option,
+                      ),
+                    );
+                  }
+                }}
+              />
+              <Label htmlFor={`${attribute.uuid}-${option}`}>{option}</Label>
+            </div>
+          ))}
         </div>
       );
     }
@@ -170,7 +153,7 @@ export function AttributeInput({
         />
       );
     }
-    case "textarea": {
+    case "textArea": {
       return <Textarea rows={3} id={attribute.uuid} {...field} />;
     }
     case "checkbox": {
@@ -221,8 +204,7 @@ export function AttributeInput({
               field={field}
               userData={userData}
               eventBlocks={rootBlock.children}
-              isMultiple={attribute.isMultiple}
-              maxSelections={attribute.maxSelections}
+              maxSelections={attribute.config.maxSelections}
             />
           ))}
         </>

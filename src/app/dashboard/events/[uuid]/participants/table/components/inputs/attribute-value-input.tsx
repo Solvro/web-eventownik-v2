@@ -174,7 +174,7 @@ export function AttributeValueInput({
       );
     }
 
-    case "textarea": {
+    case "textArea": {
       return (
         <Textarea
           value={value}
@@ -198,10 +198,6 @@ export function AttributeValueInput({
     }
 
     case "select": {
-      if (attribute.isMultiple) {
-        return renderMultiOptions(attribute.options);
-      }
-
       return (
         <Select
           value={value}
@@ -214,12 +210,9 @@ export function AttributeValueInput({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value=" ">{t("none")}</SelectItem>
-            {attribute.options?.map((option) => (
-              <SelectItem
-                key={typeof option === "string" ? option : option.value}
-                value={typeof option === "string" ? option : option.value}
-              >
-                {typeof option === "string" ? option : option.value}
+            {attribute.config.options?.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
               </SelectItem>
             ))}
           </SelectContent>
@@ -227,17 +220,13 @@ export function AttributeValueInput({
       );
     }
 
-    case "multiselect": {
-      return renderMultiOptions(attribute.options);
+    case "multiSelect": {
+      return renderMultiOptions(attribute.config.options);
     }
 
     case "block": {
       const rootBlock =
         blocks.find((b) => b?.attributeUuid === attribute.uuid) ?? null;
-
-      if (rootBlock?.attribute.isMultiple ?? false) {
-        return renderMultiOptions(rootBlock?.children);
-      }
 
       const selectedBlock = rootBlock?.children.find(
         (block) => block.uuid === value,

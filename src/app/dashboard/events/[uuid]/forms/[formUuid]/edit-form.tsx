@@ -19,32 +19,43 @@ import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
 import { getDefaultFormDates } from "@/lib/event-form-utils";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
-import type { EventForm } from "@/types/forms";
+import type { Attribute } from "@/types/attributes";
+import type { EventForm, FormAttribute } from "@/types/forms";
 
 import { updateEventForm } from "../actions";
 
 interface EventFormEditFormProps {
   eventUuid: string;
   formToEdit: EventForm;
-  eventAttributes: EventAttribute[];
+  eventAttributes: Attribute[];
+  isFirstForm: boolean;
 }
 
 function EventFormEditForm({
   eventUuid,
   formToEdit,
   eventAttributes,
+  isFirstForm,
 }: EventFormEditFormProps) {
-  const [includedAttributes, setIncludedAttributes] = useState<
-    FormAttributeBase[]
-  >(formToEdit.attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+  const [includedAttributes, setIncludedAttributes] = useState<FormAttribute[]>(
+    formToEdit.formDefinitions
+      .toSorted((a, b) => a.order - b.order)
+      .map((definition) => ({
+        attributeUuid: definition.attribute.uuid,
+        isRequired: definition.isRequired,
+        order: definition.order,
+      })),
+  );
   const form = useForm<z.infer<typeof EventFormGeneralInfoSchema>>({
     resolver: zodResolver(EventFormGeneralInfoSchema),
     defaultValues: {
       name: formToEdit.name,
       description: formToEdit.description,
-      ...getDefaultFormDates(formToEdit.openDate, formToEdit.closeDate),
-      isFirstForm: formToEdit.isFirstForm,
+      ...getDefaultFormDates(
+        formToEdit.openDate === null ? null : new Date(formToEdit.openDate),
+        formToEdit.closeDate === null ? null : new Date(formToEdit.closeDate),
+      ),
+      isFirstForm,
       isOpen: formToEdit.isOpen,
       openCondition: formToEdit.openCondition,
     },
@@ -60,7 +71,6 @@ function EventFormEditForm({
   async function onSubmit(values: z.infer<typeof EventFormGeneralInfoSchema>) {
     try {
       const result = await updateEventForm(eventUuid, formToEdit.uuid, {
-        ...formToEdit,
         ...values,
         attributes: includedAttributes,
       });
