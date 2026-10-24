@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 import { FormControl, FormItem, FormLabel } from "./ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -31,7 +31,7 @@ export function AttributeInputBlock({
 }: {
   block: Block;
   // participants: Participant[];
-  userData?: Participant;
+  userData?: PublicParticipant;
   isMultiple: boolean;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;

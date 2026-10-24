@@ -7,7 +7,7 @@ import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
 import { Checkbox } from "./ui/checkbox";
@@ -43,7 +43,7 @@ export function AttributeBlocksWrapper({
   maxSelections = 1,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  userData?: Participant;
+  userData?: PublicParticipant;
   eventBlocks: Block[];
   maxSelections?: number | null;
 }) {

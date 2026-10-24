@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getAttributeLabel } from "@/lib/utils";
 import type { PublicFormAttribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeBlocksWrapper } from "./attribute-blocks-wrapper";
 
@@ -30,7 +30,7 @@ export function AttributeInput({
   shouldCheckUserData = false,
 }: {
   attribute: PublicFormAttribute;
-  userData?: Participant;
+  userData?: PublicParticipant;
   eventBlocks?: Block[];
   field: ControllerRenderProps<FieldValues, string>;
   isRequired?: boolean;

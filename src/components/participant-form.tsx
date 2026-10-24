@@ -38,7 +38,7 @@ import {
 } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 interface ErrorObject {
   rule: string;
@@ -73,7 +73,7 @@ interface ParticipantFormProps {
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
-  userData?: Participant;
+  userData?: PublicParticipant;
   eventBlocks?: Block[];
   editMode?: boolean;
 }
@@ -120,7 +120,7 @@ export function ParticipantForm({
       ...(includeEmail && { email: userData?.email ?? "" }),
       ...userData?.attributes.reduce<Record<string, string | number>>(
         (accumulator, userAttribute) => {
-          accumulator[userAttribute.uuid] = userAttribute.value;
+          accumulator[userAttribute.attributeUuid] = userAttribute.value;
           return accumulator;
         },
         {},
@@ -270,7 +270,7 @@ export function ParticipantForm({
       const hasExistingValue =
         userData?.attributes.some(
           (userAttribute) =>
-            userAttribute.uuid === formDefinition.attribute.uuid,
+            userAttribute.attributeUuid === formDefinition.attribute.uuid,
         ) ?? false;
 
       if (!hasFile && !hasExistingValue) {

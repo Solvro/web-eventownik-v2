@@ -10,7 +10,7 @@ import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 import { EventNotFound } from "../../event-not-found";
 import { FormGenerator } from "../../form-generator";
@@ -71,7 +71,7 @@ async function getUserData(eventSlug: string, userSlug: string) {
     console.error(error);
     return null;
   }
-  return (await userDataResponse.json()) as Participant;
+  return (await userDataResponse.json()) as PublicParticipant;
 }
 
 export async function generateMetadata({

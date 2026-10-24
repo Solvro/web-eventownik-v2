@@ -6,7 +6,7 @@ import { getEventBlockAttributeBlocks } from "@/app/[eventSlug]/utils";
 import { ParticipantForm } from "@/components/participant-form";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
-import type { Participant } from "@/types/participant";
+import type { PublicParticipant } from "@/types/participant";
 
 import { submitParticipantForm } from "./actions";
 
@@ -20,7 +20,7 @@ export function FormGenerator({
   editMode,
 }: {
   formDefinitions: FormDefinition[];
-  userData?: Participant;
+  userData?: PublicParticipant;
   originalEventBlocks: Block[];
   formUuid: string;
   eventSlug: string;
