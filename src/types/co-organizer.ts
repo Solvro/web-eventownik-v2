@@ -16,3 +16,7 @@ export interface CoOrganizer {
   email: string;
   permissions: Permission[];
 }
+
+export interface GetCoOrganizersResponse {
+  data: CoOrganizer[];
+}

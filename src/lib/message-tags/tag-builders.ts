@@ -1,14 +1,14 @@
 import type { useTranslations } from "next-intl";
 
-import { EventAttribute } from "@/types/attributes";
-import { EventForm } from "@/types/forms";
+import type { Attribute } from "@/types/attributes";
+import type { EventForm } from "@/types/forms";
 
-import { MessageTag } from ".";
+import type { MessageTag } from ".";
 import { getAttributeLabel } from "../utils";
 import { getCategories } from "./categories";
 
 export function getAttributeTags(
-  eventAttributes: EventAttribute[],
+  eventAttributes: Attribute[],
   t: ReturnType<typeof useTranslations<"MessageTags">>,
 ): MessageTag[] {
   const categories = getCategories(t);
@@ -18,8 +18,7 @@ export function getAttributeTags(
     description: t("attributeItemDesc", {
       name: getAttributeLabel(attribute.name, "pl"),
     }),
-    // NOTE: Why 'attribute.slug' can be null?
-    value: `/participant_${attribute.slug ?? ""}`,
+    value: `/participant_${attribute.uuid}`,
     color: "brown",
     category: categories.attribute,
   }));
@@ -37,7 +36,7 @@ export function getFormTags(
       description: t("formItemDesc", {
         name: eventForm.name,
       }),
-      value: `/form_${eventForm.slug}`,
+      value: `/form_${eventForm.uuid}`,
       color: "green",
       category: categories.form,
     }),

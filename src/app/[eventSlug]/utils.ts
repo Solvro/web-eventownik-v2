@@ -1,5 +1,5 @@
 import { API_URL } from "@/lib/api";
-import type { PublicBlock } from "@/types/blocks";
+import type { Block } from "@/types/blocks";
 
 export async function getEventBlockAttributeBlocks(
   eventSlug: string,
@@ -11,10 +11,12 @@ export async function getEventBlockAttributeBlocks(
       method: "GET",
     },
   );
+
   if (!blocksResponse.ok) {
     const error = (await blocksResponse.json()) as unknown;
     console.error(error);
     return null;
   }
-  return (await blocksResponse.json()) as PublicBlock[];
+
+  return (await blocksResponse.json()) as Block;
 }
