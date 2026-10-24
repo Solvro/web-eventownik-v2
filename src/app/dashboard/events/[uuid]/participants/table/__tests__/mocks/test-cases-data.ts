@@ -145,7 +145,8 @@ export const textCaseData: TestCaseData = {
   attributeType: "text",
   emails: [
     {
-      uuid: crypto.randomUUID(),
+      // TODO(v3): Replace with uuid when backend fixes the response properties
+      id: crypto.randomUUID(),
       eventUuid: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
       name: "Welcome Email - New Registration",
       trigger: "participant_registered",

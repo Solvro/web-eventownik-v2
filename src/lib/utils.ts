@@ -14,6 +14,8 @@ const PHONE_REGEX = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
 
 export const SLUG_REGEX = /^[a-z0-9-]+$/;
 
+export const COPY_SUFFIX_REGEX = / \((?:copy|kopia) \d+\)$/;
+
 const POLISH_TO_ASCII: Record<string, string> = {
   ą: "a",
   ę: "e",
@@ -177,4 +179,29 @@ export function getAttributeLabel(name: string, language: string) {
   } catch {
     return name;
   }
+}
+
+export function getNextCopyName(
+  name: string,
+  existingNames: string[],
+  english?: boolean,
+) {
+  const baseName = name.replace(COPY_SUFFIX_REGEX, "");
+  // Copies made in either language share one counter
+  const copyPrefixes = [`${baseName} (copy `, `${baseName} (kopia `];
+  let highestNumber = 0;
+
+  for (const existingName of existingNames) {
+    const copyPrefix = copyPrefixes.find((prefix) =>
+      existingName.startsWith(prefix),
+    );
+    if (copyPrefix !== undefined && existingName.endsWith(")")) {
+      const copyNumber = existingName.slice(copyPrefix.length, -1);
+      if (/^\d+$/.test(copyNumber) && Number(copyNumber) > highestNumber) {
+        highestNumber = Number(copyNumber);
+      }
+    }
+  }
+
+  return `${baseName} (${english === true ? "copy" : "kopia"} ${(highestNumber + 1).toString()})`;
 }

@@ -1,10 +1,28 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
+
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
+import { COPY_SUFFIX_REGEX, getNextCopyName } from "@/lib/utils";
+import type { FormAttributeBase } from "@/types/attributes";
+import type { CompleteEventForm } from "@/types/forms";
 import type { CreateEventFormDto } from "@/types/forms";
+
+export type Payload = Omit<
+  CompleteEventForm,
+  | "eventUuid"
+  | "uuid"
+  | "slug"
+  | "attributes"
+  | "order"
+  | "createdAt"
+  | "updatedAt"
+> & {
+  attributes: FormAttributeBase[];
+};
 
 export async function createEventForm(
   eventUuid: string,
@@ -235,6 +253,63 @@ export async function deleteEventForm(eventUuid: string, formUuid: string) {
         },
       },
     };
+  }
+
+  return { success: true };
+}
+
+export async function duplicateEventForm(
+  eventUuid: string,
+  formUuid: string,
+  sourceName: string,
+) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return { success: false };
+  }
+
+  const existingResponse = await fetch(
+    `${API_URL}/events/${eventUuid}/forms?name=${encodeURIComponent(sourceName.replace(COPY_SUFFIX_REGEX, ""))}&take=100`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
+  );
+  if (!existingResponse.ok) {
+    console.warn(
+      `[duplicateEventForm action] Failed to fetch existing form names for event ${eventUuid}, the copy number may repeat:`,
+      await existingResponse.text(),
+    );
+  }
+  const existing = existingResponse.ok
+    ? (
+        (await existingResponse.json()) as {
+          data: { name: string }[];
+        }
+      ).data
+    : [];
+  const newName = getNextCopyName(
+    sourceName,
+    existing.map((item) => item.name),
+    (await getLocale()) === "en",
+  );
+
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/forms/${formUuid}/duplicate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ name: newName }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateEventForm action] Failed to duplicate form ${formUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
   }
 
   return { success: true };

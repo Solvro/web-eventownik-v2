@@ -1,11 +1,14 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
+import { getNextCopyName } from "@/lib/utils";
+import type { Block } from "@/types/blocks";
 
 export async function reorderBlockAttributes(
   eventUuid: string,
@@ -302,6 +305,86 @@ export async function deleteBlock(
         },
       },
     };
+  }
+
+  return { success: true };
+}
+
+export async function duplicateBlock(
+  eventUuid: string,
+  attributeUuid: string,
+  blockUuid: string,
+  sourceName: string,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    return { success: false };
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(attributeUuid) ||
+    !isValidUuid(blockUuid)
+  ) {
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
+  }
+
+  const blocksUrl = `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`;
+  const headers = {
+    Authorization: `Bearer ${session.bearerToken}`,
+    "Content-Type": "application/json",
+  };
+
+  const treeResponse = await fetch(blocksUrl, { headers });
+  if (!treeResponse.ok) {
+    console.warn(
+      `[duplicateBlock action] Failed to fetch sibling block names for block ${blockUuid}, the copy number may repeat:`,
+      await treeResponse.text(),
+    );
+  }
+  const rootBlock = treeResponse.ok
+    ? ((await treeResponse.json()) as Block | [])
+    : [];
+  const siblings = Array.isArray(rootBlock) ? [] : rootBlock.children;
+
+  const response = await fetch(
+    `${blocksUrl}/${encodeURIComponent(blockUuid)}/duplicate`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        name: getNextCopyName(
+          sourceName,
+          siblings.map((block) => block.name),
+          (await getLocale()) === "en",
+        ),
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[duplicateBlock action] Failed to duplicate block ${blockUuid} for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return { success: false };
+  }
+
+  // The copy keeps the source's order, so it would land right after it. Move it to the front instead
+  const newBlock = (await response.json()) as { uuid: string };
+  if (siblings.length > 0) {
+    const reorderResult = await reorderBlocks(eventUuid, attributeUuid, [
+      newBlock.uuid,
+      ...siblings.map((block) => block.uuid),
+    ]);
+    if (!reorderResult.success) {
+      console.warn(
+        `[duplicateBlock action] Failed to move the copy of block ${blockUuid} to the front`,
+      );
+    }
   }
 
   return { success: true };
