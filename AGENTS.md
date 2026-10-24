@@ -93,6 +93,7 @@ Copy `.env.example` to `.env` and configure:
 ```env
 NEXT_PUBLIC_EVENTOWNIK_API=<backend API URL>
 SESSION_SECRET=<session encryption secret>
+SESSION_COOKIE_MAX_AGE=<session lifetime in seconds, ~60 s below the backend's JWT_EXPIRES_IN>
 NEXT_PUBLIC_PHOTO_URL=<backend photo URL>
 NEXT_PUBLIC_HCAPTCHA_SITEKEY=<hCaptcha site key>
 NEXT_PUBLIC_OTEL_METRICS_ENDPOINT=<SigNoz OTLP endpoint>

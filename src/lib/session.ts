@@ -43,9 +43,18 @@ async function decrypt(session: string | undefined = "") {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     });
+    if (
+      typeof payload.bearerToken !== "string" ||
+      payload.bearerToken.length === 0
+    ) {
+      console.error(
+        "[Decrypt] Failed to verify session: bearerToken is invalid",
+      );
+      return;
+    }
     return payload as SessionPayload;
   } catch (error) {
-    console.error("Failed to verify session", error);
+    console.error("[Decrypt] Failed to verify session:", error);
   }
 }
 

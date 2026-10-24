@@ -19,6 +19,9 @@ export function parseSetCookieHeader(setCookieHeader: string): CookieOptions {
   const cookieOptions: CookieOptions = {
     name: cookieName,
     value: cookieValue,
+    // The backend's path (/api/v3/auth) is meant for its own host. The cookie
+    // is re-issued on the frontend host, where it must reach every page.
+    path: "/",
     sameSite: "lax",
   };
 
@@ -27,9 +30,6 @@ export function parseSetCookieHeader(setCookieHeader: string): CookieOptions {
       .split("=")
       .map((item) => item.trim().toLowerCase());
 
-    if (key === "path") {
-      cookieOptions.path = "/";
-    }
     if (key === "httponly") {
       cookieOptions.httpOnly = true;
     }

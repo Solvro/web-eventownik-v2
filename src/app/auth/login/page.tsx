@@ -229,7 +229,7 @@ function LoginForm() {
           )}
 
           <Link
-            href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
+            href="/auth/register"
             className={`w-full text-neutral-600 ${buttonVariants({
               variant: "link",
             })}`}
