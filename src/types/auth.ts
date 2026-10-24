@@ -1,8 +1,7 @@
 import type { JWTPayload } from "jose";
 
 export interface AuthSuccessResponse {
-  admin: Admin;
-  token: string;
+  access_token: string;
 }
 
 export interface AuthErrorResponse {
@@ -27,14 +26,3 @@ export interface Admin {
 export interface SessionPayload extends JWTPayload {
   bearerToken: string;
 }
-
-export type LoginError = "invalidLoginCredentials" | "serverErrorTryLater";
-
-export type ResetPassTokenError =
-  | "sendResetEmailFailed"
-  | "serverErrorTryLater";
-
-export type ResetError =
-  | "tokenInvalidOrExpired"
-  | "passwordResetFailed"
-  | "serverErrorTryLater";
