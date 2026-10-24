@@ -2,7 +2,6 @@ import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
 import { duplicateBlock } from "@/app/dashboard/events/[uuid]/blocks/actions";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
 import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
@@ -49,7 +48,12 @@ function BlockEntry({
           resourceName={block.name}
           resourceType={t("block")}
           onDuplicate={async () =>
-            duplicateBlock(eventUuid, attributeUuid, block.uuid, block.name)
+            await duplicateBlock(
+              eventUuid,
+              attributeUuid,
+              block.uuid,
+              block.name,
+            )
           }
         />
         <div className="flex gap-2">
