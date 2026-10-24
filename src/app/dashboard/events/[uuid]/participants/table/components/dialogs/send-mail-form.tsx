@@ -161,8 +161,9 @@ function SendMailForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                          {/* TODO(v3): Replace with uuid when backend fixes the response properties */}
                           {emails.map((email) => (
-                            <SelectItem key={email.uuid} value={email.uuid}>
+                            <SelectItem key={email.id} value={email.id}>
                               {email.name}
                             </SelectItem>
                           ))}

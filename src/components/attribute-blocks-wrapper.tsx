@@ -6,7 +6,7 @@ import { Activity, useState } from "react";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { PublicBlock } from "@/types/blocks";
+import type { Block } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { AttributeInputBlock } from "./attribute-input-block";
@@ -17,7 +17,7 @@ import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 function includeBlock(
-  block: PublicBlock,
+  block: Block,
   searchText: string,
   hideFullBlocks: boolean,
 ): boolean {
@@ -27,7 +27,7 @@ function includeBlock(
   const isBlockNotFull =
     !hideFullBlocks ||
     block.capacity === null ||
-    (block.meta.participantsInBlockCount ?? 0) < block.capacity;
+    (block.blockParticipantCount ?? 0) < block.capacity;
   return doesBlockIncludeSearchText && isBlockNotFull;
 }
 
@@ -40,13 +40,11 @@ export function AttributeBlocksWrapper({
   field,
   userData,
   eventBlocks,
-  isMultiple = false,
-  maxSelections = null,
+  maxSelections = 1,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  userData: PublicParticipant | undefined;
-  eventBlocks: PublicBlock[];
-  isMultiple?: boolean;
+  userData?: PublicParticipant;
+  eventBlocks: Block[];
   maxSelections?: number | null;
 }) {
   const t = useTranslations("Form");
@@ -61,12 +59,14 @@ export function AttributeBlocksWrapper({
     includeBlock(block, searchText, hideFullBlocks),
   );
 
+  const resolvedMaxSelections = maxSelections ?? 1;
+  const isMultiple = resolvedMaxSelections > 1;
   const selectedValues = isMultiple ? ((field.value ?? []) as string[]) : null;
 
   const handleMultiChange = (blockUuid: string, checked: boolean) => {
     const current = (field.value ?? []) as string[];
     if (checked) {
-      if (maxSelections !== null && current.length >= maxSelections) {
+      if (current.length >= resolvedMaxSelections) {
         return;
       }
       field.onChange([...current, blockUuid]);
@@ -118,11 +118,9 @@ export function AttributeBlocksWrapper({
           </Activity>
         </FieldGroup>
       )}
-      {maxSelections !== null && (
-        <p className="self-start text-sm">
-          {t("maxBlockSelections", { count: maxSelections })}
-        </p>
-      )}
+      <p className="self-start text-sm">
+        {t("maxBlockSelections", { count: resolvedMaxSelections })}
+      </p>
       {isMultiple ? (
         <div
           className={cn(
@@ -168,8 +166,7 @@ export function AttributeBlocksWrapper({
               }}
               disabled={
                 !(selectedValues?.includes(childBlock.uuid) ?? false) &&
-                maxSelections !== null &&
-                (selectedValues?.length ?? 0) >= maxSelections
+                (selectedValues?.length ?? 0) >= resolvedMaxSelections
               }
             />
           ))}

@@ -18,7 +18,7 @@ import { DownloadAttributeFileButton } from "../buttons/download-file-attribute-
 import { DrawingPreviewButton } from "../buttons/drawing-preview-button";
 import { AttributeValueInput } from "../inputs/attribute-value-input";
 
-const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiselect", "block"]);
+const IMMEDIATE_TYPES = new Set(["checkbox", "select", "multiSelect", "block"]);
 
 interface EditableCellProps {
   info: CellContext<FlattenedParticipant, ParticipantAttributeValueType>;
@@ -63,6 +63,7 @@ export function EditableCell({
         attribute.type,
         attribute.uuid,
         blocks,
+        (attribute.config.maxSelections ?? 1) > 1,
       );
       return formatted instanceof Date ? formatted.toISOString() : formatted;
     }

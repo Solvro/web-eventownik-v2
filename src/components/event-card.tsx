@@ -10,7 +10,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { duplicateEvent } from "@/app/dashboard/events/actions";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
@@ -87,6 +89,13 @@ export function EventCard({ event }: { event: Event }) {
             {t("viewDetails")}
           </Link>
         </Button>
+        <DuplicateResourceButton
+          resourceName={event.name}
+          resourceType={t("event")}
+          onDuplicate={duplicateEvent.bind(null, event.uuid)}
+          variant="ghost"
+          className="size-12"
+        />
         <ShareButton
           path={event.slug}
           variant="icon"

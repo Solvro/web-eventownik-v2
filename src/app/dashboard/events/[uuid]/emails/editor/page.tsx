@@ -2,8 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Editor } from "@/components/editor/index";
 import { rootDefaults } from "@/lib/editor";
-import { getFormTags } from "@/lib/message-tags/tag-builders";
-import { getAttributeTags } from "@/lib/message-tags/tag-builders";
+import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
 
 import {
   getEmailEventInfo,
