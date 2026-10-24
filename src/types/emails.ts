@@ -6,7 +6,8 @@ import type { Participant } from "./participant";
  * Data about a single email when fetching the entire list. Does not have `content` and `schema` fields.
  */
 export interface EventEmail {
-  uuid: string;
+  // TODO(v3): Replace with uuid when backend fixes the response properties
+  id: string;
   eventUuid: string;
   name: string;
   trigger: (typeof EMAIL_TRIGGERS)[number]["value"];

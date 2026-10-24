@@ -208,6 +208,12 @@ export async function duplicateEventEmail(
     `${API_URL}/events/${eventUuid}/emails?take=100`,
     { headers: { Authorization: `Bearer ${session.bearerToken}` } },
   );
+  if (!existingResponse.ok) {
+    console.warn(
+      `[duplicateEventEmail action] Failed to fetch existing email names for event ${eventUuid}, the copy number may repeat:`,
+      await existingResponse.text(),
+    );
+  }
   const existing = existingResponse.ok
     ? ((await existingResponse.json()) as { data: { name: string }[] }).data
     : [];

@@ -234,7 +234,8 @@ function EventEmailEditForm({
     };
     const result = await updateEventEmail({
       eventUuid,
-      mailUuid: emailToEdit.uuid,
+      // TODO(v3): Replace with uuid when backend fixes the response properties
+      mailUuid: emailToEdit.id,
       emailTemplate: updatedMail,
     });
 

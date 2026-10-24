@@ -29,13 +29,21 @@ function SortableTile({ id, index, children }: SortableTileProps) {
   );
 }
 
-interface SortableTileGridProps<T extends { uuid: string }> {
+// TODO(v3): Replace with uuid when backend fixes the response properties
+type SortableItem = { uuid: string } | { id: string };
+
+// TODO(v3): Replace with uuid when backend fixes the response properties
+function getItemId(item: SortableItem) {
+  return "uuid" in item ? item.uuid : item.id;
+}
+
+interface SortableTileGridProps<T extends SortableItem> {
   items: T[];
   onReorder: (orderedIds: string[]) => Promise<{ success: boolean }>;
   renderItem: (item: T) => React.ReactNode;
 }
 
-function SortableTileGrid<T extends { uuid: string }>({
+function SortableTileGrid<T extends SortableItem>({
   items: initialItems,
   onReorder,
   renderItem,
@@ -72,7 +80,7 @@ function SortableTileGrid<T extends { uuid: string }>({
           const newOrder = [...items];
           const [removed] = newOrder.splice(initialIndex, 1);
           newOrder.splice(index, 0, removed);
-          void onReorder(newOrder.map((item) => item.uuid));
+          void onReorder(newOrder.map((item) => getItemId(item)));
         });
       }
     }
@@ -82,7 +90,11 @@ function SortableTileGrid<T extends { uuid: string }>({
     <DragDropProvider onDragEnd={handleDragEnd}>
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {items.map((item, index) => (
-          <SortableTile key={item.uuid} id={item.uuid} index={index}>
+          <SortableTile
+            key={getItemId(item)}
+            id={getItemId(item)}
+            index={index}
+          >
             {renderItem(item)}
           </SortableTile>
         ))}

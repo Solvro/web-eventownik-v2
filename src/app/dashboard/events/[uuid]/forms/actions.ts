@@ -6,7 +6,7 @@ import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
-import { getNextCopyName } from "@/lib/utils";
+import { COPY_SUFFIX_REGEX, getNextCopyName } from "@/lib/utils";
 import type { FormAttributeBase } from "@/types/attributes";
 import type { CompleteEventForm } from "@/types/forms";
 
@@ -250,9 +250,15 @@ export async function duplicateEventForm(
   }
 
   const existingResponse = await fetch(
-    `${API_URL}/events/${eventUuid}/forms?name=${encodeURIComponent(sourceName.replace(/ \((?:copy|kopia) \d+\)$/, ""))}&take=100`,
+    `${API_URL}/events/${eventUuid}/forms?name=${encodeURIComponent(sourceName.replace(COPY_SUFFIX_REGEX, ""))}&take=100`,
     { headers: { Authorization: `Bearer ${session.bearerToken}` } },
   );
+  if (!existingResponse.ok) {
+    console.warn(
+      `[duplicateEventForm action] Failed to fetch existing form names for event ${eventUuid}, the copy number may repeat:`,
+      await existingResponse.text(),
+    );
+  }
   const existing = existingResponse.ok
     ? (
         (await existingResponse.json()) as {

@@ -11,7 +11,7 @@ import { getSingleEventForm } from "@/app/dashboard/events/[uuid]/forms/data-acc
 import { API_URL } from "@/lib/api";
 import { getUser } from "@/lib/dal";
 import { verifySession } from "@/lib/session";
-import { getNextCopyName } from "@/lib/utils";
+import { COPY_SUFFIX_REGEX, getNextCopyName } from "@/lib/utils";
 import type { EventAttribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { CoOrganizer } from "@/types/co-organizer";
@@ -43,9 +43,15 @@ export async function duplicateEvent(eventUuid: string) {
   const event = (await eventResponse.json()) as Event;
 
   const eventsResponse = await fetch(
-    `${API_URL}/events?name=${encodeURIComponent(event.name.replace(/ \((?:copy|kopia) \d+\)$/, ""))}&take=100`,
+    `${API_URL}/events?name=${encodeURIComponent(event.name.replace(COPY_SUFFIX_REGEX, ""))}&take=100`,
     { headers },
   );
+  if (!eventsResponse.ok) {
+    console.warn(
+      `[duplicateEvent] Failed to fetch existing event names for ${eventUuid}, the copy number may repeat:`,
+      await eventsResponse.text(),
+    );
+  }
   const myEvents = eventsResponse.ok
     ? ((await eventsResponse.json()) as { data: Event[] }).data
     : [];
@@ -58,18 +64,29 @@ export async function duplicateEvent(eventUuid: string) {
   const baseSlug = event.slug.replace(/-copy-[\da-z]+$/, "");
 
   let photoDataUrl = "";
+  // A photo that can't be copied must not block the copy of the event itself
   if (event.photoUrl != null && event.photoUrl !== "") {
-    const photoResponse = await fetch(event.photoUrl);
-    if (photoResponse.ok) {
+    try {
+      const photoResponse = await fetch(event.photoUrl);
       const contentType =
         photoResponse.headers.get("content-type") ?? "image/jpeg";
-      const base64 = Buffer.from(await photoResponse.arrayBuffer()).toString(
-        "base64",
-      );
-      photoDataUrl = `data:${contentType};base64,${base64}`;
-    } else {
+      if (photoResponse.ok && contentType.startsWith("image/")) {
+        const base64 = Buffer.from(await photoResponse.arrayBuffer()).toString(
+          "base64",
+        );
+        photoDataUrl = `data:${contentType};base64,${base64}`;
+      } else {
+        warnings.push({ key: "eventPhotoCopyWarning" });
+        console.error(
+          `[duplicateEvent] Failed to fetch photo of ${eventUuid}: status ${photoResponse.status.toString()}, content type ${contentType}`,
+        );
+      }
+    } catch (error) {
       warnings.push({ key: "eventPhotoCopyWarning" });
-      console.error(`[duplicateEvent] Failed to fetch photo of ${eventUuid}`);
+      console.error(
+        `[duplicateEvent] Failed to fetch photo of ${eventUuid}:`,
+        error,
+      );
     }
   }
 
@@ -289,7 +306,8 @@ export async function duplicateEvent(eventUuid: string) {
     ? ((await formsResponse.json()) as { data: EventForm[] }).data
     : [];
 
-  for (const formFromList of forms) {
+  // The list is newest first, so copy the oldest first to keep the original order
+  for (const formFromList of forms.toReversed()) {
     const form = await getSingleEventForm(eventUuid, formFromList.uuid);
     if (form === null) {
       warnings.push({
@@ -358,7 +376,8 @@ export async function duplicateEvent(eventUuid: string) {
       ).data
     : [];
 
-  for (const emailFromList of emails) {
+  // The list is newest first, so copy the oldest first to keep the original order
+  for (const emailFromList of emails.toReversed()) {
     const email = await getSingleEventEmail(eventUuid, emailFromList.id);
     if (email === null) {
       warnings.push({

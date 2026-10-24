@@ -40,7 +40,8 @@ function EmailTemplateEntry({
           onDuplicate={async () =>
             duplicateEventEmail(
               eventUuid,
-              emailTemplate.uuid,
+              // TODO(v3): Replace with uuid when backend fixes the response properties
+              emailTemplate.id,
               emailTemplate.name,
             )
           }
@@ -52,18 +53,21 @@ function EmailTemplateEntry({
             title={t("editTemplate")}
             asChild
           >
-            <Link href={`emails/${emailTemplate.uuid}`}>
+            {/* TODO(v3): Replace with uuid when backend fixes the response properties */}
+            <Link href={`emails/${emailTemplate.id}`}>
               <SquarePen />
               <span className="sr-only">{t("editTemplate")}</span>
             </Link>
           </Button>
           <MailHistoryPopup
             eventUuid={eventUuid}
-            emailUuid={emailTemplate.uuid}
+            // TODO(v3): Replace with uuid when backend fixes the response properties
+            emailUuid={emailTemplate.id}
           />
           <DeleteEmailPopup
             eventUuid={eventUuid}
-            mailUuid={emailTemplate.uuid}
+            // TODO(v3): Replace with uuid when backend fixes the response properties
+            mailUuid={emailTemplate.id}
             mailName={emailTemplate.name}
           />
         </div>
