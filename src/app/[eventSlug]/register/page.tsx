@@ -119,31 +119,6 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const eventBlocks = eventBlocksResponse.filter((block) => block !== null);
 
-  if (!form.isOpen) {
-    return (
-      <EventPageLayout
-        event={event}
-        description={event.description ?? ""}
-        variant="form"
-      >
-        <div className="border-border bg-card flex flex-col items-center justify-center gap-4 rounded-lg border p-8 text-center">
-          <Info className="text-muted-foreground size-10" aria-hidden="true" />
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">
-              {t("registrationDisabled")}
-            </h1>
-          </div>
-          <Link
-            href={`/${event.slug}`}
-            className="text-primary text-sm font-medium underline underline-offset-4"
-          >
-            {t("backToEventPage")}
-          </Link>
-        </div>
-      </EventPageLayout>
-    );
-  }
-
   return (
     <EventPageLayout
       event={event}

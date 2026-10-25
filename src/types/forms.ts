@@ -68,14 +68,6 @@ export interface GetPublicFormResponse {
   formDefinitions: FormDefinition[];
 }
 
-export interface FormErrorObject {
-  rule: string;
-  field: string;
-  message: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface CompleteEventForm {
   name: string;
   description: string;

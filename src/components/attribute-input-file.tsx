@@ -95,7 +95,9 @@ export function AttributeInputFile({
     }
 
     if (validateFile(file)) {
-      const fileWithattributeUuidAsName = new File([file], attribute.uuid);
+      const fileWithattributeUuidAsName = new File([file], attribute.uuid, {
+        type: file.type,
+      });
       setFiles((previousFiles) => {
         const filtered = previousFiles.filter(
           (existingFile) =>

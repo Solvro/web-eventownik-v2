@@ -1,13 +1,13 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
-import type { FormErrorObject } from "@/types/forms";
 
 interface ErrorResponse {
-  errors: FormErrorObject[];
-  message: string | undefined;
+  message?: string | string[];
 }
 
 interface SubmitFormOptions {
@@ -29,7 +29,7 @@ export interface SubmitFormError {
 
 interface SubmitFormResult {
   success: boolean;
-  errors?: FormErrorObject[];
+  isEmailTaken?: boolean;
   error?: SubmitFormError;
 }
 
@@ -46,11 +46,18 @@ async function uploadFormFile(
   const formData = new FormData();
   formData.append("file", file);
 
+  // The backend throttles uploads per client IP, so pass the participant's IP instead of the server's
+  const requestHeaders = await headers();
+  const forwardedFor = requestHeaders.get("x-forwarded-for");
+
   const response = await fetch(
     `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/files`,
     {
       method: "POST",
       body: formData,
+      ...(forwardedFor != null && {
+        headers: { "X-Forwarded-For": forwardedFor },
+      }),
     },
   );
 
@@ -86,7 +93,11 @@ export async function submitParticipantForm({
 
     const fileAttributes = await Promise.all(fileUploadPromises);
 
-    const { email, token, ...attributeValues } = values;
+    const {
+      email,
+      "cf-turnstile-response": turnstileToken,
+      ...attributeValues
+    } = values;
     const regularAttributes = Object.entries(attributeValues).map(
       ([attributeUuid, value]) => ({
         attributeUuid,
@@ -98,7 +109,7 @@ export async function submitParticipantForm({
 
     const payload = {
       email,
-      "h-captcha-response": token,
+      "cf-turnstile-response": turnstileToken,
       ...(participantSlug != null && { participantId: participantSlug }),
       attributes,
     };
@@ -123,16 +134,15 @@ export async function submitParticipantForm({
         errorData,
       );
 
-      const errorMessages = [
-        errorData.message,
-        ...errorData.errors.map((error) => error.message),
-      ]
+      const errorMessages = [errorData.message ?? []]
+        .flat()
         .filter(Boolean)
         .join("\n");
 
       return {
         success: false,
-        errors: errorData.errors,
+        // The backend responds with 409 only when the email is already registered for the event
+        isEmailTaken: response.status === 409,
         error: errorMessages
           ? { message: errorMessages }
           : {
