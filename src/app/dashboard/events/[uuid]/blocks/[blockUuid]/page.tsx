@@ -7,18 +7,19 @@ import { CreateBlockForm } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid
 import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/toggle-participants-visibility-button";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { AttributeBase } from "@/types/attributes";
-import type { Block } from "@/types/blocks";
+import type { Attribute } from "@/types/attributes";
+import type { Block, BlockParticipant } from "@/types/blocks";
+import type { Event } from "@/types/event";
 
 import { SortableBlockGrid } from "./sortable-block-grid";
 
 async function getRootBlock(
-  eventUuid: string,
+  eventSlug: string,
   blockUuid: string,
   bearerToken: string,
 ) {
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(blockUuid)}/blocks`,
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(blockUuid)}/blocks`,
     {
       method: "GET",
       headers: {
@@ -32,11 +33,39 @@ async function getRootBlock(
   } else {
     const error = (await response.json()) as unknown;
     console.error(
-      `[getRootBlock] Failed to fetch root block ${blockUuid} for event ${eventUuid}:`,
+      `[getRootBlock] Failed to fetch root block ${blockUuid} for event ${eventSlug}:`,
       error,
     );
     return null;
   }
+}
+
+export async function getBlock(
+  eventSlug: string,
+  attributeUuid: string,
+  blockUuid: string,
+  bearerToken: string,
+) {
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    },
+  );
+
+  if (response.ok) {
+    return (await response.json()) as BlockParticipant[];
+  }
+
+  const error = (await response.json()) as unknown;
+  console.error(
+    `[getBlock] Failed to fetch block ${blockUuid} for attribute ${attributeUuid} in event ${eventSlug}:`,
+    error,
+  );
+  return null;
 }
 
 async function getRootBlockAttributeName(
@@ -53,8 +82,9 @@ async function getRootBlockAttributeName(
       },
     },
   );
+
   if (response.ok) {
-    const attribute = (await response.json()) as AttributeBase;
+    const attribute = (await response.json()) as Attribute;
     return attribute.name;
   } else {
     const error = (await response.json()) as unknown;
@@ -101,53 +131,86 @@ export default async function EventBlockEditPage({
   }
   const { bearerToken } = session;
 
-  const rootBlock = await getRootBlock(eventUuid, rootBlockUuid, bearerToken);
+  const eventResponse = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    },
+  );
+
+  if (!eventResponse.ok) {
+    notFound();
+  }
+
+  const event = (await eventResponse.json()) as Event;
+  const rootBlock = await getRootBlock(event.slug, rootBlockUuid, bearerToken);
+
+  if (rootBlock == null) {
+    notFound();
+  }
+
+  const participantsByBlockUuid: Record<string, BlockParticipant[]> =
+    Object.fromEntries(
+      await Promise.all(
+        rootBlock.children.map(
+          async (block): Promise<[string, BlockParticipant[]]> => [
+            block.uuid,
+            (await getBlock(
+              event.slug,
+              rootBlock.attributeUuid ?? rootBlockUuid,
+              block.uuid,
+              bearerToken,
+            )) ?? [],
+          ],
+        ),
+      ),
+    );
+
   const rootBlockName = await getRootBlockAttributeName(
     eventUuid,
     rootBlockUuid,
     bearerToken,
   );
 
-  if (rootBlock == null) {
-    notFound();
-  } else {
-    return (
-      <div className="flex grow flex-col gap-8">
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-          <div className="md:space-y-2">
-            <h1 className="text-3xl font-bold">{rootBlockName}</h1>
-            <span className="text-muted-foreground text-lg">
-              {t("totalParticipants", {
-                count: rootBlock.children
-                  .map((block) => block.meta.participantsInBlockCount ?? 0)
-                  .reduce((a, b) => a + b, 0),
-              })}
-            </span>
-          </div>
-          <ToggleParticipantsVisibilityButton />
-          <CreateBlockForm
-            eventUuid={eventUuid}
-            attributeUuid={rootBlockUuid}
-            parentUuid={rootBlock.uuid}
-          />
+  return (
+    <div className="flex grow flex-col gap-8">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div className="md:space-y-2">
+          <h1 className="text-3xl font-bold">{rootBlockName}</h1>
+          <span className="text-muted-foreground text-lg">
+            {t("totalParticipants", {
+              count: rootBlock.children
+                .map((block) => block.blockParticipantCount ?? 0)
+                .reduce((a, b) => a + b, 0),
+            })}
+          </span>
         </div>
-        {rootBlock.children.length > 0 ? (
-          <SortableBlockGrid
-            blocks={rootBlock.children}
-            eventUuid={eventUuid}
-            attributeUuid={rootBlockUuid}
-          />
-        ) : (
-          <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
-            <div className="flex w-full flex-col items-center justify-center py-12 text-center">
-              <Cuboid className="text-muted-foreground mb-4 size-12" />
-              <h3 className="text-muted-foreground text-lg">
-                {t("noBlocksInBlockYet")}
-              </h3>
-            </div>
-          </div>
-        )}
+        <ToggleParticipantsVisibilityButton />
+        <CreateBlockForm
+          eventUuid={eventUuid}
+          attributeUuid={rootBlockUuid}
+          parentUuid={rootBlock.uuid}
+        />
       </div>
-    );
-  }
+      {rootBlock.children.length > 0 ? (
+        <SortableBlockGrid
+          blocks={rootBlock.children}
+          eventUuid={eventUuid}
+          attributeUuid={rootBlockUuid}
+          participantsByBlockUuid={participantsByBlockUuid}
+        />
+      ) : (
+        <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
+          <div className="flex w-full flex-col items-center justify-center py-12 text-center">
+            <Cuboid className="text-muted-foreground mb-4 size-12" />
+            <h3 className="text-muted-foreground text-lg">
+              {t("noBlocksInBlockYet")}
+            </h3>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

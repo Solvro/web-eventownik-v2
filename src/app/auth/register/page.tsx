@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
 import { registerFormSchema } from "@/types/schemas";
-import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { register } from "../actions";
 
@@ -70,7 +69,12 @@ function RegisterForm() {
           description: t("tryRegisterAgain"),
         });
       } else {
-        const redirectUrl = redirectTo ?? "/dashboard/events";
+        toast({
+          variant: "default",
+          title: t("registerSuccess"),
+          description: t("registerSuccessDescription"),
+        });
+        const redirectUrl = redirectTo ?? "/auth/login";
         router.push(redirectUrl);
       }
     } catch (error) {
@@ -134,10 +138,7 @@ function RegisterForm() {
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-500">
-                {translateOrFallback(
-                  t,
-                  form.formState.errors.email?.message as AuthSchemaErrorKeys,
-                )}
+                {translateOrFallback(t, form.formState.errors.email?.message)}
               </FormMessage>
             </FormItem>
           )}
@@ -159,8 +160,7 @@ function RegisterForm() {
               <FormMessage className="text-sm text-red-500">
                 {translateOrFallback(
                   t,
-                  form.formState.errors.password
-                    ?.message as AuthSchemaErrorKeys,
+                  form.formState.errors.password?.message,
                 )}
               </FormMessage>
             </FormItem>
@@ -182,8 +182,7 @@ function RegisterForm() {
               <FormMessage className="text-sm text-red-500">
                 {translateOrFallback(
                   t,
-                  form.formState.errors.firstName
-                    ?.message as AuthSchemaErrorKeys,
+                  form.formState.errors.firstName?.message,
                 )}
               </FormMessage>
             </FormItem>
@@ -205,8 +204,7 @@ function RegisterForm() {
               <FormMessage className="text-sm text-red-500">
                 {translateOrFallback(
                   t,
-                  form.formState.errors.lastName
-                    ?.message as AuthSchemaErrorKeys,
+                  form.formState.errors.lastName?.message,
                 )}
               </FormMessage>
             </FormItem>

@@ -59,7 +59,8 @@ export default async function EventMailEditPage({
       attributes={attributes}
       initialData={JSON.parse(emailToEdit.schema) as PuckData}
       mutationData={{
-        emailUuid: emailToEdit.uuid,
+        // TODO(v3): Replace with uuid when backend fixes the response properties
+        emailUuid: emailToEdit.id,
         eventUuid: id,
         mode: "update",
       }}

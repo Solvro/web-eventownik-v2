@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export type AuthSchemaErrorKeys =
-  | "invalidEmail"
-  | "passwordMinLength"
-  | "nameRequired"
-  | "surnameRequired"
-  | "tokenRequired"
-  | "passwordsMustMatch"
-  | "confirmPassword";
-
 export const loginFormSchema = z.object({
   email: z.string().email("invalidEmail"),
   password: z.string().min(8, { message: "passwordMinLength" }),

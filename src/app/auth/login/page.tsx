@@ -24,9 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
-import type { LoginError } from "@/types/auth";
 import { loginFormSchema } from "@/types/schemas";
-import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { login } from "../actions";
 
@@ -73,7 +71,7 @@ function LoginForm() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: translateOrFallback(t, result.error as LoginError),
+          description: translateOrFallback(t, result.error),
         });
       }
     } catch (error) {
@@ -146,10 +144,7 @@ function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateOrFallback(
-                    t,
-                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
-                  )}
+                  {translateOrFallback(t, form.formState.errors.email?.message)}
                 </FormMessage>
               </FormItem>
             )}
@@ -171,8 +166,7 @@ function LoginForm() {
                 <FormMessage className="text-sm text-red-500">
                   {translateOrFallback(
                     t,
-                    form.formState.errors.password
-                      ?.message as AuthSchemaErrorKeys,
+                    form.formState.errors.password?.message,
                   )}
                 </FormMessage>
                 <Link
@@ -236,7 +230,7 @@ function LoginForm() {
           )}
 
           <Link
-            href={`/auth/register${redirectTo == null ? "" : `?redirectTo=${encodeURIComponent(redirectTo)}`}`}
+            href="/auth/register"
             className={`w-full text-neutral-600 ${buttonVariants({
               variant: "link",
             })}`}

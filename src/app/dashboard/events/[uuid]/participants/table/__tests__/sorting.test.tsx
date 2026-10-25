@@ -35,14 +35,14 @@ function getDisplayedAttributeValue(
   }
 
   if (Array.isArray(value)) {
-    return attributeType === "multiselect" ? value.join(", ") : value.join(",");
+    return attributeType === "multiSelect" ? value.join(", ") : value.join(",");
   }
 
   if (attributeType === "date") {
     return format(new Date(value), "dd-MM-yyyy");
   }
 
-  if (attributeType === "multiselect") {
+  if (attributeType === "multiSelect") {
     return typeof value === "string" ? value.split(",").join(", ") : "";
   }
 

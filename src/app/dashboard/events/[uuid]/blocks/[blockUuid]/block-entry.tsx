@@ -2,12 +2,14 @@ import { useAtomValue } from "jotai";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { BlockParticipantsList } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/block-participants-list";
+import { duplicateBlock } from "@/app/dashboard/events/[uuid]/blocks/actions";
 import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
-import type { Block } from "@/types/blocks";
+import type { Block, BlockParticipant } from "@/types/blocks";
 
+import { BlockParticipantsList } from "./block-participants-list";
 import { DeleteBlockPopup } from "./delete-block-popup";
 import { EditBlockEntry } from "./edit-block-entry";
 
@@ -19,10 +21,12 @@ function BlockEntry({
   block,
   eventUuid,
   attributeUuid,
+  participants,
 }: {
   block: Block;
   eventUuid: string;
   attributeUuid: string;
+  participants: BlockParticipant[];
 }) {
   const t = useTranslations("Dashboard");
   const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
@@ -30,8 +34,7 @@ function BlockEntry({
     block.capacity == null
       ? 0
       : Math.round(
-          (Number(valueOrZero(block.meta.participantsInBlockCount)) /
-            block.capacity) *
+          (Number(valueOrZero(block.blockParticipantCount)) / block.capacity) *
             100,
         );
 
@@ -40,27 +43,41 @@ function BlockEntry({
       key={block.uuid}
       className="flex h-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
     >
-      <div className="flex justify-end gap-2">
-        <EditBlockEntry
-          blockToEdit={block}
-          eventUuid={eventUuid}
-          attributeUuid={attributeUuid}
-          parentUuid={block.uuid}
+      <div className="flex justify-between gap-2">
+        <DuplicateResourceButton
+          resourceName={block.name}
+          resourceType={t("block")}
+          onDuplicate={async () =>
+            await duplicateBlock(
+              eventUuid,
+              attributeUuid,
+              block.uuid,
+              block.name,
+            )
+          }
         />
-        <DeleteBlockPopup
-          eventUuid={eventUuid}
-          blockUuid={block.uuid}
-          blockName={block.name}
-          attributeUuid={attributeUuid}
-        />
+        <div className="flex gap-2">
+          <EditBlockEntry
+            blockToEdit={block}
+            eventUuid={eventUuid}
+            attributeUuid={attributeUuid}
+            parentUuid={block.uuid}
+          />
+          <DeleteBlockPopup
+            eventUuid={eventUuid}
+            blockUuid={block.uuid}
+            blockName={block.name}
+            attributeUuid={attributeUuid}
+          />
+        </div>
       </div>
       <div className="flex grow flex-col items-center justify-center gap-4">
         <p className="text-center text-2xl font-bold">{block.name}</p>
         <div className="flex items-center gap-2">
           <Users className="size-5" />
           {block.capacity === null
-            ? valueOrZero(block.meta.participantsInBlockCount)
-            : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+            ? valueOrZero(block.blockParticipantCount)
+            : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
         </div>
         <Field className="w-full max-w-sm">
           <Progress
@@ -77,7 +94,7 @@ function BlockEntry({
           </FieldLabel>
         </Field>
         {areParticipantsVisible ? (
-          <BlockParticipantsList participants={block.meta.participants} />
+          <BlockParticipantsList participants={participants} />
         ) : null}
       </div>
     </div>

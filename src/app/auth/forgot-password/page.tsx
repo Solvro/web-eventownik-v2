@@ -22,9 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
-import type { ResetPassTokenError } from "@/types/auth";
 import { sendPasswordResetTokenSchema } from "@/types/schemas";
-import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { sendPasswordResetToken } from "../actions";
 
@@ -70,10 +68,7 @@ export default function ForgotPasswordPage() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: translateOrFallback(
-            t,
-            result.error as ResetPassTokenError,
-          ),
+          description: translateOrFallback(t, result.error),
         });
       }
     } catch (error) {
@@ -163,10 +158,7 @@ export default function ForgotPasswordPage() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateOrFallback(
-                    t,
-                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
-                  )}
+                  {translateOrFallback(t, form.formState.errors.email?.message)}
                 </FormMessage>
               </FormItem>
             )}
