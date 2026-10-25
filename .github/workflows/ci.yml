@@ -37,7 +37,7 @@ jobs:
           NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
-          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
+          NEXT_PUBLIC_TURNSTILE_SITEKEY: 1x00000000000000000000AA
           SESSION_COOKIE_MAX_AGE: 3540
         if: always()
 
@@ -46,7 +46,7 @@ jobs:
           NEXT_PUBLIC_EVENTOWNIK_API: https://example.com/
           SESSION_SECRET: MEGATAJNYKLUCZ
           NEXT_PUBLIC_PHOTO_URL: https://example.com/
-          NEXT_PUBLIC_HCAPTCHA_SITEKEY: MEGANIETAJNYKLUCZ
+          NEXT_PUBLIC_TURNSTILE_SITEKEY: 1x00000000000000000000AA
           SESSION_COOKIE_MAX_AGE: 3540
         run: npm run build
         if: always()
