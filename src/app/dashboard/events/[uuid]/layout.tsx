@@ -3,9 +3,9 @@ import { notFound, redirect } from "next/navigation";
 
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { EventPrimaryColorSetter } from "@/components/event-primary-color";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { GetAttributesResponse } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 
 async function fetchEventAndAttributes(eventUuid: string) {
@@ -15,8 +15,8 @@ async function fetchEventAndAttributes(eventUuid: string) {
   }
   const { bearerToken } = session;
 
-  const attributesResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes?sort=order:asc`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
@@ -33,12 +33,11 @@ async function fetchEventAndAttributes(eventUuid: string) {
     },
   );
 
-  if (!eventResponse.ok || !attributesResponse.ok) {
+  if (!eventResponse.ok || attributes === null) {
     notFound();
   }
 
   const event = (await eventResponse.json()) as Event;
-  const attributes = (await attributesResponse.json()) as GetAttributesResponse;
   return { event, attributes };
 }
 
@@ -72,7 +71,7 @@ export default async function DashboardEventLayout({
   return (
     <div className="mb-12 flex grow flex-col gap-4 sm:mb-0 sm:flex-row sm:gap-14">
       <EventPrimaryColorSetter primaryColor={event.primaryColor ?? "#3672fd"} />
-      <DashboardSidebar event={event} attributes={attributes.data} />
+      <DashboardSidebar event={event} attributes={attributes} />
       <div className="flex max-w-full grow flex-col overflow-x-auto px-0.5">
         {children}
       </div>

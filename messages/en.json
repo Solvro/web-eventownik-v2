@@ -96,6 +96,8 @@
     "loggingOut": "Signing out...",
     "login": "Sign in",
     "editEvent": "Edit event",
+    "publishEvent": "Publish event",
+    "publishEventDescription": "Only published events have a publicly accessible page and registration. Once verified, they're also listed on the homepage.",
     "eventImage": "Event image",
     "share": "Share",
     "copiedToClipboard": "Copied to clipboard!",

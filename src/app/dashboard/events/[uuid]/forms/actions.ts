@@ -7,22 +7,7 @@ import { API_URL } from "@/lib/api";
 import { resolveFormDateTime } from "@/lib/event-form-utils";
 import { verifySession } from "@/lib/session";
 import { COPY_SUFFIX_REGEX, getNextCopyName } from "@/lib/utils";
-import type { FormAttributeBase } from "@/types/attributes";
-import type { CompleteEventForm } from "@/types/forms";
 import type { CreateEventFormDto } from "@/types/forms";
-
-export type Payload = Omit<
-  CompleteEventForm,
-  | "eventUuid"
-  | "uuid"
-  | "slug"
-  | "attributes"
-  | "order"
-  | "createdAt"
-  | "updatedAt"
-> & {
-  attributes: FormAttributeBase[];
-};
 
 export async function createEventForm(
   eventUuid: string,

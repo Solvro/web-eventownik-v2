@@ -10,13 +10,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
-import { duplicateEvent } from "@/app/dashboard/events/actions";
+// TODO(v3): Restore along with the "Duplicate event" button below
+// import { duplicateEvent } from "@/app/dashboard/events/actions";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
-import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
+// import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
-import { PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
@@ -42,11 +42,7 @@ export function EventCardBase({
     >
       <Link className="relative" href={`/dashboard/events/${event.uuid}`}>
         <Image
-          src={
-            event.photoUrl == null
-              ? EventPhotoPlaceholder
-              : `${PHOTO_URL}/${event.photoUrl}`
-          }
+          src={event.photoUrl ?? EventPhotoPlaceholder}
           width="500"
           height="500"
           className="aspect-square w-full object-cover"
@@ -61,7 +57,7 @@ export function EventCardBase({
               </p>
             </EventInfoBlock>
             <EventInfoBlock>
-              <p className="text-sm">{event.participantsCount}</p>
+              <p className="text-sm">{event.participantsLimit}</p>
               <Users size={16} />
             </EventInfoBlock>
           </div>
@@ -89,6 +85,7 @@ export function EventCard({ event }: { event: Event }) {
             {t("viewDetails")}
           </Link>
         </Button>
+        {/* TODO(v3): Event duplication is disabled until it's rewritten for the v3 API
         <DuplicateResourceButton
           resourceName={event.name}
           resourceType={t("event")}
@@ -96,6 +93,7 @@ export function EventCard({ event }: { event: Event }) {
           variant="ghost"
           className="size-12"
         />
+        */}
         <ShareButton
           path={event.slug}
           variant="icon"
@@ -123,7 +121,7 @@ export function EventCardForSuperadmin({
       event={event}
       className={cn(
         "border-2",
-        event.isActive ? "border-green-400" : "border-red-400",
+        event.isVerified ? "border-green-400" : "border-red-400",
       )}
     >
       <div className="flex w-full flex-col gap-2">
@@ -142,7 +140,7 @@ export function EventCardForSuperadmin({
         <ActivateEvent
           bearerToken={bearerToken}
           eventUuid={event.uuid}
-          isActive={event.isActive}
+          isActive={event.isVerified}
         />
       </div>
     </EventCardBase>

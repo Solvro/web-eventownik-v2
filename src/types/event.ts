@@ -1,4 +1,3 @@
-import type { Attribute } from "./attributes";
 import type { EventForm } from "./forms";
 import type { EventLink } from "./link";
 
@@ -10,17 +9,19 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   slug: string;
-  organizerUuid: string;
+  organizerUuid: string | null;
   description: string | null;
-  registerFormUuid: string;
+  registerFormUuid: string | null;
   location: string | null;
   primaryColor: string | null;
-  organizer: string | null;
-  participantsCount: number | null;
+  organizerName: string | null;
+  participantsLimit: number | null;
   contactEmail: string | null;
   photoUrl: string | null;
-  registerForm: EventForm | null;
+  isPublic: boolean;
+  isVerified: boolean;
+  isFeatured: boolean;
+  /** Included only by the public event endpoint, without form definition attributes */
+  registerForm?: EventForm | null;
   links: EventLink[];
-  isActive: boolean;
-  attributes: Attribute[];
 }

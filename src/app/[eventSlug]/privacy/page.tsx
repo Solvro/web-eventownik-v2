@@ -3,8 +3,7 @@ import { getTranslations } from "next-intl/server";
 import React from "react";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
-import { API_URL, PHOTO_URL } from "@/lib/api";
-import { getAttributeLabel } from "@/lib/utils";
+import { API_URL } from "@/lib/api";
 import type { Event } from "@/types/event";
 
 import { EventPageLayout } from "../event-page-layout";
@@ -39,7 +38,7 @@ export async function generateMetadata({
     title: t("privacyPolicyTitle", { name: event.name }),
     description: t("eventPrivacyPolicy", { name: event.name }),
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: event.photoUrl == null ? [] : [event.photoUrl],
     },
   };
 }
@@ -112,16 +111,6 @@ export default async function EventPage({ params }: EventPageProps) {
                 dane dotyczące urządzenia tj. adres IP, dane sesji,
                 identyfikator użytkownika
               </li>
-              {event.attributes.map((attribute) => {
-                return (
-                  <li key={attribute.uuid}>
-                    {getAttributeLabel(attribute.name, "pl")}
-                    {attribute.config.isSensitiveData
-                      ? ` (Wyrażam zgodę na przetwarzanie tej informacji w celu: '${attribute.config.reason ?? "nie podano"}')`
-                      : ""}
-                  </li>
-                );
-              })}
             </ol>
           </li>
           <li>

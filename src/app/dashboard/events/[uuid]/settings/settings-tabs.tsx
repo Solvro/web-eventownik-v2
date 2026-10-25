@@ -43,12 +43,12 @@ import { deleteEvent, updateEvent } from "./actions";
 import type { AttributeChange, CoOrganizerChange } from "./change-types";
 import { Attributes } from "./tabs/attributes";
 import { CoOrganizers } from "./tabs/co-organizers";
-import { General } from "./tabs/general-info";
+import { EventPublishSchema, General } from "./tabs/general-info";
 import { Personalization } from "./tabs/personalization";
 import type { TabProps } from "./tabs/tab-props";
 
 const EventSettingsSchema = z.intersection(
-  EventGeneralInfoSchema,
+  z.intersection(EventGeneralInfoSchema, EventPublishSchema),
   z.intersection(
     EventPersonalizationFormSchema,
     z.intersection(EventCoorganizersFormSchema, EventAttributesFormSchema),
@@ -150,17 +150,19 @@ export function EventSettingsTabs({
       endDate: new Date(unmodifiedEvent.endDate),
       endTime: `${getHours(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}:${getMinutes(new Date(unmodifiedEvent.endDate)).toString().padStart(2, "0")}`,
       location: unmodifiedEvent.location ?? "",
-      organizer: unmodifiedEvent.organizer ?? "",
+      organizer: unmodifiedEvent.organizerName ?? "",
       termsLink: policyLink?.url ?? "",
+      isPublic: unmodifiedEvent.isPublic,
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
       primaryColor: unmodifiedEvent.primaryColor,
-      participantsNumber: unmodifiedEvent.participantsCount ?? 100,
-      socialMediaLinks: generalLinks as {
-        label?: string;
-        url: string;
-        type: "general";
-      }[],
+      participantsNumber: unmodifiedEvent.participantsLimit ?? 100,
+      // `parseLinks` returns no `generalLinks` for an event without links, and v3 returns null labels
+      socialMediaLinks: (generalLinks ?? []).map((link) => ({
+        label: link.label ?? "",
+        url: link.url,
+        type: "general" as const,
+      })),
       slug: unmodifiedEvent.slug,
       contactEmail: unmodifiedEvent.contactEmail ?? undefined,
       // Co-organizers fields
@@ -223,10 +225,11 @@ export function EventSettingsTabs({
       startDate: formatISO(values.startDate, { representation: "complete" }),
       endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
-      organizer: values.organizer ?? "",
+      organizerName: values.organizer ?? "",
       photoUrl: values.photoUrl ?? null,
       primaryColor: values.primaryColor,
-      participantsCount: values.participantsNumber,
+      participantsLimit: values.participantsNumber,
+      isPublic: values.isPublic,
       links: [
         ...(values.termsLink == null
           ? []
@@ -250,6 +253,7 @@ export function EventSettingsTabs({
           : newEvent.photoUrl;
       const eventResult = await updateEvent(
         unmodifiedEvent,
+        unmodifiedAttributes,
         {
           ...newEvent,
           photoUrl: base64Image,

@@ -3,10 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 import { EventSettingsTabs } from "@/app/dashboard/events/[uuid]/settings/settings-tabs";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
+import { getUser } from "@/lib/dal";
 import { verifySession } from "@/lib/session";
-import type { GetAttributesResponse } from "@/types/attributes";
-import type { GetCoOrganizersResponse } from "@/types/co-organizer";
+import type { Attribute } from "@/types/attributes";
+import type { CoOrganizer, EventOrganizer } from "@/types/co-organizer";
 import type { Event } from "@/types/event";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,7 +44,7 @@ export default async function DashboardEventSettingsPage({
   }
   const event = (await eventResponse.json()) as Event;
 
-  const coOrganizersResponse = await fetch(
+  const organizers = await fetchAllPages<EventOrganizer>(
     `${API_URL}/events/${encodeURIComponent(uuid)}/organizers`,
     {
       headers: {
@@ -51,34 +52,41 @@ export default async function DashboardEventSettingsPage({
       },
     },
   );
-  if (!coOrganizersResponse.ok) {
+  if (organizers === null) {
     notFound();
   }
-  const coOrganizers =
-    (await coOrganizersResponse.json()) as GetCoOrganizersResponse;
+  // The list includes the current user, who shouldn't be able to remove themselves
+  const user = await getUser();
+  const coOrganizers: CoOrganizer[] = organizers
+    .filter((organizer) => organizer.uuid !== user?.uuid)
+    .map((organizer) => ({
+      id: organizer.uuid,
+      email: organizer.email,
+      permissions: organizer.permissions.map(({ permission }) => ({
+        id: permission,
+      })),
+    }));
 
-  const attributesResponse = await fetch(
-    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes?sort=order:asc`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
       },
     },
   );
-  if (!attributesResponse.ok) {
+  if (attributes === null) {
     notFound();
   }
-  const attributes = (await attributesResponse.json()) as GetAttributesResponse;
-  attributes.data.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <>
       <h1 className="mb-6 text-3xl font-bold">{t("editEvent")}</h1>
       <div className="flex flex-1 flex-col">
         <EventSettingsTabs
-          unmodifiedEvent={{ ...event, attributes: attributes.data }}
-          unmodifiedCoOrganizers={coOrganizers.data}
-          unmodifiedAttributes={attributes.data}
+          unmodifiedEvent={event}
+          unmodifiedCoOrganizers={coOrganizers}
+          unmodifiedAttributes={attributes}
         />
       </div>
     </>

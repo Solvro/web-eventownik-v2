@@ -1,14 +1,13 @@
 export type PermissionType =
-  | 6 // "email"
-  | 5 // "participant"
-  | 4 // "form"
-  | 3 // "setting"
-  | 1; // "all"
+  | "MANAGE_ALL"
+  | "MANAGE_EVENT"
+  | "MANAGE_FORM"
+  | "MANAGE_PARTICIPANT"
+  | "MANAGE_EMAIL"
+  | "MANAGE_SETTINGS";
 
 export interface Permission {
   id: PermissionType;
-  action: string;
-  subject: string;
 }
 
 export interface CoOrganizer {
@@ -17,6 +16,9 @@ export interface CoOrganizer {
   permissions: Permission[];
 }
 
-export interface GetCoOrganizersResponse {
-  data: CoOrganizer[];
+/** Organizer as returned by the organizers list endpoint */
+export interface EventOrganizer {
+  uuid: string;
+  email: string;
+  permissions: { permission: PermissionType }[];
 }

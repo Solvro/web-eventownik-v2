@@ -60,7 +60,6 @@ export function AttributesForm({
       order: fields.length,
       config: {
         options: [],
-        isSensitiveData: false,
       },
     };
 

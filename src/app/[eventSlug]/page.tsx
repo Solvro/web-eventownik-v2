@@ -7,7 +7,7 @@ import sanitizeHtml from "sanitize-html";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { Button } from "@/components/ui/button";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import type { Event } from "@/types/event";
 
@@ -43,7 +43,7 @@ export async function generateMetadata({
     title: event.name,
     description: `${event.description == null ? event.name : sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} })} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: event.photoUrl == null ? [] : [event.photoUrl],
     },
   };
 }
@@ -81,7 +81,7 @@ export default async function EventPage({ params }: EventPageProps) {
               variant="eventDefault"
               className="text-xl tracking-tight backdrop-blur-sm md:p-6 md:text-2xl pointer-fine:bg-(--event-primary-color)/70"
               style={{
-                viewTransitionName: isFormOpen(event.registerForm)
+                viewTransitionName: isFormOpen(event.registerForm ?? null)
                   ? "register-button"
                   : "form-close-info",
               }}

@@ -28,7 +28,9 @@ export function SocialMediaLink({
 }) {
   const { url, label } = link;
   const displayLabel =
-    label.trim().length > 0 ? label : new URL(url).hostname.replace("www.", "");
+    label != null && label.trim().length > 0
+      ? label
+      : new URL(url).hostname.replace("www.", "");
 
   return (
     <Tooltip delayDuration={0}>
