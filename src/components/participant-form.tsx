@@ -41,12 +41,6 @@ import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
 
-interface ErrorObject {
-  rule: string;
-  field: string;
-  message: string;
-}
-
 function getFieldErrorMessage(
   errors: FieldErrors,
   fieldName: string,
@@ -70,7 +64,7 @@ interface ParticipantFormProps {
     files: File[],
   ) => Promise<{
     success: boolean;
-    errors?: ErrorObject[];
+    isEmailTaken?: boolean;
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
@@ -121,13 +115,26 @@ export function ParticipantForm({
       ...(includeEmail && { email: userData?.email ?? "" }),
       ...userData?.attributes.reduce<Record<string, string | number>>(
         (accumulator, userAttribute) => {
-          accumulator[userAttribute.attributeUuid] = userAttribute.value;
+          // Stored files come back as URLs, which the backend rejects as new values.
+          // File inputs stay empty, and new uploads are sent separately as tokens
+          if (
+            userAttribute.attribute.type !== "file" &&
+            userAttribute.attribute.type !== "drawing"
+          ) {
+            accumulator[userAttribute.attributeUuid] = userAttribute.value;
+          }
           return accumulator;
         },
         {},
       ),
     },
   });
+
+  function getUserAttribute(attributeUuid: string) {
+    return userData?.attributes.find(
+      (userAttribute) => userAttribute.attributeUuid === attributeUuid,
+    );
+  }
 
   function resetStates() {
     router.refresh();
@@ -153,9 +160,19 @@ export function ParticipantForm({
     values: z.infer<typeof formSchema>,
     token: string,
   ) {
+    // When editing, send only the fields the participant changed. The backend keeps omitted
+    // attributes as they are, while an empty value erases them (and deletes stored files)
+    const submittedValues = editMode
+      ? Object.fromEntries(
+          Object.entries(values).filter(
+            ([name]) => form.getFieldState(name).isDirty,
+          ),
+        )
+      : values;
+
     try {
       const result = await onSubmit(
-        { ...values, "cf-turnstile-response": token },
+        { ...submittedValues, "cf-turnstile-response": token },
         files,
       );
       if (result.success) {
@@ -165,13 +182,7 @@ export function ParticipantForm({
         }
         setSuccess(true);
       } else {
-        if (
-          includeEmail &&
-          result.errors != null &&
-          result.errors.length > 0 &&
-          result.errors[0].rule === "database.unique" &&
-          result.errors[0].field === "email"
-        ) {
+        if (includeEmail && result.isEmailTaken === true) {
           form.setError("email", {
             type: "manual",
             message: t("emailTaken"),
@@ -273,11 +284,10 @@ export function ParticipantForm({
       const hasFile = files.some(
         (file) => file.name === formDefinition.attribute.uuid,
       );
-      const hasExistingValue =
-        userData?.attributes.some(
-          (userAttribute) =>
-            userAttribute.attributeUuid === formDefinition.attribute.uuid,
-        ) ?? false;
+      const existingValue = getUserAttribute(
+        formDefinition.attribute.uuid,
+      )?.value;
+      const hasExistingValue = existingValue != null && existingValue !== "";
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
@@ -377,7 +387,10 @@ export function ParticipantForm({
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={formDefinition.attribute.updatedAt}
+                        lastUpdate={
+                          getUserAttribute(formDefinition.attribute.uuid)
+                            ?.updatedAt
+                        }
                       />
                     ) : formDefinition.attribute.type === "drawing" ? (
                       <AttributeInputDrawing
@@ -386,7 +399,10 @@ export function ParticipantForm({
                         setError={form.control.setError}
                         resetField={form.resetField}
                         setFiles={setFiles}
-                        lastUpdate={formDefinition.attribute.updatedAt}
+                        lastUpdate={
+                          getUserAttribute(formDefinition.attribute.uuid)
+                            ?.updatedAt
+                        }
                       />
                     ) : (
                       <AttributeInput
