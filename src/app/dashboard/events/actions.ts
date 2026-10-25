@@ -1,5 +1,10 @@
+/* eslint-disable unicorn/no-empty-file -- the whole file is commented out until PR 8 */
 "use server";
 
+// TODO(v3): Event duplication is disabled until it's rewritten for the v3 API, and the
+// "Duplicate event" button in `event-card.tsx` is hidden until then.
+// See `.claude/tasks/v3-pass/plan.md` (PR 8) and `.claude/notes/tiles-clone-leftovers.md`.
+/*
 import { formatDate } from "date-fns";
 import { getLocale } from "next-intl/server";
 
@@ -412,3 +417,4 @@ export async function duplicateEvent(eventUuid: string) {
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
+*/

@@ -4,8 +4,7 @@ import type { Attribute } from "@/types/attributes";
 
 export type EventAttributesFormErrors =
   | "attributeNameRequired"
-  | "attributeNameExists"
-  | "sensitiveDataReasonRequired";
+  | "attributeNameExists";
 
 export const EventAttributesFormSchema = z.object({
   attributes: z
@@ -35,18 +34,6 @@ export const EventAttributesFormSchema = z.object({
           });
         }
         nameSet.add(normalizedName);
-
-        if (
-          attribute.config.isSensitiveData &&
-          (attribute.config.reason == null ||
-            attribute.config.reason.trim() === "")
-        ) {
-          context.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: [index, "reason"],
-            message: "sensitiveDataReasonRequired",
-          });
-        }
       }
     }),
 });

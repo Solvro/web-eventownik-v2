@@ -27,6 +27,7 @@ export interface ErrorMessage {
 
 interface SaveEventResult {
   uuid?: string;
+  isSlugTaken?: boolean;
   errors?: {
     message: ErrorMessage | string;
   }[];
@@ -46,7 +47,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
-  formData.append("organizer", event.organizer ?? "");
+  formData.append("organizerName", event.organizer ?? "");
   if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
     formData.append("contactEmail", event.contactEmail);
   }
@@ -55,7 +56,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
-  formData.append("participantsCount", event.participantsNumber.toString());
+  formData.append("participantsLimit", event.participantsNumber.toString());
+  // New events start as drafts, the organizer publishes them in the event settings
+  formData.append("isPublic", "false");
 
   const addLinkToFormData = (
     url: string,
@@ -124,7 +127,9 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
     console.error(
       `[saveEvent] Failed to create event: ${rawMessages[0] ?? "Unknown error"}`,
     );
-    return { errors };
+    // The backend responds with 409 only when the slug is already taken. The slug step can't
+    // catch every case, since drafts are hidden from the public endpoint it uses
+    return { errors, isSlugTaken: response.status === 409 };
   }
 
   const data = (await response.json()) as Record<"uuid", string>;
@@ -151,7 +156,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           },
           body: JSON.stringify({
             email: coorganizer.email,
-            permissionsIds: [1],
+            permissions: ["MANAGE_ALL"],
           }),
         },
       );
@@ -198,7 +203,15 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
-  for (const attribute of event.attributes) {
+  // New attributes have temporary UUIDs, which block attributes reference in `participantFields`.
+  // Block attributes are created last, so the references can be replaced with the real UUIDs
+  const createdAttributeUuids = new Map<string, string>();
+  const attributesInCreationOrder = [
+    ...event.attributes.filter((attribute) => attribute.type !== "block"),
+    ...event.attributes.filter((attribute) => attribute.type === "block"),
+  ];
+
+  for (const attribute of attributesInCreationOrder) {
     try {
       const attributeResponse = await fetch(
         `${API_URL}/events/${eventUuid}/attributes`,
@@ -216,7 +229,15 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
             config: {
               ...(attribute.type === "block"
                 ? {
-                    participantFields: attribute.config.participantFields ?? [],
+                    participantFields: (
+                      attribute.config.participantFields ?? []
+                    ).flatMap((field) => {
+                      if (field === "email") {
+                        return [field];
+                      }
+                      const createdUuid = createdAttributeUuids.get(field);
+                      return createdUuid === undefined ? [] : [createdUuid];
+                    }),
                   }
                 : {
                     options:
@@ -224,11 +245,6 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
                         ? attribute.config.options
                         : null,
                   }),
-              isSensitiveData: attribute.config.isSensitiveData,
-              reason:
-                (attribute.config.isSensitiveData ?? false)
-                  ? (attribute.config.reason ?? null)
-                  : null,
               ...(attribute.type === "block" && {
                 maxSelections: attribute.config.maxSelections ?? 1,
               }),
@@ -238,6 +254,10 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       );
 
       if (attributeResponse.ok) {
+        const createdAttribute = (await attributeResponse.json()) as {
+          uuid: string;
+        };
+        createdAttributeUuids.set(attribute.uuid, createdAttribute.uuid);
         attributesAdded++;
       } else {
         const errorData = (await attributeResponse.json()) as ApiErrorResponse;

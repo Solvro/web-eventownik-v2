@@ -7,7 +7,7 @@ import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-for
 import { EventCard } from "@/components/event-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -30,22 +30,19 @@ export default async function EventListPage() {
     notFound();
   }
   const { bearerToken } = session;
-  const response = await fetch(`${API_URL}/events`, {
+  const allEvents = await fetchAllPages<Event>(`${API_URL}/events`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
 
-  if (!response.ok) {
+  if (allEvents === null) {
     return <FetchErrorAlert />;
   }
 
-  // NOTE: Response structure refactor
-  const events = ((await response.json()) as { data: Event[] }).data.toSorted(
-    (a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    },
-  );
+  const events = allEvents.toSorted((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   const isSuperAdmin = await checkIfSuperAdmin(bearerToken);
 

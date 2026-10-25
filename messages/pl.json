@@ -96,6 +96,8 @@
     "loggingOut": "Wylogowywanie...",
     "login": "Zaloguj się",
     "editEvent": "Edytuj wydarzenie",
+    "publishEvent": "Opublikuj wydarzenie",
+    "publishEventDescription": "Tylko opublikowane wydarzenia mają ogólnodostępną stronę i rejestrację. Po weryfikacji pojawiają się też na stronie głównej.",
     "eventImage": "Zdjęcie wydarzenia",
     "share": "Udostępnij",
     "copiedToClipboard": "Skopiowano do schowka!",

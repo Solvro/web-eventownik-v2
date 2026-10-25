@@ -8,7 +8,7 @@ import sanitizeHtml from "sanitize-html";
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { FormClosedView } from "@/components/form-closed-view";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
@@ -47,7 +47,7 @@ export async function generateMetadata({
     title: event.name,
     description: `${event.description == null ? event.name : sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} })} | ${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")}`,
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: event.photoUrl == null ? [] : [event.photoUrl],
     },
   };
 }
@@ -71,6 +71,10 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
 
   const event = (await eventResponse.json()) as Event;
   const { policyLink } = parseLinks(event.links);
+
+  if (event.registerFormUuid === null) {
+    return <EventNotFound whatNotFound="form" />;
+  }
 
   const formResponse = await fetch(
     `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(event.registerFormUuid)}`,

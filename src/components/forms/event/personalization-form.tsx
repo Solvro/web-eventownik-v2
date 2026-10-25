@@ -91,11 +91,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   </>
                 ) : (
                   <Image
-                    src={
-                      imageValue.startsWith("blob:")
-                        ? imageValue
-                        : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${imageValue}`
-                    }
+                    src={imageValue}
                     alt={t("eventImagePreview")}
                     width={1080}
                     height={1080}

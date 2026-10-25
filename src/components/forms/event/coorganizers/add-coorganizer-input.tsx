@@ -60,7 +60,8 @@ export function AddCoOrganizerInput({
             className="h-12 w-12 disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50"
             disabled={!isEmailValid || emailAlreadyExists}
             onClick={() => {
-              setSelectedPermissions([6, 5, 4, 3]);
+              // Co-organizers always get every permission, selecting them is disabled for now
+              setSelectedPermissions(["MANAGE_ALL"]);
             }}
           >
             <Plus className="h-4 w-4" />
@@ -74,8 +75,11 @@ export function AddCoOrganizerInput({
             {PERMISSIONS_CONFIG.map(({ permission, label }) => (
               <div key={permission.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`permission-${permission.id.toString()}-new`}
-                  checked={selectedPermissions.includes(permission.id)}
+                  id={`permission-${permission.id}-new`}
+                  checked={
+                    selectedPermissions.includes(permission.id) ||
+                    selectedPermissions.includes("MANAGE_ALL")
+                  }
                   onCheckedChange={(checked) => {
                     if (checked === true) {
                       setSelectedPermissions((previous) => [
@@ -91,7 +95,7 @@ export function AddCoOrganizerInput({
                   disabled={true} // temporary disabled
                 />
                 <Label
-                  htmlFor={`permission-${permission.id.toString()}-new`}
+                  htmlFor={`permission-${permission.id}-new`}
                   className="cursor-pointer"
                 >
                   {tEventPermissions(label)}

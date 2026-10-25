@@ -220,7 +220,12 @@ export function CreateEventForm() {
         };
         try {
           const result = await saveEvent(newEventObject);
-          if ("errors" in result) {
+          if (result.isSlugTaken === true) {
+            setCurrentStep(1);
+            form.setError("slug", {
+              message: t("slugAlreadyTaken"),
+            });
+          } else if ("errors" in result) {
             toast({
               variant: "destructive",
               title: t("failedToCreateEvent"),

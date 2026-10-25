@@ -2,7 +2,7 @@ import { RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers";
 import type { DragEndEvent } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
-import { HelpCircle, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -10,13 +10,6 @@ import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,11 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { translateOrFallback } from "@/i18n/utils";
 import type { Attribute, AttributeType } from "@/types/attributes";
 
@@ -180,90 +168,8 @@ export function AttributeItem({
               {t("showInTable")}
             </Label>
           </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id={`isSensitiveData-${index.toString()}`}
-              onCheckedChange={(checked) => {
-                setValue(
-                  `attributes.${index}.config.isSensitiveData`,
-                  checked === true,
-                );
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              defaultChecked={attribute.config.isSensitiveData}
-            />
-            <div className="flex items-center gap-2">
-              <Label htmlFor={`isSensitiveData-${index.toString()}`}>
-                {t("sensitiveData")}
-              </Label>
-
-              <Dialog>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label={t("sensitiveDataExplanation")}
-                        className="size-4"
-                      >
-                        <HelpCircle />
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">{t("tip")}</TooltipContent>
-                </Tooltip>
-
-                <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">
-                      {t("whatIsSensitiveData")}
-                    </DialogTitle>
-                    <div className="[&>p]:my-2 [&>p]:text-left sm:[&>p]:text-justify">
-                      <p>{t("sensitiveDataDescr")}</p>
-                      <p>
-                        {t.rich("sensitiveDataExamples", {
-                          strong: (chunks) => <strong>{chunks}</strong>,
-                        })}
-                      </p>
-                    </div>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
         </div>
       </div>
-
-      {(watch(`attributes.${index}.config.isSensitiveData`) ?? false) ? (
-        <div className="my-2 flex flex-col gap-2">
-          <Label htmlFor={`reason-${index.toString()}`}>
-            {t("sensitiveDataReason")}
-          </Label>
-          <Input
-            id={`reason-${index.toString()}`}
-            defaultValue={attribute.config.reason ?? ""}
-            required={attribute.config.isSensitiveData}
-            onChange={(event_) => {
-              setValue(
-                `attributes.${index}.config.reason`,
-                event_.target.value,
-              );
-            }}
-            placeholder={t("sensitiveDataReasonExamples")}
-            onBlur={() => {
-              onUpdateItem?.(index, getValues(`attributes.${index}`));
-            }}
-          />
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.attributes?.[index]?.config?.reason
-                ?.message as EventAttributesFormErrors,
-            )}
-          </FormMessage>
-        </div>
-      ) : null}
 
       {(watch(`attributes.${index}.type`) === "select" ||
         watch(`attributes.${index}.type`) === "multiSelect") && (
