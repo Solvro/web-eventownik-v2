@@ -3,7 +3,7 @@ export interface Block {
   createdAt: string;
   updatedAt: string;
   capacity: number | null;
-  order: number;
+  order: number | null;
   name: string;
   description: string | null;
   parentUuid: string | null;
@@ -13,8 +13,7 @@ export interface Block {
   children: Block[];
 }
 
+/** A block occupant, named by the block attribute's participant fields. Empty if none are set */
 export interface BlockParticipant {
-  uuid: string;
-  email: string;
-  name?: string;
+  name: string;
 }

@@ -53,7 +53,9 @@ export function AttributeBlocksWrapper({
   });
   const [hideFullBlocks, setHideFullBlocks] = useState(false);
 
-  const sortedBlocks = eventBlocks.toSorted((a, b) => a.order - b.order);
+  const sortedBlocks = eventBlocks.toSorted(
+    (a, b) => (a.order ?? 0) - (b.order ?? 0),
+  );
 
   const filteredBlocks = sortedBlocks.filter((block) =>
     includeBlock(block, searchText, hideFullBlocks),

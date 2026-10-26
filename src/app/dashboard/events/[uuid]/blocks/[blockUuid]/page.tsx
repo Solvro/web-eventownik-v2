@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
+import { getBlockParticipants } from "@/app/[eventSlug]/utils";
 import { CreateBlockForm } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/create-block-form";
 import { ToggleParticipantsVisibilityButton } from "@/app/dashboard/events/[uuid]/blocks/[blockUuid]/toggle-participants-visibility-button";
 import { API_URL } from "@/lib/api";
@@ -38,34 +39,6 @@ async function getRootBlock(
     );
     return null;
   }
-}
-
-export async function getBlock(
-  eventSlug: string,
-  attributeUuid: string,
-  blockUuid: string,
-  bearerToken: string,
-) {
-  const response = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/attributes/${encodeURIComponent(attributeUuid)}/blocks/${encodeURIComponent(blockUuid)}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  if (response.ok) {
-    return (await response.json()) as BlockParticipant[];
-  }
-
-  const error = (await response.json()) as unknown;
-  console.error(
-    `[getBlock] Failed to fetch block ${blockUuid} for attribute ${attributeUuid} in event ${eventSlug}:`,
-    error,
-  );
-  return null;
 }
 
 async function getRootBlockAttributeName(
@@ -157,12 +130,7 @@ export default async function EventBlockEditPage({
         rootBlock.children.map(
           async (block): Promise<[string, BlockParticipant[]]> => [
             block.uuid,
-            (await getBlock(
-              event.slug,
-              rootBlock.attributeUuid ?? rootBlockUuid,
-              block.uuid,
-              bearerToken,
-            )) ?? [],
+            (await getBlockParticipants(event.slug, block)) ?? [],
           ],
         ),
       ),
