@@ -184,7 +184,15 @@ export const setupSuggestions = (
   const allTags = [...getMessageTags(t), ...additionalTags];
 
   return [
-    Mention.configure({
+    Mention.extend({
+      // Saved templates store tags as bare `<span data-id="/...">` elements, see `normalizeMessageTags`
+      parseHTML() {
+        return [
+          { tag: `span[data-type="${this.name}"]` },
+          { tag: 'span[data-id^="/"]' },
+        ];
+      },
+    }).configure({
       suggestion: {
         ...getSuggestionOptions(allTags),
       },
@@ -193,15 +201,18 @@ export const setupSuggestions = (
           "px-2 rounded-md inline-block !truncate max-w-sm align-[-0.3em] font-sans!",
       },
       renderHTML({ options, node }) {
+        const id = node.attrs.id as string;
         return [
           "span",
           mergeAttributes(
             {
-              style: getTagStyle(allTags, node.attrs.id as string),
+              style: getTagStyle(allTags, id),
             },
             options.HTMLAttributes,
           ),
-          node.attrs.label,
+          (node.attrs.label as string | null) ??
+            allTags.find((tag) => tag.value === id)?.title ??
+            id,
         ];
       },
     }),

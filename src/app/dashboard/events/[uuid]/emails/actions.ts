@@ -9,13 +9,47 @@ import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
-import { getSingleEventEmail } from "./data-access";
+import { getEmailDeliveries } from "./data-access";
 
-export async function getSingleEventEmailAction(
+export async function getEmailDeliveriesAction(
   eventUuid: string,
   emailUuid: string,
 ) {
-  return await getSingleEventEmail(eventUuid, emailUuid);
+  return await getEmailDeliveries(eventUuid, emailUuid);
+}
+
+/**
+ * The backend replaces message tags only in empty spans with nothing but `data-id`, while
+ * the editor renders them with a label and styling. See `setupSuggestions` for parsing them back.
+ *
+ * TODO(v3): Remove once the backend parser accepts the editor's spans
+ */
+function normalizeMessageTags(content: string) {
+  return content.replaceAll(
+    /<span\b[^>]*\bdata-id="(\/(?:participant|form|event)_[\w-]+)"[^>]*>[\s\S]*?<\/span>/g,
+    '<span data-id="$1"></span>',
+  );
+}
+
+/**
+ * Builds the request body for creating or updating a template.
+ * `trigger` and `triggerConfig` are always sent together, since the backend
+ * clears the config of a template updated without it.
+ */
+function getEmailTemplateBody(template: UpdateEventEmailPayload) {
+  return {
+    name: template.name,
+    content: normalizeMessageTags(template.content),
+    trigger: template.trigger,
+    triggerConfig:
+      template.trigger === "FORM_FILLED"
+        ? { formUuid: template.triggerValue }
+        : {},
+    // Simple templates have no schema, and the backend expects an object, not a JSON string
+    ...(template.schema != null && {
+      schema: JSON.parse(template.schema) as unknown,
+    }),
+  };
 }
 
 export async function createEventEmail(data: {
@@ -33,7 +67,7 @@ export async function createEventEmail(data: {
       Authorization: `Bearer ${session.bearerToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data.emailTemplate),
+    body: JSON.stringify(getEmailTemplateBody(data.emailTemplate)),
   });
 
   if (!response.ok) {
@@ -86,7 +120,7 @@ export async function updateEventEmail(data: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data.emailTemplate),
+      body: JSON.stringify(getEmailTemplateBody(data.emailTemplate)),
     },
   );
 
@@ -109,50 +143,6 @@ export async function updateEventEmail(data: {
   }
 
   return { error: null, success: true };
-}
-
-export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
-  const session = await verifySession();
-
-  if (session == null) {
-    return {
-      success: false,
-      error: { key: "unauthorized" as EventDetailsKey },
-    };
-  }
-
-  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
-  const results = await Promise.all(
-    orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventUuid}/emails/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.bearerToken}`,
-        },
-        body: JSON.stringify({ order: index }),
-      }),
-    ),
-  );
-
-  const failed = results.find((r) => !r.ok);
-  if (failed !== undefined) {
-    console.error(
-      `[reorderEmails action] Failed to reorder emails for event ${eventUuid}`,
-    );
-    return {
-      success: false,
-      error: {
-        key: "httpError" as EventDetailsKey,
-        values: {
-          status: failed.status,
-          statusText: failed.statusText,
-        },
-      },
-    };
-  }
-
-  return { success: true };
 }
 
 export async function deleteEventMail(eventUuid: string, mailUuid: string) {

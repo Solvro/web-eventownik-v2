@@ -1,10 +1,13 @@
 import "server-only";
 
-import { API_URL } from "@/lib/api";
-import type { PaginatedResponse } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { GetAttributesResponse } from "@/types/attributes";
-import type { EventEmail, SingleEventEmail } from "@/types/emails";
+import type { Attribute } from "@/types/attributes";
+import type {
+  EventEmail,
+  EventEmailParticipantData,
+  SingleEventEmail,
+} from "@/types/emails";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 
@@ -14,22 +17,20 @@ export async function getEventEmails(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/emails`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  const emails = await fetchAllPages<EventEmail>(
+    `${API_URL}/events/${eventUuid}/emails`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
-  if (!response.ok) {
+  if (emails === null) {
     console.error(
-      `[getEventEmails] Failed to fetch available emails for event ${eventUuid}:`,
-      response,
+      `[getEventEmails] Failed to fetch available emails for event ${eventUuid}`,
     );
-    return null;
   }
-
-  const emails = ((await response.json()) as { data: EventEmail[] }).data;
 
   return emails;
 }
@@ -71,24 +72,23 @@ export async function getEventAttributes(eventUuid: string) {
     return [];
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${eventUuid}/attributes?sort=order:asc`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
-  if (!response.ok) {
+  if (attributes === null) {
     console.error(
-      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new email for event ${eventUuid}:`,
-      response,
+      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new email for event ${eventUuid}`,
     );
     return [];
   }
 
-  const attributes = (await response.json()) as GetAttributesResponse;
-
-  return attributes.data;
+  return attributes;
 }
 
 export async function getEventForms(eventUuid: string) {
@@ -97,23 +97,47 @@ export async function getEventForms(eventUuid: string) {
     return [];
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/forms`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  const forms = await fetchAllPages<EventForm>(
+    `${API_URL}/events/${eventUuid}/forms?sort=order:asc,createdAt:asc`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
-  if (!response.ok) {
+  if (forms === null) {
     console.error(
-      `[getEventForms] Failed to fetch forms for event ${eventUuid}:`,
-      response,
+      `[getEventForms] Failed to fetch forms for event ${eventUuid}`,
     );
     return [];
   }
 
-  const parsed = (await response.json()) as PaginatedResponse<EventForm>;
-  return parsed.data;
+  return forms;
+}
+
+export async function getEmailDeliveries(eventUuid: string, emailUuid: string) {
+  const session = await verifySession();
+  if (session == null) {
+    return null;
+  }
+
+  const deliveries = await fetchAllPages<EventEmailParticipantData>(
+    `${API_URL}/events/${eventUuid}/emails/${emailUuid}/participants`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+    },
+  );
+
+  if (deliveries === null) {
+    console.error(
+      `[getEmailDeliveries] Failed to fetch deliveries of email ${emailUuid} for event ${eventUuid}`,
+    );
+  }
+
+  return deliveries;
 }
 
 export async function getEmailEventInfo(eventUuid: string) {

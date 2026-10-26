@@ -50,7 +50,7 @@ export const handlers = [
     },
   ),
   http.post<{ eventUuid: string; emailUuid: string }>(
-    `${API_URL}/events/:eventUuid/emails/send/:emailUuid`,
+    `${API_URL}/events/:eventUuid/emails/:emailUuid/send`,
     () => {
       return HttpResponse.json();
     },

@@ -21,16 +21,16 @@ export async function generateMetadata() {
 export default async function EventMailEditPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ uuid: string }>;
 }) {
   const t = await getTranslations("Editor");
   const tMessageTags = await getTranslations("MessageTags");
 
-  const { id } = await params;
+  const { uuid } = await params;
 
-  const attributes = await getEventAttributes(id);
-  const forms = await getEventForms(id);
-  const event = await getEmailEventInfo(id);
+  const attributes = await getEventAttributes(uuid);
+  const forms = await getEventForms(uuid);
+  const event = await getEmailEventInfo(uuid);
 
   return (
     <Editor
@@ -49,7 +49,7 @@ export default async function EventMailEditPage({
       }}
       mutationData={{
         emailUuid: null,
-        eventUuid: id,
+        eventUuid: uuid,
         mode: "create",
       }}
       eventData={{

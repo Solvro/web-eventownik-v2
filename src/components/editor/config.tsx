@@ -1125,7 +1125,7 @@ export const getPuckConfig = ({
           },
         };
 
-        if (data.props?.trigger === "form_filled") {
+        if (data.props?.trigger === "FORM_FILLED") {
           return {
             ...defaultFields,
             triggerValue: {
@@ -1139,7 +1139,7 @@ export const getPuckConfig = ({
           };
         }
 
-        if (data.props?.trigger === "attribute_changed") {
+        if (data.props?.trigger === "ATTRIBUTE_CHANGED") {
           return {
             ...defaultFields,
             triggerValue: {
