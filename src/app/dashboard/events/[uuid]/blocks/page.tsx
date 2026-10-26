@@ -2,7 +2,7 @@ import { Cuboid } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 
@@ -29,8 +29,8 @@ export default async function DashboardEventBlocksPage({
   const { bearerToken } = session;
   const { uuid } = await params;
 
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes`,
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${encodeURIComponent(uuid)}/attributes?sort=order:asc`,
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
@@ -38,11 +38,9 @@ export default async function DashboardEventBlocksPage({
     },
   );
 
-  if (!response.ok) {
+  if (attributes === null) {
     notFound();
   }
-
-  const attributes = ((await response.json()) as { data: Attribute[] }).data;
 
   const blocks = attributes.filter(
     (attribute: { type: string }) => attribute.type === "block",

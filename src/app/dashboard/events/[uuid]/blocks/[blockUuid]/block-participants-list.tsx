@@ -14,10 +14,7 @@ export function BlockParticipantsList({
 
   const isAnonymousList =
     participants.length > 0 &&
-    participants.every(
-      (participant) =>
-        participant.name?.trim() === "" || participant.name === undefined,
-    );
+    participants.every((participant) => participant.name.trim() === "");
 
   return (
     <ScrollArea className="h-50 w-full rounded-md border p-4">
@@ -29,9 +26,13 @@ export function BlockParticipantsList({
         </p>
       ) : (
         <ul>
-          {participants.map((participant) => (
-            <li key={participant.uuid} className="py-1 text-sm">
-              {participant.name ?? t("anonymousParticipant")}
+          {participants.map((participant, index) => (
+            // Occupants have no identifier, only the values of the participant fields
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={index} className="py-1 text-sm">
+              {participant.name.trim() === ""
+                ? t("anonymousParticipant")
+                : participant.name}
             </li>
           ))}
         </ul>
