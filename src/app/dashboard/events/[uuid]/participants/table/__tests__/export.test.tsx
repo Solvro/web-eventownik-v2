@@ -36,7 +36,7 @@ describe("Export data", () => {
   it("should display informative error when server error occurs", async () => {
     server.use(
       http.get<{ eventUuid: string }>(
-        `${API_URL}/events/:eventUuid/participants/export`,
+        `${API_URL}/events/:eventUuid/import-export/participants`,
         () => {
           return HttpResponse.json({}, { status: 500 });
         },

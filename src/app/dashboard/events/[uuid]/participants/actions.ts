@@ -4,10 +4,10 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type { ExportKey, SendMailKey, TableKey } from "@/i18n/utils";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
-import type { Attribute, GetAttributesResponse } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
@@ -21,7 +21,7 @@ export interface ImportedParticipant {
 }
 
 interface ImportParticipantsResponse {
-  message?: string;
+  message?: string | string[];
   error?: string;
   errors?: { message?: string }[];
   warning?: {
@@ -91,20 +91,16 @@ export async function getParticipants(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
+  const participants = await fetchAllPages<Participant>(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${session.bearerToken}` },
-    },
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
   );
 
-  if (!response.ok) {
-    console.error("Failed to fetch participants", response);
+  if (participants === null) {
+    console.error(`[getParticipants] Failed to fetch participants`);
     return null;
   }
-  const participants = (await response.json()) as { data: Participant[] };
-  return participants.data.toSorted(
+  return participants.toSorted(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 }
@@ -151,18 +147,13 @@ export async function getAttributes(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes`,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${session.bearerToken}` },
-    },
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes?sort=order:asc`,
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
   );
-  if (!response.ok) {
-    console.error("Failed to fetch attributes", response);
-    return null;
+  if (attributes === null) {
+    console.error(`[getAttributes] Failed to fetch attributes`);
   }
-  const attributes = (await response.json()) as GetAttributesResponse;
   return attributes;
 }
 
@@ -234,33 +225,41 @@ export async function deleteManyParticipants(
     };
   }
 
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ participantsToUnregisterIds: participants }),
-    },
-  );
+  // The backend accepts at most 500 participants per request
+  const chunks: string[][] = [];
+  for (let index = 0; index < participants.length; index += 500) {
+    chunks.push(participants.slice(index, index + 500));
+  }
 
-  if (!response.ok) {
-    console.error(
-      `[deleteManyParticipants] Failed to delete many participants for event ${eventUuid}:`,
-      response,
+  for (const chunk of chunks) {
+    const response = await fetch(
+      `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/unregister-many`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.bearerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ participantsToUnregisterIds: chunk }),
+      },
     );
-    if (response.status === 500) {
+
+    if (!response.ok) {
+      console.error(
+        `[deleteManyParticipants] Failed to delete many participants for event ${eventUuid}:`,
+        response,
+      );
+      if (response.status === 500) {
+        return {
+          success: false,
+          error: { key: "serverError" as TableKey },
+        };
+      }
       return {
         success: false,
-        error: { key: "serverError" as TableKey },
+        error: { key: "unexpectedError" as TableKey },
       };
     }
-    return {
-      success: false,
-      error: { key: "unexpectedError" as TableKey },
-    };
   }
   return { success: true };
 }
@@ -306,7 +305,8 @@ export async function updateParticipant(
   eventUuid: string,
   participantUuid: string,
   payload: {
-    participantAttributes?: Record<string, string>;
+    /** Values already converted for the backend, see `toBackendAttributeValue` */
+    participantAttributes?: Record<string, unknown>;
     [key: string]: unknown;
   },
 ) {
@@ -330,7 +330,7 @@ export async function updateParticipant(
         ...(participantAttributes != null && {
           participantAttributes: Object.entries(participantAttributes).map(
             ([key, value]) => {
-              return { attributeUuid: key, value: value === "" ? null : value };
+              return { attributeUuid: key, value };
             },
           ),
         }),
@@ -356,14 +356,17 @@ async function createImportedParticipants(
   participants: ImportedParticipant[],
   bearerToken: string,
 ) {
-  return await fetch(`${API_URL}/events/${eventUuid}/participants/import`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-      "Content-Type": "application/json",
+  return await fetch(
+    `${API_URL}/events/${eventUuid}/import-export/participants`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ participants }),
     },
-    body: JSON.stringify({ participants }),
-  });
+  );
 }
 
 export async function importParticipants(
@@ -416,8 +419,10 @@ export async function importParticipants(
           ?.map((item) => item.message)
           .filter((message) => message != null)
           .join(", ") ?? "";
+      const message =
+        parsed.message == null ? undefined : [parsed.message].flat().join(", ");
       const baseError =
-        parsed.message ??
+        message ??
         parsed.error ??
         (validationErrors === "" ? error : validationErrors);
 
@@ -505,7 +510,7 @@ export async function exportData(eventUuid: string) {
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/export`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/import-export/participants?format=xlsx`,
     {
       method: "GET",
       headers: {
@@ -610,7 +615,7 @@ export async function downloadAttributeFile(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}/attributes/${encodeURIComponent(attributeUuid)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/participants/${encodeURIComponent(participantId)}/attributes/${encodeURIComponent(attributeUuid)}/download`,
     {
       method: "GET",
       headers: {

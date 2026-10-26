@@ -795,7 +795,7 @@
   },
   "ImportParticipants": {
     "triggerLabel": "Importuj uczestników z CSV",
-    "triggerText": "Importuj uczestników",
+    "triggerText": "Import",
     "dialogTitle": "Importuj uczestników z pliku CSV",
     "dialogDescription": "Wybierz plik CSV i dopasuj jego kolumny do atrybutów uczestników.",
     "unsupportedFileTitle": "Nieobsługiwany plik",

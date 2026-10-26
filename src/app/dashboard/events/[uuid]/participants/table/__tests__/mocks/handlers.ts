@@ -27,8 +27,8 @@ export const handlers = [
       return HttpResponse.json();
     },
   ),
-  http.delete<{ eventUuid: string }>(
-    `${API_URL}/events/:eventUuid/participants`,
+  http.post<{ eventUuid: string }>(
+    `${API_URL}/events/:eventUuid/participants/unregister-many`,
     async ({ request }) => {
       const { participantsToUnregisterIds } = (await request.json()) as {
         participantsToUnregisterIds: string[];
@@ -44,7 +44,7 @@ export const handlers = [
     },
   ),
   http.get<{ eventUuid: string }>(
-    `${API_URL}/events/:eventUuid/participants/export`,
+    `${API_URL}/events/:eventUuid/import-export/participants`,
     () => {
       return HttpResponse.json();
     },

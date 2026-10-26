@@ -24,7 +24,6 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventUuid],
     queryFn: async () => getAttributes(eventUuid),
-    select: (response) => response?.data,
   });
 
   const { data: participants, isError: isParticipantsError } = useQuery({

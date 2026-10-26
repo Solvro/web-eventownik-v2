@@ -190,7 +190,8 @@ function validateAttributeValue(
         value: matchedValues
           .filter((item) => item != null)
           .map((item) => resolveAttributeOption(item).value)
-          .join(","),
+          // The backend splits multiple values on semicolons
+          .join(";"),
       };
     }
     case "date":
@@ -235,7 +236,8 @@ function validateAttributeValue(
           value: matchedBlocks
             .filter((item) => item != null)
             .map((item) => item.uuid)
-            .join(","),
+            // The backend splits multiple values on semicolons
+            .join(";"),
         };
       }
 

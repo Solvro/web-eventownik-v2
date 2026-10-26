@@ -42,7 +42,7 @@ describe("Filtering", () => {
     // Step 2: Enter value which is specific to only 1 row
     await user.type(
       globalFilterInput,
-      participants[0].attributes[0].value.toString(),
+      String(participants[0].attributes[0].value),
     );
     expect(getDataRows().length).toBe(1);
 

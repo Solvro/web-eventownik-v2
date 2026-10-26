@@ -59,9 +59,30 @@ export function formatAttributeValue(
       const items = parseMultiValue(String(value)).filter(Boolean);
       return items.join(", ");
     }
+    // The backend returns booleans, which React doesn't render
+    case "checkbox":
+      return String(value);
     default:
       return value;
   }
+}
+
+/**
+ * Converts a value from the table's string representation to the one the backend expects.
+ * The table joins multiple values with commas, while the backend expects an array.
+ * Select inputs use " " for no value, so blank values are cleared with null.
+ */
+export function toBackendAttributeValue(
+  type: Attribute["type"],
+  value: string,
+): string | string[] | null {
+  if (value.trim() === "") {
+    return null;
+  }
+  if (type === "multiSelect" || type === "block") {
+    return value.split(",").filter(Boolean);
+  }
+  return value;
 }
 
 function parseMultiValue(raw: string): string[] {
