@@ -10,10 +10,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
-// TODO(v3): Restore along with the "Duplicate event" button below
-// import { duplicateEvent } from "@/app/dashboard/events/actions";
+import { duplicateEvent } from "@/app/dashboard/events/actions";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
-// import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
@@ -85,7 +84,6 @@ export function EventCard({ event }: { event: Event }) {
             {t("viewDetails")}
           </Link>
         </Button>
-        {/* TODO(v3): Event duplication is disabled until it's rewritten for the v3 API
         <DuplicateResourceButton
           resourceName={event.name}
           resourceType={t("event")}
@@ -93,7 +91,6 @@ export function EventCard({ event }: { event: Event }) {
           variant="ghost"
           className="size-12"
         />
-        */}
         <ShareButton
           path={event.slug}
           variant="icon"
