@@ -19,32 +19,18 @@ export async function getEmailDeliveriesAction(
 }
 
 /**
- * The backend replaces message tags only in empty spans with nothing but `data-id`, while
- * the editor renders them with a label and styling. See `setupSuggestions` for parsing them back.
- *
- * TODO(v3): Remove once the backend parser accepts the editor's spans
- */
-function normalizeMessageTags(content: string) {
-  return content.replaceAll(
-    /<span\b[^>]*\bdata-id="(\/(?:participant|form|event)_[\w-]+)"[^>]*>[\s\S]*?<\/span>/g,
-    '<span data-id="$1"></span>',
-  );
-}
-
-/**
  * Builds the request body for creating or updating a template.
- * `trigger` and `triggerConfig` are always sent together, since the backend
- * clears the config of a template updated without it.
+ * The UI keeps the selected form as `triggerValue`, while the backend expects it in `triggerConfig`.
  */
 function getEmailTemplateBody(template: UpdateEventEmailPayload) {
   return {
     name: template.name,
-    content: normalizeMessageTags(template.content),
+    content: template.content,
     trigger: template.trigger,
-    triggerConfig:
-      template.trigger === "FORM_FILLED"
-        ? { formUuid: template.triggerValue }
-        : {},
+    // Other triggers have no target. The backend clears the stored config when the trigger changes
+    ...(template.trigger === "FORM_FILLED" && {
+      triggerConfig: { formUuid: template.triggerValue },
+    }),
     // Simple templates have no schema, and the backend expects an object, not a JSON string
     ...(template.schema != null && {
       schema: JSON.parse(template.schema) as unknown,
@@ -143,6 +129,48 @@ export async function updateEventEmail(data: {
   }
 
   return { error: null, success: true };
+}
+
+export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
+  const session = await verifySession();
+
+  if (session == null) {
+    return {
+      success: false,
+      error: { key: "unauthorized" as EventDetailsKey },
+    };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/emails/reorder`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ emailIds: orderedIds }),
+    },
+  );
+
+  if (!response.ok) {
+    console.error(
+      `[reorderEmails action] Failed to reorder emails for event ${eventUuid}:`,
+      await response.text(),
+    );
+    return {
+      success: false,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
+    };
+  }
+
+  return { success: true };
 }
 
 export async function deleteEventMail(eventUuid: string, mailUuid: string) {

@@ -150,6 +150,7 @@ export const textCaseData: TestCaseData = {
       name: "Welcome Email - New Registration",
       trigger: "PARTICIPANT_REGISTERED",
       triggerConfig: {},
+      order: 0,
       createdAt: "2024-12-15T09:30:00.000Z",
       updatedAt: "2025-01-20T14:22:15.000Z",
       meta: {

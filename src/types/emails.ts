@@ -18,6 +18,7 @@ export interface EventEmail {
   name: string;
   trigger: (typeof EMAIL_TRIGGERS)[number]["value"];
   triggerConfig: EmailTriggerConfig | null;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
   meta: {

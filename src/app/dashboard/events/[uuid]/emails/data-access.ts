@@ -18,7 +18,7 @@ export async function getEventEmails(eventUuid: string) {
   }
 
   const emails = await fetchAllPages<EventEmail>(
-    `${API_URL}/events/${eventUuid}/emails`,
+    `${API_URL}/events/${eventUuid}/emails?sort=order:asc`,
     {
       headers: {
         Authorization: `Bearer ${session.bearerToken}`,
