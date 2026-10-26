@@ -8,13 +8,21 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
-import type { FlattenedParticipant } from "@/types/participant";
+import type {
+  FlattenedParticipant,
+  ParticipantAttributeValueType,
+} from "@/types/participant";
 
 import { updateParticipant } from "../../../actions";
+import { toBackendAttributeValue } from "../../core/utils";
 
 interface EditParticipantButtonProps {
   row: Row<FlattenedParticipant>;
   table: Table<FlattenedParticipant>;
+}
+
+function toComparable(value: ParticipantAttributeValueType) {
+  return value == null ? "" : String(value);
 }
 
 function areRowsEqual(
@@ -71,14 +79,27 @@ export function EditParticipantButton({
       return;
     }
 
-    const attributeValues: Record<string, string> = {};
+    // Only changed values are sent. The backend recreates every sent attribute, which deletes
+    // files it can't match and triggers "attribute changed" emails even for the same value
+    const snapshot = table.options.meta?.getRowSnapshot(row.index);
+    const attributeValues: Record<string, unknown> = {};
     const baseUpdates: Record<string, unknown> = {};
 
     for (const column of table.getAllColumns()) {
       const attribute = column.columnDef.meta?.attribute;
+      const key = attribute?.uuid ?? column.id;
+      if (
+        snapshot != null &&
+        toComparable(participant[key]) === toComparable(snapshot[key])
+      ) {
+        continue;
+      }
+
       if (attribute != null) {
-        const value = participant[attribute.uuid];
-        attributeValues[attribute.uuid] = value == null ? "" : String(value);
+        attributeValues[attribute.uuid] = toBackendAttributeValue(
+          attribute.type,
+          toComparable(participant[attribute.uuid]),
+        );
       } else if (
         column.id !== "select" &&
         column.id !== "no" &&

@@ -20,7 +20,7 @@ import { renderTable } from "./utils";
 interface ParticipantForSortingTest {
   createdAt: string;
   attributes: {
-    value?: string | string[] | number | Date | null | undefined;
+    value?: string | string[] | number | boolean | Date | null | undefined;
   }[];
 }
 
@@ -39,7 +39,7 @@ function getDisplayedAttributeValue(
   }
 
   if (attributeType === "date") {
-    return format(new Date(value), "dd-MM-yyyy");
+    return format(new Date(value as string), "dd-MM-yyyy");
   }
 
   if (attributeType === "multiSelect") {

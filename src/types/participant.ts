@@ -8,7 +8,8 @@ export interface Participant {
   attributes: {
     uuid: string;
     name: string;
-    value: string | number;
+    /** Raw JSON value: booleans for checkboxes and string arrays for multiSelect and block */
+    value: string | number | boolean | string[] | null;
     createdAt: string;
     updatedAt: string;
   }[];

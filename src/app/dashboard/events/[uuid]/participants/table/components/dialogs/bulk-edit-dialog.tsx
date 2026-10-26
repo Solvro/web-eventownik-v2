@@ -36,6 +36,7 @@ import type { Block } from "@/types/blocks";
 import type { FlattenedParticipant } from "@/types/participant";
 
 import { updateParticipant } from "../../../actions";
+import { toBackendAttributeValue } from "../../core/utils";
 import { AttributeValueInput } from "../inputs/attribute-value-input";
 
 interface BulkEditDialogProps {
@@ -89,8 +90,11 @@ export function BulkEditDialog({
 
     const results = await Promise.allSettled(
       selectedRows.map(async (row) => {
-        const attributeValues: Record<number, string> = {
-          [selectedAttribute.uuid]: value,
+        const attributeValues = {
+          [selectedAttribute.uuid]: toBackendAttributeValue(
+            selectedAttribute.type,
+            value,
+          ),
         };
         return updateParticipant(eventUuid, row.original.uuid, {
           participantAttributes: attributeValues,

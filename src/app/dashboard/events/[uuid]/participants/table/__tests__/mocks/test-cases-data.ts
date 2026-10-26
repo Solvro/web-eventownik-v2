@@ -13,7 +13,7 @@ interface RawParticipantAttribute {
   uuid: string;
   name: string;
   slug: string;
-  value: string | number;
+  value: string | number | boolean;
 }
 
 interface RawParticipant {
@@ -640,7 +640,7 @@ export const checkboxCaseData: TestCaseData = {
           uuid: subscribedAttributeUuid,
           name: "Subscribed",
           slug: "subscribed",
-          value: "true",
+          value: true,
         },
       ],
     },
@@ -655,7 +655,7 @@ export const checkboxCaseData: TestCaseData = {
           uuid: subscribedAttributeUuid,
           name: "Subscribed",
           slug: "subscribed",
-          value: "false",
+          value: false,
         },
       ],
     },
@@ -670,7 +670,7 @@ export const checkboxCaseData: TestCaseData = {
           uuid: subscribedAttributeUuid,
           name: "Subscribed",
           slug: "subscribed",
-          value: "true",
+          value: true,
         },
       ],
     },

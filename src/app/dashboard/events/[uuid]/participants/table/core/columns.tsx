@@ -127,6 +127,11 @@ export function createColumns(
             return filterValue.some((value) => values.has(value as string));
           }
 
+          // Checkbox values are booleans from the backend, but strings after editing in the table
+          if (rowValue !== null && attribute.type === "checkbox") {
+            return filterValue.includes(String(rowValue));
+          }
+
           // Special case when attribute of single select type is set empty
           // Check implementation of AttributeInput for explanation
           if (rowValue === " " && filterValue.includes(null)) {

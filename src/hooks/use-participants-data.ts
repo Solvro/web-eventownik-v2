@@ -33,7 +33,13 @@ export function useParticipantsData(
   }, [participants]);
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventUuid, ids),
+    mutationFn: async (ids: string[]) => {
+      const result = await deleteManyParticipants(eventUuid, ids);
+      if (!result.success) {
+        throw new Error(t("deleteParticipantsErrorDescription"));
+      }
+      return result;
+    },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["participants", eventUuid],

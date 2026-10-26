@@ -51,7 +51,9 @@ describe.skip("Editing participant", () => {
     const getTextInput = () => getAllByRole(firstRow, "textbox")[1];
     const getNumberInput = () => getByRole(firstRow, "spinbutton");
 
-    expect(getTextInput()).toHaveValue(editedParticipant.attributes[0].value);
+    expect(getTextInput()).toHaveValue(
+      editedParticipant.attributes[0].value as string,
+    );
     expect(getNumberInput()).toHaveValue(
       Number(editedParticipant.attributes[1].value),
     );
