@@ -214,6 +214,7 @@
     "coOrganizerAddWarning": "Failed to add co-organizer {email}. You can add them later in settings",
     "coOrganizerAddError": "Error adding co-organizer {email}. You can add them later in settings",
     "attributeAddWarning": "Failed to add attribute {name}. You can add it later in settings",
+    "participantFieldsCopyWarning": "Failed to copy the participant fields of block attribute {name}. You can set them later in settings",
     "attributeAddError": "Error adding attribute {name}. You can add it later in settings",
     "selectColor": "Select color",
     "from": "From",
