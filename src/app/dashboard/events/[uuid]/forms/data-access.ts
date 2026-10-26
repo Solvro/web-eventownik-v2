@@ -1,9 +1,8 @@
 import { cache } from "react";
 
-import type { PaginatedResponse } from "@/lib/api";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
-import type { GetAttributesResponse } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 
@@ -13,22 +12,20 @@ async function getEventAttributes(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/attributes`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  const attributes = await fetchAllPages<Attribute>(
+    `${API_URL}/events/${eventUuid}/attributes?sort=order:asc`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
-  if (!response.ok) {
+  if (attributes === null) {
     console.error(
-      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new form for event ${eventUuid}:`,
-      response,
+      `[getEventAttributes] Failed to fetch available attributes when attempting to create a new form for event ${eventUuid}`,
     );
-    return null;
   }
-
-  const attributes = (await response.json()) as GetAttributesResponse;
 
   return attributes;
 }
@@ -63,23 +60,24 @@ async function getEventForms(eventUuid: string) {
     return [];
   }
 
-  const response = await fetch(`${API_URL}/events/${eventUuid}/forms`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${session.bearerToken}`,
+  // `createdAt` breaks ties, e.g. a duplicated form gets the same order as the original
+  const forms = await fetchAllPages<EventForm>(
+    `${API_URL}/events/${eventUuid}/forms?sort=order:asc,createdAt:asc`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
     },
-  });
+  );
 
-  if (!response.ok) {
+  if (forms === null) {
     console.error(
-      `[getEventForms] Failed to fetch forms for event ${eventUuid}:`,
-      response,
+      `[getEventForms] Failed to fetch forms for event ${eventUuid}`,
     );
     return [];
   }
 
-  const parsed = (await response.json()) as PaginatedResponse<EventForm>;
-  return parsed.data;
+  return forms;
 }
 
 const getSingleEventForm = cache(
