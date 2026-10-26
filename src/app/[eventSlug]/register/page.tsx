@@ -12,7 +12,7 @@ import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
 import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
-import type { EventForm, FormDefinition, PublicEventForm } from "@/types/forms";
+import type { EventForm, FormDefinition } from "@/types/forms";
 
 import { FormGenerator } from "../form-generator";
 import { getEventBlockAttributeBlocks } from "../utils";
@@ -72,24 +72,11 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const event = (await eventResponse.json()) as Event;
   const { policyLink } = parseLinks(event.links);
 
-  if (event.registerFormUuid === null) {
+  // The public event includes its registration form, with the attributes of the form definitions
+  const publicForm = event.registerForm;
+  if (publicForm == null) {
     return <EventNotFound whatNotFound="form" />;
   }
-
-  const formResponse = await fetch(
-    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}/forms/${encodeURIComponent(event.registerFormUuid)}`,
-    {
-      method: "GET",
-    },
-  );
-
-  if (!formResponse.ok) {
-    const error = (await formResponse.json()) as unknown;
-    console.error(error);
-    return <EventNotFound whatNotFound="form" />;
-  }
-
-  const publicForm = (await formResponse.json()) as PublicEventForm;
 
   const formDefinitions = publicForm.formDefinitions.filter(
     (definition): definition is FormDefinition => definition.attribute !== null,
