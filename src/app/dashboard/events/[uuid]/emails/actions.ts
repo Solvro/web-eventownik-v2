@@ -9,13 +9,33 @@ import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
 import type { UpdateEventEmailPayload } from "@/types/emails";
 
-import { getSingleEventEmail } from "./data-access";
+import { getEmailDeliveries } from "./data-access";
 
-export async function getSingleEventEmailAction(
+export async function getEmailDeliveriesAction(
   eventUuid: string,
   emailUuid: string,
 ) {
-  return await getSingleEventEmail(eventUuid, emailUuid);
+  return await getEmailDeliveries(eventUuid, emailUuid);
+}
+
+/**
+ * Builds the request body for creating or updating a template.
+ * The UI keeps the selected form as `triggerValue`, while the backend expects it in `triggerConfig`.
+ */
+function getEmailTemplateBody(template: UpdateEventEmailPayload) {
+  return {
+    name: template.name,
+    content: template.content,
+    trigger: template.trigger,
+    // Other triggers have no target. The backend clears the stored config when the trigger changes
+    ...(template.trigger === "FORM_FILLED" && {
+      triggerConfig: { formUuid: template.triggerValue },
+    }),
+    // Simple templates have no schema, and the backend expects an object, not a JSON string
+    ...(template.schema != null && {
+      schema: JSON.parse(template.schema) as unknown,
+    }),
+  };
 }
 
 export async function createEventEmail(data: {
@@ -33,7 +53,7 @@ export async function createEventEmail(data: {
       Authorization: `Bearer ${session.bearerToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data.emailTemplate),
+    body: JSON.stringify(getEmailTemplateBody(data.emailTemplate)),
   });
 
   if (!response.ok) {
@@ -86,7 +106,7 @@ export async function updateEventEmail(data: {
         Authorization: `Bearer ${session.bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data.emailTemplate),
+      body: JSON.stringify(getEmailTemplateBody(data.emailTemplate)),
     },
   );
 
@@ -121,32 +141,30 @@ export async function reorderEmails(eventUuid: string, orderedIds: string[]) {
     };
   }
 
-  //TODO: as soon as backend exposes an endpoint for reordering block attributes, replace this with a single request
-  const results = await Promise.all(
-    orderedIds.map(async (id, index) =>
-      fetch(`${API_URL}/events/${eventUuid}/emails/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.bearerToken}`,
-        },
-        body: JSON.stringify({ order: index }),
-      }),
-    ),
+  const response = await fetch(
+    `${API_URL}/events/${eventUuid}/emails/reorder`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.bearerToken}`,
+      },
+      body: JSON.stringify({ emailIds: orderedIds }),
+    },
   );
 
-  const failed = results.find((r) => !r.ok);
-  if (failed !== undefined) {
+  if (!response.ok) {
     console.error(
-      `[reorderEmails action] Failed to reorder emails for event ${eventUuid}`,
+      `[reorderEmails action] Failed to reorder emails for event ${eventUuid}:`,
+      await response.text(),
     );
     return {
       success: false,
       error: {
         key: "httpError" as EventDetailsKey,
         values: {
-          status: failed.status,
-          statusText: failed.statusText,
+          status: response.status,
+          statusText: response.statusText,
         },
       },
     };

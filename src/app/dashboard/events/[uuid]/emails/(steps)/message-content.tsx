@@ -46,21 +46,21 @@ export function getTitlePlaceholder(
   t: ReturnType<typeof useTranslations>,
 ) {
   switch (trigger) {
-    case "participant_registered": {
+    case "PARTICIPANT_REGISTERED": {
       return t("thankYouForRegistration");
     }
-    case "participant_deleted": {
+    case "PARTICIPANT_DELETED": {
       return t("removedFromParticipants");
     }
-    case "manual": {
+    case "MANUAL": {
       return t("eventTermsUpdated");
     }
-    case "form_filled": {
+    case "FORM_FILLED": {
       return t("formSubmissionThankYou");
     }
     // NOTE: Commented out because this trigger is not yet implemented on the backend.
     // Uncomment when the backend supports this feature.
-    // case "attribute_changed": {
+    // case "ATTRIBUTE_CHANGED": {
     //   return "Otrzymaliśmy Twoją wpłatę";
     // }
     default: {
@@ -130,7 +130,7 @@ function MessageContentForm({
       setNewEmailTemplate({
         name: "",
         content: "",
-        trigger: "manual",
+        trigger: "MANUAL",
         triggerValue: null,
         triggerValue2: null,
       });

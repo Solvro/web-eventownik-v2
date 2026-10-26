@@ -477,21 +477,14 @@ export async function getEmails(eventUuid: string) {
     return null;
   }
 
-  const response = await fetch(
+  const mails = await fetchAllPages<EventEmail>(
     `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.bearerToken}`,
-      },
-    },
+    { headers: { Authorization: `Bearer ${session.bearerToken}` } },
   );
 
-  if (!response.ok) {
-    console.error("Failed to fetch mails", response);
-    return null;
+  if (mails === null) {
+    console.error(`[getEmails] Failed to fetch mails`);
   }
-  const mails = ((await response.json()) as { data: EventEmail[] }).data;
   return mails;
 }
 
@@ -562,7 +555,7 @@ export async function sendMail(
   }
 
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/send/${encodeURIComponent(emailUuid)}`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/emails/${encodeURIComponent(emailUuid)}/send`,
     {
       method: "POST",
       headers: {
@@ -570,7 +563,7 @@ export async function sendMail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        participants,
+        participantUuids: participants,
       }),
     },
   );

@@ -55,46 +55,31 @@ function SortableHeader<TData, TValue>({
   );
 }
 
-type EmailStatus = "sent" | "pending" | "failed";
-
 export const getColumns = (
   t: ReturnType<typeof useTranslations>,
 ): ColumnDef<EventEmailParticipantData>[] => [
   {
-    accessorKey: "email",
+    // The email is missing for deliveries to participants that were deleted since
+    accessorFn: (row) => row.email ?? "-",
+    id: "email",
     header: ({ column }) => (
       <SortableHeader column={column} title="recipient" />
     ),
   },
   {
     id: "date",
-    accessorFn: (row) => {
-      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
-
-      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
-        return "-";
-      }
-      return value;
-    },
+    accessorFn: (row) => format(row.sendAt, "dd.MM.yyyy"),
     header: ({ column }) => <SortableHeader column={column} title="date" />,
   },
   {
     id: "time",
-    accessorFn: (row) => {
-      const value = format(row.meta.pivot_send_at, "dd.MM.yyyy");
-
-      if (row.meta.pivot_status === "pending" && value === "01.01.1970") {
-        return "-";
-      }
-
-      return format(row.meta.pivot_send_at, "HH:mm");
-    },
+    accessorFn: (row) => format(row.sendAt, "HH:mm"),
     header: ({ column }) => <SortableHeader column={column} title="time" />,
   },
   {
     id: "status",
     accessorFn: (row) => {
-      return t(row.meta.pivot_status as EmailStatus);
+      return t(row.status);
     },
     header: ({ column }) => <StatusColumnHeader column={column} />,
     filterFn: (row, _columnId, filterValue) => {
@@ -102,7 +87,7 @@ export const getColumns = (
       if (values === undefined || values.length === 0) {
         return true;
       }
-      return values.includes(row.original.meta.pivot_status);
+      return values.includes(row.original.status);
     },
   },
 ];

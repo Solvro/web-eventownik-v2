@@ -12,10 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { SingleEventEmail } from "@/types/emails";
+import type { EventEmailParticipantData } from "@/types/emails";
 
 import { EmailHistoryTable } from "./(table)/table";
-import { getSingleEventEmailAction } from "./actions";
+import { getEmailDeliveriesAction } from "./actions";
 
 interface MailHistoryPopupProps {
   eventUuid: string;
@@ -26,9 +26,9 @@ function MailHistoryPopup({ eventUuid, emailUuid }: MailHistoryPopupProps) {
   const t = useTranslations("EmailHistoryTable");
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data, isLoading } = useQuery<SingleEventEmail | null>({
+  const { data, isLoading } = useQuery<EventEmailParticipantData[] | null>({
     queryKey: ["email-history", eventUuid, emailUuid],
-    queryFn: async () => await getSingleEventEmailAction(eventUuid, emailUuid),
+    queryFn: async () => await getEmailDeliveriesAction(eventUuid, emailUuid),
     enabled: isOpen,
   });
 
@@ -61,7 +61,7 @@ function MailHistoryPopup({ eventUuid, emailUuid }: MailHistoryPopupProps) {
               </p>
             </div>
           ) : data !== null && data !== undefined ? (
-            <EmailHistoryTable email={data} />
+            <EmailHistoryTable deliveries={data} />
           ) : (
             <div className="flex flex-1 items-start justify-center pt-12">
               <p className="text-center text-sm text-red-500">

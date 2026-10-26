@@ -145,20 +145,18 @@ export const textCaseData: TestCaseData = {
   attributeType: "text",
   emails: [
     {
-      // TODO(v3): Replace with uuid when backend fixes the response properties
       id: crypto.randomUUID(),
-      eventUuid: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
+      eventId: "1ac2bfb4-61ae-4cab-9d3d-d5e989e3a458",
       name: "Welcome Email - New Registration",
-      trigger: "participant_registered",
-      triggerValue: null,
-      triggerValue2: null,
+      trigger: "PARTICIPANT_REGISTERED",
+      triggerConfig: {},
       order: 0,
       createdAt: "2024-12-15T09:30:00.000Z",
       updatedAt: "2025-01-20T14:22:15.000Z",
       meta: {
-        failedCount: "3",
-        pendingCount: "12",
-        sentCount: "847",
+        failedCount: 3,
+        pendingCount: 12,
+        sentCount: 847,
       },
     },
   ],

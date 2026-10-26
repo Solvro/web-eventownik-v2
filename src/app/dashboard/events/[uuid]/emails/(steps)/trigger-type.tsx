@@ -45,12 +45,12 @@ const EventEmailTemplateTriggerTypeSchema = z
   })
   .refine(
     (data) => {
-      if (data.trigger === "form_filled") {
+      if (data.trigger === "FORM_FILLED") {
         return data.triggerValue !== undefined && data.triggerValue !== "";
       }
       // NOTE: Commented out because this trigger is not yet implemented on the backend.
       // Uncomment when the backend supports this feature.
-      // if (data.trigger === "attribute_changed") {
+      // if (data.trigger === "ATTRIBUTE_CHANGED") {
       //   return (
       //     (data.triggerValue !== undefined && data.triggerValue !== "") ||
       //     (data.triggerValue2 !== undefined && data.triggerValue2 !== "")
@@ -86,16 +86,16 @@ function TriggerConfigurationInputs({
   }
 
   switch (target.value) {
-    case "participant_registered":
-    case "participant_deleted":
-    case "manual": {
+    case "PARTICIPANT_REGISTERED":
+    case "PARTICIPANT_DELETED":
+    case "MANUAL": {
       return (
         <p className="text-muted-foreground my-2 text-sm">
           {t("triggerNoAdditionalConfiguration")}
         </p>
       );
     }
-    case "form_filled": {
+    case "FORM_FILLED": {
       return (
         <div className="flex flex-col gap-4">
           <FormField
@@ -127,7 +127,7 @@ function TriggerConfigurationInputs({
     }
     // NOTE: Commented out because this trigger is not yet implemented on the backend.
     // Uncomment when the backend supports this feature.
-    // case "attribute_changed": {
+    // case "ATTRIBUTE_CHANGED": {
     //   return (
     //     <div className="flex flex-col gap-2">
     //       <FormField

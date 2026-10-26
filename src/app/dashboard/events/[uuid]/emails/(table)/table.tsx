@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SingleEventEmail } from "@/types/emails";
+import type { EventEmailParticipantData } from "@/types/emails";
 
 import { EmailHistoryToolbar } from "./email-history-toolbar";
 import { useEmailHistoryTable } from "./use-email-history-table";
@@ -29,9 +29,13 @@ function getAriaSort(
   return "descending";
 }
 
-function EmailHistoryTable({ email }: { email: SingleEventEmail }) {
+function EmailHistoryTable({
+  deliveries,
+}: {
+  deliveries: EventEmailParticipantData[];
+}) {
   const t = useTranslations("EmailHistoryTable");
-  const { table, globalFilter } = useEmailHistoryTable(email);
+  const { table, globalFilter } = useEmailHistoryTable(deliveries);
   const filteredCount = table.getFilteredRowModel().rows.length;
 
   return (
