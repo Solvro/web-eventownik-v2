@@ -38,7 +38,10 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
-import { getDefaultFormDates } from "@/lib/event-form-utils";
+import {
+  getDefaultFormDates,
+  resolveFormDateTime,
+} from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
 import type { Attribute } from "@/types/attributes";
 import type { FormAttribute } from "@/types/forms";
@@ -116,6 +119,17 @@ function CreateEventFormForm({
         try {
           const newForm = {
             ...values,
+            // Resolved here, so the dates use the browser's timezone instead of the server's
+            openDate: resolveFormDateTime(
+              values.openCondition,
+              values.openDate,
+              values.openTime,
+            ),
+            closeDate: resolveFormDateTime(
+              values.openCondition,
+              values.closeDate,
+              values.closeTime,
+            ),
             attributes: includedAttributes,
           };
 

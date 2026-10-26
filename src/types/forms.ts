@@ -12,6 +12,7 @@ export interface EventForm {
   eventUuid: string;
   isOpen: boolean;
   openCondition: OpenCondition;
+  order: number | null;
   createdAt: string;
   updatedAt: string;
   formDefinitions: FormDefinition[];

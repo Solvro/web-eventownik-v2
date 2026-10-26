@@ -18,7 +18,10 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
-import { getDefaultFormDates } from "@/lib/event-form-utils";
+import {
+  getDefaultFormDates,
+  resolveFormDateTime,
+} from "@/lib/event-form-utils";
 import type { Attribute } from "@/types/attributes";
 import type { EventForm, FormAttribute } from "@/types/forms";
 
@@ -72,6 +75,17 @@ function EventFormEditForm({
     try {
       const result = await updateEventForm(eventUuid, formToEdit.uuid, {
         ...values,
+        // Resolved here, so the dates use the browser's timezone instead of the server's
+        openDate: resolveFormDateTime(
+          values.openCondition,
+          values.openDate,
+          values.openTime,
+        ),
+        closeDate: resolveFormDateTime(
+          values.openCondition,
+          values.closeDate,
+          values.closeTime,
+        ),
         attributes: includedAttributes,
       });
 
