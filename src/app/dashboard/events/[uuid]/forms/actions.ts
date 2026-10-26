@@ -6,7 +6,6 @@ import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import { COPY_SUFFIX_REGEX, getNextCopyName } from "@/lib/utils";
-import type { Event } from "@/types/event";
 import type { CreateEventFormDto } from "@/types/forms";
 
 /**
@@ -21,62 +20,6 @@ export type EventFormPayload = Omit<
   closeDate: string | null;
 };
 
-async function setIsFirstForm(
-  eventUuid: string,
-  formUuid: string,
-  isFirstForm: boolean,
-  bearerToken: string,
-) {
-  return fetch(`${API_URL}/events/${eventUuid}/forms/${formUuid}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${bearerToken}`,
-    },
-    body: JSON.stringify({ isFirstForm }),
-  });
-}
-
-/**
- * The backend rejects a new registration form while the event has a different one, so the current
- * one has to be unset first. Returns its UUID, so it can be restored if saving the new one fails.
- *
- * TODO(v3): Replace with a single request once the backend can swap registration forms
- */
-async function unsetOtherRegistrationForm(
-  eventUuid: string,
-  formUuid: string | null,
-  bearerToken: string,
-) {
-  const eventResponse = await fetch(`${API_URL}/events/${eventUuid}`, {
-    headers: { Authorization: `Bearer ${bearerToken}` },
-  });
-  if (!eventResponse.ok) {
-    return null;
-  }
-
-  const { registerFormUuid } = (await eventResponse.json()) as Event;
-  if (registerFormUuid === null || registerFormUuid === formUuid) {
-    return null;
-  }
-
-  const response = await setIsFirstForm(
-    eventUuid,
-    registerFormUuid,
-    false,
-    bearerToken,
-  );
-  if (!response.ok) {
-    console.error(
-      `[unsetOtherRegistrationForm] Failed to unset registration form ${registerFormUuid} for event ${eventUuid}:`,
-      await response.text(),
-    );
-    return null;
-  }
-
-  return registerFormUuid;
-}
-
 export async function createEventForm(
   eventUuid: string,
   form: EventFormPayload,
@@ -89,11 +32,6 @@ export async function createEventForm(
       error: { key: "unauthorized" as EventDetailsKey },
     };
   }
-
-  const previousRegistrationFormUuid =
-    form.isFirstForm === true
-      ? await unsetOtherRegistrationForm(eventUuid, null, session.bearerToken)
-      : null;
 
   const response = await fetch(`${API_URL}/events/${eventUuid}/forms`, {
     method: "POST",
@@ -114,15 +52,6 @@ export async function createEventForm(
   });
 
   if (!response.ok) {
-    if (previousRegistrationFormUuid !== null) {
-      await setIsFirstForm(
-        eventUuid,
-        previousRegistrationFormUuid,
-        true,
-        session.bearerToken,
-      );
-    }
-
     const error = (await response.json()) as {
       message?: string | string[];
     };
@@ -168,15 +97,6 @@ export async function updateEventForm(
     };
   }
 
-  const previousRegistrationFormUuid =
-    form.isFirstForm === true
-      ? await unsetOtherRegistrationForm(
-          eventUuid,
-          formUuid,
-          session.bearerToken,
-        )
-      : null;
-
   const response = await fetch(
     `${API_URL}/events/${eventUuid}/forms/${formUuid}`,
     {
@@ -199,15 +119,6 @@ export async function updateEventForm(
   );
 
   if (!response.ok) {
-    if (previousRegistrationFormUuid !== null) {
-      await setIsFirstForm(
-        eventUuid,
-        previousRegistrationFormUuid,
-        true,
-        session.bearerToken,
-      );
-    }
-
     const error = (await response.json()) as {
       message?: string | string[];
     };

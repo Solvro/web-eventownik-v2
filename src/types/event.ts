@@ -1,4 +1,4 @@
-import type { EventForm } from "./forms";
+import type { PublicEventForm } from "./forms";
 import type { EventLink } from "./link";
 
 export interface Event {
@@ -21,7 +21,7 @@ export interface Event {
   isPublic: boolean;
   isVerified: boolean;
   isFeatured: boolean;
-  /** Included only by the public event endpoint, without form definition attributes */
-  registerForm?: EventForm | null;
+  /** Included only by the public event endpoint, with the attributes of the form definitions */
+  registerForm?: PublicEventForm | null;
   links: EventLink[];
 }

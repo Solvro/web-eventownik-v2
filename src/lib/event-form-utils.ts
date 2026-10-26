@@ -18,7 +18,12 @@ export function combineDateAndTime(date: Date, time: string) {
   return result;
 }
 
-export function isFormOpen(form: EventForm | null): boolean {
+export function isFormOpen(
+  form: Pick<
+    EventForm,
+    "openCondition" | "isOpen" | "openDate" | "closeDate"
+  > | null,
+): boolean {
   if (form === null) {
     return false;
   }
