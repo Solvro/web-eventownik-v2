@@ -1,7 +1,7 @@
 import { addYears, format, startOfMonth } from "date-fns";
 import type { MetadataRoute } from "next";
 
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import type { Event } from "@/types/event";
 
 const BASE_URL =
@@ -13,14 +13,11 @@ async function fetchPublicEvents(): Promise<Event[]> {
   const to = format(addYears(now, 1), "yyyy-MM-dd");
 
   try {
-    const response = await fetch(
+    const events = await fetchAllPages<Event>(
       `${API_URL}/public/events?after=${from}&before=${to}`,
       { next: { revalidate: 3600 } },
     );
-    if (!response.ok) {
-      return [];
-    }
-    return ((await response.json()) as { data: Event[] }).data;
+    return events ?? [];
   } catch {
     return [];
   }
