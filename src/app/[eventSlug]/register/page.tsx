@@ -142,34 +142,22 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         editMode={false}
       />
 
-      <p className="text-foreground/50 my-4 text-center text-sm">
-        <Info className="inline-block size-4 align-[-0.195em]" />{" "}
-        {t("consentIntro")}
-        <br />
-        <Link
-          href={`/${event.slug}/privacy`}
-          className="text-(--event-primary-color)/90"
-          target="_blank"
-        >
-          {t("privacyPolicy")}
-        </Link>
-        {policyLink == null ? (
-          <span> {t("ofEvent")}</span>
-        ) : (
-          <>
-            {" "}
-            {t("and")}{" "}
-            <Link
-              href={policyLink.url}
-              className="text-(--event-primary-color)/90"
-              target="_blank"
-            >
-              {t("terms")}
-            </Link>{" "}
-            {t("ofEvent")}
-          </>
-        )}
-      </p>
+      {/* The privacy policy page was removed, it will be replaced by a new GDPR clause page */}
+      {policyLink == null ? null : (
+        <p className="text-foreground/50 my-4 text-center text-sm">
+          <Info className="inline-block size-4 align-[-0.195em]" />{" "}
+          {t("consentIntro")}
+          <br />
+          <Link
+            href={policyLink.url}
+            className="text-(--event-primary-color)/90"
+            target="_blank"
+          >
+            {t("terms")}
+          </Link>{" "}
+          {t("ofEvent")}
+        </p>
+      )}
     </EventPageLayout>
   );
 }

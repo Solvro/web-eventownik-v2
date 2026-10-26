@@ -67,8 +67,10 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
-      {event.registerForm?.openCondition === "MANUAL" &&
-      !event.registerForm.isOpen ? (
+      {/* In v3, an event has no registration form until the organizer sets one */}
+      {event.registerForm == null ||
+      (event.registerForm.openCondition === "MANUAL" &&
+        !event.registerForm.isOpen) ? (
         <div className="flex w-full justify-center pt-4">
           <p className="bg-background/24 rounded-lg px-4 py-2 text-center backdrop-blur-sm sm:text-2xl sm:font-semibold">
             {t("registrationDisabled")}
@@ -81,7 +83,7 @@ export default async function EventPage({ params }: EventPageProps) {
               variant="eventDefault"
               className="text-xl tracking-tight backdrop-blur-sm md:p-6 md:text-2xl pointer-fine:bg-(--event-primary-color)/70"
               style={{
-                viewTransitionName: isFormOpen(event.registerForm ?? null)
+                viewTransitionName: isFormOpen(event.registerForm)
                   ? "register-button"
                   : "form-close-info",
               }}

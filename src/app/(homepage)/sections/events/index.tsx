@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import type { Event as EventType } from "@/types/event";
 
 /**
@@ -55,11 +55,11 @@ async function fetchEvents(
   const [_key, year, month] = context.queryKey;
   const url = getEventsUrl(year, month);
 
-  const response = await fetch(url);
-  if (!response.ok) {
+  const events = await fetchAllPages<EventType>(url);
+  if (events === null) {
     throw new Error("Network response was not ok");
   }
-  return ((await response.json()) as { data: EventType[] }).data;
+  return events;
 }
 
 export function Events() {

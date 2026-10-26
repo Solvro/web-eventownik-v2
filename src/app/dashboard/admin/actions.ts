@@ -8,9 +8,6 @@ export async function activateEvent(
   eventUuid: string,
   bearerToken: string,
 ) {
-  const formData = new FormData();
-  formData.append("isActive", (!wasActive).toString());
-
   if (!isValidUuid(eventUuid)) {
     console.error(`[activateEvent action] Invalid event UUID: ${eventUuid}`);
     return {
@@ -18,14 +15,16 @@ export async function activateEvent(
     };
   }
 
+  // v2 "activation" is v3 verification, which lists published events on the homepage
   const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/activate`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
       },
-      body: formData,
+      body: JSON.stringify({ isVerified: !wasActive }),
     },
   );
   if (!response.ok) {
