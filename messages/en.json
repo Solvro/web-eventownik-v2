@@ -560,7 +560,9 @@
     "forms": "Forms",
     "settings": "Settings",
     "participants": "Participants",
-    "emails": "Emails"
+    "emails": "Emails",
+    "tickets": "Tickets",
+    "scanTickets": "Ticket scanning"
   },
   "Export": {
     "failed": "Export failed!",

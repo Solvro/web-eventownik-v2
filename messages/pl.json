@@ -559,7 +559,9 @@
     "forms": "Formularze",
     "settings": "Ustawienia",
     "participants": "Uczestnicy",
-    "emails": "Maile"
+    "emails": "Maile",
+    "tickets": "Bilety",
+    "scanTickets": "Skanowanie biletów"
   },
   "Export": {
     "failed": "Eksport nie powiódł się!",
