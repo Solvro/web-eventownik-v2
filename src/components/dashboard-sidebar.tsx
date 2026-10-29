@@ -6,6 +6,7 @@ import {
   Mail,
   Play,
   SlidersHorizontal,
+  Ticket,
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -77,6 +78,11 @@ export function DashboardSidebar({
           title: t("listOfParticipants"),
           icon: <Users />,
           route: "participants",
+        },
+        {
+          title: t("tickets"),
+          icon: <Ticket />,
+          route: "tickets",
         },
       ],
     },

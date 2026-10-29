@@ -30,6 +30,10 @@ interface DeleteResourcePopupProps {
   onSuccess?: () => void;
   triggerTitle?: string;
   triggerClassName?: string;
+  /** Extra warning shown below the confirmation question */
+  description?: string;
+  /** Replaces the default icon button */
+  trigger?: React.ReactNode;
 }
 
 function DeleteResourcePopup({
@@ -39,6 +43,8 @@ function DeleteResourcePopup({
   onSuccess,
   triggerTitle,
   triggerClassName = "text-red-700",
+  description,
+  trigger,
 }: DeleteResourcePopupProps) {
   const t = useTranslations("Dashboard");
   const tEventDetails = useTranslations("EventDetails");
@@ -81,17 +87,21 @@ function DeleteResourcePopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="eventGhost"
-          size="icon"
-          title={triggerTitle ?? `${t("delete")} ${resourceType.toLowerCase()}`}
-          className={triggerClassName}
-        >
-          <Trash2 />
-          <span className="sr-only">
-            {t("delete")} {resourceType.toLowerCase()}
-          </span>
-        </Button>
+        {trigger ?? (
+          <Button
+            variant="eventGhost"
+            size="icon"
+            title={
+              triggerTitle ?? `${t("delete")} ${resourceType.toLowerCase()}`
+            }
+            className={triggerClassName}
+          >
+            <Trash2 />
+            <span className="sr-only">
+              {t("delete")} {resourceType.toLowerCase()}
+            </span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-96 max-w-96">
         <div className="sr-only">
@@ -109,6 +119,9 @@ function DeleteResourcePopup({
               name: resourceName,
             })}
           </p>
+          {description === undefined ? null : (
+            <p className="text-destructive text-sm">{description}</p>
+          )}
           <div className="flex gap-2">
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <Button

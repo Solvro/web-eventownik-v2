@@ -16,6 +16,12 @@ export interface Ticket {
   updatedAt: string;
 }
 
+/** attributeUuid must be a block attribute for BLOCK tickets and is not allowed for EVENT tickets */
+export type CreateTicketPayload = (
+  | { mode: "EVENT" }
+  | { mode: "BLOCK"; attributeUuid: string }
+) & { shownAttributeUuids?: string[] };
+
 export type TicketScanStatus =
   | "VALID"
   | "ALREADY_CONFIRMED"
