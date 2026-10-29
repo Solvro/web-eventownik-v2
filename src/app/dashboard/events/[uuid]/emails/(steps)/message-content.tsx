@@ -25,10 +25,15 @@ import { Input } from "@/components/ui/input";
 import { useAutoSave } from "@/hooks/use-autosave";
 import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
-import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
+import {
+  getAttributeTags,
+  getFormTags,
+  getTicketTags,
+} from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
+import type { Ticket } from "@/types/tickets";
 
 import { createEventEmail } from "../actions";
 
@@ -73,6 +78,7 @@ function MessageContentForm({
   eventUuid,
   attributes,
   eventForms,
+  eventTickets,
   goToPreviousStep,
   setDialogOpen,
   setCurrentStep,
@@ -80,6 +86,7 @@ function MessageContentForm({
   eventUuid: string;
   attributes: Attribute[];
   eventForms: EventForm[];
+  eventTickets: Ticket[];
   goToPreviousStep: () => void;
   setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -211,6 +218,7 @@ function MessageContentForm({
                     [
                       ...getAttributeTags(attributes, tMessageTags),
                       ...getFormTags(eventForms, tMessageTags),
+                      ...getTicketTags(eventTickets, tMessageTags),
                     ],
                     tMessageTags,
                   )}

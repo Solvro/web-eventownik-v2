@@ -763,6 +763,8 @@
     "participantEmailDesc": "Replaced with the participant's email address",
     "registrationDate": "Registration date",
     "registrationDateDesc": "Replaced with the date the participant registered for the event",
+    "ticketLink": "Ticket link",
+    "ticketLinkDesc": "Replaced with a link to the participant's ticket with a QR code",
     "event": "Event",
     "participant": "Participant",
     "attribute": "Attribute",

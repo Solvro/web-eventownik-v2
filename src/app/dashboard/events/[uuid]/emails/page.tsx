@@ -7,6 +7,7 @@ import {
   getEventAttributes,
   getEventEmails,
   getEventForms,
+  getEventTickets,
 } from "./data-access";
 import { SortableEmailGrid } from "./sortable-email-grid";
 
@@ -26,10 +27,11 @@ export default async function DashboardEventEmailTemplatesPage({
   const t = await getTranslations("Dashboard");
   const { uuid } = await params;
 
-  const [templates, attributes, forms] = await Promise.all([
+  const [templates, attributes, forms, tickets] = await Promise.all([
     getEventEmails(uuid),
     getEventAttributes(uuid),
     getEventForms(uuid),
+    getEventTickets(uuid),
   ]);
 
   return (
@@ -40,6 +42,7 @@ export default async function DashboardEventEmailTemplatesPage({
           eventUuid={uuid}
           attributes={attributes}
           eventForms={forms}
+          eventTickets={tickets}
         />
       </div>
       {templates === null ? (

@@ -2,12 +2,17 @@ import { getTranslations } from "next-intl/server";
 
 import { Editor } from "@/components/editor/index";
 import { rootDefaults } from "@/lib/editor";
-import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
+import {
+  getAttributeTags,
+  getFormTags,
+  getTicketTags,
+} from "@/lib/message-tags/tag-builders";
 
 import {
   getEmailEventInfo,
   getEventAttributes,
   getEventForms,
+  getEventTickets,
 } from "../data-access";
 
 export async function generateMetadata() {
@@ -31,12 +36,14 @@ export default async function EventMailEditPage({
   const attributes = await getEventAttributes(uuid);
   const forms = await getEventForms(uuid);
   const event = await getEmailEventInfo(uuid);
+  const tickets = await getEventTickets(uuid);
 
   return (
     <Editor
       tags={[
         ...getAttributeTags(attributes, tMessageTags),
         ...getFormTags(forms, tMessageTags),
+        ...getTicketTags(tickets, tMessageTags),
       ]}
       forms={forms}
       attributes={attributes}

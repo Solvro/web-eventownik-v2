@@ -762,6 +762,8 @@
     "participantEmailDesc": "Zamienia się w email uczestnika",
     "registrationDate": "Data rejestracji",
     "registrationDateDesc": "Zamienia się w datę zarejestrowania się uczestnika na wydarzenie",
+    "ticketLink": "Link do biletu",
+    "ticketLinkDesc": "Zamienia się w link do biletu uczestnika z kodem QR",
     "event": "Wydarzenie",
     "participant": "Uczestnik",
     "attribute": "Atrybut",
