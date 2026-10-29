@@ -944,6 +944,7 @@
     "system": "System"
   },
   "Tickets": {
+    "ticketQrCode": "Kod QR biletu",
     "eventTicket": "Bilet na wydarzenie",
     "eventTicketDescription": "Zarządzaj biletem wstępu na wydarzenie",
     "blockTickets": "Bilety na bloki",

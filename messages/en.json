@@ -945,6 +945,7 @@
     "system": "System"
   },
   "Tickets": {
+    "ticketQrCode": "Ticket QR code",
     "eventTicket": "Event ticket",
     "eventTicketDescription": "Manage the entry ticket for the whole event",
     "blockTickets": "Block tickets",
