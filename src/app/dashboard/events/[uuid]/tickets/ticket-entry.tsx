@@ -1,3 +1,8 @@
+import { ScanBarcode } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { Ticket } from "@/types/tickets";
@@ -21,6 +26,8 @@ function TicketEntry({
   /** Blocks of the ticket's attribute. Empty for EVENT tickets */
   blocks: Block[];
 }) {
+  const t = useTranslations("Tickets");
+
   return (
     <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
       <div className="flex items-center justify-end">
@@ -48,6 +55,11 @@ function TicketEntry({
         <p className="line-clamp-2 w-full overflow-hidden text-lg font-bold text-wrap">
           {title}
         </p>
+        <Button variant="outline" asChild>
+          <Link href={`/dashboard/events/${eventUuid}/tickets/${ticket.uuid}`}>
+            <ScanBarcode /> {t("scan")}
+          </Link>
+        </Button>
       </div>
     </div>
   );

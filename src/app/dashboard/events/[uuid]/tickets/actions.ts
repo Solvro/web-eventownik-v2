@@ -10,6 +10,9 @@ import type {
   CreateTicketPayload,
   GetTicketParticipantsResponse,
   Ticket,
+  TicketCheckIn,
+  TicketCheckInError,
+  TicketScanResult,
 } from "@/types/tickets";
 
 export async function getTickets(eventUuid: string) {
@@ -282,4 +285,124 @@ export async function getTicketParticipants(
   }
 
   return (await response.json()) as GetTicketParticipantsResponse;
+}
+
+/** Looks the ticket up without confirming anything. blockUuid is required for BLOCK tickets and not allowed for EVENT tickets */
+export async function scanTicket(
+  eventUuid: string,
+  ticketUuid: string,
+  token: string,
+  blockUuid?: string,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(ticketUuid) ||
+    (blockUuid !== undefined && !isValidUuid(blockUuid))
+  ) {
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/tickets/${encodeURIComponent(ticketUuid)}/scan`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token, blockUuid }),
+    },
+  );
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[scanTicket action] Failed to scan for ticket ${ticketUuid} of event ${eventUuid}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
+    };
+  }
+
+  return { success: true, result: (await response.json()) as TicketScanResult };
+}
+
+/** blockUuid is required for BLOCK tickets and not allowed for EVENT tickets */
+export async function checkInTicket(
+  eventUuid: string,
+  ticketUuid: string,
+  token: string,
+  blockUuid?: string,
+) {
+  const session = await verifySession();
+  if (session == null) {
+    redirect("/auth/login");
+  }
+
+  if (
+    !isValidUuid(eventUuid) ||
+    !isValidUuid(ticketUuid) ||
+    (blockUuid !== undefined && !isValidUuid(blockUuid))
+  ) {
+    return {
+      success: false,
+      error: { key: "invalidIdentifier" as EventDetailsKey },
+    };
+  }
+
+  const response = await fetch(
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}/tickets/${encodeURIComponent(ticketUuid)}/check-ins`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.bearerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token, blockUuid }),
+    },
+  );
+
+  // 409 (already confirmed) and 422 (no longer valid) are expected outcomes, not failures
+  if (response.status === 409 || response.status === 422) {
+    return {
+      success: false,
+      rejection: (await response.json()) as TicketCheckInError,
+    };
+  }
+
+  if (!response.ok) {
+    const error = (await response.json()) as unknown;
+    console.error(
+      `[checkInTicket action] Failed to check in for ticket ${ticketUuid} of event ${eventUuid}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: {
+        key: "httpError" as EventDetailsKey,
+        values: {
+          status: response.status,
+          statusText: response.statusText,
+        },
+      },
+    };
+  }
+
+  return { success: true, checkIn: (await response.json()) as TicketCheckIn };
 }

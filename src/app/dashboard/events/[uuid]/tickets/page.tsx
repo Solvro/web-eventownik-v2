@@ -10,35 +10,9 @@ import type { Event } from "@/types/event";
 
 import { getTickets } from "./actions";
 import { CreateTicketForm } from "./create-ticket-form";
+import { getAttributeBlocks } from "./data-access";
 import { DeleteTicketPopup } from "./delete-ticket-popup";
 import { TicketEntry } from "./ticket-entry";
-
-async function getAttributeBlocks(
-  eventUuid: string,
-  attributeUuid: string,
-  bearerToken: string,
-) {
-  const response = await fetch(
-    `${API_URL}/events/${encodeURIComponent(eventUuid)}/attributes/${encodeURIComponent(attributeUuid)}/blocks`,
-    {
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    console.error(
-      `[getAttributeBlocks] Failed to fetch blocks of attribute ${attributeUuid} for event ${eventUuid}:`,
-      await response.text(),
-    );
-    return [];
-  }
-
-  // The backend returns an empty array instead of the root block if the attribute has none
-  const rootBlock = (await response.json()) as Block | [];
-  return Array.isArray(rootBlock) ? [] : rootBlock.children;
-}
 
 export async function generateMetadata() {
   const t = await getTranslations("Sidebar");

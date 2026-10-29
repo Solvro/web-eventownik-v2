@@ -9,7 +9,9 @@ import type { Attribute } from "@/types/attributes";
 import type { ParticipantAttributeValueType } from "@/types/participant";
 import type { TicketParticipant, TicketScanAttribute } from "@/types/tickets";
 
-function formatTicketAttribute(attribute: TicketScanAttribute | undefined) {
+export function formatTicketAttribute(
+  attribute: TicketScanAttribute | undefined,
+) {
   if (attribute === undefined) {
     return "-";
   }
