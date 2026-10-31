@@ -34,4 +34,12 @@ export const PERMISSIONS_CONFIG: {
     permission: { id: "MANAGE_EMAIL" },
     label: "emails",
   },
+  {
+    permission: { id: "MANAGE_TICKET" },
+    label: "tickets",
+  },
+  {
+    permission: { id: "SCAN_TICKET" },
+    label: "scanTickets",
+  },
 ];

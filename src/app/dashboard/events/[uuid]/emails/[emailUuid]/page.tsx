@@ -10,6 +10,7 @@ import { EMAIL_ALLOWED_ATTRIBUTES, EMAIL_ALLOWED_TAGS } from "@/lib/editor";
 import {
   getEventAttributes,
   getEventForms,
+  getEventTickets,
   getSingleEventEmail,
 } from "../data-access";
 import { EventEmailEditForm } from "./edit-form";
@@ -56,9 +57,10 @@ export default async function EventMailEditPage({
     }),
   };
 
-  const [attributes, forms] = await Promise.all([
+  const [attributes, forms, tickets] = await Promise.all([
     getEventAttributes(uuid),
     getEventForms(uuid),
+    getEventTickets(uuid),
   ]);
 
   return (
@@ -76,6 +78,7 @@ export default async function EventMailEditPage({
         emailToEdit={emailToEdit}
         eventAttributes={attributes}
         eventForms={forms}
+        eventTickets={tickets}
       />
     </div>
   );
