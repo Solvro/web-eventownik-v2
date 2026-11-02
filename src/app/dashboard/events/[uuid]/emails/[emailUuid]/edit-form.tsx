@@ -31,11 +31,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
 import { translateOrFallback } from "@/i18n/utils";
 import { EMAIL_TRIGGERS } from "@/lib/emails";
-import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
+import {
+  getAttributeTags,
+  getFormTags,
+  getTicketTags,
+} from "@/lib/message-tags/tag-builders";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import type { Attribute } from "@/types/attributes";
 import type { SingleEventEmail } from "@/types/emails";
 import type { EventForm } from "@/types/forms";
+import type { Ticket } from "@/types/tickets";
 
 import { getTitlePlaceholder } from "../(steps)/message-content";
 import { updateEventEmail } from "../actions";
@@ -195,11 +200,13 @@ function EventEmailEditForm({
   eventUuid,
   eventAttributes,
   eventForms,
+  eventTickets,
   emailToEdit,
 }: {
   eventUuid: string;
   eventAttributes: Attribute[];
   eventForms: EventForm[];
+  eventTickets: Ticket[];
   emailToEdit: SingleEventEmail;
 }) {
   const t = useTranslations("EventDetails");
@@ -375,6 +382,7 @@ function EventEmailEditForm({
                     [
                       ...getAttributeTags(eventAttributes, tMessageTags),
                       ...getFormTags(eventForms, tMessageTags),
+                      ...getTicketTags(eventTickets, tMessageTags),
                     ],
                     tMessageTags,
                   )}

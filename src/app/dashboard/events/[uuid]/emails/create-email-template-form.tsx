@@ -17,6 +17,7 @@ import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useUnsavedAtom } from "@/hooks/use-unsaved";
 import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
+import type { Ticket } from "@/types/tickets";
 
 import { MessageContentForm } from "./(steps)/message-content";
 import { TriggerTypeForm } from "./(steps)/trigger-type";
@@ -27,10 +28,12 @@ function CreateEmailTemplateForm({
   eventUuid,
   attributes,
   eventForms,
+  eventTickets,
 }: {
   eventUuid: string;
   attributes: Attribute[];
   eventForms: EventForm[];
+  eventTickets: Ticket[];
 }) {
   const t = useTranslations("Email");
   const router = useRouter();
@@ -162,6 +165,7 @@ function CreateEmailTemplateForm({
               <MessageContentForm
                 attributes={attributes}
                 eventForms={eventForms}
+                eventTickets={eventTickets}
                 eventUuid={eventUuid}
                 goToPreviousStep={() => {
                   setCurrentStep(0);

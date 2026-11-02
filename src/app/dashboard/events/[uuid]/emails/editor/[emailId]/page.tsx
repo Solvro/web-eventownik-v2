@@ -4,13 +4,18 @@ import { notFound, redirect } from "next/navigation";
 
 import { Editor } from "@/components/editor/index";
 import { rootDefaults } from "@/lib/editor";
-import { getAttributeTags, getFormTags } from "@/lib/message-tags/tag-builders";
+import {
+  getAttributeTags,
+  getFormTags,
+  getTicketTags,
+} from "@/lib/message-tags/tag-builders";
 import type { PuckData } from "@/types/editor";
 
 import {
   getEmailEventInfo,
   getEventAttributes,
   getEventForms,
+  getEventTickets,
   getSingleEventEmail,
 } from "../../data-access";
 
@@ -53,6 +58,7 @@ export default async function EventMailEditPage({
   const attributes = await getEventAttributes(uuid);
   const forms = await getEventForms(uuid);
   const event = await getEmailEventInfo(uuid);
+  const tickets = await getEventTickets(uuid);
 
   const { schema } = emailToEdit;
   const initialData: PuckData = {
@@ -74,6 +80,7 @@ export default async function EventMailEditPage({
       tags={[
         ...getAttributeTags(attributes, tMessageTags),
         ...getFormTags(forms, tMessageTags),
+        ...getTicketTags(tickets, tMessageTags),
       ]}
       forms={forms}
       attributes={attributes}

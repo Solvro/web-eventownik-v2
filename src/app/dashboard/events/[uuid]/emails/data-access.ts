@@ -11,6 +11,8 @@ import type {
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 
+import { getTickets } from "../tickets/actions";
+
 export async function getEventEmails(eventUuid: string) {
   const session = await verifySession();
   if (session == null) {
@@ -114,6 +116,19 @@ export async function getEventForms(eventUuid: string) {
   }
 
   return forms;
+}
+
+export async function getEventTickets(eventUuid: string) {
+  const tickets = await getTickets(eventUuid);
+
+  if (tickets === null) {
+    console.error(
+      `[getEventTickets] Failed to fetch tickets for event ${eventUuid}`,
+    );
+    return [];
+  }
+
+  return tickets;
 }
 
 export async function getEmailDeliveries(eventUuid: string, emailUuid: string) {

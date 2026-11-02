@@ -4,7 +4,9 @@ export type PermissionType =
   | "MANAGE_FORM"
   | "MANAGE_PARTICIPANT"
   | "MANAGE_EMAIL"
-  | "MANAGE_SETTINGS";
+  | "MANAGE_SETTINGS"
+  | "MANAGE_TICKET"
+  | "SCAN_TICKET";
 
 export interface Permission {
   id: PermissionType;

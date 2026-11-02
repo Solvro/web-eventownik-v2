@@ -2,6 +2,7 @@ import type { useTranslations } from "next-intl";
 
 import type { Attribute } from "@/types/attributes";
 import type { EventForm } from "@/types/forms";
+import type { Ticket } from "@/types/tickets";
 
 import type { MessageTag } from ".";
 import { getAttributeLabel } from "../utils";
@@ -41,4 +42,24 @@ export function getFormTags(
       category: categories.form,
     }),
   );
+}
+
+/** The ticket page returns 404 until the event has a ticket, so the tag is only offered then */
+export function getTicketTags(
+  eventTickets: Ticket[],
+  t: ReturnType<typeof useTranslations<"MessageTags">>,
+): MessageTag[] {
+  if (eventTickets.length === 0) {
+    return [];
+  }
+
+  return [
+    {
+      title: t("ticketLink"),
+      description: t("ticketLinkDesc"),
+      value: "/ticket_link",
+      color: "purple",
+      category: getCategories(t).participant,
+    },
+  ];
 }
