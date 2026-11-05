@@ -29,7 +29,7 @@ function TicketEntry({
   const t = useTranslations("Tickets");
 
   return (
-    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64">
+    <div className="bg-background flex h-64 flex-col justify-between rounded-md border border-slate-500 p-4 max-sm:w-full sm:w-64">
       <div className="flex items-center justify-end">
         <EditTicketEntry
           ticketToEdit={ticket}
