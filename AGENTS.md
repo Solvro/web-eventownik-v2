@@ -16,7 +16,7 @@ Eventownik is an event management platform designed to support event organizatio
 
 ## General Guidelines
 
-- Always use npm for package management
+- Always use npm for package management and for running scripts and tools (`npm run <script>`, `npx <tool>`). Never use pnpm, yarn, or bun: they rewrite `node_modules` in an incompatible layout and create stray lockfiles.
 - We use GitHub Issues for issue tracking
 - When starting a new feature, create a branch from `main` with the format `<type>[scope]/<description>`
 - PR titles should follow [Conventional Commits](https://www.conventionalcommits.org/) format

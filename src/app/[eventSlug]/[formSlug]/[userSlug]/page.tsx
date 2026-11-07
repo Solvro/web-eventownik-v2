@@ -145,6 +145,7 @@ export default async function FormPage({ params }: FormPageProps) {
         formId={form.id.toString()}
         eventSlug={eventSlug}
         userSlug={userSlug}
+        termsLink={event.termsLink}
         editMode={true}
       />
     </EventPageLayout>
