@@ -35,7 +35,7 @@ export function Partners() {
             />
             <Image
               src={"/assets/logo/wuzetka.png"}
-              alt={t("studentGovernmentFacultyOfManagement")}
+              alt={t("studentGovernmentW8N")}
               width={300}
               height={300}
               className="max-h-12 w-auto dark:invert"

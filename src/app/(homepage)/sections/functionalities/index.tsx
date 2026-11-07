@@ -8,6 +8,7 @@ import type { JSX } from "react";
 import { useRef } from "react";
 
 import { Badge } from "../../../../components/ui/badge";
+import { Organizations } from "../organizations";
 import { FeatureAccordion } from "./feature-accordion";
 
 function FeatureTile({
@@ -73,6 +74,7 @@ export function Functionalities() {
 
   return (
     <div className="flex w-full flex-col items-center">
+      <Organizations />
       <section
         id="functionalities"
         className="flex flex-col items-center px-4 pt-24 sm:pt-48"
