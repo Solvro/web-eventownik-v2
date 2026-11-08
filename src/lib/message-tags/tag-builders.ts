@@ -31,15 +31,13 @@ export function getFormTags(
 ): MessageTag[] {
   const categories = getCategories(t);
 
-  return eventForms.map(
-    (eventForm): MessageTag => ({
-      title: eventForm.name,
-      description: t("formItemDesc", {
-        name: eventForm.name,
-      }),
-      value: `/form_${eventForm.slug}`,
-      color: "green",
-      category: categories.form,
+  return eventForms.map((eventForm): MessageTag => ({
+    title: eventForm.name,
+    description: t("formItemDesc", {
+      name: eventForm.name,
     }),
-  );
+    value: `/form_${eventForm.slug}`,
+    color: "green",
+    category: categories.form,
+  }));
 }

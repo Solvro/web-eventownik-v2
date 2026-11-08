@@ -1,15 +1,12 @@
-import type {
-  Attribute,
-  AttributeType,
-  FormAttribute,
-} from "@/types/attributes";
+import type { AttributeType } from "@/types/attributes";
 import type { EventEmail } from "@/types/emails";
 import type { Participant } from "@/types/participant";
 
+import type { TestAttribute } from "./test-attributes";
+
 export interface TestCaseData {
   participants: Participant[];
-  // TODO(refactor,multiselect-blocks): Adjust the type here after cleaning up `@/types/attributes.ts`
-  attributes: Omit<Attribute, keyof FormAttribute>[];
+  attributes: TestAttribute[];
   emails?: EventEmail[];
   attributeType?: AttributeType;
 }
@@ -78,7 +75,7 @@ export const textCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
     },
-  ] as Attribute[],
+  ],
   attributeType: "text",
   emails: [
     {
@@ -1079,7 +1076,7 @@ export const deleteParticipantCaseData: TestCaseData = {
       createdAt: "2025-07-01T10:03:00Z",
       updatedAt: "2025-07-01T10:03:00Z",
     },
-  ] as Attribute[],
+  ],
   attributeType: "text",
 };
 
