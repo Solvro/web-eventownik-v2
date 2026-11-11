@@ -90,7 +90,6 @@ export async function duplicateEvent(eventUuid: string) {
     }
   }
 
-  // `saveEvent` creates the copy as a draft, like every new event
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
   const result = await saveEvent({

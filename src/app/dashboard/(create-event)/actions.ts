@@ -57,8 +57,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
   formData.append("participantsLimit", event.participantsNumber.toString());
-  // New events start as drafts, the organizer publishes them in the event settings
-  formData.append("isPublic", "false");
+  formData.append("isPublic", "true");
 
   const addLinkToFormData = (
     url: string,
