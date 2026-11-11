@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { encrypt, sessionCookieMaxAge, verifySession } from "@/lib/session";
+import { createSessionCookie, verifySession } from "@/lib/session";
 
 import { API_URL } from "./lib/api";
 import { parseSetCookieHeader } from "./lib/cookies";
@@ -52,15 +52,7 @@ export async function proxy(request: NextRequest) {
           response.cookies.set(parseSetCookieHeader(setCookieHeader));
         }
 
-        response.cookies.set({
-          name: "session-v3",
-          value: await encrypt({ bearerToken: data.access_token }),
-          httpOnly: true,
-          secure: true,
-          expires: new Date(Date.now() + sessionCookieMaxAge * 1000),
-          sameSite: "lax",
-          path: "/",
-        });
+        response.cookies.set(await createSessionCookie(data.access_token));
       } else {
         if (request.nextUrl.pathname.startsWith("/dashboard")) {
           return redirectToLogin(request);
