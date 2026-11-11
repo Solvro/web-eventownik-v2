@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { PublicFormAttribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
@@ -69,7 +69,7 @@ export function AttributeInput({
           <SelectTrigger id={attribute.uuid}>
             <SelectValue
               placeholder={t("selectAttribute", {
-                name: getAttributeLabel(attribute.name, locale).toLowerCase(),
+                name: legacyTranslate(attribute.name, locale).toLowerCase(),
               })}
             />
           </SelectTrigger>
@@ -102,10 +102,12 @@ export function AttributeInput({
                       option,
                     ]);
                   } else {
+                    const newValues = ((field.value ?? []) as string[]).filter(
+                      (value: string) => value !== option,
+                    );
+
                     field.onChange(
-                      ((field.value ?? []) as string[]).filter(
-                        (value: string) => value !== option,
-                      ),
+                      newValues.length > 0 ? newValues : undefined,
                     );
                   }
                 }}
@@ -163,7 +165,7 @@ export function AttributeInput({
             id={attribute.uuid}
             checked={field.value === "true" || field.value === true}
             onCheckedChange={(checked) => {
-              field.onChange(checked);
+              field.onChange(checked === true ? true : undefined);
             }}
           />
           {/*<Label htmlFor={field.name}>{attribute.label || field.name}</Label>*/}

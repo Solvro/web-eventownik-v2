@@ -790,6 +790,8 @@
     "invalidUuid": "Invalid resource UUID"
   },
   "Sidebar": {
+    "closeSidebar": "Collapse panel",
+    "openSidebar": "Expand panel",
     "general": "General",
     "event": "Event",
     "forms": "Forms",

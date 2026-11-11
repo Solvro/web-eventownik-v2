@@ -34,8 +34,8 @@ import { useToast } from "@/hooks/use-toast";
 import { translateOrFallback } from "@/i18n/utils";
 import {
   cn,
-  getAttributeLabel,
   getSchemaObjectForPublicAttributes,
+  legacyTranslate,
 } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
@@ -360,65 +360,68 @@ export function ParticipantForm({
               control={form.control}
               name={formDefinition.attribute.uuid}
               render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    formDefinition.attribute.type === "checkbox" &&
-                      "flex flex-row-reverse items-start justify-end space-y-0",
-                  )}
-                >
-                  <FormLabel htmlFor={formDefinition.attribute.uuid}>
-                    {getAttributeLabel(formDefinition.attribute.name, locale)}{" "}
-                    {formDefinition.isRequired ? (
-                      <Tooltip>
-                        <TooltipTrigger type="button">
-                          <span className="text-red-500">*</span>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                          {t("attributeIsRequiredTooltip")}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
-                  </FormLabel>
-                  <FormControl>
-                    {formDefinition.attribute.type === "file" ? (
-                      <AttributeInputFile
-                        attribute={formDefinition.attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          getUserAttribute(formDefinition.attribute.uuid)
-                            ?.updatedAt
-                        }
-                      />
-                    ) : formDefinition.attribute.type === "drawing" ? (
-                      <AttributeInputDrawing
-                        attribute={formDefinition.attribute}
-                        field={field}
-                        setError={form.control.setError}
-                        resetField={form.resetField}
-                        setFiles={setFiles}
-                        lastUpdate={
-                          getUserAttribute(formDefinition.attribute.uuid)
-                            ?.updatedAt
-                        }
-                      />
-                    ) : (
-                      <AttributeInput
-                        attribute={formDefinition.attribute}
-                        isRequired={formDefinition.isRequired}
-                        userData={userData}
-                        eventBlocks={eventBlocks.filter(
-                          (block) =>
-                            block.attributeUuid ===
-                            formDefinition.attribute.uuid,
-                        )}
-                        field={field}
-                        shouldCheckUserData={editMode}
-                      />
+                <FormItem>
+                  <div
+                    className={cn(
+                      formDefinition.attribute.type === "checkbox" &&
+                        "flex flex-row-reverse items-start justify-end space-y-0",
+                      "w-full",
                     )}
-                  </FormControl>
+                  >
+                    <FormLabel htmlFor={formDefinition.attribute.uuid}>
+                      {legacyTranslate(formDefinition.attribute.name, locale)}{" "}
+                      {formDefinition.isRequired ? (
+                        <Tooltip>
+                          <TooltipTrigger type="button">
+                            <span className="text-red-500">*</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            {t("attributeIsRequiredTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+                    </FormLabel>
+                    <FormControl>
+                      {formDefinition.attribute.type === "file" ? (
+                        <AttributeInputFile
+                          attribute={formDefinition.attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            getUserAttribute(formDefinition.attribute.uuid)
+                              ?.updatedAt
+                          }
+                        />
+                      ) : formDefinition.attribute.type === "drawing" ? (
+                        <AttributeInputDrawing
+                          attribute={formDefinition.attribute}
+                          field={field}
+                          setError={form.control.setError}
+                          resetField={form.resetField}
+                          setFiles={setFiles}
+                          lastUpdate={
+                            getUserAttribute(formDefinition.attribute.uuid)
+                              ?.updatedAt
+                          }
+                        />
+                      ) : (
+                        <AttributeInput
+                          attribute={formDefinition.attribute}
+                          isRequired={formDefinition.isRequired}
+                          userData={userData}
+                          eventBlocks={eventBlocks.filter(
+                            (block) =>
+                              block.attributeUuid ===
+                              formDefinition.attribute.uuid,
+                          )}
+                          field={field}
+                          shouldCheckUserData={editMode}
+                        />
+                      )}
+                    </FormControl>
+                  </div>
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
@@ -427,7 +430,7 @@ export function ParticipantForm({
                         formDefinition.attribute.uuid,
                       ),
                       {
-                        name: getAttributeLabel(
+                        name: legacyTranslate(
                           formDefinition.attribute.name,
                           "pl",
                         ),

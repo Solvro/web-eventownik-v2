@@ -25,7 +25,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { getAttributeLabel } from "@/lib/utils";
+import { legacyTranslate } from "@/lib/utils";
 import type { FlattenedParticipant } from "@/types/participant";
 
 interface ColumnVisibilityDropdownProps {
@@ -69,7 +69,7 @@ function SortableColumnItem({ column, locale }: SortableColumnItemProps) {
           e.preventDefault();
         }}
       >
-        {getAttributeLabel(column.columnDef.meta?.name ?? column.id, locale)}
+        {legacyTranslate(column.columnDef.meta?.name ?? column.id, locale)}
       </DropdownMenuCheckboxItem>
       <GripVertical
         size={18}
