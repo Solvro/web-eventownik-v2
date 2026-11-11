@@ -185,6 +185,8 @@
     "resourceDuplicated": "Zduplikowano {resourceType}",
     "resourceDuplicatedWithName": "Utworzono kopię: {resourceType} ''{resourceName}''",
     "resourceDuplicateFailed": "Nie udało się zduplikować: {resourceType}!",
+    "resourceDuplicating": "Trwa duplikowanie: {resourceType}",
+    "resourceDuplicatingDescription": "Tworzenie kopii ''{resourceName}'' może chwilę potrwać",
     "resourceDeleted": "{resourceType} został usunięty",
     "resourceDeletedWithName": "{resourceType} ''{resourceName}'' został usunięty",
     "resourceDeleteFailed": "Nie udało się usunąć {resourceType}!",
