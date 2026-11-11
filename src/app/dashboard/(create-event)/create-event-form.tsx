@@ -109,7 +109,11 @@ export function CreateEventForm() {
       photoUrl: event.photoUrl,
       primaryColor: event.primaryColor,
       participantsNumber: event.participantsNumber,
-      socialMediaLinks: event.socialMediaLinks,
+      socialMediaLinks: event.socialMediaLinks as {
+        label?: string;
+        url: string;
+        type: "general";
+      }[],
       slug: event.slug === "" ? nameToSlug(event.name) : event.slug,
       contactEmail: event.contactEmail,
       coorganizers: [],
@@ -210,15 +214,18 @@ export function CreateEventForm() {
               ? []
               : event.coorganizers,
           attributes:
-            event.attributes.length === 1 &&
-            !event.attributes[0].name &&
-            event.attributes[0].slug === ""
+            event.attributes.length === 1 && !event.attributes[0].name
               ? []
               : event.attributes,
         };
         try {
           const result = await saveEvent(newEventObject);
-          if ("errors" in result) {
+          if (result.isSlugTaken === true) {
+            setCurrentStep(1);
+            form.setError("slug", {
+              message: t("slugAlreadyTaken"),
+            });
+          } else if ("errors" in result) {
             toast({
               variant: "destructive",
               title: t("failedToCreateEvent"),
@@ -231,7 +238,7 @@ export function CreateEventForm() {
                   )
                   .join("\n") ?? t("tryCreatingEventAgain"),
             });
-          } else if (result.id != null) {
+          } else if (result.uuid != null) {
             URL.revokeObjectURL(event.photoUrl);
 
             if (result.warnings != null && result.warnings.length > 0) {
@@ -281,7 +288,7 @@ export function CreateEventForm() {
 
             setTimeout(() => {
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              router.push(`/dashboard/events/${result.id}`);
+              router.push(`/dashboard/events/${result.uuid}`);
             }, 200);
           }
         } catch {

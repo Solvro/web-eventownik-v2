@@ -19,17 +19,31 @@ export function TagsList({ items, command, ref }: TagsListProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedTagRef = useRef<HTMLButtonElement | null>(null);
 
+  // Items are displayed grouped by category, which can differ from the order they arrive in
+  // (e.g. a "participant" tag appended after attribute tags). Selection must use the displayed order.
+  const groupedItems = Object.entries(
+    items.reduce<Record<string, MessageTag[]>>((accumulator, item) => {
+      const categoryTitle = item.category?.title ?? "Inne";
+      accumulator[categoryTitle] ??= [];
+      accumulator[categoryTitle].push(item);
+      return accumulator;
+    }, {}),
+  );
+  const orderedItems = groupedItems.flatMap(([, tags]) => tags);
+
   const selectItem = (index: number) => {
-    const item = items[index];
+    const item = orderedItems[index];
     command({ id: item.value, label: item.title });
   };
 
   const upHandler = () => {
-    setSelectedIndex((selectedIndex + items.length - 1) % items.length);
+    setSelectedIndex(
+      (selectedIndex + orderedItems.length - 1) % orderedItems.length,
+    );
   };
 
   const downHandler = () => {
-    setSelectedIndex((selectedIndex + 1) % items.length);
+    setSelectedIndex((selectedIndex + 1) % orderedItems.length);
   };
 
   const enterHandler = () => {
@@ -74,15 +88,8 @@ export function TagsList({ items, command, ref }: TagsListProps) {
       }}
       className="bg-popover border-muted relative z-9999 flex max-h-96 flex-col overflow-auto rounded-md border p-2 pr-4 shadow-md"
     >
-      {items.length > 0 ? (
-        Object.entries(
-          items.reduce<Record<string, MessageTag[]>>((accumulator, item) => {
-            const categoryTitle = item.category?.title ?? "Inne";
-            accumulator[categoryTitle] ??= [];
-            accumulator[categoryTitle].push(item);
-            return accumulator;
-          }, {}),
-        ).map(([categoryTitle, tags]) => {
+      {orderedItems.length > 0 ? (
+        groupedItems.map(([categoryTitle, tags]) => {
           const categoryObject = tags[0].category;
           return (
             <div key={categoryTitle} className="my-2 flex flex-col gap-2">

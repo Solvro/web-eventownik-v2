@@ -1,11 +1,15 @@
 "use client";
 
-import { ChevronRight, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronRight, Loader2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
+import { getBlockParticipants } from "@/app/[eventSlug]/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import type { PublicBlock } from "@/types/blocks";
+import type { Block } from "@/types/blocks";
 import type { PublicParticipant } from "@/types/participant";
 
 import { FormControl, FormItem, FormLabel } from "./ui/form";
@@ -22,43 +26,38 @@ const valueOrZero = (value: number | null | undefined) => {
  */
 export function AttributeInputBlock({
   block,
-  userData,
   isMultiple,
   checked,
   onCheckedChange,
   disabled: disabledFromParent,
 }: {
-  block: PublicBlock;
-  userData: PublicParticipant | undefined;
+  block: Block;
+  userData?: PublicParticipant;
   isMultiple: boolean;
-  /**
-   * Only required when isMultiple is true
-   */
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
 }) {
   const t = useTranslations("Form");
   const isFull =
-    block.capacity !== null && block.meta.participants.length >= block.capacity;
+    block.capacity !== null &&
+    (block.blockParticipantCount ?? 0) >= block.capacity;
 
-  const isRegistered =
-    userData === undefined
-      ? false
-      : userData.attributes.some((attribute) =>
-          attribute.type === "block" && attribute.isMultiple
-            ? attribute.meta.pivot_value.includes(block.id.toString())
-            : attribute.meta.pivot_value === block.id.toString(),
-        );
-  const hasParticipants = block.meta.participants.length > 0;
+  const isDisabled = disabledFromParent ?? isFull;
+
+  const { eventSlug } = useParams<{ eventSlug: string }>();
+  const [isParticipantsListOpen, setIsParticipantsListOpen] = useState(false);
+  const hasParticipants = (block.blockParticipantCount ?? 0) > 0;
+  const { data: participants, isLoading: isLoadingParticipants } = useQuery({
+    // The key is hashed by value, so it changes only when the polled block data does
+    queryKey: ["block-participants", eventSlug, block],
+    queryFn: async () => getBlockParticipants(eventSlug, block),
+    enabled: isParticipantsListOpen && hasParticipants,
+  });
   const isAnonymousList =
-    hasParticipants &&
-    block.meta.participants.every(
-      (participant) =>
-        participant.name?.trim() === "" || participant.name === undefined,
-    );
-
-  const isDisabled = disabledFromParent ?? (!isRegistered && isFull);
+    participants != null &&
+    participants.length > 0 &&
+    participants.every((participant) => participant.name.trim() === "");
 
   return (
     <FormItem className="flex flex-col rounded-md border border-slate-500 p-4 [&>button:first-of-type]:m-0">
@@ -73,7 +72,7 @@ export function AttributeInputBlock({
           />
         ) : (
           <FormControl>
-            <RadioGroupItem value={block.id.toString()} disabled={isDisabled} />
+            <RadioGroupItem value={block.uuid} disabled={isDisabled} />
           </FormControl>
         )}
         <FormLabel className="flex grow">
@@ -89,25 +88,22 @@ export function AttributeInputBlock({
                 className={cn(
                   "flex items-center gap-2 text-sm",
                   isFull && "text-red-600",
-                  isRegistered && "text-primary",
                 )}
               >
                 <Users className="size-4" />
                 {block.capacity === null
-                  ? valueOrZero(block.meta.participantsInBlockCount)
-                  : `${valueOrZero(block.meta.participantsInBlockCount)}/${block.capacity.toString()}`}
+                  ? valueOrZero(block.blockParticipantCount)
+                  : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
               </div>
             </div>
           </div>
         </FormLabel>
       </div>
-      {isRegistered ? (
-        <p className="text-muted-foreground mb-0 text-sm leading-none whitespace-nowrap">
-          {t("userRegisteredOnBlock")}
-        </p>
-      ) : null}
       <div className="mt-auto">
-        <Popover>
+        <Popover
+          open={isParticipantsListOpen}
+          onOpenChange={setIsParticipantsListOpen}
+        >
           <PopoverTrigger
             className="text-primary flex w-full items-center gap-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 [&[data-state=open]>svg]:rotate-90"
             disabled={!hasParticipants}
@@ -119,20 +115,22 @@ export function AttributeInputBlock({
             className="w-(--radix-popover-trigger-width) p-2"
             align="center"
           >
-            {isAnonymousList ? (
+            {isLoadingParticipants ? (
+              <Loader2 className="text-muted-foreground mx-auto size-4 animate-spin" />
+            ) : isAnonymousList ? (
               <p className="text-muted-foreground px-3 text-sm">
                 {t("anonymousParticipantsList")}
               </p>
-            ) : hasParticipants ? (
+            ) : participants != null && participants.length > 0 ? (
               <ScrollArea className="*:data-[slot='scroll-area-viewport']:max-h-64">
                 <ul className="divide-border/60 space-y-0.5 px-1">
-                  {block.meta.participants.map((occupant) => {
-                    const isAnonymous =
-                      occupant.name?.trim() === "" ||
-                      occupant.name === undefined;
+                  {participants.map((occupant, index) => {
+                    const isAnonymous = occupant.name.trim() === "";
                     return (
                       <li
-                        key={occupant.id}
+                        // Occupants have no identifier, only the values of the participant fields
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={index}
                         className={cn(
                           "rounded-sm px-2 py-1.5 text-sm",
                           isAnonymous && "text-muted-foreground italic",

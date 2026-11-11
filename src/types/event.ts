@@ -1,26 +1,27 @@
-import type { EventAttribute } from "./attributes";
-import type { EventForm } from "./forms";
+import type { PublicEventForm } from "./forms";
+import type { EventLink } from "./link";
 
 export interface Event {
-  id: number;
-  organizerId: number;
   name: string;
-  description: string | null;
-  slug: string;
+  uuid: string;
   startDate: string;
   endDate: string;
-  firstFormId: number;
-  location: string | null;
-  primaryColor: string | null;
-  organizer: string | null;
-  participantsCount: number | null;
-  contactEmail: string | null;
-  socialMediaLinks: string[] | null;
   createdAt: string;
   updatedAt: string;
+  slug: string;
+  organizerUuid: string | null;
+  description: string | null;
+  registerFormUuid: string | null;
+  location: string | null;
+  primaryColor: string | null;
+  organizerName: string | null;
+  participantsLimit: number | null;
+  contactEmail: string | null;
   photoUrl: string | null;
-  firstForm: EventForm | null;
-  termsLink: string | null;
-  isActive: boolean;
-  attributes: EventAttribute[];
+  isPublic: boolean;
+  isVerified: boolean;
+  isFeatured: boolean;
+  /** Included only by the public event endpoint, with the attributes of the form definitions */
+  registerForm?: PublicEventForm | null;
+  links: EventLink[];
 }

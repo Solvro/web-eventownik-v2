@@ -7,7 +7,7 @@ import { CreateEventForm } from "@/app/dashboard/(create-event)/create-event-for
 import { EventCard } from "@/components/event-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -30,17 +30,17 @@ export default async function EventListPage() {
     notFound();
   }
   const { bearerToken } = session;
-  const response = await fetch(`${API_URL}/events`, {
+  const allEvents = await fetchAllPages<Event>(`${API_URL}/events`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
 
-  if (!response.ok) {
+  if (allEvents === null) {
     return <FetchErrorAlert />;
   }
 
-  const events = ((await response.json()) as Event[]).toSorted((a, b) => {
+  const events = allEvents.toSorted((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
@@ -91,7 +91,7 @@ export default async function EventListPage() {
         </Alert>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {events.length > 0 ? (
-            events.map((event) => <EventCard key={event.id} event={event} />)
+            events.map((event) => <EventCard key={event.uuid} event={event} />)
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
               <CalendarDays className="text-muted-foreground mb-4 size-12" />

@@ -1,22 +1,21 @@
 "use client";
 
 import { Puck } from "@puckeditor/core";
-import "@puckeditor/core/no-external.css";
 import { useLocale, useTranslations } from "next-intl";
 
 import { PuckComposition } from "@/components/editor/composition";
 import { getPuckConfig } from "@/components/editor/config";
 import { createOverrides } from "@/components/editor/overrides";
 import type { MessageTag } from "@/lib/message-tags";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { PuckData, PuckEventData, PuckMutationData } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
 interface BlockEditorProps {
   initialData: Partial<PuckData>;
   tags: MessageTag[];
-  forms: Pick<EventForm, "id" | "name">[];
-  attributes: Pick<EventAttribute, "id" | "name">[];
+  forms: Pick<EventForm, "uuid" | "name">[];
+  attributes: Pick<Attribute, "uuid" | "name">[];
   mutationData: PuckMutationData;
   eventData: PuckEventData;
 }

@@ -2,25 +2,32 @@
 
 import { formatISO } from "date-fns";
 
-import type { DashboardKey } from "@/i18n/translate-or-fallback";
+import type { DashboardKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
 import { generateFileFromDataUrl } from "@/lib/event";
 import { verifySession } from "@/lib/session";
 
 import type { Event } from "./state";
 
+interface ApiErrorResponse {
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
+}
+
 export async function isSlugTaken(slug: string) {
-  const response = await fetch(`${API_URL}/events/${slug}/public`);
+  const response = await fetch(`${API_URL}/public/events/${slug}`);
   return response.ok;
 }
 
-interface ErrorMessage {
+export interface ErrorMessage {
   key: DashboardKey;
   values?: Record<string, string | number | Date>;
 }
 
 interface SaveEventResult {
-  id?: string;
+  uuid?: string;
+  isSlugTaken?: boolean;
   errors?: {
     message: ErrorMessage | string;
   }[];
@@ -40,22 +47,43 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   formData.append("name", event.name);
   formData.append("description", event.description ?? "");
-  formData.append("organizer", event.organizer ?? "");
-  formData.append("contactEmail", event.contactEmail ?? "");
+  formData.append("organizerName", event.organizer ?? "");
+  if (typeof event.contactEmail === "string" && event.contactEmail !== "") {
+    formData.append("contactEmail", event.contactEmail);
+  }
   formData.append("slug", event.slug);
-  formData.append("termsLink", event.termsLink ?? "");
   formData.append("startDate", formatISO(event.startDate));
   formData.append("endDate", formatISO(event.endDate));
   formData.append("location", event.location ?? "");
   formData.append("primaryColor", event.primaryColor);
-  formData.append("participantsCount", event.participantsNumber.toString());
+  formData.append("participantsLimit", event.participantsNumber.toString());
+  formData.append("isPublic", "true");
 
-  for (const _link of event.socialMediaLinks) {
-    if (_link.link) {
-      const value =
-        _link.label == null ? _link.link : `[${_link.label}](${_link.link})`;
-      formData.append("socialMediaLinks[]", value);
-    }
+  const addLinkToFormData = (
+    url: string,
+    type: string,
+    label: string,
+    index: string,
+  ) => {
+    formData.append(`links[${index}][url]`, url);
+    formData.append(`links[${index}][type]`, type);
+    formData.append(`links[${index}][label]`, label);
+  };
+
+  const allLinks = [
+    ...(event.termsLink == null
+      ? []
+      : [{ url: event.termsLink, type: "policy", label: "" }]),
+    ...event.socialMediaLinks
+      .filter((link) => link.url.trim())
+      .map((link) => ({
+        url: link.url,
+        type: "general",
+        label: link.label ?? "",
+      })),
+  ];
+  for (const [index, link] of allLinks.entries()) {
+    addLinkToFormData(link.url, link.type, link.label.trim(), index.toString());
   }
 
   if (event.photoUrl) {
@@ -81,23 +109,36 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   });
 
   if (!response.ok) {
-    const error = (await response.json()) as { errors: { message: string }[] };
-    console.error(
-      `[saveEvent] Failed to create event: ${error.errors[0]?.message ?? "Unknown error"}`,
+    const errorData = (await response.json()) as ApiErrorResponse;
+
+    const rawMessages = Array.isArray(errorData.message)
+      ? errorData.message
+      : typeof errorData.message === "string" && errorData.message.trim() !== ""
+        ? [errorData.message]
+        : ["Failed to create event"];
+
+    const errors: NonNullable<SaveEventResult["errors"]> = rawMessages.map(
+      (message) => ({
+        message,
+      }),
     );
-    return { errors: error.errors };
+
+    console.error(
+      `[saveEvent] Failed to create event: ${rawMessages[0] ?? "Unknown error"}`,
+    );
+    // The backend responds with 409 only when the slug is already taken. The slug step can't
+    // catch every case, since drafts are hidden from the public endpoint it uses
+    return { errors, isSlugTaken: response.status === 409 };
   }
 
-  const data = (await response.json()) as Record<"id", string>;
+  const data = (await response.json()) as Record<"uuid", string>;
 
-  if (!("id" in data)) {
-    console.error("[saveEvent] No event ID returned from server");
-    return {
-      errors: [{ message: { key: "failedToCreateEvent" as DashboardKey } }],
-    };
+  if (!("uuid" in data)) {
+    console.error("[saveEvent] No event UUID returned from server");
+    return { errors: [{ message: "Failed to create event" }] };
   }
 
-  const eventId = data.id;
+  const eventUuid = data.uuid;
 
   const coOrganizerErrors: ErrorMessage[] = [];
   let coOrganizersAdded = 0;
@@ -105,7 +146,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   for (const coorganizer of event.coorganizers) {
     try {
       const coorganizerResponse = await fetch(
-        `${API_URL}/events/${eventId}/organizers`,
+        `${API_URL}/events/${eventUuid}/organizers`,
         {
           method: "POST",
           headers: {
@@ -114,7 +155,7 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           },
           body: JSON.stringify({
             email: coorganizer.email,
-            permissionsIds: [1],
+            permissions: ["MANAGE_ALL"],
           }),
         },
       );
@@ -122,9 +163,8 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
       if (coorganizerResponse.ok) {
         coOrganizersAdded++;
       } else {
-        const errorData = (await coorganizerResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData =
+          (await coorganizerResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add co-organizer %s:",
           coorganizer.email,
@@ -162,10 +202,18 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
   const attributeErrors: ErrorMessage[] = [];
   let attributesAdded = 0;
 
-  for (const attribute of event.attributes) {
+  // New attributes have temporary UUIDs, which block attributes reference in `participantFields`.
+  // Block attributes are created last, so the references can be replaced with the real UUIDs
+  const createdAttributeUuids = new Map<string, string>();
+  const attributesInCreationOrder = [
+    ...event.attributes.filter((attribute) => attribute.type !== "block"),
+    ...event.attributes.filter((attribute) => attribute.type === "block"),
+  ];
+
+  for (const attribute of attributesInCreationOrder) {
     try {
       const attributeResponse = await fetch(
-        `${API_URL}/events/${eventId}/attributes`,
+        `${API_URL}/events/${eventUuid}/attributes`,
         {
           method: "POST",
           headers: {
@@ -175,25 +223,43 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
           body: JSON.stringify({
             name: attribute.name,
             type: attribute.type,
-            slug: attribute.slug,
             showInList: attribute.showInList,
-            options:
-              (attribute.options ?? []).length > 0
-                ? attribute.options
-                : undefined,
             order: attribute.order,
-            isSensitiveData: false,
-            reason: null,
+            config: {
+              ...(attribute.type === "block"
+                ? {
+                    participantFields: (
+                      attribute.config.participantFields ?? []
+                    ).flatMap((field) => {
+                      if (field === "email") {
+                        return [field];
+                      }
+                      const createdUuid = createdAttributeUuids.get(field);
+                      return createdUuid === undefined ? [] : [createdUuid];
+                    }),
+                  }
+                : {
+                    options:
+                      (attribute.config.options ?? []).length > 0
+                        ? attribute.config.options
+                        : null,
+                  }),
+              ...(attribute.type === "block" && {
+                maxSelections: attribute.config.maxSelections ?? 1,
+              }),
+            },
           }),
         },
       );
 
       if (attributeResponse.ok) {
+        const createdAttribute = (await attributeResponse.json()) as {
+          uuid: string;
+        };
+        createdAttributeUuids.set(attribute.uuid, createdAttribute.uuid);
         attributesAdded++;
       } else {
-        const errorData = (await attributeResponse.json()) as {
-          errors: { message: string }[];
-        };
+        const errorData = (await attributeResponse.json()) as ApiErrorResponse;
         console.error(
           "[saveEvent] Failed to add attribute %s:",
           attribute.name,
@@ -226,12 +292,12 @@ export async function saveEvent(event: Event): Promise<SaveEventResult> {
 
   if (warnings.length > 0) {
     console.warn(
-      `[saveEvent] Event ${eventId} created with ${warnings.length.toString()} warnings`,
+      `[saveEvent] Event ${eventUuid} created with ${warnings.length.toString()} warnings`,
     );
   }
 
   return {
-    id: eventId,
+    uuid: eventUuid,
     warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

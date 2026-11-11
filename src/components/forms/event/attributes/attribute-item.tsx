@@ -2,7 +2,7 @@ import { RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers";
 import type { DragEndEvent } from "@dnd-kit/dom";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
-import { HelpCircle, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -10,13 +10,6 @@ import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,13 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import type { AttributeType } from "@/types/attributes";
+import { translateOrFallback } from "@/i18n/utils";
+import type { Attribute, AttributeType } from "@/types/attributes";
 
 import { AttributeTypeOptions } from "./attribute-type-options";
 import type {
@@ -41,10 +29,15 @@ import type {
   EventAttributesFormSchema,
 } from "./schema";
 import { SortableOption } from "./sortable-option";
-import type { AttributeItemProps, NewEventAttribute } from "./types";
 
 // Required for usage of useFieldArray hook
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
+
+export interface AttributeItemProps {
+  attribute: Attribute;
+  index: number;
+  onUpdateItem?: (index: number, value: Attribute) => void;
+}
 
 const getOptionValue = (option: unknown): string => {
   if (typeof option === "string") {
@@ -87,12 +80,12 @@ export function AttributeItem({
       const newIndex = source.index;
 
       if (initialIndex !== newIndex) {
-        const oldOptions = getValues(`attributes.${index}.options`);
+        const oldOptions = getValues(`attributes.${index}.config.options`);
         if (oldOptions != null) {
           const newOptions = [...oldOptions];
           const [removed] = newOptions.splice(initialIndex, 1);
           newOptions.splice(newIndex, 0, removed);
-          setValue(`attributes.${index}.options`, newOptions);
+          setValue(`attributes.${index}.config.options`, newOptions);
           onUpdateItem?.(index, getValues(`attributes.${index}`));
         }
       }
@@ -101,12 +94,12 @@ export function AttributeItem({
 
   const addOption = () => {
     const trimmedValue = optionsInput.trim();
-    const oldOptions = getValues(`attributes.${index}.options`);
+    const oldOptions = getValues(`attributes.${index}.config.options`);
     if (trimmedValue) {
       const exists = oldOptions?.includes(trimmedValue) ?? false;
       if (!exists) {
         const newOptions = [...(oldOptions ?? []), trimmedValue];
-        setValue(`attributes.${index}.options`, newOptions);
+        setValue(`attributes.${index}.config.options`, newOptions);
         setOptionsInput("");
         onUpdateItem?.(index, getValues(`attributes.${index}`));
       }
@@ -115,8 +108,8 @@ export function AttributeItem({
 
   const handleRemoveOption = (optionToRemove: string) => {
     setValue(
-      `attributes.${index}.options`,
-      getValues(`attributes.${index}.options`)?.filter(
+      `attributes.${index}.config.options`,
+      getValues(`attributes.${index}.config.options`)?.filter(
         (o) => o !== optionToRemove,
       ) ?? [],
     );
@@ -175,90 +168,11 @@ export function AttributeItem({
               {t("showInTable")}
             </Label>
           </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id={`isSensitiveData-${index.toString()}`}
-              onCheckedChange={(checked) => {
-                setValue(
-                  `attributes.${index}.isSensitiveData`,
-                  checked === true,
-                );
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              defaultChecked={attribute.isSensitiveData}
-            />
-            <div className="flex items-center gap-2">
-              <Label htmlFor={`isSensitiveData-${index.toString()}`}>
-                {t("sensitiveData")}
-              </Label>
-
-              <Dialog>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label={t("sensitiveDataExplanation")}
-                        className="size-4"
-                      >
-                        <HelpCircle />
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">{t("tip")}</TooltipContent>
-                </Tooltip>
-
-                <DialogContent className="max-w-full md:max-w-lg lg:max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">
-                      {t("whatIsSensitiveData")}
-                    </DialogTitle>
-                    <div className="[&>p]:my-2 [&>p]:text-left sm:[&>p]:text-justify">
-                      <p>{t("sensitiveDataDescr")}</p>
-                      <p>
-                        {t.rich("sensitiveDataExamples", {
-                          strong: (chunks) => <strong>{chunks}</strong>,
-                        })}
-                      </p>
-                    </div>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
         </div>
       </div>
 
-      {watch(`attributes.${index}.isSensitiveData`) ? (
-        <div className="my-2 flex flex-col gap-2">
-          <Label htmlFor={`reason-${index.toString()}`}>
-            {t("sensitiveDataReason")}
-          </Label>
-          <Input
-            id={`reason-${index.toString()}`}
-            defaultValue={attribute.reason ?? ""}
-            required={attribute.isSensitiveData}
-            onChange={(event_) => {
-              setValue(`attributes.${index}.reason`, event_.target.value);
-            }}
-            placeholder={t("sensitiveDataReasonExamples")}
-            onBlur={() => {
-              onUpdateItem?.(index, getValues(`attributes.${index}`));
-            }}
-          />
-          <FormMessage className="text-sm text-red-500">
-            {translateOrFallback(
-              t,
-              formState.errors.attributes?.[index]?.reason
-                ?.message as EventAttributesFormErrors,
-            )}
-          </FormMessage>
-        </div>
-      ) : null}
-
       {(watch(`attributes.${index}.type`) === "select" ||
-        watch(`attributes.${index}.type`) === "multiselect") && (
+        watch(`attributes.${index}.type`) === "multiSelect") && (
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input
@@ -281,7 +195,7 @@ export function AttributeItem({
               onDragEnd={handleDragEnd}
               modifiers={[RestrictToHorizontalAxis]}
             >
-              {watch(`attributes.${index}.options`)?.map(
+              {watch(`attributes.${index}.config.options`)?.map(
                 (option, optionIndex) => {
                   const optionValue = getOptionValue(option);
                   return (
@@ -310,78 +224,56 @@ export function AttributeItem({
               { label: "Email", value: "email" },
               ...(Array.isArray(allAttributes) ? allAttributes : [])
                 .map((a, index_) => ({ ...a, _index: index_ }))
-                .filter(
-                  (
-                    a,
-                  ): a is NewEventAttribute & {
-                    _index: number;
-                    slug: string;
-                  } =>
-                    a._index !== index &&
-                    typeof a.slug === "string" &&
-                    a.slug.length > 0,
-                )
-                .map((a) => ({ label: a.name, value: a.slug })),
+                .filter((a) => a._index !== index)
+                .map((a) => ({ label: a.name, value: a.uuid })),
             ]}
             onValueChange={(values) => {
-              setValue(`attributes.${index}.options`, values);
+              setValue(`attributes.${index}.config.participantFields`, values);
               onUpdateItem?.(index, getValues(`attributes.${index}`));
             }}
-            defaultValue={(getValues(`attributes.${index}.options`) ?? []).map(
-              (option) => getOptionValue(option),
-            )}
+            defaultValue={(
+              getValues(`attributes.${index}.config.participantFields`) ?? []
+            ).map((field) => getOptionValue(field))}
             placeholder={t("selectAttributesToDisplay")}
           />
           <p className="text-muted-foreground text-sm">
             {t("anonymousRegistrationsInfo")}
           </p>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id={`isMultiple-${index.toString()}`}
-              onCheckedChange={(checked) => {
-                setValue(`attributes.${index}.isMultiple`, checked === true);
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              defaultChecked={attribute.isMultiple}
-            />
-            <Label htmlFor={`isMultiple-${index.toString()}`}>
-              {t("allowMultipleSelection")}
-            </Label>
-          </div>
         </div>
       )}
 
-      {watch(`attributes.${index}.isMultiple`) &&
-        watch(`attributes.${index}.type`) === "block" && (
-          <div className="space-y-2">
-            <Label htmlFor={`maxSelections-${index.toString()}`}>
-              {t("maxSelectedBlocks")}
-            </Label>
-            <Input
-              id={`maxSelections-${index.toString()}`}
-              defaultValue={attribute.maxSelections ?? ""}
-              onChange={(event_) => {
-                setValue(
-                  `attributes.${index}.maxSelections`,
-                  Number.parseInt(event_.target.value),
-                );
-              }}
-              placeholder={t("example3")}
-              onBlur={() => {
-                onUpdateItem?.(index, getValues(`attributes.${index}`));
-              }}
-              type="number"
-              className="[appearance:textfield]"
-            />
-            <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.attributes?.[index]?.maxSelections
-                  ?.message as EventAttributesFormErrors,
-              )}
-            </FormMessage>
-          </div>
-        )}
+      {watch(`attributes.${index}.type`) === "block" && (
+        <div className="space-y-2">
+          <Label htmlFor={`maxSelections-${index.toString()}`}>
+            {t("maxSelectedBlocks")}
+          </Label>
+          <Input
+            id={`maxSelections-${index.toString()}`}
+            defaultValue={attribute.config.maxSelections ?? 1}
+            onChange={(event_) => {
+              setValue(
+                `attributes.${index}.config.maxSelections`,
+                Math.max(Number.parseInt(event_.target.value, 10) || 1, 1),
+              );
+            }}
+            placeholder={t("example3")}
+            onBlur={() => {
+              onUpdateItem?.(index, getValues(`attributes.${index}`));
+            }}
+            type="number"
+            min={1}
+            className="[appearance:textfield]"
+          />
+          <FormMessage className="text-sm text-red-500">
+            {translateOrFallback(
+              t,
+
+              formState.errors.attributes?.[index]?.config?.maxSelections
+                ?.message as EventAttributesFormErrors,
+            )}
+          </FormMessage>
+        </div>
+      )}
     </div>
   );
 }

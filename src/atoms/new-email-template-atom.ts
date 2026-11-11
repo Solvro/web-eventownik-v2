@@ -13,7 +13,7 @@ export interface NewEventEmailTemplate {
 export const newEventEmailTemplateAtom = atom<NewEventEmailTemplate>({
   name: "",
   content: "",
-  trigger: "manual",
+  trigger: "MANUAL",
   triggerValue: null,
   triggerValue2: null,
 });

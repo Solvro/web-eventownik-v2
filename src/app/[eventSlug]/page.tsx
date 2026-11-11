@@ -7,7 +7,8 @@ import sanitizeHtml from "sanitize-html";
 
 import { EventPageLayout } from "@/app/[eventSlug]/event-page-layout";
 import { Button } from "@/components/ui/button";
-import { API_URL, PHOTO_URL } from "@/lib/api";
+import { API_URL } from "@/lib/api";
+import { isFormOpen } from "@/lib/event-form-utils";
 import { legacyTranslate } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
@@ -23,9 +24,12 @@ export async function generateMetadata({
   const { eventSlug, locale } = await params;
   const t = await getTranslations({ locale, namespace: "Event" });
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -40,7 +44,7 @@ export async function generateMetadata({
     title: event.name,
     description: `${format(event.startDate, "dd.MM.yyyy HH:mm")} - ${format(event.endDate, "dd.MM.yyyy HH:mm")} | ${event.description == null ? event.name : legacyTranslate(sanitizeHtml(event.description, { allowedTags: [], allowedAttributes: {} }), "pl")}`,
     openGraph: {
-      images: [`${PHOTO_URL}/${event.photoUrl ?? ""}`],
+      images: event.photoUrl == null ? [] : [event.photoUrl],
     },
   };
 }
@@ -48,9 +52,12 @@ export async function generateMetadata({
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug, locale } = await params;
 
-  const response = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
@@ -61,23 +68,30 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <EventPageLayout event={event} description={event.description ?? ""}>
-      {(event.firstForm?.isOpen ?? false) ? (
+      {/* In v3, an event has no registration form until the organizer sets one */}
+      {event.registerForm == null ||
+      (event.registerForm.openCondition === "MANUAL" &&
+        !event.registerForm.isOpen) ? (
+        <div className="flex w-full justify-center pt-4">
+          <p className="bg-background/24 rounded-lg px-4 py-2 text-center backdrop-blur-sm sm:text-2xl sm:font-semibold">
+            {t("registrationDisabled")}
+          </p>
+        </div>
+      ) : (
         <div className="flex w-full justify-center pt-4">
           <Link href={`/${event.slug}/register#form`}>
             <Button
               variant="eventDefault"
               className="text-xl tracking-tight backdrop-blur-sm md:p-6 md:text-2xl pointer-fine:bg-(--event-primary-color)/70"
-              style={{ viewTransitionName: "register-button" }}
+              style={{
+                viewTransitionName: isFormOpen(event.registerForm)
+                  ? "register-button"
+                  : "form-close-info",
+              }}
             >
               {t("registerForThisEvent")}
             </Button>
           </Link>
-        </div>
-      ) : (
-        <div className="flex w-full justify-center pt-4">
-          <p className="bg-background/24 rounded-lg px-4 py-2 text-center backdrop-blur-sm sm:text-2xl sm:font-semibold">
-            {t("registrationDisabled")}
-          </p>
         </div>
       )}
     </EventPageLayout>
