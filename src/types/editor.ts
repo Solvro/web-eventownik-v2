@@ -1,5 +1,4 @@
 import type { Config, Data, Slot } from "@puckeditor/core";
-import type { CSSProperties } from "react";
 
 import type {
   AppearanceFields,

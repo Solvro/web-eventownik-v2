@@ -10,16 +10,21 @@ import type {
   SendMailKey,
   TableKey,
 } from "@/i18n/utils";
-import type { PaginatedResponse } from "@/lib/api";
 import { API_URL, fetchAllPages } from "@/lib/api";
 import { isValidUuid } from "@/lib/is-valid-uuid";
 import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
-import type { FormErrorObject } from "@/types/form";
+import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 import type { Participant } from "@/types/participant";
+
+export interface FormErrorObject {
+  rule?: string;
+  field?: string;
+  message?: string;
+}
 
 export interface ImportedParticipant {
   email: string;
@@ -360,14 +365,34 @@ export async function updateParticipant(
   return { success: true };
 }
 
-export async function getRegistrationForm(eventId: string) {
+export async function getRegistrationForm(eventUuid: string) {
   const session = await verifySession();
   if (session === null) {
     redirect("/auth/login");
   }
 
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[getRegistrationForm] Invalid event UUID: ${eventUuid}`);
+    return null;
+  }
+
+  const eventResponse = await fetch(`${API_URL}/events/${eventUuid}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${session.bearerToken}` },
+  });
+
+  if (!eventResponse.ok) {
+    console.error("Failed to fetch event", eventResponse);
+    return null;
+  }
+
+  const event = (await eventResponse.json()) as Event;
+  if (event.registerFormUuid == null || event.registerFormUuid === "") {
+    return null;
+  }
+
   const response = await fetch(
-    `${API_URL}/events/${eventId}/forms?perPage=100`,
+    `${API_URL}/events/${eventUuid}/forms/${event.registerFormUuid}`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${session.bearerToken}` },
@@ -379,8 +404,7 @@ export async function getRegistrationForm(eventId: string) {
     throw new Error("Failed to fetch registration form");
   }
 
-  const forms = (await response.json()) as PaginatedResponse<EventForm>;
-  return forms.data.find((form) => form.isFirstForm) ?? null;
+  return (await response.json()) as EventForm;
 }
 
 interface ParticipantFormResult {
@@ -391,18 +415,17 @@ interface ParticipantFormResult {
 
 function toParticipantAttributesPayload(attributes: Record<string, unknown>) {
   const participantAttributes: {
-    attributeId: number;
+    attributeUuid: string;
     value: string | string[] | null;
   }[] = [];
 
   for (const [key, value] of Object.entries(attributes)) {
-    const attributeId = Number(key);
-    if (Number.isNaN(attributeId) || value === undefined) {
+    if (!isValidUuid(key) || value === undefined) {
       continue;
     }
     if (Array.isArray(value)) {
       participantAttributes.push({
-        attributeId,
+        attributeUuid: key,
         value: value.length === 0 ? null : value.map(String),
       });
     } else if (
@@ -411,11 +434,11 @@ function toParticipantAttributesPayload(attributes: Record<string, unknown>) {
       typeof value === "boolean"
     ) {
       participantAttributes.push({
-        attributeId,
+        attributeUuid: key,
         value: value === "" ? null : String(value),
       });
     } else {
-      participantAttributes.push({ attributeId, value: null });
+      participantAttributes.push({ attributeUuid: key, value: null });
     }
   }
 
@@ -490,23 +513,23 @@ async function sendParticipantForm(
 }
 
 export async function createParticipant(
-  eventId: string,
+  eventUuid: string,
   values: Record<string, unknown>,
 ) {
   return sendParticipantForm(
-    `${API_URL}/events/${eventId}/participants`,
+    `${API_URL}/events/${eventUuid}/participants`,
     "POST",
     values,
   );
 }
 
 export async function editParticipant(
-  eventId: string,
-  participantId: number,
+  eventUuid: string,
+  participantUuid: string,
   values: Record<string, unknown>,
 ) {
   return sendParticipantForm(
-    `${API_URL}/events/${eventId}/participants/${participantId.toString()}`,
+    `${API_URL}/events/${eventUuid}/participants/${participantUuid}`,
     "PATCH",
     values,
   );

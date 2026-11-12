@@ -2,13 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useParticipantsData } from "@/hooks/use-participants-data";
 import { useParticipantsTable } from "@/hooks/use-participants-table";
 import { useUnsavedForm } from "@/hooks/use-unsaved";
-import type { FlattenedParticipant } from "@/types/participant";
 
 import {
   getAttributes,
@@ -18,13 +17,11 @@ import {
 } from "./actions";
 import { TableMenu } from "./table/components/buttons/table-menu";
 import { HelpDialog } from "./table/components/dialogs/help-dialog";
-import { ParticipantDialog } from "./table/components/dialogs/participant-dialog";
 import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const t = useTranslations("Table");
-  const [selectedParticipant, setSelectedParticipant] =
-    useState<FlattenedParticipant | null>(null);
+  const router = useRouter();
 
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventUuid],
@@ -112,16 +109,12 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
           deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
-      <ParticipantTable table={table} onRowClick={setSelectedParticipant} />
-      <ParticipantDialog
-        eventId={eventId}
-        blocks={blocks ?? []}
-        participant={selectedParticipant}
-        open={selectedParticipant !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedParticipant(null);
-          }
+      <ParticipantTable
+        table={table}
+        onRowClick={(participant) => {
+          router.push(
+            `/dashboard/events/${eventUuid}/participants/${participant.uuid}`,
+          );
         }}
       />
       <UnsavedChangesAlert

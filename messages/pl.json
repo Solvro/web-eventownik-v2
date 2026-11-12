@@ -953,7 +953,8 @@
     "editParticipantTitle": "Edytuj uczestnika",
     "editParticipantDescription": "Zmień dane uczestnika w formularzu rejestracyjnym.",
     "editParticipantSuccessDescription": "Dane uczestnika zostały zaktualizowane",
-    "editParticipantLoadError": "Nie udało się załadować danych uczestnika."
+    "editParticipantLoadError": "Nie udało się załadować danych uczestnika.",
+    "backToParticipants": "Wróć do uczestników"
   },
   "Themes": {
     "light": "Jasny",

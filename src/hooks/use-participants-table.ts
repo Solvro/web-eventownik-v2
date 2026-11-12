@@ -99,7 +99,7 @@ export function useParticipantsTable({
     },
 
     meta: {
-      eventUuid: eventUuid,
+      eventUuid,
       updateData: onUpdateData,
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {

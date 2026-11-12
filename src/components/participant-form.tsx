@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -88,6 +88,7 @@ interface ParticipantFormProps {
    * Content rendered at the top of the form, above the fields
    */
   header?: ReactNode;
+  className?: string;
 }
 
 export function ParticipantForm({
@@ -101,6 +102,7 @@ export function ParticipantForm({
   onSuccess,
   initialValues,
   header,
+  className,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -349,7 +351,7 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className={cn("w-full max-w-sm space-y-4", className)}
       >
         {header}
 

@@ -1,5 +1,5 @@
 import { Calendar, FileSpreadsheet, Tag, User } from "lucide-react";
-import { useTranslations } from "next-intl";
+import type { useTranslations } from "next-intl";
 
 export const CATEGORY_ICON_CLASSNAME = "size-4";
 

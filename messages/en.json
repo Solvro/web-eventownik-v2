@@ -954,7 +954,8 @@
     "editParticipantTitle": "Edit participant",
     "editParticipantDescription": "Change the participant's data in the registration form.",
     "editParticipantSuccessDescription": "The participant's data has been updated",
-    "editParticipantLoadError": "Failed to load the participant's data."
+    "editParticipantLoadError": "Failed to load the participant's data.",
+    "backToParticipants": "Back to participants"
   },
   "Themes": {
     "light": "Light",
