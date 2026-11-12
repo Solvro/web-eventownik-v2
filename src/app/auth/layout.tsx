@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { verifySession } from "@/lib/session";
 
 export async function generateMetadata() {
   const t = await getTranslations("Auth");
@@ -13,8 +14,7 @@ export async function generateMetadata() {
 export default async function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // eslint-disable-next-line unicorn/no-await-expression-member
-  const session = (await cookies()).get("session");
+  const session = await verifySession();
 
   if (session != null) {
     redirect("/dashboard/events");

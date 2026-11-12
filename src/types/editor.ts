@@ -112,8 +112,8 @@ export type PuckData = Data<PuckComponents, RootSettings>;
 
 export interface PuckMutationData {
   mode: "create" | "update";
-  eventId: string;
-  emailId: string | null;
+  eventUuid: string;
+  emailUuid: string | null;
 }
 
 export interface PuckEventData {

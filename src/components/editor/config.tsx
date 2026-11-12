@@ -23,7 +23,6 @@ import Image from "next/image";
 import { useRef } from "react";
 import type { CSSProperties } from "react";
 
-import { PHOTO_URL } from "@/lib/api";
 import {
   appearanceDefaults,
   containerDefaults,
@@ -34,7 +33,7 @@ import { EMAIL_TRIGGERS } from "@/lib/emails";
 import type { MessageTag } from "@/lib/message-tags";
 import { setupSuggestions } from "@/lib/message-tags/tag-suggestions";
 import { getBase64FromUrl } from "@/lib/utils";
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { PuckConfig, PuckEventData, RootSettings } from "@/types/editor";
 import type { EventForm } from "@/types/forms";
 
@@ -118,8 +117,8 @@ export const getPuckConfig = ({
   tMessageTags,
 }: {
   tags: MessageTag[];
-  forms: Pick<EventForm, "id" | "name">[];
-  attributes: Pick<EventAttribute, "id" | "name">[];
+  forms: Pick<EventForm, "uuid" | "name">[];
+  attributes: Pick<Attribute, "uuid" | "name">[];
   eventData: PuckEventData;
   t: ReturnType<typeof useTranslations<"Editor">>;
   tEmailTriggers: ReturnType<typeof useTranslations<"EmailTriggers">>;
@@ -1126,28 +1125,28 @@ export const getPuckConfig = ({
           },
         };
 
-        if (data.props?.trigger === "form_filled") {
+        if (data.props?.trigger === "FORM_FILLED") {
           return {
             ...defaultFields,
             triggerValue: {
               type: "select",
               label: t("form"),
               options: forms.map((form) => {
-                return { label: form.name, value: form.id };
+                return { label: form.name, value: form.uuid };
               }),
               labelIcon: <FileSpreadsheet className={PUCK_ICON_CLASSNAME} />,
             },
           };
         }
 
-        if (data.props?.trigger === "attribute_changed") {
+        if (data.props?.trigger === "ATTRIBUTE_CHANGED") {
           return {
             ...defaultFields,
             triggerValue: {
               type: "select",
               label: t("attribute"),
               options: attributes.map((attribute) => {
-                return { label: attribute.name, value: attribute.id };
+                return { label: attribute.name, value: attribute.uuid };
               }),
               labelIcon: <Tag className={PUCK_ICON_CLASSNAME} />,
             },
@@ -1166,7 +1165,7 @@ export const getPuckConfig = ({
         const eventImageUrl =
           eventData.photoUrl === ""
             ? "/event-photo-placeholder.png"
-            : `${PHOTO_URL}/${eventData.photoUrl}`;
+            : eventData.photoUrl;
         return (
           <div
             id="editor-root"

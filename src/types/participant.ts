@@ -1,29 +1,61 @@
-import type { AttributeBase, PublicParticipantAttribute } from "./attributes";
+import type { PublicFormAttribute } from "./attributes";
+import type { PaginationMeta } from "./common";
 
 export interface Participant {
-  id: number;
+  uuid: string;
   email: string;
-  slug: string;
   createdAt: string;
-  updatedAt: string;
-  attributes: AttributeBase[];
+  attributes: {
+    uuid: string;
+    name: string;
+    /** Raw JSON value: booleans for checkboxes and string arrays for multiSelect and block */
+    value: string | number | boolean | string[] | null;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  emails: {
+    uuid: string;
+    status: string;
+    sendAt: string;
+    name: string;
+    content: string;
+    trigger: string;
+    triggerValue: string;
+  }[];
 }
 
-export interface PublicParticipant extends Omit<Participant, "attributes"> {
-  eventId: number;
-  attributes: PublicParticipantAttribute[];
+/** TODO: Public participant endpoint has a different attribute response shape.
+ * Remove after backend fixes the issue and use Participant interface instead
+ */
+export interface PublicParticipant {
+  uuid: string;
+  email: string;
+  eventUuid: string;
+  createdAt: string;
+  updatedAt?: string;
+  attributes: {
+    uuid: string;
+    participantUuid: string;
+    attributeUuid: string;
+    value: string | number;
+    createdAt: string;
+    updatedAt: string;
+    attribute: PublicFormAttribute;
+  }[];
 }
 
-export interface FlattenedParticipant {
-  id: number;
-  email: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
+export interface GetParticipantsResponse {
+  data: Participant[];
+  meta: PaginationMeta;
+}
+
+export interface FlattenedParticipant extends Omit<
+  Participant,
+  "attributes" | "emails"
+> {
   mode: "edit" | "view";
   wasExpanded: boolean;
-  //key is attribute id
-  [key: string]: ParticipantAttributeValueType;
+  [attributeUuid: string]: ParticipantAttributeValueType;
 }
 
 export type ParticipantAttributeValueType =

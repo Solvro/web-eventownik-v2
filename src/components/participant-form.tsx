@@ -1,12 +1,14 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
+import type { FieldErrors } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,32 +32,45 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import type { FormValidationErrors } from "@/lib/utils";
-import { cn, getSchemaObjectForAttributes, legacyTranslate } from "@/lib/utils";
-import type { FormAttribute } from "@/types/attributes";
-import type { PublicBlock } from "@/types/blocks";
+import { translateOrFallback } from "@/i18n/utils";
+import {
+  cn,
+  getSchemaObjectForPublicAttributes,
+  legacyTranslate,
+} from "@/lib/utils";
+import type { Block } from "@/types/blocks";
+import type { FormDefinition } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
 
-interface ErrorObject {
-  rule: string;
-  field: string;
-  message: string;
+function getFieldErrorMessage(
+  errors: FieldErrors,
+  fieldName: string,
+): string | undefined {
+  const fieldError = Object.entries(errors).find(
+    ([key]) => key === fieldName,
+  )?.[1];
+
+  if (fieldError == null || typeof fieldError !== "object") {
+    return undefined;
+  }
+
+  const message = "message" in fieldError ? fieldError.message : undefined;
+  return typeof message === "string" ? message : undefined;
 }
 
 interface ParticipantFormProps {
-  attributes: FormAttribute[];
+  formDefinitions: FormDefinition[];
   onSubmit: (
     values: Record<string, unknown>,
     files: File[],
   ) => Promise<{
     success: boolean;
-    errors?: ErrorObject[];
+    isEmailTaken?: boolean;
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
   userData?: PublicParticipant;
-  eventBlocks?: PublicBlock[];
+  eventBlocks?: Block[];
   editMode?: boolean;
   /**
    * Set to false for authenticated (dashboard) submissions which don't require hCaptcha
@@ -76,7 +91,7 @@ interface ParticipantFormProps {
 }
 
 export function ParticipantForm({
-  attributes,
+  formDefinitions,
   onSubmit,
   includeEmail = false,
   userData,
@@ -94,44 +109,54 @@ export function ParticipantForm({
   const router = useRouter();
 
   const [files, setFiles] = useState<File[]>([]);
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const sortedAttributes = useMemo(
-    () => attributes.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-    [attributes],
+  const sortedFormDefinitions = useMemo(
+    () => formDefinitions.toSorted((a, b) => a.order - b.order),
+    [formDefinitions],
   );
 
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
-  const hCaptchaRef = useRef<HCaptcha>(null);
+  const captchaRef = useRef<TurnstileInstance>(null);
 
   const submitText = editMode ? t("save") : t("register");
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
-  // Generate schema for the form based on event attributes
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
-    ...getSchemaObjectForAttributes(attributes),
+    ...getSchemaObjectForPublicAttributes(formDefinitions),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...(includeEmail && { email: "" }),
-      ...userData?.attributes
-        .filter(
-          (attribute) =>
-            attribute.type !== "file" && attribute.type !== "drawing",
-        )
-        .reduce<Record<string, string>>((accumulator, attribute) => {
-          accumulator[attribute.id.toString()] = attribute.meta.pivot_value;
+      ...(includeEmail && { email: userData?.email ?? "" }),
+      ...userData?.attributes.reduce<Record<string, string | number>>(
+        (accumulator, userAttribute) => {
+          // Stored files come back as URLs, which the backend rejects as new values.
+          // File inputs stay empty, and new uploads are sent separately as tokens
+          if (
+            userAttribute.attribute.type !== "file" &&
+            userAttribute.attribute.type !== "drawing"
+          ) {
+            accumulator[userAttribute.attributeUuid] = userAttribute.value;
+          }
           return accumulator;
-        }, {}),
+        },
+        {},
+      ),
       ...initialValues,
     },
   });
+
+  function getUserAttribute(attributeUuid: string) {
+    return userData?.attributes.find(
+      (userAttribute) => userAttribute.attributeUuid === attributeUuid,
+    );
+  }
 
   function resetStates() {
     router.refresh();
@@ -140,7 +165,7 @@ export function ParticipantForm({
     setSuccess(false);
     setIsAwaitingCaptcha(false);
     setDidCaptchaFail(false);
-    setHCaptchaToken(null);
+    setCaptchaToken(null);
     pendingFormData.current = null;
   }
 
@@ -157,9 +182,19 @@ export function ParticipantForm({
     values: z.infer<typeof formSchema>,
     token?: string,
   ) {
+    // When editing, send only the fields the participant changed. The backend keeps omitted
+    // attributes as they are, while an empty value erases them (and deletes stored files)
+    const submittedValues = editMode
+      ? Object.fromEntries(
+          Object.entries(values).filter(
+            ([name]) => form.getFieldState(name).isDirty,
+          ),
+        )
+      : values;
+
     try {
       const result = await onSubmit(
-        token === undefined ? values : { ...values, token },
+        { ...submittedValues, "cf-turnstile-response": token },
         files,
       );
       if (result.success) {
@@ -174,13 +209,7 @@ export function ParticipantForm({
         }
         setSuccess(true);
       } else {
-        if (
-          includeEmail &&
-          result.errors != null &&
-          result.errors.length > 0 &&
-          result.errors[0].rule === "database.unique" &&
-          result.errors[0].field === "email"
-        ) {
+        if (includeEmail && result.isEmailTaken === true) {
           form.setError("email", {
             type: "manual",
             message: t("emailTaken"),
@@ -221,7 +250,9 @@ export function ParticipantForm({
         description: t("serverError"),
       });
     } finally {
-      hCaptchaRef.current?.resetCaptcha();
+      // Tokens are single-use, so get a fresh one for the next submission
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
       // We set it here instead of in `handleCaptchaVerify` to prevent submit button content flash
       setIsAwaitingCaptcha(false);
     }
@@ -248,7 +279,7 @@ export function ParticipantForm({
    * Calls submitWithCaptcha with the captcha token.
    */
   async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
+    setCaptchaToken(token);
     setDidCaptchaFail(false);
 
     if (pendingFormData.current !== null) {
@@ -259,39 +290,37 @@ export function ParticipantForm({
 
   /**
    * Second stage of form submission after Zod validation.
-   * Checks captcha status: executes captcha if not yet verified, and
-   * if captcha is verified, submits form right away - noticable in edit mode.
+   * Checks captcha status: the challenge runs in the background as soon as the form renders,
+   * so if it's already solved the form is submitted right away, otherwise we wait for it.
    *
    * After this function finishes, `form.formState.isSubmitSuccessful` will be true, that's why
    * we don't rely on it to show the success screen.
    */
   async function handleFormSubmit(values: z.infer<typeof formSchema>) {
     // Validate required file/drawing attributes
-    const requiredFileDrawingAttributes = sortedAttributes.filter(
+    const requiredFileDrawingFormDefinitions = sortedFormDefinitions.filter(
       (attribute) =>
         attribute.isRequired &&
-        (attribute.type === "file" || attribute.type === "drawing"),
+        (attribute.attribute.type === "file" ||
+          attribute.attribute.type === "drawing"),
     );
 
     let hasValidationErrors = false;
 
-    for (const attribute of requiredFileDrawingAttributes) {
+    for (const formDefinition of requiredFileDrawingFormDefinitions) {
       const hasFile = files.some(
-        (file) => file.name === attribute.id.toString(),
+        (file) => file.name === formDefinition.attribute.uuid,
       );
-      const hasExistingValue =
-        userData?.attributes.some(
-          (userAttribute) =>
-            userAttribute.id === attribute.id &&
-            userAttribute.meta.pivot_value !== "" &&
-            userAttribute.meta.pivot_value.length > 0,
-        ) ?? false;
+      const existingValue = getUserAttribute(
+        formDefinition.attribute.uuid,
+      )?.value;
+      const hasExistingValue = existingValue != null && existingValue !== "";
 
       if (!hasFile && !hasExistingValue) {
         hasValidationErrors = true;
-        form.setError(attribute.id.toString(), {
+        form.setError(formDefinition.attribute.uuid, {
           message:
-            attribute.type === "file"
+            formDefinition.attribute.type === "file"
               ? t("fileUploadRequired")
               : t("drawingRequired"),
         });
@@ -307,13 +336,12 @@ export function ParticipantForm({
       return;
     }
 
-    if (hCaptchaToken === null) {
+    if (captchaToken === null) {
       pendingFormData.current = values;
 
       setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
     } else {
-      await submitWithCaptcha(values, hCaptchaToken);
+      await submitWithCaptcha(values, captchaToken);
     }
   }
 
@@ -359,24 +387,24 @@ export function ParticipantForm({
           />
         ) : null}
 
-        {sortedAttributes.map((attribute) => {
+        {sortedFormDefinitions.map((formDefinition) => {
           return (
             <FormField
-              key={attribute.id}
+              key={formDefinition.attribute.uuid}
               control={form.control}
-              name={attribute.id.toString()}
+              name={formDefinition.attribute.uuid}
               render={({ field }) => (
                 <FormItem>
                   <div
                     className={cn(
-                      attribute.type === "checkbox" &&
+                      formDefinition.attribute.type === "checkbox" &&
                         "flex flex-row-reverse items-start justify-end space-y-0",
                       "w-full",
                     )}
                   >
-                    <FormLabel htmlFor={attribute.id.toString()}>
-                      {legacyTranslate(attribute.name, locale)}{" "}
-                      {attribute.isRequired ? (
+                    <FormLabel htmlFor={formDefinition.attribute.uuid}>
+                      {legacyTranslate(formDefinition.attribute.name, locale)}{" "}
+                      {formDefinition.isRequired ? (
                         <Tooltip>
                           <TooltipTrigger type="button">
                             <span className="text-red-500">*</span>
@@ -388,38 +416,39 @@ export function ParticipantForm({
                       ) : null}
                     </FormLabel>
                     <FormControl>
-                      {attribute.type === "file" ? (
+                      {formDefinition.attribute.type === "file" ? (
                         <AttributeInputFile
-                          attribute={attribute}
+                          attribute={formDefinition.attribute}
                           field={field}
                           setError={form.control.setError}
                           resetField={form.resetField}
                           setFiles={setFiles}
                           lastUpdate={
-                            userData?.attributes.find(
-                              (attribute_) => attribute_.id === attribute.id,
-                            )?.meta.pivot_updated_at ?? null
+                            getUserAttribute(formDefinition.attribute.uuid)
+                              ?.updatedAt
                           }
                         />
-                      ) : attribute.type === "drawing" ? (
+                      ) : formDefinition.attribute.type === "drawing" ? (
                         <AttributeInputDrawing
-                          attribute={attribute}
+                          attribute={formDefinition.attribute}
                           field={field}
                           setError={form.control.setError}
                           resetField={form.resetField}
                           setFiles={setFiles}
                           lastUpdate={
-                            userData?.attributes.find(
-                              (attribute_) => attribute_.id === attribute.id,
-                            )?.meta.pivot_updated_at ?? null
+                            getUserAttribute(formDefinition.attribute.uuid)
+                              ?.updatedAt
                           }
                         />
                       ) : (
                         <AttributeInput
-                          attribute={attribute}
+                          attribute={formDefinition.attribute}
+                          isRequired={formDefinition.isRequired}
                           userData={userData}
                           eventBlocks={eventBlocks.filter(
-                            (block) => block.attributeId === attribute.id,
+                            (block) =>
+                              block.attributeUuid ===
+                              formDefinition.attribute.uuid,
                           )}
                           field={field}
                           shouldCheckUserData={editMode}
@@ -430,10 +459,16 @@ export function ParticipantForm({
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-                      (form.formState.errors as any)[attribute.id.toString()]
-                        ?.message as FormValidationErrors,
-                      { name: legacyTranslate(attribute.name, "pl") },
+                      getFieldErrorMessage(
+                        form.formState.errors,
+                        formDefinition.attribute.uuid,
+                      ),
+                      {
+                        name: legacyTranslate(
+                          formDefinition.attribute.name,
+                          "pl",
+                        ),
+                      },
                     )}
                   </FormMessage>
                 </FormItem>
@@ -449,17 +484,13 @@ export function ParticipantForm({
         )}
 
         {withCaptcha ? (
-          <HCaptcha
-            ref={hCaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-            size="invisible"
-            onVerify={handleCaptchaVerify}
+          <Turnstile
+            ref={captchaRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
+            options={{ appearance: "interaction-only", size: "flexible" }}
+            onSuccess={handleCaptchaVerify}
             onExpire={() => {
-              setHCaptchaToken(null);
-              setDidCaptchaFail(true);
-            }}
-            onClose={() => {
-              setDidCaptchaFail(true);
+              setCaptchaToken(null);
             }}
             onError={(captchaError) => {
               console.error("Captcha error occurred:", captchaError);
@@ -473,9 +504,12 @@ export function ParticipantForm({
             type="button"
             variant="destructive"
             className="sticky bottom-4 w-full shadow-lg md:bottom-0"
-            onClick={() => {
+            onClick={(event) => {
+              // React reuses this button's DOM node for the submit button, so without this
+              // the click would also submit the form once the button re-renders
+              event.preventDefault();
               setDidCaptchaFail(false);
-              hCaptchaRef.current?.execute();
+              captchaRef.current?.reset();
             }}
           >
             <Ban className="size-8" />

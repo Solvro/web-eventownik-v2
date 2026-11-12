@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { EventCardForSuperadmin } from "@/components/event-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import type { Event } from "@/types/event";
 
@@ -20,15 +20,16 @@ export async function generateMetadata() {
 }
 
 async function getAllEvents(bearerToken: string) {
-  const response = await fetch(`${API_URL}/events/admins/superadminIndex`, {
+  // For a superadmin, the events list contains every event in the system
+  const events = await fetchAllPages<Event>(`${API_URL}/events`, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
-  if (!response.ok) {
+  if (events === null) {
     return [];
   }
-  return ((await response.json()) as Event[]).toSorted((a, b) => {
+  return events.toSorted((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 }
@@ -70,7 +71,7 @@ export default async function AdminPage() {
           {events.length > 0 ? (
             events.map((event) => (
               <EventCardForSuperadmin
-                key={event.id}
+                key={event.uuid}
                 event={event}
                 bearerToken={bearerToken}
               />

@@ -2,27 +2,8 @@
 
 import { atom } from "jotai";
 
-import type { EventAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 import type { CoOrganizer } from "@/types/co-organizer";
-
-export const AttributeTypes = [
-  "text",
-  "number",
-  "textarea",
-  "file",
-  "drawing",
-  "select",
-  "multiselect",
-  "block",
-  "date",
-  "time",
-  "datetime",
-  "email",
-  "tel",
-  "color",
-  // "password",
-  "checkbox",
-] as const;
 
 export interface Event {
   name: string;
@@ -36,11 +17,11 @@ export interface Event {
   photoUrl: string;
   primaryColor: string;
   participantsNumber: number;
-  socialMediaLinks: { label?: string; link: string }[];
+  socialMediaLinks: { label?: string; url: string; type: string }[];
   slug: string;
   contactEmail: string | undefined;
   coorganizers: CoOrganizer[];
-  attributes: EventAttribute[];
+  attributes: Attribute[];
   termsLink: string | undefined;
 }
 

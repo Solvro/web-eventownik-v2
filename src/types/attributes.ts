@@ -1,78 +1,52 @@
-import type { AttributeTypes } from "@/app/dashboard/(create-event)/state";
+import type { PaginationMeta } from "./common";
 
-// TODO(refactor): Refactor types across this entire file.
+export interface AttributeConfig {
+  options?: string[];
+  participantFields?: string[];
+  allowOther?: boolean;
+  isRequired?: boolean;
+  maxSelections?: number | null;
+}
 export type AttributeOption = string | { label: string; value: string };
 
-export interface EventAttribute {
-  id: number;
-  name: string;
-  slug: string | null;
-  eventId: number;
-  options: AttributeOption[] | null;
-  type: string;
-  rootBlockId: number | undefined;
-  showInList: boolean;
-  order: number | null;
-  createdAt: string;
-  updatedAt: string;
-  isSensitiveData: boolean;
-  reason: string | null;
-  isMultiple: boolean;
-  maxSelections: number | null;
-}
-
-/**
- * @param value - Data returned from API is always a string (even numbers, booleans are in string format - "true", "123")
- */
-export interface AttributeBase {
-  id: number;
-  name: string;
-  value: string | string[];
-  slug: string | null;
-}
-
-export interface Attribute extends Omit<AttributeBase, "value"> {
-  eventId: number;
-  showInList: boolean;
-  options: AttributeOption[] | null;
+export interface Attribute {
+  uuid: string;
   type: AttributeType;
-  order: number | null;
-  createdAt: string;
-  updatedAt: string;
-  // TODO(refactor): Cleanup type definitions. Added here for now to implement multiselect blocks.
-  isRequired: boolean;
-  isEditable: boolean;
-  isMultiple: boolean;
-  maxSelections: number | null;
+  name: string;
+  order: number;
+  showInList: boolean;
+  config: AttributeConfig;
 }
 
-export interface FormAttribute extends Attribute {
-  id: number;
-  order: number | null;
-  isRequired: boolean;
-  isEditable: boolean;
-  isMultiple: boolean;
-  maxSelections: number | null;
+export interface GetAttributesResponse {
+  data: Attribute[];
+  meta: PaginationMeta;
 }
 
-export interface FormAttributeBase {
-  id: number;
-  order?: number | null;
-  isRequired: boolean;
-  isEditable: boolean;
+export interface PublicFormAttribute {
+  uuid: string;
+  name: string;
+  type: AttributeType;
+  order: number;
+  showInList: boolean;
+  config: AttributeConfig;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-/**
- * The attribute type that is returned by the API in the public participant endpoint
- */
-export interface PublicParticipantAttribute extends Omit<Attribute, "value"> {
-  meta: {
-    pivot_value: string;
-    pivot_created_at: string;
-    pivot_participant_id: number;
-    pivot_attribute_id: number;
-    pivot_updated_at: string;
-  };
-}
-
-export type AttributeType = (typeof AttributeTypes)[number];
+export type AttributeType =
+  | "text"
+  | "number"
+  | "textArea"
+  | "file"
+  | "drawing"
+  | "select"
+  | "multiSelect"
+  | "block"
+  | "date"
+  | "time"
+  | "datetime"
+  | "email"
+  | "tel"
+  | "color"
+  | "checkbox";

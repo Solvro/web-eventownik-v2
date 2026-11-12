@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 import {
   deleteManyParticipants,
   getParticipants,
-} from "@/app/dashboard/events/[id]/participants/actions";
-import { flattenParticipants } from "@/app/dashboard/events/[id]/participants/table/core/data";
+} from "@/app/dashboard/events/[uuid]/participants/actions";
+import { flattenParticipants } from "@/app/dashboard/events/[uuid]/participants/table/core/data";
 import { useToast } from "@/hooks/use-toast";
 import type { FlattenedParticipant, Participant } from "@/types/participant";
 
 export function useParticipantsData(
-  eventId: string,
+  eventUuid: string,
   initialParticipants: Participant[] = [],
 ) {
   const queryClient = useQueryClient();
@@ -19,8 +19,8 @@ export function useParticipantsData(
   const t = useTranslations("Table");
 
   const { data: participants, isFetching } = useQuery({
-    queryKey: ["participants", eventId],
-    queryFn: async () => getParticipants(eventId),
+    queryKey: ["participants", eventUuid],
+    queryFn: async () => getParticipants(eventUuid),
     initialData: initialParticipants,
   });
 
@@ -29,16 +29,20 @@ export function useParticipantsData(
   );
 
   useEffect(() => {
-    if (participants != null) {
-      setFlattenedData(flattenParticipants(participants));
-    }
+    setFlattenedData(flattenParticipants(participants ?? []));
   }, [participants]);
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => deleteManyParticipants(eventId, ids),
+    mutationFn: async (ids: string[]) => {
+      const result = await deleteManyParticipants(eventUuid, ids);
+      if (!result.success) {
+        throw new Error(t("deleteParticipantsErrorDescription"));
+      }
+      return result;
+    },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
-        queryKey: ["participants", eventId],
+        queryKey: ["participants", eventUuid],
       });
       toast({
         title: t("deleteParticipantsSuccess"),

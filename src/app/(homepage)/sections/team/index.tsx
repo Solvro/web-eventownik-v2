@@ -281,15 +281,36 @@ const team: TeamMember[] = [
   },
 ];
 
+const GITHUB_REPOSITORY_API_URL =
+  "https://api.github.com/repos/Solvro/web-eventownik-v2";
+
+/**
+ * Star count is purely decorative, so GitHub API failures (rate limits,
+ * 5xx HTML error pages, network errors) must never break homepage rendering.
+ */
+async function getStargazersCount(): Promise<number | null> {
+  try {
+    const response = await fetch(GITHUB_REPOSITORY_API_URL, {
+      headers: { Accept: "application/vnd.github+json" },
+      signal: AbortSignal.timeout(3000),
+      next: { revalidate: 3600 },
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = (await response.json()) as { stargazers_count?: unknown };
+    return typeof data.stargazers_count === "number"
+      ? data.stargazers_count
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function Team() {
   const t = await getTranslations("Homepage");
 
-  const repositoryData = await fetch(
-    "https://api.github.com/repos/Solvro/web-eventownik-v2",
-  );
-  const { stargazers_count } = (await repositoryData.json()) as {
-    stargazers_count: number;
-  };
+  const stargazersCount = await getStargazersCount();
 
   return (
     <section
@@ -328,10 +349,12 @@ export async function Team() {
         >
           <FaGithub size={20} />
           <p className="font-medium whitespace-nowrap">{t("giveUsAStar")}</p>
-          <div className="flex flex-row items-center gap-1">
-            <Star fill="#3672FD" strokeWidth={0} size={20} />
-            <p className="font-medium">{stargazers_count}</p>
-          </div>
+          {stargazersCount === null ? null : (
+            <div className="flex flex-row items-center gap-1">
+              <Star fill="#3672FD" strokeWidth={0} size={20} />
+              <p className="font-medium">{stargazersCount}</p>
+            </div>
+          )}
         </a>
       </div>
     </section>

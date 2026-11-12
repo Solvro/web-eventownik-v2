@@ -1,9 +1,11 @@
 "use client";
 
+import { subDays } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
+import { FormDateTimeField } from "@/components/date-time-field";
 import { WysiwygEditor } from "@/components/editor";
 import {
   FormControl,
@@ -14,24 +16,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
+import { combineDateAndTime } from "@/lib/event-form-utils";
 import { cn } from "@/lib/utils";
-
-export type EventFormGeneralInfoErrors =
-  | "nameRequired"
-  | "descriptionRequired"
-  | "startTimeRequired"
-  | "endTimeRequired";
 
 export const EventFormGeneralInfoSchema = z
   .object({
     name: z.string().nonempty({ message: "nameRequired" }),
     description: z.string(),
-    startTime: z.string().nonempty("startTimeRequired"),
-    endTime: z.string().nonempty("endTimeRequired"),
-    startDate: z.date(),
-    endDate: z.date(),
+    openTime: z.string(),
+    closeTime: z.string(),
+    openDate: z.date(),
+    closeDate: z.date(),
+    openCondition: z.enum(["MANUAL", "ON_DATE"]),
     isFirstForm: z.boolean().default(false),
     isOpen: z.boolean().default(true),
   })
@@ -42,28 +47,40 @@ export const EventFormGeneralInfoSchema = z
       path: ["description"],
       message: "descriptionRequired",
     },
-  );
-/* 
-  .refine(
-    (schema) => {
-      const startDate = new Date(schema.startDate);
-      const endDate = new Date(schema.endDate);
+  )
 
-      if (isSameDay(startDate, endDate)) {
-        const startTime = Number(schema.startTime.replace(":", "."));
-        const endTime = Number(schema.endTime.replace(":", "."));
-        // TODO: Should probably check and throw if either of them are already in the past
-        return endTime > startTime;
-      } else {
-        return endDate > startDate;
-      }
-    },
-    {
-      path: ["endDate"],
-      message: "Data zakończenia musi być po dacie rozpoczęcia.",
-    },
-  );
-  */
+  .superRefine((schema, context) => {
+    if (schema.openCondition === "MANUAL") {
+      return;
+    }
+
+    if (!schema.openTime) {
+      context.addIssue({
+        code: "custom",
+        path: ["openTime"],
+        message: "openTimeRequired",
+      });
+    }
+
+    if (!schema.closeTime) {
+      context.addIssue({
+        code: "custom",
+        path: ["closeTime"],
+        message: "closeTimeRequired",
+      });
+    }
+
+    const open = combineDateAndTime(schema.openDate, schema.openTime);
+    const close = combineDateAndTime(schema.closeDate, schema.closeTime);
+
+    if (close < open) {
+      context.addIssue({
+        code: "custom",
+        path: ["closeDate"],
+        message: "closeDateMustBeAfterOpenDate",
+      });
+    }
+  });
 
 interface GeneralInfoFormProps {
   className?: string;
@@ -71,7 +88,8 @@ interface GeneralInfoFormProps {
 
 export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
   const t = useTranslations("EventDetails");
-  const { control, formState, watch } =
+
+  const { control, formState, watch, getValues } =
     useFormContext<z.infer<typeof EventFormGeneralInfoSchema>>();
 
   return (
@@ -91,162 +109,93 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
               />
             </FormControl>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.name?.message as EventFormGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.name?.message)}
             </FormMessage>
           </FormItem>
         )}
       />
-      {/*
-              <div className="space-y-2">
-                <FormLabel>Data otwarcia</FormLabel>
-                <div className="flex flex-row items-center gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className="w-[240px] pl-3 text-left font-normal"
-                                disabled={form.formState.isSubmitting}
-                              >
-                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
-      {/*
-                                {field.value
-                                  ? format(field.value, "PPP")
-                                  : "Wybierz datę"}
-                                <CalendarArrowDownIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              className="z-50"
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => endOfYesterday() > date}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </FormItem>
-                    )}
-                  />
 
-                  <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            disabled={form.formState.isSubmitting}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.startDate?.message}
-                </FormMessage>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.startTime?.message}
-                </FormMessage>
-              </div>
-              <div className="space-y-2">
-                <FormLabel>Data zamknięcia</FormLabel>
-                <div className="flex flex-row items-center gap-4">
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className="w-[240px] pl-3 text-left font-normal"
-                                disabled={form.formState.isSubmitting}
-                              >
-                                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions */}
-      {/*
-                                {field.value
-                                  ? format(field.value, "PPP")
-                                  : "Wybierz datę"}
-                                <CalendarArrowUpIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              className="z-50"
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => endOfYesterday() > date}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="endTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="time"
-                            disabled={form.formState.isSubmitting}
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.endDate?.message}
-                </FormMessage>
-                <FormMessage className="text-sm text-red-500">
-                  {form.formState.errors.endTime?.message}
-                </FormMessage>
-              </div>
-              */}
       <FormField
         control={control}
-        name="description"
+        name="openCondition"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("formDescr")}</FormLabel>
-            <FormDescription>{t("registrationFormDescr")}</FormDescription>
-            <WysiwygEditor
-              content={field.value}
-              onChange={field.onChange}
-              disabled={watch("isFirstForm")}
-              placeholder={t("enterFormDescr")}
-            />
+            <FormLabel>{t("formClosingMethod")}</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value}
+              disabled={formState.isSubmitting}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("selectFormClosingMethod")} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="MANUAL">{t("manual")}</SelectItem>
+                <SelectItem value="ON_DATE">
+                  {t("automaticDateTime")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage className="text-sm text-red-500">
-              {translateOrFallback(
-                t,
-                formState.errors.description
-                  ?.message as EventFormGeneralInfoErrors,
-              )}
+              {translateOrFallback(t, formState.errors.openCondition?.message)}
             </FormMessage>
           </FormItem>
         )}
       />
+
+      {watch("openCondition") === "ON_DATE" && (
+        <div className="flex w-full flex-col flex-wrap gap-x-12 gap-y-8 md:flex-row">
+          <FormDateTimeField
+            control={control}
+            formState={formState}
+            label={t("openingDateTime")}
+            dateName={"openDate"}
+            timeName={"openTime"}
+            className="flex-1 md:min-w-84"
+          />
+
+          <FormDateTimeField
+            control={control}
+            formState={formState}
+            label={t("closingDateTime")}
+            dateName={"closeDate"}
+            timeName={"closeTime"}
+            className="flex-1 md:min-w-84"
+            disabled={(date) =>
+              date <
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              (getValues("openDate") === undefined
+                ? subDays(new Date(), 1)
+                : getValues("openDate"))
+            }
+          />
+        </div>
+      )}
+
+      {watch("openCondition") === "MANUAL" && (
+        <FormField
+          name="isOpen"
+          control={control}
+          render={({ field }) => (
+            <FormItem className="flex w-fit flex-col">
+              <FormLabel>{t("isEnabled")}</FormLabel>
+              <FormDescription>
+                {t("acceptingSubmissionsDescr")}
+              </FormDescription>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className="m-0"
+                  disabled={formState.isSubmitting ? true : undefined}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      )}
 
       <FormField
         name="isFirstForm"
@@ -267,20 +216,21 @@ export function GeneralInfoForm({ className }: GeneralInfoFormProps) {
       />
 
       <FormField
-        name="isOpen"
         control={control}
+        name="description"
         render={({ field }) => (
-          <FormItem className="flex w-fit flex-col">
-            <FormLabel>{t("isEnabled")}</FormLabel>
-            <FormDescription>{t("acceptingSubmissionsDescr")}</FormDescription>
-            <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                className="m-0"
-                disabled={formState.isSubmitting ? true : undefined}
-              />
-            </FormControl>
+          <FormItem>
+            <FormLabel>{t("formDescr")}</FormLabel>
+            <FormDescription>{t("registrationFormDescr")}</FormDescription>
+            <WysiwygEditor
+              content={field.value}
+              onChange={field.onChange}
+              disabled={watch("isFirstForm")}
+              placeholder={t("enterFormDescr")}
+            />
+            <FormMessage className="text-sm text-red-500">
+              {translateOrFallback(t, formState.errors.description?.message)}
+            </FormMessage>
           </FormItem>
         )}
       />

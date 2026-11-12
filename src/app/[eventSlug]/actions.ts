@@ -1,12 +1,13 @@
 "use server";
 
-import type { EventDetailsKey } from "@/i18n/translate-or-fallback";
+import { headers } from "next/headers";
+
+import type { EventDetailsKey } from "@/i18n/utils";
 import { API_URL } from "@/lib/api";
-import type { FormErrorObject } from "@/types/form";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 
 interface ErrorResponse {
-  errors: FormErrorObject[];
-  message: string | undefined;
+  message?: string | string[];
 }
 
 interface SubmitFormOptions {
@@ -14,8 +15,8 @@ interface SubmitFormOptions {
   /**
    * Legacy events have IDs, new events have slugs - this handles both
    */
-  eventId: string;
-  formId: string;
+  eventUuid: string;
+  formUuid: string;
   files: File[];
   participantSlug?: string;
 }
@@ -28,8 +29,43 @@ export interface SubmitFormError {
 
 interface SubmitFormResult {
   success: boolean;
-  errors?: FormErrorObject[];
+  isEmailTaken?: boolean;
   error?: SubmitFormError;
+}
+
+interface UploadFileResponse {
+  fileToken: string;
+  expiresAt: string;
+}
+
+async function uploadFormFile(
+  eventUuid: string,
+  formUuid: string,
+  file: File,
+): Promise<UploadFileResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // The backend throttles uploads per client IP, so pass the participant's IP instead of the server's
+  const requestHeaders = await headers();
+  const forwardedFor = requestHeaders.get("x-forwarded-for");
+
+  const response = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/files`,
+    {
+      method: "POST",
+      body: formData,
+      ...(forwardedFor != null && {
+        headers: { "X-Forwarded-For": forwardedFor },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to upload file: ${file.name}`);
+  }
+
+  return (await response.json()) as UploadFileResponse;
 }
 
 /**
@@ -37,45 +73,55 @@ interface SubmitFormResult {
  */
 export async function submitParticipantForm({
   values,
-  eventId,
-  formId,
+  eventUuid,
+  formUuid,
   files,
   participantSlug,
 }: SubmitFormOptions): Promise<SubmitFormResult> {
+  if (!isValidUuid(formUuid)) {
+    return { success: false, error: { message: "Invalid form identifier" } };
+  }
+
   try {
-    const formData = new FormData();
+    const fileUploadPromises = files.map(async (file) => {
+      const result = await uploadFormFile(eventUuid, formUuid, file);
+      return {
+        attributeUuid: file.name,
+        value: result.fileToken,
+      };
+    });
 
-    for (const file of files) {
-      // Filename of file is corresponding attribute id
-      formData.append(file.name, file);
-    }
+    const fileAttributes = await Promise.all(fileUploadPromises);
 
-    if (participantSlug !== undefined) {
-      formData.append("participantSlug", participantSlug);
-    }
+    const {
+      email,
+      "cf-turnstile-response": turnstileToken,
+      ...attributeValues
+    } = values;
+    const regularAttributes = Object.entries(attributeValues).map(
+      ([attributeUuid, value]) => ({
+        attributeUuid,
+        value: value === "null" ? null : (value ?? null),
+      }),
+    );
 
-    for (const [key, value] of Object.entries(values)) {
-      if (Array.isArray(value)) {
-        // Handle opting out
-        if (value.length === 0) {
-          formData.append(key, "null");
-          continue;
-        }
+    const attributes = [...regularAttributes, ...fileAttributes];
 
-        for (const item of value) {
-          formData.append(key, String(item));
-        }
-        continue;
-      }
-
-      formData.append(key, String(value));
-    }
+    const payload = {
+      email,
+      "cf-turnstile-response": turnstileToken,
+      ...(participantSlug != null && { participantId: participantSlug }),
+      attributes,
+    };
 
     const response = await fetch(
-      `${API_URL}/events/${eventId}/forms/${formId}/submit`,
+      `${API_URL}/public/events/${encodeURIComponent(eventUuid)}/forms/${encodeURIComponent(formUuid)}/submit`,
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
     );
 
@@ -88,21 +134,17 @@ export async function submitParticipantForm({
         errorData,
       );
 
-      const errorMessages = [
-        errorData.message,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        ...(errorData.errors.map((error) => error.message) ?? []),
-      ]
+      const errorMessages = [errorData.message ?? []]
+        .flat()
         .filter(Boolean)
         .join("\n");
 
       return {
         success: false,
-        errors: errorData.errors,
+        // The backend responds with 409 only when the email is already registered for the event
+        isEmailTaken: response.status === 409,
         error: errorMessages
-          ? {
-              message: errorMessages,
-            }
+          ? { message: errorMessages }
           : {
               key: "httpError" as EventDetailsKey,
               values: {

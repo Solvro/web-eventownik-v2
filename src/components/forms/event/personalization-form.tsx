@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
+import { translateOrFallback } from "@/i18n/utils";
 import { cn } from "@/lib/utils";
 
 // Required for usage of useFieldArray hook
@@ -35,8 +35,9 @@ export const EventPersonalizationFormSchema = z.object({
   termsLink: z.string().url("termsUrlInvalid").optional().or(z.literal("")),
   socialMediaLinks: z.array(
     z.object({
-      label: z.string().optional(),
-      link: z.string().url("invalidUrl"),
+      label: z.string(),
+      type: z.literal("general"),
+      url: z.string().url("invalidUrl"),
     }),
   ),
   slug: z
@@ -90,11 +91,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   </>
                 ) : (
                   <Image
-                    src={
-                      imageValue.startsWith("blob:")
-                        ? imageValue
-                        : `${process.env.NEXT_PUBLIC_PHOTO_URL}/${imageValue}`
-                    }
+                    src={imageValue}
                     alt={t("eventImagePreview")}
                     width={1080}
                     height={1080}
@@ -240,7 +237,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                           type="url"
                           placeholder="https://fb.me/knsolvro"
                           {...register(
-                            `socialMediaLinks.${index}.link` as const,
+                            `socialMediaLinks.${index}.url` as const,
                           )}
                         />
                       </FormControl>
@@ -266,12 +263,12 @@ export function PersonalizationForm({ className }: { className?: string }) {
                         )}
                       </p>
                     )}
-                    {formState.errors.socialMediaLinks?.[index]?.link
-                      ?.message != null && (
+                    {formState.errors.socialMediaLinks?.[index]?.url?.message !=
+                      null && (
                       <p className="text-sm text-[0.8rem] font-medium text-red-500">
                         {translateOrFallback(
                           t,
-                          formState.errors.socialMediaLinks[index].link.message,
+                          formState.errors.socialMediaLinks[index].url.message,
                         )}
                       </p>
                     )}
@@ -282,7 +279,7 @@ export function PersonalizationForm({ className }: { className?: string }) {
                   variant="outline"
                   className="gap-2"
                   onClick={() => {
-                    append({ label: "", link: "" });
+                    append({ label: "", type: "general", url: "" });
                   }}
                 >
                   <PlusIcon className="h-4 w-4" />
