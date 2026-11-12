@@ -16,8 +16,6 @@ import { verifySession } from "@/lib/session";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { EventEmail } from "@/types/emails";
-import type { Event } from "@/types/event";
-import type { EventForm } from "@/types/forms";
 import type { Participant } from "@/types/participant";
 
 export interface FormErrorObject {
@@ -363,48 +361,6 @@ export async function updateParticipant(
     return { success: false };
   }
   return { success: true };
-}
-
-export async function getRegistrationForm(eventUuid: string) {
-  const session = await verifySession();
-  if (session === null) {
-    redirect("/auth/login");
-  }
-
-  if (!isValidUuid(eventUuid)) {
-    console.error(`[getRegistrationForm] Invalid event UUID: ${eventUuid}`);
-    return null;
-  }
-
-  const eventResponse = await fetch(`${API_URL}/events/${eventUuid}`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${session.bearerToken}` },
-  });
-
-  if (!eventResponse.ok) {
-    console.error("Failed to fetch event", eventResponse);
-    return null;
-  }
-
-  const event = (await eventResponse.json()) as Event;
-  if (event.registerFormUuid == null || event.registerFormUuid === "") {
-    return null;
-  }
-
-  const response = await fetch(
-    `${API_URL}/events/${eventUuid}/forms/${event.registerFormUuid}`,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${session.bearerToken}` },
-    },
-  );
-
-  if (!response.ok) {
-    console.error("Failed to fetch registration form", response);
-    throw new Error("Failed to fetch registration form");
-  }
-
-  return (await response.json()) as EventForm;
 }
 
 interface ParticipantFormResult {

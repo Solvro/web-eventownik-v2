@@ -25,9 +25,10 @@ import type { Participant, PublicParticipant } from "@/types/participant";
 import {
   createParticipant,
   editParticipant,
+  getAttributes,
   getParticipant,
-  getRegistrationForm,
 } from "../../../actions";
+import { getChangedValues } from "../../core/utils";
 
 function getInitialValues(
   participant: Participant,
@@ -133,13 +134,14 @@ export function ParticipantFormContent({
 
   const isEditMode = participantUuid != null;
 
+  // All event attributes, not only the registration form ones - organizers can set anything
   const {
-    data: registrationForm,
+    data: attributes,
     isLoading: isFormLoading,
     isError: isFormError,
   } = useQuery({
-    queryKey: ["registrationForm", eventUuid],
-    queryFn: async () => getRegistrationForm(eventUuid),
+    queryKey: ["attributes", eventUuid],
+    queryFn: async () => getAttributes(eventUuid),
   });
 
   const {
@@ -159,18 +161,23 @@ export function ParticipantFormContent({
   });
 
   // File and drawing uploads are not supported by the dashboard endpoints
-  const formDefinitions = useMemo(
+  const formDefinitions = useMemo<FormDefinition[]>(
     () =>
-      registrationForm?.formDefinitions.filter(
-        (formDefinition) =>
-          formDefinition.attribute.type !== "file" &&
-          formDefinition.attribute.type !== "drawing",
-      ) ?? [],
-    [registrationForm],
+      (attributes ?? [])
+        .filter(
+          (attribute) =>
+            attribute.type !== "file" && attribute.type !== "drawing",
+        )
+        .map((attribute) => ({
+          formUuid: "",
+          isRequired: false,
+          order: attribute.order,
+          attribute,
+        })),
+    [attributes],
   );
   const hasSkippedAttributes =
-    registrationForm != null &&
-    formDefinitions.length !== registrationForm.formDefinitions.length;
+    attributes != null && formDefinitions.length !== attributes.length;
 
   const eventBlocks = useMemo(
     () => (blocks ?? []).filter((block): block is Block => block != null),
@@ -213,16 +220,14 @@ export function ParticipantFormContent({
       </p>
     );
   }
-  if (registrationForm == null) {
-    return (
-      <p className="text-muted-foreground text-center text-sm">
-        {t("addParticipantNoForm")}
-      </p>
-    );
-  }
   if (isEditMode && participantDetails == null) {
     return null;
   }
+
+  const initialValues =
+    participantDetails == null
+      ? undefined
+      : getInitialValues(participantDetails, formDefinitions);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -244,11 +249,7 @@ export function ParticipantFormContent({
             ? undefined
             : toUserData(participantDetails, formDefinitions, eventUuid)
         }
-        initialValues={
-          participantDetails == null
-            ? undefined
-            : getInitialValues(participantDetails, formDefinitions)
-        }
+        initialValues={initialValues}
         header={
           participantDetails == null ? null : (
             <RegistrationDateTime createdAt={participantDetails.createdAt} />
@@ -256,7 +257,11 @@ export function ParticipantFormContent({
         }
         onSubmit={async (values) =>
           isEditMode
-            ? editParticipant(eventUuid, participantUuid, values)
+            ? editParticipant(
+                eventUuid,
+                participantUuid,
+                getChangedValues(values, initialValues ?? {}),
+              )
             : createParticipant(eventUuid, values)
         }
         onSuccess={() => {
