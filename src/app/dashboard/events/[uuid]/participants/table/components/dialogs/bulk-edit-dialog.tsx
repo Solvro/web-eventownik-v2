@@ -78,7 +78,10 @@ export function BulkEditDialog({
 
   function handleAttributeChange(attributeUuid: string) {
     setSelectedattributeUuid(attributeUuid);
-    setValue("");
+    const attribute = editableAttributes.find(
+      (candidate) => candidate.uuid === attributeUuid,
+    );
+    setValue(attribute?.type === "checkbox" ? "false" : "");
   }
 
   async function handleSave() {
