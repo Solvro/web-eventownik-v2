@@ -395,3 +395,15 @@
     @slot;
   }
 }
+
+/* Used by the LogoMarquee component. The tiny rotation stops the browser from
+   snapping the track to whole pixels, which made slow speeds look choppy (the
+   visible position only changed once per pixel travelled). */
+@keyframes logo-marquee {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0.01deg);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0) rotate(0.01deg);
+  }
+}
