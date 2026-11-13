@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { Participant, PublicParticipant } from "@/types/participant";
@@ -230,7 +231,7 @@ export function ParticipantFormContent({
       : getInitialValues(participantDetails, formDefinitions);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col gap-4">
       {hasSkippedAttributes ? (
         <p className="text-muted-foreground w-full text-sm">
           {t("addParticipantSkippedAttributes")}
@@ -242,7 +243,11 @@ export function ParticipantFormContent({
         eventBlocks={eventBlocks}
         includeEmail
         withCaptcha={false}
-        className={className}
+        className={cn(
+          "grid max-w-none gap-4 space-y-0 sm:grid-cols-2",
+          className,
+        )}
+        submitLabel={t("save")}
         editMode={isEditMode}
         userData={
           participantDetails == null
@@ -294,7 +299,14 @@ export function AddParticipantDialog({
           <span className="max-md:sr-only">{t("addParticipantTrigger")}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md">
+      <DialogContent
+        className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-h-[90vh] sm:max-w-3xl"
+        onOpenAutoFocus={(event) => {
+          // Default autofocus lands on the required-field tooltip trigger and opens it
+          event.preventDefault();
+          (event.currentTarget as HTMLElement | null)?.focus();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{t("addParticipantTitle")}</DialogTitle>
           <DialogDescription>

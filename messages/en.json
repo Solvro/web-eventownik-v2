@@ -951,7 +951,6 @@
     "addParticipantSkippedAttributes": "File and drawing fields are not available when adding a participant manually.",
     "participantRegistrationDateTime": "Registration date and time",
     "editParticipantTitle": "Edit participant",
-    "editParticipantDescription": "Change any of the participant's attributes. Only the email is required.",
     "editParticipantSuccessDescription": "The participant's data has been updated",
     "editParticipantLoadError": "Failed to load the participant's data.",
     "backToParticipants": "Back to participants"

@@ -950,7 +950,6 @@
     "addParticipantSkippedAttributes": "Pola typu plik i rysunek nie są dostępne przy ręcznym dodawaniu uczestnika.",
     "participantRegistrationDateTime": "Data i godzina rejestracji",
     "editParticipantTitle": "Edytuj uczestnika",
-    "editParticipantDescription": "Zmień dowolne atrybuty uczestnika. Wymagany jest tylko email.",
     "editParticipantSuccessDescription": "Dane uczestnika zostały zaktualizowane",
     "editParticipantLoadError": "Nie udało się załadować danych uczestnika.",
     "backToParticipants": "Wróć do uczestników"

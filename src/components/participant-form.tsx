@@ -38,9 +38,18 @@ import {
   getSchemaObjectForPublicAttributes,
   legacyTranslate,
 } from "@/lib/utils";
+import type { AttributeType } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
+
+// Fields that take the full form width when the form uses a multi-column grid
+const WIDE_ATTRIBUTE_TYPES = new Set<AttributeType>([
+  "textArea",
+  "block",
+  "file",
+  "drawing",
+]);
 
 function getFieldErrorMessage(
   errors: FieldErrors,
@@ -88,6 +97,10 @@ interface ParticipantFormProps {
    * Content rendered at the top of the form, above the fields
    */
   header?: ReactNode;
+  /**
+   * Overrides the default submit button label
+   */
+  submitLabel?: string;
   className?: string;
 }
 
@@ -102,6 +115,7 @@ export function ParticipantForm({
   onSuccess,
   initialValues,
   header,
+  submitLabel,
   className,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
@@ -123,7 +137,7 @@ export function ParticipantForm({
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const captchaRef = useRef<TurnstileInstance>(null);
 
-  const submitText = editMode ? t("save") : t("register");
+  const submitText = submitLabel ?? (editMode ? t("save") : t("register"));
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
@@ -396,7 +410,12 @@ export function ParticipantForm({
               control={form.control}
               name={formDefinition.attribute.uuid}
               render={({ field }) => (
-                <FormItem>
+                <FormItem
+                  className={cn(
+                    WIDE_ATTRIBUTE_TYPES.has(formDefinition.attribute.type) &&
+                      "sm:col-span-2",
+                  )}
+                >
                   <div
                     className={cn(
                       formDefinition.attribute.type === "checkbox" &&
@@ -480,7 +499,7 @@ export function ParticipantForm({
         })}
 
         {form.formState.errors.root?.message != null && (
-          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
+          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500 sm:col-span-2">
             {form.formState.errors.root.message}
           </FormMessage>
         )}
@@ -505,7 +524,7 @@ export function ParticipantForm({
           <Button
             type="button"
             variant="destructive"
-            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            className="sticky bottom-4 w-full shadow-lg sm:col-span-2 md:bottom-0"
             onClick={(event) => {
               // React reuses this button's DOM node for the submit button, so without this
               // the click would also submit the form once the button re-renders
@@ -522,7 +541,7 @@ export function ParticipantForm({
             type="submit"
             variant="eventDefault"
             disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            className="sticky bottom-4 w-full shadow-lg sm:col-span-2 md:bottom-0"
             style={{ viewTransitionName: "register-button" }}
           >
             {form.formState.isSubmitting ? (

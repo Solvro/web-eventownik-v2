@@ -44,17 +44,12 @@ export default async function ParticipantPage({
       >
         <ArrowLeft className="size-4" /> {t("backToParticipants")}
       </Link>
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">{t("editParticipantTitle")}</h1>
-        <p className="text-muted-foreground text-sm">
-          {t("editParticipantDescription")}
-        </p>
-      </div>
+      <h1 className="text-2xl font-bold">{t("editParticipantTitle")}</h1>
       <ParticipantFormContent
         eventUuid={uuid}
         blocks={blocks}
         participantUuid={participantUuid}
-        className="max-w-none"
+        className="max-w-4xl"
       />
     </div>
   );
