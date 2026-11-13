@@ -102,3 +102,37 @@ function parseMultiValue(raw: string): string[] {
   }
   return inner.split(",");
 }
+
+function toComparable(value: unknown): string {
+  if (value == null) {
+    return "";
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => toComparable(item)).join(",");
+  }
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return String(value);
+  }
+  return JSON.stringify(value);
+}
+
+/**
+ * The backend recreates every sent attribute, which triggers "attribute changed" emails
+ * even for the same value, so only changed attributes are sent (email is always kept)
+ */
+export function getChangedValues(
+  values: Record<string, unknown>,
+  initialValues: Record<string, unknown>,
+) {
+  return Object.fromEntries(
+    Object.entries(values).filter(
+      ([key, value]) =>
+        key === "email" ||
+        toComparable(value) !== toComparable(initialValues[key]),
+    ),
+  );
+}

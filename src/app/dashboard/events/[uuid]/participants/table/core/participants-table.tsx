@@ -1,7 +1,7 @@
 "use client";
 
-import { flexRender } from "@tanstack/react-table";
 import type { RowData, Table as TanstackTable } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -41,11 +41,15 @@ declare module "@tanstack/react-table" {
   }
 }
 
+const INTERACTIVE_ELEMENTS_SELECTOR =
+  "button, a, input, textarea, select, label, [role='checkbox'], [role='combobox'], [role='menuitem'], [contenteditable='true']";
+
 interface ParticipantTableProps {
   table: TanstackTable<FlattenedParticipant>;
+  onRowClick?: (participant: FlattenedParticipant) => void;
 }
 
-export function ParticipantTable({ table }: ParticipantTableProps) {
+export function ParticipantTable({ table, onRowClick }: ParticipantTableProps) {
   const t = useTranslations("Table");
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
     null,
@@ -129,6 +133,25 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
     window.addEventListener("mouseup", onMouseUp);
   };
 
+  const handleRowClick = (
+    event: React.MouseEvent<HTMLTableRowElement>,
+    participant: FlattenedParticipant,
+  ) => {
+    const target = event.target as HTMLElement;
+    // Ignore clicks bubbling from portals (dropdowns, dialogs), interactive
+    // elements, rows edited inline and text selection
+    if (
+      onRowClick === undefined ||
+      participant.mode === "edit" ||
+      !event.currentTarget.contains(target) ||
+      target.closest(INTERACTIVE_ELEMENTS_SELECTOR) !== null ||
+      (window.getSelection()?.toString() ?? "") !== ""
+    ) {
+      return;
+    }
+    onRowClick(participant);
+  };
+
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col">
       <ScrollArea
@@ -177,6 +200,12 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                         height: rowHeights[row.id],
                         position: "relative",
                       }}
+                      className={cn(
+                        onRowClick !== undefined && "cursor-pointer",
+                      )}
+                      onClick={(event) => {
+                        handleRowClick(event, row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
@@ -220,7 +249,13 @@ export function ParticipantTable({ table }: ParticipantTableProps) {
                   );
                 })
               : rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    className={cn(onRowClick !== undefined && "cursor-pointer")}
+                    onClick={(event) => {
+                      handleRowClick(event, row.original);
+                    }}
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}

@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 import { UnsavedChangesAlert } from "@/components/unsaved-changes-alert";
 import { useParticipantsData } from "@/hooks/use-participants-data";
@@ -20,6 +21,7 @@ import { ParticipantTable } from "./table/core/participants-table";
 
 export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
   const t = useTranslations("Table");
+  const router = useRouter();
 
   const { data: attributes, isError: isAttributesError } = useQuery({
     queryKey: ["attributes", eventUuid],
@@ -107,7 +109,14 @@ export function ParticipantsLoader({ eventUuid }: { eventUuid: string }) {
           deleteManyParticipants={handleDeleteManyParticipants}
         />
       </div>
-      <ParticipantTable table={table} />
+      <ParticipantTable
+        table={table}
+        onRowClick={(participant) => {
+          router.push(
+            `/dashboard/events/${eventUuid}/participants/${participant.uuid}`,
+          );
+        }}
+      />
       <UnsavedChangesAlert
         active={isGuardActive}
         onConfirm={onConfirm}

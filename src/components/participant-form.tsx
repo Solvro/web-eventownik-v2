@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { FieldErrors } from "react-hook-form";
 import { useForm } from "react-hook-form";
@@ -37,9 +38,18 @@ import {
   getSchemaObjectForPublicAttributes,
   legacyTranslate,
 } from "@/lib/utils";
+import type { AttributeType } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
+
+// Fields that take the full form width when the form uses a multi-column grid
+const WIDE_ATTRIBUTE_TYPES = new Set<AttributeType>([
+  "textArea",
+  "block",
+  "file",
+  "drawing",
+]);
 
 function getFieldErrorMessage(
   errors: FieldErrors,
@@ -71,6 +81,27 @@ interface ParticipantFormProps {
   userData?: PublicParticipant;
   eventBlocks?: Block[];
   editMode?: boolean;
+  /**
+   * Set to false for authenticated (dashboard) submissions which don't require hCaptcha
+   */
+  withCaptcha?: boolean;
+  /**
+   * Called after a successful submission instead of showing the success screen
+   */
+  onSuccess?: () => void;
+  /**
+   * Values that override the defaults derived from `userData`
+   */
+  initialValues?: Record<string, unknown>;
+  /**
+   * Content rendered at the top of the form, above the fields
+   */
+  header?: ReactNode;
+  /**
+   * Overrides the default submit button label
+   */
+  submitLabel?: string;
+  className?: string;
 }
 
 export function ParticipantForm({
@@ -80,6 +111,12 @@ export function ParticipantForm({
   userData,
   eventBlocks = [],
   editMode = false,
+  withCaptcha = true,
+  onSuccess,
+  initialValues,
+  header,
+  submitLabel,
+  className,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -100,7 +137,7 @@ export function ParticipantForm({
   const pendingFormData = useRef<z.infer<typeof formSchema> | null>(null);
   const captchaRef = useRef<TurnstileInstance>(null);
 
-  const submitText = editMode ? t("save") : t("register");
+  const submitText = submitLabel ?? (editMode ? t("save") : t("register"));
   const submittingText = editMode ? t("saving") : t("registering");
   const successMessage = editMode ? t("saved") : t("registrationSuccess");
 
@@ -127,6 +164,7 @@ export function ParticipantForm({
         },
         {},
       ),
+      ...initialValues,
     },
   });
 
@@ -158,7 +196,7 @@ export function ParticipantForm({
    */
   async function submitWithCaptcha(
     values: z.infer<typeof formSchema>,
-    token: string,
+    token?: string,
   ) {
     // When editing, send only the fields the participant changed. The backend keeps omitted
     // attributes as they are, while an empty value erases them (and deletes stored files)
@@ -177,6 +215,11 @@ export function ParticipantForm({
       );
       if (result.success) {
         setFiles([]);
+        if (onSuccess !== undefined) {
+          form.reset();
+          onSuccess();
+          return;
+        }
         if (editMode) {
           form.reset(values);
         }
@@ -304,6 +347,11 @@ export function ParticipantForm({
       return;
     }
 
+    if (!withCaptcha) {
+      await submitWithCaptcha(values);
+      return;
+    }
+
     if (captchaToken === null) {
       pendingFormData.current = values;
 
@@ -317,8 +365,10 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className={cn("w-full max-w-sm space-y-4", className)}
       >
+        {header}
+
         {includeEmail ? (
           <FormField
             control={form.control}
@@ -360,7 +410,12 @@ export function ParticipantForm({
               control={form.control}
               name={formDefinition.attribute.uuid}
               render={({ field }) => (
-                <FormItem>
+                <FormItem
+                  className={cn(
+                    WIDE_ATTRIBUTE_TYPES.has(formDefinition.attribute.type) &&
+                      "sm:col-span-2",
+                  )}
+                >
                   <div
                     className={cn(
                       formDefinition.attribute.type === "checkbox" &&
@@ -444,30 +499,32 @@ export function ParticipantForm({
         })}
 
         {form.formState.errors.root?.message != null && (
-          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
+          <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500 sm:col-span-2">
             {form.formState.errors.root.message}
           </FormMessage>
         )}
 
-        <Turnstile
-          ref={captchaRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
-          options={{ appearance: "interaction-only", size: "flexible" }}
-          onSuccess={handleCaptchaVerify}
-          onExpire={() => {
-            setCaptchaToken(null);
-          }}
-          onError={(captchaError) => {
-            console.error("Captcha error occurred:", captchaError);
-            setDidCaptchaFail(true);
-          }}
-        />
+        {withCaptcha ? (
+          <Turnstile
+            ref={captchaRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
+            options={{ appearance: "interaction-only", size: "flexible" }}
+            onSuccess={handleCaptchaVerify}
+            onExpire={() => {
+              setCaptchaToken(null);
+            }}
+            onError={(captchaError) => {
+              console.error("Captcha error occurred:", captchaError);
+              setDidCaptchaFail(true);
+            }}
+          />
+        ) : null}
 
         {didCaptchaFail ? (
           <Button
             type="button"
             variant="destructive"
-            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            className="sticky bottom-4 w-full shadow-lg sm:col-span-2 md:bottom-0"
             onClick={(event) => {
               // React reuses this button's DOM node for the submit button, so without this
               // the click would also submit the form once the button re-renders
@@ -484,7 +541,7 @@ export function ParticipantForm({
             type="submit"
             variant="eventDefault"
             disabled={form.formState.isSubmitting || isAwaitingCaptcha}
-            className="sticky bottom-4 w-full shadow-lg md:bottom-0"
+            className="sticky bottom-4 w-full shadow-lg sm:col-span-2 md:bottom-0"
             style={{ viewTransitionName: "register-button" }}
           >
             {form.formState.isSubmitting ? (
