@@ -5,7 +5,7 @@ import type { EventForm } from "@/types/forms";
 import type { Ticket } from "@/types/tickets";
 
 import type { MessageTag } from ".";
-import { getAttributeLabel } from "../utils";
+import { legacyTranslate } from "../utils";
 import { getCategories } from "./categories";
 
 export function getAttributeTags(
@@ -15,9 +15,9 @@ export function getAttributeTags(
   const categories = getCategories(t);
 
   return eventAttributes.map((attribute) => ({
-    title: getAttributeLabel(attribute.name, "pl"),
+    title: legacyTranslate(attribute.name, "pl"),
     description: t("attributeItemDesc", {
-      name: getAttributeLabel(attribute.name, "pl"),
+      name: legacyTranslate(attribute.name, "pl"),
     }),
     value: `/participant_${attribute.uuid}`,
     color: "brown",

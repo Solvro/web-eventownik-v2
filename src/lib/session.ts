@@ -8,6 +8,7 @@ import type { SessionPayload } from "@/types/auth";
 
 import { API_URL } from "./api";
 import { parseSetCookieHeader } from "./cookies";
+import { getSessionExpiry, isAccessTokenExpiring } from "./session-expiry";
 
 const SECRET_KEY = process.env.SESSION_SECRET ?? "";
 if (SECRET_KEY === "") {
@@ -20,22 +21,37 @@ if (sessionCookieMaxAgeString === "") {
   throw new Error("SESSION_COOKIE_MAX_AGE env variable is not set!!!");
 }
 
-export const sessionCookieMaxAge = Number.parseInt(
-  sessionCookieMaxAgeString,
-  10,
-);
+const sessionCookieMaxAge = Number.parseInt(sessionCookieMaxAgeString, 10);
 if (Number.isNaN(sessionCookieMaxAge)) {
   throw new TypeError(
     "SESSION_COOKIE_MAX_AGE must be a valid number (in seconds)!!!",
   );
 }
 
-export async function encrypt(payload: SessionPayload) {
+async function encrypt(payload: SessionPayload, expiresAt: Date) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(`${sessionCookieMaxAgeString}s`)
+    .setExpirationTime(Math.floor(expiresAt.getTime() / 1000))
     .sign(encodedKey);
+}
+
+/**
+ * Builds the `session-v3` cookie for a backend access token. The session ends
+ * shortly before the access token does, so the proxy refreshes it in time.
+ */
+export async function createSessionCookie(bearerToken: string) {
+  const expires = getSessionExpiry(bearerToken, sessionCookieMaxAge);
+
+  return {
+    name: "session-v3",
+    value: await encrypt({ bearerToken }, expires),
+    httpOnly: true,
+    secure: true,
+    expires,
+    sameSite: "lax" as const,
+    path: "/",
+  };
 }
 
 async function decrypt(session: string | undefined = "") {
@@ -52,6 +68,10 @@ async function decrypt(session: string | undefined = "") {
       );
       return;
     }
+    // Sessions issued before the expiry was tied to the access token can outlive it
+    if (isAccessTokenExpiring(payload.bearerToken)) {
+      return;
+    }
     return payload as SessionPayload;
   } catch (error) {
     console.error("[Decrypt] Failed to verify session:", error);
@@ -62,17 +82,9 @@ export async function createSession(
   sessionPayload: SessionPayload,
   backendSetCookie: string[],
 ) {
-  const expiresAt = new Date(Date.now() + sessionCookieMaxAge * 1000);
-  const session = await encrypt(sessionPayload);
   const cookieStore = await cookies();
 
-  cookieStore.set("session-v3", session, {
-    httpOnly: true,
-    secure: true,
-    expires: expiresAt,
-    sameSite: "lax",
-    path: "/",
-  });
+  cookieStore.set(await createSessionCookie(sessionPayload.bearerToken));
 
   for (const setCookieHeader of backendSetCookie) {
     cookieStore.set(parseSetCookieHeader(setCookieHeader));

@@ -186,6 +186,8 @@
     "resourceDuplicated": "{resourceType} has been duplicated",
     "resourceDuplicatedWithName": "Created a copy of {resourceType} ''{resourceName}''",
     "resourceDuplicateFailed": "Failed to duplicate {resourceType}!",
+    "resourceDuplicating": "Duplicating {resourceType}…",
+    "resourceDuplicatingDescription": "Copying ''{resourceName}'' may take a moment",
     "resourceDeleted": "{resourceType} has been deleted",
     "resourceDeletedWithName": "{resourceType} ''{resourceName}'' has been deleted",
     "resourceDeleteFailed": "Failed to delete {resourceType}!",
@@ -790,6 +792,8 @@
     "invalidUuid": "Invalid resource UUID"
   },
   "Sidebar": {
+    "closeSidebar": "Collapse panel",
+    "openSidebar": "Expand panel",
     "general": "General",
     "event": "Event",
     "forms": "Forms",

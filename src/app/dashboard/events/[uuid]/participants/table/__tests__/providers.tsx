@@ -11,7 +11,14 @@ export function Providers({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const client = useMemo(() => new QueryClient(), []);
+  const client = useMemo(
+    () =>
+      new QueryClient({
+        // Tests pass participants as initialData - don't refetch them over the network
+        defaultOptions: { queries: { staleTime: Infinity, retry: false } },
+      }),
+    [],
+  );
 
   return (
     <NextIntlClientProvider locale="pl" messages={plMessages}>

@@ -19,6 +19,10 @@ import {
 } from "@/components/ui/tooltip";
 import type { EventLink } from "@/types/link";
 
+function getHostname(url: string): string {
+  return new URL(url).hostname.replace("www.", "");
+}
+
 export function SocialMediaLink({
   link,
   className,
@@ -28,9 +32,7 @@ export function SocialMediaLink({
 }) {
   const { url, label } = link;
   const displayLabel =
-    label != null && label.trim().length > 0
-      ? label
-      : new URL(url).hostname.replace("www.", "");
+    label != null && label.trim().length > 0 ? label : getHostname(url);
 
   return (
     <Tooltip delayDuration={0}>
