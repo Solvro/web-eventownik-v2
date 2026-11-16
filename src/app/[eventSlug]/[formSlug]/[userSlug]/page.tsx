@@ -8,6 +8,7 @@ import { EventInfoDiv } from "@/components/event-info-div";
 import { FormClosedView } from "@/components/form-closed-view";
 import { API_URL } from "@/lib/api";
 import { isFormOpen } from "@/lib/event-form-utils";
+import { parseLinks } from "@/lib/links";
 import type { Event } from "@/types/event";
 import type { EventForm } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
@@ -147,6 +148,7 @@ export default async function FormPage({ params }: FormPageProps) {
         formUuid={form.uuid}
         eventSlug={eventSlug}
         userSlug={userSlug}
+        termsLink={parseLinks(event.links).policyLink?.url}
         editMode={true}
       />
     </EventPageLayout>

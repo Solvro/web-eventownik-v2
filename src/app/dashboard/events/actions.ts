@@ -117,6 +117,7 @@ export async function duplicateEvent(eventUuid: string) {
     coorganizers: [],
     attributes: [],
     termsLink: event.links.find((link) => link.type === "policy")?.url,
+    dataRecipients: event.dataRecipients ?? undefined,
   });
 
   if (result.uuid === undefined) {

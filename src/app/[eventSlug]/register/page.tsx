@@ -1,8 +1,6 @@
 import { format } from "date-fns";
-import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import sanitizeHtml from "sanitize-html";
 
 import { EventNotFound } from "@/app/[eventSlug]/event-not-found";
@@ -127,25 +125,9 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         originalEventBlocks={eventBlocks}
         formUuid={form.uuid}
         eventSlug={eventSlug}
+        termsLink={policyLink?.url}
         editMode={false}
       />
-
-      {/* The privacy policy page was removed, it will be replaced by a new GDPR clause page */}
-      {policyLink == null ? null : (
-        <p className="text-foreground/50 my-4 text-center text-sm">
-          <Info className="inline-block size-4 align-[-0.195em]" />{" "}
-          {t("consentIntro")}
-          <br />
-          <Link
-            href={policyLink.url}
-            className="text-(--event-primary-color)/90"
-            target="_blank"
-          >
-            {t("terms")}
-          </Link>{" "}
-          {t("ofEvent")}
-        </p>
-      )}
     </EventPageLayout>
   );
 }

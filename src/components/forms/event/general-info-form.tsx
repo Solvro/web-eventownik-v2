@@ -1,12 +1,15 @@
 "use client";
 
 import { subDays } from "date-fns";
+import { HelpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { FormDateTimeField } from "@/components/date-time-field";
 import { WysiwygEditor } from "@/components/editor";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
   FormField,
@@ -15,6 +18,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { translateOrFallback } from "@/i18n/utils";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +36,12 @@ export const EventGeneralInfoSchema = z
     endTime: z.string().nonempty("endTimeRequired"),
     location: z.string().optional(),
     organizer: z.string().optional(),
-    contactEmail: z.string().email("invalidEmail").or(z.literal("")).optional(),
+    contactEmail: z
+      .string({ message: "contactEmailRequired" })
+      .email("invalidEmail")
+      .nonempty("contactEmailRequired"),
+    dataRecipientsEnabled: z.boolean(),
+    dataRecipients: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -46,10 +59,19 @@ export const EventGeneralInfoSchema = z
       message: "endDateBeforeStartDate",
       path: ["endDate"],
     },
+  )
+  .refine(
+    (data) =>
+      !data.dataRecipientsEnabled ||
+      (data.dataRecipients?.trim().length ?? 0) > 0,
+    {
+      message: "dataRecipientsRequired",
+      path: ["dataRecipients"],
+    },
   );
 
 export function GeneralInfoForm({ className }: { className?: string }) {
-  const { control, formState, getValues } =
+  const { control, formState, getValues, watch } =
     useFormContext<z.infer<typeof EventGeneralInfoSchema>>();
   const t = useTranslations("EventDetails");
 
@@ -179,6 +201,67 @@ export function GeneralInfoForm({ className }: { className?: string }) {
           </FormItem>
         )}
       />
+
+      <div className="col-span-full flex flex-col gap-4">
+        <FormField
+          control={control}
+          name="dataRecipientsEnabled"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center gap-2 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked === true);
+                  }}
+                  disabled={formState.isSubmitting}
+                />
+              </FormControl>
+              <FormLabel>{t("dataRecipientsEnabled")}</FormLabel>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    aria-label={t("dataRecipientsExplanation")}
+                    className="size-4"
+                  >
+                    <HelpCircle />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-72 text-center">
+                  {t("dataRecipientsExplanation")}
+                </TooltipContent>
+              </Tooltip>
+            </FormItem>
+          )}
+        />
+
+        {watch("dataRecipientsEnabled") ? (
+          <FormField
+            control={control}
+            name="dataRecipients"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>{t("dataRecipients")}</FormLabel>
+                <Input
+                  type="text"
+                  disabled={formState.isSubmitting}
+                  placeholder={t("dataRecipientsPlaceholder")}
+                  {...field}
+                />
+                <FormMessage className="text-sm text-red-500">
+                  {translateOrFallback(
+                    t,
+                    formState.errors.dataRecipients?.message,
+                  )}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

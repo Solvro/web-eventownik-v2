@@ -17,6 +17,7 @@ export interface Event {
   organizerName: string | null;
   participantsLimit: number | null;
   contactEmail: string | null;
+  dataRecipients: string | null;
   photoUrl: string | null;
   isPublic: boolean;
   isVerified: boolean;

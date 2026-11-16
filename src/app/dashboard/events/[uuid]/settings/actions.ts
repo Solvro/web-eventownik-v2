@@ -111,6 +111,10 @@ export async function updateEvent(
           event.contactEmail == null || event.contactEmail === ""
             ? null
             : event.contactEmail,
+        dataRecipients:
+          event.dataRecipients == null || event.dataRecipients === ""
+            ? null
+            : event.dataRecipients,
         isPublic: event.isPublic,
         links: validLinks,
       }),

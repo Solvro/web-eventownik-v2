@@ -96,6 +96,8 @@ export async function submitParticipantForm({
     const {
       email,
       "cf-turnstile-response": turnstileToken,
+      gdprConsent,
+      termsAccepted,
       ...attributeValues
     } = values;
     const regularAttributes = Object.entries(attributeValues).map(
@@ -110,6 +112,8 @@ export async function submitParticipantForm({
     const payload = {
       email,
       "cf-turnstile-response": turnstileToken,
+      gdprConsent,
+      termsAccepted,
       ...(participantSlug != null && { participantId: participantSlug }),
       attributes,
     };

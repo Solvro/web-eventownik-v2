@@ -23,6 +23,7 @@ export interface Event {
   coorganizers: CoOrganizer[];
   attributes: Attribute[];
   termsLink: string | undefined;
+  dataRecipients: string | undefined;
 }
 
 export const eventAtom = atom<Event>({
@@ -44,4 +45,5 @@ export const eventAtom = atom<Event>({
   coorganizers: [],
   attributes: [],
   termsLink: "",
+  dataRecipients: "",
 });

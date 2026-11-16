@@ -152,6 +152,10 @@ export function EventSettingsTabs({
       location: unmodifiedEvent.location ?? "",
       organizer: unmodifiedEvent.organizerName ?? "",
       termsLink: policyLink?.url ?? "",
+      dataRecipientsEnabled:
+        unmodifiedEvent.dataRecipients != null &&
+        unmodifiedEvent.dataRecipients.trim() !== "",
+      dataRecipients: unmodifiedEvent.dataRecipients ?? "",
       isPublic: unmodifiedEvent.isPublic,
       // Personalization fields
       photoUrl: unmodifiedEvent.photoUrl ?? undefined,
@@ -226,6 +230,9 @@ export function EventSettingsTabs({
       endDate: formatISO(values.endDate, { representation: "complete" }),
       location: values.location ?? "",
       organizerName: values.organizer ?? "",
+      dataRecipients: values.dataRecipientsEnabled
+        ? (values.dataRecipients?.trim() ?? "")
+        : "",
       photoUrl: values.photoUrl ?? null,
       primaryColor: values.primaryColor,
       participantsLimit: values.participantsNumber,
@@ -243,7 +250,7 @@ export function EventSettingsTabs({
         ...values.socialMediaLinks.filter((link) => link.url !== ""),
       ],
       slug: values.slug,
-      contactEmail: values.contactEmail ?? null,
+      contactEmail: values.contactEmail,
     };
 
     try {

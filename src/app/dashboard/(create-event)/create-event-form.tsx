@@ -116,6 +116,8 @@ export function CreateEventForm() {
       }[],
       slug: event.slug === "" ? nameToSlug(event.name) : event.slug,
       contactEmail: event.contactEmail,
+      dataRecipientsEnabled: Boolean(event.dataRecipients),
+      dataRecipients: event.dataRecipients,
       coorganizers: [],
       attributes: [],
     },
@@ -209,6 +211,9 @@ export function CreateEventForm() {
           startDate,
           endDate,
           photoUrl: base64Image,
+          dataRecipients: form.getValues("dataRecipientsEnabled")
+            ? (form.getValues("dataRecipients")?.trim() ?? "")
+            : "",
           coorganizers:
             event.coorganizers.length === 1 && !event.coorganizers[0].email
               ? []
@@ -281,6 +286,7 @@ export function CreateEventForm() {
               coorganizers: [],
               attributes: [],
               termsLink: "",
+              dataRecipients: "",
             });
 
             // Disable the unsaved changes guard

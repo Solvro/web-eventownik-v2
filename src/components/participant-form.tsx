@@ -5,6 +5,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import type { FieldErrors } from "react-hook-form";
@@ -41,6 +42,8 @@ import type { Block } from "@/types/blocks";
 import type { FormDefinition } from "@/types/forms";
 import type { PublicParticipant } from "@/types/participant";
 
+import { Checkbox } from "./ui/checkbox";
+
 function getFieldErrorMessage(
   errors: FieldErrors,
   fieldName: string,
@@ -68,18 +71,26 @@ interface ParticipantFormProps {
     error?: SubmitFormError;
   }>;
   includeEmail?: boolean;
+  includeGdpr?: boolean;
+  includeTerms?: boolean;
   userData?: PublicParticipant;
   eventBlocks?: Block[];
   editMode?: boolean;
+  eventSlug?: string;
+  termsLink?: string | null;
 }
 
 export function ParticipantForm({
   formDefinitions,
   onSubmit,
   includeEmail = false,
+  includeGdpr = false,
+  includeTerms = false,
   userData,
   eventBlocks = [],
   editMode = false,
+  eventSlug = "",
+  termsLink,
 }: ParticipantFormProps) {
   const t = useTranslations("Form");
   const tEventDetails = useTranslations("EventDetails");
@@ -107,6 +118,20 @@ export function ParticipantForm({
   const formSchema = z.object({
     ...(includeEmail && { email: z.string().email(t("invalidEmail")) }),
     ...getSchemaObjectForPublicAttributes(formDefinitions),
+    ...(includeGdpr && {
+      gdprConsent: z.literal<boolean>(true, {
+        errorMap: () => ({
+          message: t("gdprRequired"),
+        }),
+      }),
+    }),
+    ...(includeTerms && {
+      termsAccepted: z.literal<boolean>(true, {
+        errorMap: () => ({
+          message: t("termsRequired"),
+        }),
+      }),
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -127,6 +152,8 @@ export function ParticipantForm({
         },
         {},
       ),
+      ...(includeGdpr && { gdprConsent: false }),
+      ...(includeTerms && { termsAccepted: false }),
     },
   });
 
@@ -317,7 +344,7 @@ export function ParticipantForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="w-full max-w-sm space-y-4"
+        className="w-full max-w-md space-y-4"
       >
         {includeEmail ? (
           <FormField
@@ -360,12 +387,11 @@ export function ParticipantForm({
               control={form.control}
               name={formDefinition.attribute.uuid}
               render={({ field }) => (
-                <FormItem>
-                  <div
+                <>
+                  <FormItem
                     className={cn(
                       formDefinition.attribute.type === "checkbox" &&
                         "flex flex-row-reverse items-start justify-end space-y-0",
-                      "w-full",
                     )}
                   >
                     <FormLabel htmlFor={formDefinition.attribute.uuid}>
@@ -421,7 +447,7 @@ export function ParticipantForm({
                         />
                       )}
                     </FormControl>
-                  </div>
+                  </FormItem>
                   <FormMessage className="text-sm text-red-500">
                     {translateOrFallback(
                       t,
@@ -437,11 +463,105 @@ export function ParticipantForm({
                       },
                     )}
                   </FormMessage>
-                </FormItem>
+                </>
               )}
             />
           );
         })}
+
+        {includeGdpr ? (
+          <FormField
+            control={form.control}
+            name="gdprConsent"
+            render={({ field }) => (
+              <>
+                <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                  <FormLabel htmlFor="gdprConsent">
+                    {t.rich("gdprNotice", {
+                      infoLink: (chunks) => (
+                        <Link
+                          href={`/${eventSlug}/rodo`}
+                          className="text-(--event-primary-color)/90"
+                          target="_blank"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}{" "}
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <span className="grow text-red-500">*</span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                        {t("gdprIsRequiredTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id={"gdprConsent"}
+                      checked={field.value === "true" || field.value === true}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                      }}
+                      className="mr-2"
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.gdprConsent?.message}
+                </FormMessage>
+              </>
+            )}
+          />
+        ) : null}
+
+        {includeTerms ? (
+          <FormField
+            control={form.control}
+            name="termsAccepted"
+            render={({ field }) => (
+              <>
+                <FormItem className="flex flex-row-reverse items-start justify-end space-y-0">
+                  <FormLabel htmlFor="termsAccepted">
+                    {t.rich("termsNotice", {
+                      termsLink: (chunks) => (
+                        <Link
+                          href={termsLink ?? ""}
+                          className="text-(--event-primary-color)/90"
+                          target="_blank"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}{" "}
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <span className="grow text-red-500">*</span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-(--radix-tooltip-content-available-width) text-wrap">
+                        {t("termsIsRequiredTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id={"termsAccepted"}
+                      checked={field.value === "true" || field.value === true}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                      }}
+                      className="mr-2"
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="text-sm text-red-500">
+                  {form.formState.errors.termsAccepted?.message}
+                </FormMessage>
+              </>
+            )}
+          />
+        ) : null}
 
         {form.formState.errors.root?.message != null && (
           <FormMessage className="text-center text-sm whitespace-break-spaces text-red-500">
