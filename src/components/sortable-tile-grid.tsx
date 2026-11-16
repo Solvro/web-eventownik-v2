@@ -8,7 +8,7 @@ import React, { useRef, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 
 interface SortableTileProps {
-  id: number;
+  id: string;
   index: number;
   children: React.ReactNode;
 }
@@ -29,13 +29,21 @@ function SortableTile({ id, index, children }: SortableTileProps) {
   );
 }
 
-interface SortableTileGridProps<T extends { id: number }> {
+// TODO(v3): Replace with uuid when backend fixes the response properties
+type SortableItem = { uuid: string } | { id: string };
+
+// TODO(v3): Replace with uuid when backend fixes the response properties
+function getItemId(item: SortableItem) {
+  return "uuid" in item ? item.uuid : item.id;
+}
+
+interface SortableTileGridProps<T extends SortableItem> {
   items: T[];
-  onReorder: (orderedIds: number[]) => Promise<{ success: boolean }>;
+  onReorder: (orderedIds: string[]) => Promise<{ success: boolean }>;
   renderItem: (item: T) => React.ReactNode;
 }
 
-function SortableTileGrid<T extends { id: number }>({
+function SortableTileGrid<T extends SortableItem>({
   items: initialItems,
   onReorder,
   renderItem,
@@ -72,7 +80,7 @@ function SortableTileGrid<T extends { id: number }>({
           const newOrder = [...items];
           const [removed] = newOrder.splice(initialIndex, 1);
           newOrder.splice(index, 0, removed);
-          void onReorder(newOrder.map((item) => item.id));
+          void onReorder(newOrder.map((item) => getItemId(item)));
         });
       }
     }
@@ -82,7 +90,11 @@ function SortableTileGrid<T extends { id: number }>({
     <DragDropProvider onDragEnd={handleDragEnd}>
       <div className="flex flex-wrap justify-center gap-8 sm:justify-start">
         {items.map((item, index) => (
-          <SortableTile key={item.id} id={item.id} index={index}>
+          <SortableTile
+            key={getItemId(item)}
+            id={getItemId(item)}
+            index={index}
+          >
             {renderItem(item)}
           </SortableTile>
         ))}

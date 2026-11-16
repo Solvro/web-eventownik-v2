@@ -2,7 +2,8 @@ import type { useTranslations } from "next-intl";
 
 import type { LooseAutocomplete } from "@/types/utils";
 
-import { MessageTagCategory, getCategories } from "./categories";
+import { getCategories } from "./categories";
+import type { MessageTagCategory } from "./categories";
 
 export type MessageTagColor = LooseAutocomplete<
   | "red"

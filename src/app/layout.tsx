@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
+const umamiWebsiteId = "150ddc78-fccf-4d84-9fec-316bf1a84fcb";
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
@@ -86,9 +88,16 @@ export default async function RootLayout({
             <Script
               defer
               src="https://analytics.solvro.pl/script.js"
-              data-website-id="150ddc78-fccf-4d84-9fec-316bf1a84fcb"
+              strategy="afterInteractive"
+              data-website-id={umamiWebsiteId}
               data-domains="eventownik.solvro.pl"
-            ></Script>
+            />
+            <Script
+              defer
+              src="https://analytics.solvro.pl/recorder.js"
+              strategy="afterInteractive"
+              data-website-id={umamiWebsiteId}
+            />
           </Providers>
         </NextIntlClientProvider>
       </body>

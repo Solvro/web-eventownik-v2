@@ -9,7 +9,7 @@ import type {
 import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
-import type { FormAttribute } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
 
 const EXTENSION_TO_MIME_TYPE = {
   png: "image/png",
@@ -73,11 +73,11 @@ export function AttributeInputFile({
   lastUpdate,
 }: {
   field: ControllerRenderProps<FieldValues, string>;
-  attribute: FormAttribute;
+  attribute: Attribute;
   setError: UseFormSetError<FieldValues>;
   resetField: UseFormResetField<FieldValues>;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  lastUpdate: string | null;
+  lastUpdate?: string;
 }) {
   const t = useTranslations("EventDetails");
 
@@ -87,7 +87,7 @@ export function AttributeInputFile({
     if (file === undefined) {
       setFiles((previousFiles) =>
         previousFiles.filter(
-          (existingFile) => existingFile.name !== attribute.id.toString(),
+          (existingFile) => existingFile.name !== attribute.uuid,
         ),
       );
 
@@ -95,16 +95,15 @@ export function AttributeInputFile({
     }
 
     if (validateFile(file)) {
-      const fileWithAttributeIdAsName = new File(
-        [file],
-        attribute.id.toString(),
-      );
+      const fileWithattributeUuidAsName = new File([file], attribute.uuid, {
+        type: file.type,
+      });
       setFiles((previousFiles) => {
         const filtered = previousFiles.filter(
           (existingFile) =>
-            existingFile.name !== fileWithAttributeIdAsName.name,
+            existingFile.name !== fileWithattributeUuidAsName.name,
         );
-        return [...filtered, fileWithAttributeIdAsName];
+        return [...filtered, fileWithattributeUuidAsName];
       });
     }
   }
@@ -112,13 +111,13 @@ export function AttributeInputFile({
   function validateFile(file: File) {
     const result = fileSchema.safeParse(file);
     if (result.success) {
-      resetField(attribute.id.toString());
+      resetField(attribute.uuid);
       return true;
     } else {
       const zodIssue = result.error.errors[0];
       const parsedMessage = parseFileValidationErrorMessage(zodIssue.message);
 
-      setError(attribute.id.toString(), {
+      setError(attribute.uuid, {
         message:
           parsedMessage === null
             ? zodIssue.message
@@ -141,7 +140,7 @@ export function AttributeInputFile({
       )}
       <Input
         type="file"
-        id={attribute.id.toString()}
+        id={attribute.uuid}
         {...field}
         onChange={handleFileChange}
       />

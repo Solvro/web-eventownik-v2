@@ -7,7 +7,7 @@ import type { RootSettings } from "@/types/editor";
 
 export const rootDefaults = {
   name: "",
-  trigger: "manual",
+  trigger: "MANUAL",
   backgroundColor: "#f3f4f6",
 } satisfies RootSettings;
 

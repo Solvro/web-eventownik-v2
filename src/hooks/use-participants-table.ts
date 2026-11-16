@@ -9,7 +9,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useLayoutEffect, useMemo, useState } from "react";
 
-import { createColumns } from "@/app/dashboard/events/[id]/participants/table/core/columns";
+import { createColumns } from "@/app/dashboard/events/[uuid]/participants/table/core/columns";
 import { useToast } from "@/hooks/use-toast";
 import type { Attribute } from "@/types/attributes";
 import type { Block } from "@/types/blocks";
@@ -25,7 +25,7 @@ interface UseParticipantTableProps {
   data: FlattenedParticipant[];
   attributes: Attribute[];
   blocks: (Block | null)[] | null;
-  eventId: string;
+  eventUuid: string;
   onUpdateData: (rowIndex: number, value: FlattenedParticipant) => void;
 }
 
@@ -33,10 +33,10 @@ export function useParticipantsTable({
   data,
   attributes,
   blocks,
-  eventId,
   onUpdateData,
+  eventUuid,
 }: UseParticipantTableProps) {
-  const storageKey = `column-order-${eventId}`;
+  const storageKey = `column-order-${eventUuid}`;
   const t = useTranslations("Table");
   const locale = useLocale();
   const { toast } = useToast();
@@ -99,7 +99,7 @@ export function useParticipantsTable({
     },
 
     meta: {
-      eventId,
+      eventUuid: eventUuid,
       updateData: onUpdateData,
       isRowLoading: (rowIndex: number) => loadingRows[rowIndex],
       setRowLoading: (rowIndex: number, isLoading: boolean) => {

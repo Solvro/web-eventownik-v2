@@ -29,9 +29,12 @@ function DataRecipients({ dataRecipients }: { dataRecipients: string | null }) {
 export default async function GdprPage({ params }: GdprPageProps) {
   const { eventSlug } = await params;
 
-  const eventResponse = await fetch(`${API_URL}/events/${eventSlug}/public`, {
-    method: "GET",
-  });
+  const eventResponse = await fetch(
+    `${API_URL}/public/events/${encodeURIComponent(eventSlug)}`,
+    {
+      method: "GET",
+    },
+  );
   if (!eventResponse.ok) {
     const error = (await eventResponse.json()) as unknown;
     console.error(error);

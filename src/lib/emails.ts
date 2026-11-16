@@ -14,32 +14,32 @@ export const EMAIL_TRIGGERS: readonly EmailTrigger[] = [
   {
     name: "participantRegistration",
     description: "participantRegistrationDesc",
-    value: "participant_registered",
+    value: "PARTICIPANT_REGISTERED",
   },
   {
     name: "participantRemoval",
     description: "participantRemovalDesc",
-    value: "participant_deleted",
+    value: "PARTICIPANT_DELETED",
   },
   {
     name: "formSubmission",
     description: "formSubmissionDesc",
-    value: "form_filled",
+    value: "FORM_FILLED",
   },
   // NOTE: Commented out because this trigger is not yet implemented on the backend.
   // {
   //   name: "attributeChange",
   //   description: "attributeChangeDesc",
-  //   value: "attribute_changed",
+  //   value: "ATTRIBUTE_CHANGED",
   // },
   {
     name: "manual",
     description: "manualDesc",
-    value: "manual",
+    value: "MANUAL",
   },
 ];
 
-/** Values used for pivot_status in email send history filters (API + UI). */
+/** Delivery statuses used in the email send history filters */
 export const EMAIL_HISTORY_STATUS_FILTER_VALUES = [
   "sent",
   "pending",

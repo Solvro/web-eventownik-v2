@@ -1,7 +1,8 @@
 "use client";
 
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Ban, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -20,10 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { translateOrFallback } from "@/i18n/translate-or-fallback";
-import type { ResetPassTokenError } from "@/types/auth";
+import { translateOrFallback } from "@/i18n/utils";
 import { sendPasswordResetTokenSchema } from "@/types/schemas";
-import type { AuthSchemaErrorKeys } from "@/types/schemas";
 
 import { sendPasswordResetToken } from "../actions";
 
@@ -33,14 +32,14 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [emailSent, setEmailSent] = useState(false);
 
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isAwaitingCaptcha, setIsAwaitingCaptcha] = useState<boolean>(false);
   const [didCaptchaFail, setDidCaptchaFail] = useState<boolean>(false);
 
   const pendingFormData = useRef<z.infer<
     typeof sendPasswordResetTokenSchema
   > | null>(null);
-  const hCaptchaRef = useRef<HCaptcha>(null);
+  const captchaRef = useRef<TurnstileInstance>(null);
 
   const form = useForm<z.infer<typeof sendPasswordResetTokenSchema>>({
     resolver: zodResolver(sendPasswordResetTokenSchema),
@@ -69,10 +68,7 @@ export default function ForgotPasswordPage() {
         toast({
           variant: "destructive",
           title: t("somethingWentWrong"),
-          description: translateOrFallback(
-            t,
-            result.error as ResetPassTokenError,
-          ),
+          description: translateOrFallback(t, result.error),
         });
       }
     } catch (error) {
@@ -83,7 +79,9 @@ export default function ForgotPasswordPage() {
         description: t("serverErrorTryLater"),
       });
     } finally {
-      hCaptchaRef.current?.resetCaptcha();
+      // Tokens are single-use, so get a fresh one for the next submission
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
       setIsAwaitingCaptcha(false);
     }
   }
@@ -92,7 +90,7 @@ export default function ForgotPasswordPage() {
    * Triggered upon captcha verification
    */
   async function handleCaptchaVerify(token: string) {
-    setHCaptchaToken(token);
+    setCaptchaToken(token);
     setDidCaptchaFail(false);
 
     if (pendingFormData.current !== null) {
@@ -107,12 +105,11 @@ export default function ForgotPasswordPage() {
   async function handleFormSubmit(
     values: z.infer<typeof sendPasswordResetTokenSchema>,
   ) {
-    if (hCaptchaToken === null) {
+    if (captchaToken === null) {
       pendingFormData.current = values;
       setIsAwaitingCaptcha(true);
-      hCaptchaRef.current?.execute();
     } else {
-      await submitWithCaptcha(values, hCaptchaToken);
+      await submitWithCaptcha(values, captchaToken);
     }
   }
 
@@ -161,26 +158,19 @@ export default function ForgotPasswordPage() {
                   />
                 </FormControl>
                 <FormMessage className="text-sm text-red-500">
-                  {translateOrFallback(
-                    t,
-                    form.formState.errors.email?.message as AuthSchemaErrorKeys,
-                  )}
+                  {translateOrFallback(t, form.formState.errors.email?.message)}
                 </FormMessage>
               </FormItem>
             )}
           />
 
-          <HCaptcha
-            ref={hCaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? ""}
-            size="invisible"
-            onVerify={handleCaptchaVerify}
+          <Turnstile
+            ref={captchaRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? ""}
+            options={{ appearance: "interaction-only", size: "flexible" }}
+            onSuccess={handleCaptchaVerify}
             onExpire={() => {
-              setHCaptchaToken(null);
-              setDidCaptchaFail(true);
-            }}
-            onClose={() => {
-              setDidCaptchaFail(true);
+              setCaptchaToken(null);
             }}
             onError={(captchaError) => {
               console.error("Captcha error occurred:", captchaError);
@@ -193,9 +183,12 @@ export default function ForgotPasswordPage() {
               type="button"
               variant="destructive"
               className="w-full"
-              onClick={() => {
+              onClick={(event) => {
+                // React reuses this button's DOM node for the submit button, so without this
+                // the click would also submit the form once the button re-renders
+                event.preventDefault();
                 setDidCaptchaFail(false);
-                hCaptchaRef.current?.execute();
+                captchaRef.current?.reset();
               }}
             >
               <Ban className="size-8" />

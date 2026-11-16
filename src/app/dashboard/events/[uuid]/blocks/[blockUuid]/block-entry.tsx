@@ -1,0 +1,104 @@
+import { useAtomValue } from "jotai";
+import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { duplicateBlock } from "@/app/dashboard/events/[uuid]/blocks/actions";
+import { participantsVisibilityAtom } from "@/atoms/participants-visibility-atom";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Progress } from "@/components/ui/progress";
+import type { Block, BlockParticipant } from "@/types/blocks";
+
+import { BlockParticipantsList } from "./block-participants-list";
+import { DeleteBlockPopup } from "./delete-block-popup";
+import { EditBlockEntry } from "./edit-block-entry";
+
+const valueOrZero = (value: number | null | undefined) => {
+  return value === null || value === undefined ? "0" : value.toString();
+};
+
+function BlockEntry({
+  block,
+  eventUuid,
+  attributeUuid,
+  participants,
+}: {
+  block: Block;
+  eventUuid: string;
+  attributeUuid: string;
+  participants: BlockParticipant[];
+}) {
+  const t = useTranslations("Dashboard");
+  const areParticipantsVisible = useAtomValue(participantsVisibilityAtom);
+  const percentOccupancy =
+    block.capacity == null
+      ? 0
+      : Math.round(
+          (Number(valueOrZero(block.blockParticipantCount)) / block.capacity) *
+            100,
+        );
+
+  return (
+    <div
+      key={block.uuid}
+      className="flex h-full flex-col justify-between rounded-md border border-slate-500 p-4 sm:w-64"
+    >
+      <div className="flex justify-between gap-2">
+        <DuplicateResourceButton
+          resourceName={block.name}
+          resourceType={t("block")}
+          onDuplicate={async () =>
+            await duplicateBlock(
+              eventUuid,
+              attributeUuid,
+              block.uuid,
+              block.name,
+            )
+          }
+        />
+        <div className="flex gap-2">
+          <EditBlockEntry
+            blockToEdit={block}
+            eventUuid={eventUuid}
+            attributeUuid={attributeUuid}
+            parentUuid={block.uuid}
+          />
+          <DeleteBlockPopup
+            eventUuid={eventUuid}
+            blockUuid={block.uuid}
+            blockName={block.name}
+            attributeUuid={attributeUuid}
+          />
+        </div>
+      </div>
+      <div className="flex grow flex-col items-center justify-center gap-4">
+        <p className="text-center text-2xl font-bold">{block.name}</p>
+        <div className="flex items-center gap-2">
+          <Users className="size-5" />
+          {block.capacity === null
+            ? valueOrZero(block.blockParticipantCount)
+            : `${valueOrZero(block.blockParticipantCount)}/${block.capacity.toString()}`}
+        </div>
+        <Field className="w-full max-w-sm">
+          <Progress
+            value={percentOccupancy}
+            id="progress-upload"
+            className={block.capacity === null ? "bg-muted" : ""}
+          />
+          <FieldLabel htmlFor="progress-upload">
+            <span className="ml-auto">
+              {block.capacity === null
+                ? t("unlimited")
+                : `${percentOccupancy.toString()}%`}
+            </span>
+          </FieldLabel>
+        </Field>
+        {areParticipantsVisible ? (
+          <BlockParticipantsList participants={participants} />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+export { BlockEntry };

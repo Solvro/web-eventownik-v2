@@ -10,28 +10,27 @@ import { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import type { EventAttribute, FormAttributeBase } from "@/types/attributes";
+import type { Attribute } from "@/types/attributes";
+import type { FormAttribute } from "@/types/forms";
 
-export interface AttributeItemProps {
-  id: number;
+interface AttributeItemProps {
+  uuid: string;
   index: number;
-  attribute: EventAttribute;
+  attribute: Attribute;
   isIncluded: boolean;
   isRequired: boolean;
-  handleIncludeToggle: (attribute: EventAttribute) => void;
-  handleRequiredToggle: (attribute: EventAttribute) => void;
+  handleIncludeToggle: (attribute: Attribute) => void;
+  handleRequiredToggle: (attribute: Attribute) => void;
 }
 
 export interface AttributesReorderProps {
-  attributes: EventAttribute[];
-  includedAttributes: FormAttributeBase[];
-  setIncludedAttributes: React.Dispatch<
-    React.SetStateAction<FormAttributeBase[]>
-  >;
+  attributes: Attribute[];
+  includedAttributes: FormAttribute[];
+  setIncludedAttributes: React.Dispatch<React.SetStateAction<FormAttribute[]>>;
 }
 
 function AttributeItem({
-  id,
+  uuid,
   index,
   attribute,
   isIncluded,
@@ -39,7 +38,7 @@ function AttributeItem({
   handleIncludeToggle,
   handleRequiredToggle,
 }: AttributeItemProps) {
-  const { ref, handleRef, isDragSource } = useSortable({ id, index });
+  const { ref, handleRef, isDragSource } = useSortable({ id: uuid, index });
   const t = useTranslations("EventDetails");
 
   return (
@@ -58,23 +57,21 @@ function AttributeItem({
       </button>
       <div className="flex flex-1 flex-row items-center">
         <Checkbox
-          id={`attribute-${attribute.id.toString()}`}
+          id={`attribute-${attribute.uuid}`}
           className="mr-2"
           checked={isIncluded}
           onCheckedChange={() => {
             handleIncludeToggle(attribute);
           }}
         />
-        <Label htmlFor={`attribute-${attribute.id.toString()}`}>
+        <Label htmlFor={`attribute-${attribute.uuid}`}>
           <h3 className="font-semibold">{attribute.name}</h3>
         </Label>
       </div>
       <span className="bg-popover flex items-center rounded-full px-3 py-1 text-sm">
-        <Label htmlFor={`required-${attribute.id.toString()}`}>
-          {t("required")}
-        </Label>
+        <Label htmlFor={`required-${attribute.uuid}`}>{t("required")}</Label>
         <Checkbox
-          id={`required-${attribute.id.toString()}`}
+          id={`required-${attribute.uuid}`}
           className="ml-2"
           checked={isRequired}
           onCheckedChange={() => {
@@ -96,34 +93,37 @@ function AttributesReorder({
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+  }, [attributes]);
 
-  const isIncluded = (attributeId: number) => {
-    return includedAttributes.some((attribute) => attribute.id === attributeId);
+  const isIncluded = (attributeUuid: string) => {
+    return includedAttributes.some(
+      (attribute) => attribute.attributeUuid === attributeUuid,
+    );
   };
 
-  const handleIncludeToggle = (attribute: EventAttribute) => {
-    if (isIncluded(attribute.id)) {
+  const handleIncludeToggle = (attribute: Attribute) => {
+    if (isIncluded(attribute.uuid)) {
       setIncludedAttributes((previous) =>
-        previous.filter((attribute_) => attribute_.id !== attribute.id),
+        previous.filter(
+          (attribute_) => attribute_.attributeUuid !== attribute.uuid,
+        ),
       );
     } else {
       setIncludedAttributes((previous) => [
         ...previous,
         {
-          ...attribute,
+          attributeUuid: attribute.uuid,
           isRequired: true,
-          isEditable: true,
           order: previous.length,
         },
       ]);
     }
   };
 
-  const handleRequiredToggle = (attribute: EventAttribute) => {
+  const handleRequiredToggle = (attribute: Attribute) => {
     setIncludedAttributes((previous) =>
       previous.map((attribute_) =>
-        attribute_.id === attribute.id
+        attribute_.attributeUuid === attribute.uuid
           ? { ...attribute_, isRequired: !attribute_.isRequired }
           : attribute_,
       ),
@@ -131,10 +131,10 @@ function AttributesReorder({
   };
 
   const includedIds = new Set(
-    includedAttributes.map((attribute) => attribute.id),
+    includedAttributes.map((attribute) => attribute.attributeUuid),
   );
   const nonIncludedAttributes = attributes.filter(
-    (attribute) => !includedIds.has(attribute.id),
+    (attribute) => !includedIds.has(attribute.uuid),
   );
 
   const handleDragEnd: DragEndEvent = (event) => {
@@ -173,15 +173,15 @@ function AttributesReorder({
             <h2 className="text-sm">{t("selectedAttributes")}</h2>
             {includedAttributes.map((attribute, index) => {
               const fullAttribute = attributes.find(
-                (a) => a.id === attribute.id,
+                (a) => a.uuid === attribute.attributeUuid,
               );
               if (fullAttribute == null) {
                 return null;
               }
               return (
                 <AttributeItem
-                  key={attribute.id}
-                  id={attribute.id}
+                  key={attribute.attributeUuid}
+                  uuid={attribute.attributeUuid}
                   index={index}
                   attribute={fullAttribute}
                   isIncluded={true}
@@ -210,18 +210,18 @@ function AttributesReorder({
           <h2 className="text-sm">{t("remainingAttributes")}</h2>
           {nonIncludedAttributes.map((attribute) => (
             <div
-              key={attribute.id}
+              key={attribute.uuid}
               className="bg-accent/50 mb-2 flex items-center rounded-lg p-4 shadow-sm"
             >
               <Checkbox
-                id={`attribute-${attribute.id.toString()}`}
+                id={`attribute-${attribute.uuid}`}
                 className="mr-2"
                 checked={false}
                 onCheckedChange={() => {
                   handleIncludeToggle(attribute);
                 }}
               />
-              <Label htmlFor={`attribute-${attribute.id.toString()}`}>
+              <Label htmlFor={`attribute-${attribute.uuid}`}>
                 <h3 className="font-semibold">{attribute.name}</h3>
               </Label>
             </div>
@@ -237,4 +237,4 @@ function AttributesReorder({
   );
 }
 
-export { AttributesReorder, AttributeItem };
+export { AttributeItem, AttributesReorder };

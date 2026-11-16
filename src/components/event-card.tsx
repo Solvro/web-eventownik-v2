@@ -10,11 +10,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import EventPhotoPlaceholder from "@/../public/event-photo-placeholder.png";
+import { duplicateEvent } from "@/app/dashboard/events/actions";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
+import { DuplicateResourceButton } from "@/components/duplicate-resource-button";
 import { EventInfoBlock } from "@/components/event-info-block";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
-import { PHOTO_URL } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event";
 
@@ -38,16 +39,9 @@ export function EventCardBase({
         className,
       )}
     >
-      <Link
-        className="relative"
-        href={`/dashboard/events/${event.id.toString()}`}
-      >
+      <Link className="relative" href={`/dashboard/events/${event.uuid}`}>
         <Image
-          src={
-            event.photoUrl == null
-              ? EventPhotoPlaceholder
-              : `${PHOTO_URL}/${event.photoUrl}`
-          }
+          src={event.photoUrl ?? EventPhotoPlaceholder}
           width="500"
           height="500"
           className="aspect-square w-full object-cover"
@@ -62,7 +56,7 @@ export function EventCardBase({
               </p>
             </EventInfoBlock>
             <EventInfoBlock>
-              <p className="text-sm">{event.participantsCount}</p>
+              <p className="text-sm">{event.participantsLimit}</p>
               <Users size={16} />
             </EventInfoBlock>
           </div>
@@ -70,9 +64,7 @@ export function EventCardBase({
       </Link>
       <div className="flex flex-1 flex-col justify-between p-4">
         <h3 className="mb-4 line-clamp-2 text-2xl font-bold">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
-            {event.name}
-          </Link>
+          <Link href={`/dashboard/events/${event.uuid}`}>{event.name}</Link>
         </h3>
         {children}
       </div>
@@ -87,11 +79,18 @@ export function EventCard({ event }: { event: Event }) {
     <EventCardBase event={event} className="border-muted border">
       <div className="flex w-full items-center justify-between">
         <Button asChild variant="ghost" className="flex-1 justify-start">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
+          <Link href={`/dashboard/events/${event.uuid}`}>
             <CircleHelpIcon className="size-4" />
             {t("viewDetails")}
           </Link>
         </Button>
+        <DuplicateResourceButton
+          resourceName={event.name}
+          resourceType={t("event")}
+          onDuplicate={duplicateEvent.bind(null, event.uuid)}
+          variant="ghost"
+          className="size-12"
+        />
         <ShareButton
           path={event.slug}
           variant="icon"
@@ -119,12 +118,12 @@ export function EventCardForSuperadmin({
       event={event}
       className={cn(
         "border-2",
-        event.isActive ? "border-green-400" : "border-red-400",
+        event.isVerified ? "border-green-400" : "border-red-400",
       )}
     >
       <div className="flex w-full flex-col gap-2">
         <Button asChild variant="outline">
-          <Link href={`/dashboard/events/${event.id.toString()}`}>
+          <Link href={`/dashboard/events/${event.uuid}`}>
             <LayoutDashboard className="size-4" />
             Dashboard
           </Link>
@@ -137,8 +136,8 @@ export function EventCardForSuperadmin({
         </Button>
         <ActivateEvent
           bearerToken={bearerToken}
-          eventId={event.id}
-          isActive={event.isActive}
+          eventUuid={event.uuid}
+          isActive={event.isVerified}
         />
       </div>
     </EventCardBase>

@@ -93,8 +93,9 @@ Copy `.env.example` to `.env` and configure:
 ```env
 NEXT_PUBLIC_EVENTOWNIK_API=<backend API URL>
 SESSION_SECRET=<session encryption secret>
-NEXT_PUBLIC_PHOTO_URL=<backend photo URL>
-NEXT_PUBLIC_HCAPTCHA_SITEKEY=<hCaptcha site key>
+SESSION_COOKIE_MAX_AGE=<max session lifetime in seconds; sessions also end 60 s before the backend access token expires>
+NEXT_PUBLIC_PHOTO_URL=<public S3 URL that event photos are served from (backend's S3_PUBLIC_URL)>
+NEXT_PUBLIC_TURNSTILE_SITEKEY=<Cloudflare Turnstile site key>
 NEXT_PUBLIC_OTEL_METRICS_ENDPOINT=<SigNoz OTLP endpoint>
 NEXT_PUBLIC_OTEL_FRONTEND_SERVICE_NAME=<service name for SigNoz>
 ```

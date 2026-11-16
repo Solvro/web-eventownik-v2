@@ -1,30 +1,37 @@
 "use server";
 
 import { API_URL } from "@/lib/api";
+import { isValidUuid } from "@/lib/is-valid-uuid";
 
 export async function activateEvent(
   wasActive: boolean,
-  eventId: number,
+  eventUuid: string,
   bearerToken: string,
 ) {
-  const formData = new FormData();
-  formData.append("isActive", (!wasActive).toString());
+  if (!isValidUuid(eventUuid)) {
+    console.error(`[activateEvent action] Invalid event UUID: ${eventUuid}`);
+    return {
+      error: "Invalid event identifier",
+    };
+  }
 
+  // v2 "activation" is v3 verification, which lists published events on the homepage
   const response = await fetch(
-    `${API_URL}/events/${eventId.toString()}/activate`,
+    `${API_URL}/events/${encodeURIComponent(eventUuid)}`,
     {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
       },
-      body: formData,
+      body: JSON.stringify({ isVerified: !wasActive }),
     },
   );
   if (!response.ok) {
     const error = (await response.json()) as unknown;
     console.error(error);
     console.error(
-      `[activateEvent action] Failed to activate event ${eventId.toString()}: ${JSON.stringify(error)}`,
+      `[activateEvent action] Failed to activate event ${eventUuid}: ${JSON.stringify(error)}`,
     );
     return {
       error: JSON.stringify(error),

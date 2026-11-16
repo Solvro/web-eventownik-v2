@@ -11,7 +11,6 @@ import type { Permission, PermissionType } from "@/types/co-organizer";
 import { AddCoOrganizerInput } from "./coorganizers/add-coorganizer-input";
 import { CoOrganizerItem } from "./coorganizers/coorganizer-item";
 import type { EventCoorganizersFormSchema } from "./coorganizers/schema";
-import { PERMISSIONS_CONFIG } from "./coorganizers/types";
 
 export { EventCoorganizersFormSchema } from "./coorganizers/schema";
 
@@ -57,15 +56,7 @@ export function CoorganizersForm({
     email: string,
     permissionsIds: PermissionType[],
   ) => {
-    const permissions = permissionsIds
-      .map(
-        (id) =>
-          PERMISSIONS_CONFIG.find((config) => config.permission.id === id)
-            ?.permission,
-      )
-      .filter(
-        (permission): permission is Permission => permission !== undefined,
-      );
+    const permissions: Permission[] = permissionsIds.map((id) => ({ id }));
 
     append({ id: "", email, permissions });
     onAdd?.({ id: "", email, permissions });

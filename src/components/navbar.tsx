@@ -1,13 +1,14 @@
 "use client";
 
 import * as Collapsible from "@radix-ui/react-collapsible";
-import { Menu, X } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 import { AppLogo } from "@/components/app-logo";
+import { useDashboardSidebar } from "@/components/dashboard-sidebar";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +16,8 @@ import { LanguageSwitch } from "./language-switch";
 
 export function Navbar({ authButton }: { authButton: React.ReactNode }) {
   const t = useTranslations("Dashboard");
+  const sidebarT = useTranslations("Sidebar");
+  const { isSideBarOpen, toggleSideBar } = useDashboardSidebar();
 
   const navigation = [
     // { name: "Dashboard", href: "/dashboard" },
@@ -24,6 +27,7 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isEventDashboard = pathname.startsWith("/dashboard/events/");
 
   const isCurrent = (href: string) => {
     if (pathname === "/dashboard" && href === "/dashboard") {
@@ -46,6 +50,26 @@ export function Navbar({ authButton }: { authButton: React.ReactNode }) {
             </div>
 
             <div className="flex flex-1 items-center gap-x-8 sm:items-stretch sm:justify-start">
+              {isEventDashboard ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={
+                    isSideBarOpen
+                      ? sidebarT("closeSidebar")
+                      : sidebarT("openSidebar")
+                  }
+                  title={
+                    isSideBarOpen
+                      ? sidebarT("closeSidebar")
+                      : sidebarT("openSidebar")
+                  }
+                  onClick={toggleSideBar}
+                  className={"my-auto"}
+                >
+                  {isSideBarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+                </Button>
+              ) : null}
               <div className="flex shrink-0 items-center">
                 <AppLogo />
               </div>

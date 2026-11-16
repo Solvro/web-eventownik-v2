@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { NewEventAttribute } from "./types";
+import type { Attribute } from "@/types/attributes";
 
 export type EventAttributesFormErrors =
   | "attributeNameRequired"
@@ -8,13 +8,9 @@ export type EventAttributesFormErrors =
 
 export const EventAttributesFormSchema = z.object({
   attributes: z
-    .array(z.custom<NewEventAttribute>())
+    .array(z.custom<Attribute>())
     .transform((attributes) => {
-      if (
-        attributes.length === 1 &&
-        !attributes[0].name &&
-        attributes[0].slug === ""
-      ) {
+      if (attributes.length === 1 && !attributes[0].name) {
         return [];
       }
       return attributes;

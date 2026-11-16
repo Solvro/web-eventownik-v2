@@ -3,6 +3,7 @@ import React from "react";
 
 import { Alerts } from "@/components/alerts";
 import { AuthButton } from "@/components/auth-button";
+import { DashboardSidebarProvider } from "@/components/dashboard-sidebar";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
@@ -18,16 +19,18 @@ export default function DashboardLayout({
   children: Readonly<React.ReactNode>;
 }) {
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto">
-        <header className="flex flex-col gap-4 p-4">
-          <Navbar authButton={<AuthButton />} />
-          <Alerts />
-        </header>
-        <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
-          {children}
-        </main>
+    <DashboardSidebarProvider>
+      <div className="min-h-screen">
+        <div className="container mx-auto">
+          <header className="flex flex-col gap-4 p-4">
+            <Navbar authButton={<AuthButton />} />
+            <Alerts />
+          </header>
+          <main className="flex min-h-[calc(100vh-96px)] flex-col p-4 pb-8">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </DashboardSidebarProvider>
   );
 }
