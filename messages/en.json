@@ -520,6 +520,7 @@
     "selectForm": "Select a form",
     "templateAdded": "Template added successfully",
     "templateAddFailed": "Failed to add template!",
+    "foreignEmailTags": "{count, plural, one {The template has # tag of a form or attribute that is not in this event (highlighted in red). Remove it or insert a tag from the list by typing /} other {The template has # tags of forms or attributes that are not in this event (highlighted in red). Remove them or insert tags from the list by typing /}}",
     "addTemplate": "Add new template",
     "removedFromParticipants": "You have been removed from the participants list",
     "eventTermsUpdated": "Event terms have been updated",

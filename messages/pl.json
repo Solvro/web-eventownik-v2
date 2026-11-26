@@ -519,6 +519,7 @@
     "selectForm": "Wybierz formularz",
     "templateAdded": "Dodano nowy szablon",
     "templateAddFailed": "Nie udało się dodać szablonu!",
+    "foreignEmailTags": "{count, plural, one {W szablonie jest # znacznik spoza tego eventu.} few {W szablonie są # znaczniki spoza tego eventu.} many {W szablonie jest # znaczników spoza tego eventu.} other {W szablonie są # znaczniki spoza tego eventu.}} Zaznaczone na czerwono znaczniki usuń albo zamień na znaczniki z listy po wpisaniu /",
     "addTemplate": "Dodaj nowy szablon",
     "removedFromParticipants": "Usunięto Cię z listy uczestników",
     "eventTermsUpdated": "Aktualizacja regulaminu wydarzenia",

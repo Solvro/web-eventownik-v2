@@ -2,6 +2,8 @@
 
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import { Mention } from "@tiptap/extension-mention";
+import { Plugin } from "@tiptap/pm/state";
+import type { EditorState } from "@tiptap/pm/state";
 import { ReactRenderer, mergeAttributes } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import type {
@@ -13,7 +15,7 @@ import type { useTranslations } from "next-intl";
 
 import { TagsList } from "@/components/tags-list";
 
-import { getMessageTags, getTagStyle } from ".";
+import { RESOURCE_TAG_REGEX, getMessageTags, getTagStyle } from ".";
 import type { MessageTag } from ".";
 
 /**
@@ -183,8 +185,58 @@ export const setupSuggestions = (
 ) => {
   const allTags = [...getMessageTags(t), ...additionalTags];
 
+  const fixTags = (state: EditorState) => {
+    const { tr } = state;
+
+    state.doc.descendants((node, position) => {
+      const id = node.attrs.id as string | null | undefined;
+
+      if (
+        node.type.name !== "mention" ||
+        id == null ||
+        !RESOURCE_TAG_REGEX.test(id) ||
+        allTags.some((tag) => tag.value === id)
+      ) {
+        return;
+      }
+
+      const prefix = id.slice(0, -36);
+      const sameNameTag = additionalTags.find(
+        (tag) => tag.value.startsWith(prefix) && tag.title === node.attrs.label,
+      );
+
+      if (sameNameTag !== undefined) {
+        tr.setNodeMarkup(position, undefined, {
+          ...node.attrs,
+          id: sameNameTag.value,
+        });
+      }
+    });
+
+    return tr.docChanged ? tr : null;
+  };
+
   return [
-    Mention.configure({
+    Mention.extend({
+      addProseMirrorPlugins() {
+        return [
+          ...(this.parent?.() ?? []),
+          new Plugin({
+            appendTransaction: (transactions, _oldState, newState) =>
+              transactions.some((transaction) => transaction.docChanged)
+                ? fixTags(newState)
+                : null,
+          }),
+        ];
+      },
+      onCreate() {
+        const tr = fixTags(this.editor.state);
+
+        if (tr !== null) {
+          this.editor.view.dispatch(tr);
+        }
+      },
+    }).configure({
       suggestion: {
         ...getSuggestionOptions(allTags),
       },
@@ -195,12 +247,9 @@ export const setupSuggestions = (
       renderHTML({ options, node }) {
         return [
           "span",
-          mergeAttributes(
-            {
-              style: getTagStyle(allTags, node.attrs.id as string),
-            },
-            options.HTMLAttributes,
-          ),
+          mergeAttributes(options.HTMLAttributes, {
+            style: getTagStyle(allTags, node.attrs.id as string),
+          }),
           node.attrs.label,
         ];
       },
