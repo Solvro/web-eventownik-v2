@@ -4,10 +4,12 @@ import { getLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import type { EventDetailsKey } from "@/i18n/utils";
-import { API_URL } from "@/lib/api";
+import { API_URL, fetchAllPages } from "@/lib/api";
 import { verifySession } from "@/lib/session";
 import { getNextCopyName } from "@/lib/utils";
+import type { Attribute } from "@/types/attributes";
 import type { UpdateEventEmailPayload } from "@/types/emails";
+import type { EventForm } from "@/types/forms";
 
 import { getEmailDeliveries } from "./data-access";
 
@@ -38,6 +40,50 @@ function getEmailTemplateBody(template: UpdateEventEmailPayload) {
   };
 }
 
+async function getForeignTagsError(
+  eventUuid: string,
+  content: string,
+  bearerToken: string,
+) {
+  const tagIds = Array.from(
+    content.matchAll(/data-id="(\/(?:form|participant)_[\da-f-]{36})"/gi),
+    (match) => match[1],
+  );
+
+  if (tagIds.length === 0) {
+    return null;
+  }
+
+  const init = { headers: { Authorization: `Bearer ${bearerToken}` } };
+  const [attributes, forms] = await Promise.all([
+    fetchAllPages<Attribute>(`${API_URL}/events/${eventUuid}/attributes`, init),
+    fetchAllPages<EventForm>(`${API_URL}/events/${eventUuid}/forms`, init),
+  ]);
+
+  if (attributes === null || forms === null) {
+    console.warn(
+      `[getForeignTagsError] Failed to fetch attributes or forms of event ${eventUuid}, skipping the tag check`,
+    );
+    return null;
+  }
+
+  const eventTags = new Set([
+    ...attributes.map((attribute) => `/participant_${attribute.uuid}`),
+    ...forms.map((form) => `/form_${form.uuid}`),
+  ]);
+  const count = tagIds.filter((tagId) => !eventTags.has(tagId)).length;
+
+  return count === 0
+    ? null
+    : {
+        success: false,
+        error: {
+          key: "foreignEmailTags" as EventDetailsKey,
+          values: { count },
+        },
+      };
+}
+
 export async function createEventEmail(data: {
   eventUuid: string;
   emailTemplate: UpdateEventEmailPayload;
@@ -45,6 +91,15 @@ export async function createEventEmail(data: {
   const session = await verifySession();
   if (session == null) {
     redirect("/auth/login");
+  }
+
+  const tagsError = await getForeignTagsError(
+    data.eventUuid,
+    data.emailTemplate.content,
+    session.bearerToken,
+  );
+  if (tagsError !== null) {
+    return tagsError;
   }
 
   const response = await fetch(`${API_URL}/events/${data.eventUuid}/emails`, {
@@ -96,6 +151,15 @@ export async function updateEventEmail(data: {
 
   if (session == null) {
     redirect("/auth/login");
+  }
+
+  const tagsError = await getForeignTagsError(
+    data.eventUuid,
+    data.emailTemplate.content,
+    session.bearerToken,
+  );
+  if (tagsError !== null) {
+    return tagsError;
   }
 
   const response = await fetch(

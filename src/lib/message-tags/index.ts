@@ -68,9 +68,18 @@ export function getMessageTags(
   ];
 }
 
+export const RESOURCE_TAG_REGEX = /^\/(?:form|participant)_[\da-f-]{36}$/i;
+
 export const getTagStyle = (allTags: MessageTag[], tagValue: string) => {
   const color = allTags.find((tag) => tag.value === tagValue)?.color;
-  return color === undefined
-    ? "color: var(--accent-foreground); background-color: var(--accent)"
-    : `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
+
+  if (color !== undefined) {
+    return `color: var(--tag-${color}-text); background-color: var(--tag-${color}-bg)`;
+  }
+
+  if (RESOURCE_TAG_REGEX.test(tagValue)) {
+    return "color: var(--destructive-foreground); background-color: var(--destructive); text-decoration: line-through";
+  }
+
+  return "color: var(--accent-foreground); background-color: var(--accent)";
 };

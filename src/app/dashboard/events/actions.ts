@@ -426,17 +426,22 @@ export async function duplicateEvent(eventUuid: string) {
       continue;
     }
 
+    let body = JSON.stringify({
+      name: email.name,
+      content: email.content,
+      trigger: email.trigger,
+      triggerConfig,
+      ...(email.schema !== null && { schema: email.schema }),
+      ...(email.order !== null && { order: email.order }),
+    });
+    for (const [oldUuid, newUuid] of [...attributeUuidMap, ...formUuidMap]) {
+      body = body.replaceAll(oldUuid, newUuid);
+    }
+
     const response = await fetch(`${API_URL}/events/${newEventUuid}/emails`, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        name: email.name,
-        content: email.content,
-        trigger: email.trigger,
-        triggerConfig,
-        ...(email.schema !== null && { schema: email.schema }),
-        ...(email.order !== null && { order: email.order }),
-      }),
+      body,
     });
     if (!response.ok) {
       warnings.push({ key: "emailCopyWarning", values: { name: email.name } });
