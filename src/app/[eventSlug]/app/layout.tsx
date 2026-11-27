@@ -68,17 +68,22 @@ export default async function MobileAppLayout({
     notFound();
   }
 
+  const surface = {
+    className: cn(montserrat.className, "mobile-app"),
+    style: mobileThemeStyle(
+      config.app.accentColor ?? config.event.primaryColor,
+    ),
+  };
+
   return (
     <div
       className={cn(
-        montserrat.className,
-        "mobile-app bg-background text-foreground min-h-dvh tracking-[-0.01em] antialiased",
+        surface.className,
+        "bg-background text-foreground min-h-dvh tracking-[-0.01em] antialiased",
       )}
-      style={mobileThemeStyle(
-        config.app.accentColor ?? config.event.primaryColor,
-      )}
+      style={surface.style}
     >
-      <MobileProvider eventSlug={eventSlug} config={config}>
+      <MobileProvider eventSlug={eventSlug} config={config} surface={surface}>
         <MobileDesktopFrame>
           {/* Hidden on desktop until the phone frame takes over, to avoid a flash of the bare app */}
           <div className="bg-background sm:border-border relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip sm:border-x [@media(min-width:768px)_and_(hover:hover)_and_(pointer:fine)]:invisible">

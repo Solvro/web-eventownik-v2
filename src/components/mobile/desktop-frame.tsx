@@ -62,9 +62,14 @@ function useDeviceScale(): number {
   return useSyncExternalStore(
     subscribeToResize,
     () =>
-      Math.min(
-        1,
-        Math.round(((globalThis.innerHeight - 48) / DEVICE_HEIGHT) * 100) / 100,
+      // Never smaller than a third, even in a very short window
+      Math.max(
+        0.33,
+        Math.min(
+          1,
+          Math.round(((globalThis.innerHeight - 48) / DEVICE_HEIGHT) * 100) /
+            100,
+        ),
       ),
     () => 1,
   );

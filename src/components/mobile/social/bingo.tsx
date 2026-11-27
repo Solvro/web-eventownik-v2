@@ -13,6 +13,7 @@ import {
 import { useRef, useState } from "react";
 
 import { MobileAvatar } from "@/components/mobile/avatar";
+import { useMobile } from "@/components/mobile/mobile-context";
 import { MobileScreen } from "@/components/mobile/mobile-screen";
 import { useEventSlug } from "@/components/mobile/use-event-slug";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ function CellSheet({
   onClose: () => void;
 }) {
   const eventSlug = useEventSlug();
+  const { surface } = useMobile();
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -111,7 +113,13 @@ function CellSheet({
         }
       }}
     >
-      <DialogContent className="max-w-[calc(100vw-2.5rem)] gap-5 rounded-[32px] border-0 p-6 tracking-[-0.01em] sm:max-w-sm">
+      <DialogContent
+        className={cn(
+          surface.className,
+          "max-w-[calc(100vw-2.5rem)] gap-5 rounded-[32px] border-0 p-6 tracking-[-0.01em] sm:max-w-sm",
+        )}
+        style={surface.style}
+      >
         {cell === null ? null : (
           <>
             <DialogHeader>

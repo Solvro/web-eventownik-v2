@@ -126,8 +126,18 @@ async function forward(request: NextRequest, context: RouteContext) {
   responseHeaders.set("Cache-Control", "no-store");
 
   const status = upstream.status;
-  const responseBody =
-    status === 204 || status === 304 ? null : await upstream.arrayBuffer();
+  let responseBody: ArrayBuffer | null = null;
+  if (status !== 204 && status !== 304) {
+    try {
+      responseBody = await upstream.arrayBuffer();
+    } catch {
+      // The backend stopped answering part-way through (or the timeout fired)
+      return NextResponse.json(
+        { message: "Upstream unavailable" },
+        { status: 502 },
+      );
+    }
+  }
   const response = new NextResponse(responseBody, {
     status,
     headers: responseHeaders,
