@@ -26,6 +26,7 @@ import type {
   MobileBerealState,
 } from "@/types/mobile";
 
+import { BerealCamera, canUseInAppCamera } from "./bereal-camera";
 import { EmptyState, ErrorState, Skeleton } from "./states";
 import { clockTime } from "./time";
 import { useObjectUrl } from "./use-object-url";
@@ -82,14 +83,18 @@ function DualPhoto({
   photoUrl,
   selfieUrl,
   alt,
+  onSwap,
 }: {
   photoUrl: string;
   selfieUrl: string | null;
   alt: string;
+  /** When set, the inset swaps the photos for real (which one is the main). */
+  onSwap?: () => void;
 }) {
   const [swapped, setSwapped] = useState(false);
-  const main = swapped && selfieUrl !== null ? selfieUrl : photoUrl;
-  const inset = swapped ? photoUrl : selfieUrl;
+  const visuallySwapped = onSwap === undefined && swapped;
+  const main = visuallySwapped && selfieUrl !== null ? selfieUrl : photoUrl;
+  const inset = visuallySwapped ? photoUrl : selfieUrl;
   return (
     <div className="bg-secondary relative aspect-[3/4] w-full overflow-hidden rounded-[32px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -104,7 +109,11 @@ function DualPhoto({
           type="button"
           aria-label="Zamień zdjęcia"
           onClick={() => {
-            setSwapped((value) => !value);
+            if (onSwap === undefined) {
+              setSwapped((value) => !value);
+            } else {
+              onSwap();
+            }
           }}
           className="absolute top-4 left-4 aspect-[3/4] w-[30%] overflow-hidden rounded-[17px] border-[3px] border-white shadow-[0_4px_16px_rgba(0,0,0,0.25)]"
         >
@@ -135,6 +144,8 @@ function CaptureFlow({
   const [photo, setPhoto] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
   const [caption, setCaption] = useState("");
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [fromCamera, setFromCamera] = useState(false);
   const photoUrl = useObjectUrl(photo);
   const selfieUrl = useObjectUrl(selfie);
 
@@ -179,8 +190,35 @@ function CaptureFlow({
     },
   });
 
+  const openCapture = () => {
+    if (canUseInAppCamera()) {
+      setCameraOpen(true);
+    } else {
+      photoInputRef.current?.click();
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 px-5 pt-5 tracking-[-0.01em]">
+      {cameraOpen ? (
+        <BerealCamera
+          prompt={round.prompt}
+          endsAt={round.endsAt}
+          onClose={() => {
+            setCameraOpen(false);
+          }}
+          onCapture={(nextPhoto, nextSelfie) => {
+            setPhoto(nextPhoto);
+            setSelfie(nextSelfie);
+            setFromCamera(true);
+            setCameraOpen(false);
+          }}
+          onFallback={() => {
+            setCameraOpen(false);
+            photoInputRef.current?.click();
+          }}
+        />
+      ) : null}
       <div className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(221deg,#262626_0%,#343434_100%)] p-6 text-white">
         <div
           aria-hidden
@@ -214,6 +252,7 @@ function CaptureFlow({
         className="hidden"
         onChange={(event) => {
           setPhoto(event.target.files?.[0] ?? null);
+          setFromCamera(false);
           event.target.value = "";
         }}
       />
@@ -232,7 +271,7 @@ function CaptureFlow({
       {photoUrl === null ? (
         <button
           type="button"
-          onClick={() => photoInputRef.current?.click()}
+          onClick={openCapture}
           className="bg-card text-foreground flex aspect-[3/4] w-full flex-col items-center justify-center gap-3 rounded-[32px] transition active:scale-[0.99]"
         >
           <span className="flex size-20 items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]">
@@ -240,7 +279,7 @@ function CaptureFlow({
           </span>
           <span className="text-base font-semibold">Zrób zdjęcie</span>
           <span className="text-muted-foreground text-sm font-medium">
-            Najpierw to, co widzisz przed sobą
+            Jedno kliknięcie – przód i tył naraz
           </span>
         </button>
       ) : (
@@ -250,24 +289,36 @@ function CaptureFlow({
               photoUrl={photoUrl}
               selfieUrl={selfieUrl}
               alt="Podgląd"
+              onSwap={
+                selfie === null
+                  ? undefined
+                  : () => {
+                      setPhoto(selfie);
+                      setSelfie(photo);
+                    }
+              }
             />
             <button
               type="button"
-              onClick={() => photoInputRef.current?.click()}
+              onClick={
+                fromCamera ? openCapture : () => photoInputRef.current?.click()
+              }
               className="absolute right-4 bottom-4 flex min-h-10 items-center gap-1.5 rounded-[22px] bg-black/60 px-4 text-xs font-semibold text-white backdrop-blur-sm"
             >
               <RefreshCw className="size-3.5" />
-              Zmień zdjęcie
+              {fromCamera ? "Powtórz" : "Zmień zdjęcie"}
             </button>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => selfieInputRef.current?.click()}
-            className="border-border h-14 rounded-3xl text-base font-semibold"
-          >
-            <SmilePlus />
-            {selfie === null ? "Dodaj selfie (opcjonalnie)" : "Zmień selfie"}
-          </Button>
+          {fromCamera && selfie !== null ? null : (
+            <Button
+              variant="outline"
+              onClick={() => selfieInputRef.current?.click()}
+              className="border-border h-14 rounded-3xl text-base font-semibold"
+            >
+              <SmilePlus />
+              {selfie === null ? "Dodaj selfie (opcjonalnie)" : "Zmień selfie"}
+            </Button>
+          )}
           <div>
             <input
               value={caption}
@@ -288,7 +339,7 @@ function CaptureFlow({
             className="bg-primary text-primary-foreground hover:bg-primary/90 h-[60px] rounded-3xl text-base font-semibold tracking-[0.01em]"
           >
             {mutation.isPending ? <Loader2 className="animate-spin" /> : null}
-            {isActive ? "Wrzuć" : "Wrzuć (spóźniony)"}
+            {isActive ? "Wyślij" : "Wyślij (spóźniony)"}
           </Button>
         </>
       )}
