@@ -159,9 +159,12 @@ export function MobilePushSetting() {
       </div>
       <p className="text-muted-foreground text-sm leading-5 font-medium">
         {note ??
-          (push.error
-            ? "Nie udało się zmienić ustawienia. Spróbuj ponownie."
-            : "Ogłoszenia, rundy BeerReal, matche i wiadomości na tym urządzeniu.")}
+          (push.busy
+            ? // The very first registration with the browser's push service can take a while
+              "Zapisywanie… to może potrwać chwilę."
+            : push.error
+              ? "Nie udało się zmienić ustawienia. Spróbuj ponownie."
+              : "Ogłoszenia, rundy BeerReal, matche i wiadomości na tym urządzeniu.")}
       </p>
     </div>
   );
