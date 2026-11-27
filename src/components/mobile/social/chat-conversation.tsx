@@ -18,9 +18,11 @@ import { toast } from "@/hooks/use-toast";
 import { MobileApiError, mobileApi, mobileKeys } from "@/lib/mobile/client";
 import { cn } from "@/lib/utils";
 import type {
+  MobileChatGif,
   MobileChatMessage,
   MobileChatReplyTo,
   MobileChatRoom,
+  MobileGifSearch,
 } from "@/types/mobile";
 
 import {
@@ -28,6 +30,7 @@ import {
   MessageGestures,
   ReplyQuote,
 } from "./chat-message-actions";
+import { ChatGifImage, GifPicker } from "./gif-picker";
 import { ErrorState, Skeleton } from "./states";
 import { clockTime, dayLabel } from "./time";
 
@@ -41,6 +44,7 @@ function messagesPath(roomUuid: string): string {
 interface PendingMessage {
   temporaryId: string;
   body: string;
+  gif: MobileChatGif | null;
   replyTo: MobileChatReplyTo | null;
   failed: boolean;
 }
@@ -57,7 +61,7 @@ function toReplyTo(message: MobileChatMessage): MobileChatReplyTo {
   return {
     uuid: message.uuid,
     seq: message.seq,
-    body: message.body,
+    body: message.body === "" ? "GIF" : message.body,
     senderName: authorName(message),
     isMine: message.isMine,
   };
@@ -111,6 +115,14 @@ function MessageBubble({
   showAuthor: boolean;
   onQuotePress: (seq: number) => void;
 }) {
+  const gifOnly = message.gif !== null && message.body === "";
+  const gif =
+    message.gif === null ? null : (
+      <ChatGifImage
+        gif={message.gif}
+        className={message.body === "" ? "" : "mb-1.5"}
+      />
+    );
   const quote =
     message.replyTo === null ? null : (
       <ReplyQuote
@@ -126,12 +138,25 @@ function MessageBubble({
   if (message.isMine) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] rounded-3xl rounded-br-lg bg-[var(--mobile-accent)] px-4 py-2.5 text-[var(--mobile-accent-foreground)]">
+        <div
+          className={cn(
+            "max-w-[80%] rounded-3xl rounded-br-lg bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]",
+            gifOnly ? "p-1.5 pb-1" : "px-4 py-2.5",
+          )}
+        >
           {quote}
-          <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
-            {message.body}
-          </p>
-          <p className="mt-0.5 text-right text-[10px] font-semibold text-[var(--mobile-accent-muted)]">
+          {gif}
+          {message.body === "" ? null : (
+            <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
+              {message.body}
+            </p>
+          )}
+          <p
+            className={cn(
+              "mt-0.5 text-right text-[10px] font-semibold text-[var(--mobile-accent-muted)]",
+              gifOnly && "px-2",
+            )}
+          >
             {clockTime(message.createdAt)}
           </p>
         </div>
@@ -152,7 +177,8 @@ function MessageBubble({
       </div>
       <div
         className={cn(
-          "max-w-[78%] rounded-3xl rounded-bl-lg px-4 py-2.5",
+          "max-w-[78%] rounded-3xl rounded-bl-lg",
+          gifOnly ? "p-1.5 pb-1" : "px-4 py-2.5",
           message.isOrganizer
             ? "border-primary bg-background border-2"
             : "bg-card",
@@ -162,6 +188,7 @@ function MessageBubble({
           <p
             className={cn(
               "mb-1 flex items-center gap-1 text-xs font-semibold",
+              gifOnly && "px-2.5 pt-1",
               message.isOrganizer ? "text-foreground" : "text-muted-foreground",
             )}
           >
@@ -180,10 +207,18 @@ function MessageBubble({
           </p>
         ) : null}
         {quote}
-        <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
-          {message.body}
-        </p>
-        <p className="text-muted-foreground mt-0.5 text-right text-[10px] font-semibold">
+        {gif}
+        {message.body === "" ? null : (
+          <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
+            {message.body}
+          </p>
+        )}
+        <p
+          className={cn(
+            "text-muted-foreground mt-0.5 text-right text-[10px] font-semibold",
+            gifOnly && "px-2",
+          )}
+        >
           {clockTime(message.createdAt)}
         </p>
       </div>
@@ -209,6 +244,17 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
   const [menuFor, setMenuFor] = useState<MobileChatMessage | null>(null);
   const [highlighted, setHighlighted] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [gifPickerOpen, setGifPickerOpen] = useState(false);
+
+  // The first trending page tells whether the server has GIFs configured
+  const gifsQuery = useQuery({
+    queryKey: mobileKeys.gifsAvailable(eventSlug),
+    queryFn: async () =>
+      mobileApi<MobileGifSearch>(eventSlug, "chat/gifs?offset=0"),
+    staleTime: 30 * 60_000,
+    retry: false,
+  });
+  const gifsEnabled = gifsQuery.data?.enabled === true;
 
   const roomsQuery = useQuery({
     queryKey: mobileKeys.chatRooms(eventSlug),
@@ -357,15 +403,16 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
     }, 1500);
   };
 
-  const send = async (
-    body: string,
-    temporaryId: string,
-    reply: MobileChatReplyTo | null,
-  ) => {
+  const send = async (message: PendingMessage) => {
+    const { temporaryId, replyTo: reply } = message;
     try {
       const created = await mobileApi<MobileChatMessage>(eventSlug, basePath, {
         method: "POST",
-        json: reply === null ? { body } : { body, replyToUuid: reply.uuid },
+        json: {
+          ...(message.body === "" ? {} : { body: message.body }),
+          ...(message.gif === null ? {} : { gif: message.gif }),
+          ...(reply === null ? {} : { replyToUuid: reply.uuid }),
+        },
       });
       queryClient.setQueryData<MobileChatMessage[]>(messagesKey, (current) =>
         mergeMessages(current ?? [], [created]),
@@ -393,21 +440,33 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
     }
   };
 
+  const enqueue = (body: string, gif: MobileChatGif | null) => {
+    const item: PendingMessage = {
+      temporaryId: `${String(Date.now())}-${String(Math.random())}`,
+      body,
+      gif,
+      replyTo,
+      failed: false,
+    };
+    setPending((items) => [...items, item]);
+    setReplyTo(null);
+    forceScrollRef.current = true;
+    void send(item);
+  };
+
   const submit = () => {
     const body = draft.trim();
     if (body === "" || body.length > MAX_LENGTH) {
       return;
     }
-    const temporaryId = `${String(Date.now())}-${String(Math.random())}`;
-    const reply = replyTo;
-    setPending((items) => [
-      ...items,
-      { temporaryId, body, replyTo: reply, failed: false },
-    ]);
     setDraft("");
-    setReplyTo(null);
-    forceScrollRef.current = true;
-    void send(body, temporaryId, reply);
+    enqueue(body, null);
+  };
+
+  /** A GIF goes out on its own, as the reply if one is being written */
+  const sendGif = (gif: MobileChatGif) => {
+    setGifPickerOpen(false);
+    enqueue("", { url: gif.url, width: gif.width, height: gif.height });
   };
 
   const retry = (item: PendingMessage) => {
@@ -418,7 +477,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           : entry,
       ),
     );
-    void send(item.body, item.temporaryId, item.replyTo);
+    void send({ ...item, failed: false });
   };
 
   const title = room?.title ?? (roomsQuery.isPending ? "" : "Czat");
@@ -563,7 +622,10 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
               <div key={item.temporaryId} className="flex flex-col items-end">
                 <div
                   className={cn(
-                    "max-w-[80%] rounded-3xl rounded-br-lg bg-[var(--mobile-accent)] px-4 py-2.5 text-[var(--mobile-accent-foreground)]",
+                    "max-w-[80%] rounded-3xl rounded-br-lg bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]",
+                    item.gif !== null && item.body === ""
+                      ? "p-1.5"
+                      : "px-4 py-2.5",
                     item.failed ? "opacity-60" : "opacity-75",
                   )}
                 >
@@ -578,9 +640,12 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
                       }}
                     />
                   )}
-                  <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
-                    {item.body}
-                  </p>
+                  {item.gif === null ? null : <ChatGifImage gif={item.gif} />}
+                  {item.body === "" ? null : (
+                    <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
+                      {item.body}
+                    </p>
+                  )}
                 </div>
                 {item.failed ? (
                   <button
@@ -639,6 +704,18 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           </div>
         )}
         <div className="flex items-end gap-2">
+          {gifsEnabled ? (
+            <button
+              type="button"
+              onClick={() => {
+                setGifPickerOpen(true);
+              }}
+              aria-label="Wyślij GIF"
+              className="bg-secondary flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-extrabold tracking-tight transition active:scale-95"
+            >
+              GIF
+            </button>
+          ) : null}
           <textarea
             ref={textareaRef}
             value={draft}
@@ -684,6 +761,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         <MessageActionSheet
           author={menuFor.isMine ? "Ty" : authorName(menuFor)}
           body={menuFor.body}
+          gif={menuFor.gif}
           onReply={() => {
             startReply(menuFor);
           }}
@@ -692,6 +770,15 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           }}
         />
       )}
+
+      {gifPickerOpen ? (
+        <GifPicker
+          onPick={sendGif}
+          onClose={() => {
+            setGifPickerOpen(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

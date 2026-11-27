@@ -192,9 +192,20 @@ export function ChatTab({
                       {message.replyTo.body ?? t("chat.deletedMessage")}
                     </p>
                   )}
-                  <p className="text-sm break-words whitespace-pre-line">
-                    {message.body}
-                  </p>
+                  {message.gif === null ? null : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={message.gif.url}
+                      alt="GIF"
+                      loading="lazy"
+                      className="mt-1 max-h-40 w-auto rounded-md"
+                    />
+                  )}
+                  {message.body === "" ? null : (
+                    <p className="text-sm break-words whitespace-pre-line">
+                      {message.body}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="button"
@@ -207,7 +218,7 @@ export function ChatTab({
                     setReplyTo({
                       uuid: message.uuid,
                       author,
-                      body: message.body,
+                      body: message.body === "" ? "GIF" : message.body,
                     });
                     form.setFocus("body");
                   }}

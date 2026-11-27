@@ -83,6 +83,11 @@ export const mobileKeys = {
     ["mobile", eventSlug, "chat", "rooms"] as const,
   chatMessages: (eventSlug: string, roomUuid: string) =>
     ["mobile", eventSlug, "chat", "rooms", roomUuid, "messages"] as const,
+  /** Whether GIFs are available (the first trending page answers it) */
+  gifsAvailable: (eventSlug: string) =>
+    ["mobile", eventSlug, "chat", "gifs", "available"] as const,
+  gifSearch: (eventSlug: string, query: string) =>
+    ["mobile", eventSlug, "chat", "gifs", "search", query] as const,
   tinderCandidates: (eventSlug: string) =>
     ["mobile", eventSlug, "tinder", "candidates"] as const,
   tinderMatches: (eventSlug: string) =>

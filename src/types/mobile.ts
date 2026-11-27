@@ -141,6 +141,29 @@ export interface MobileChatRoom {
   unreadCount: number;
 }
 
+/** A GIF attached to a chat message (a GIPHY media URL) */
+export interface MobileChatGif {
+  url: string;
+  width: number;
+  height: number;
+}
+
+/** One result of GET /chat/gifs */
+export interface MobileGif extends MobileChatGif {
+  id: string;
+  title: string;
+  /** Smaller rendition for the picker grid */
+  previewUrl: string;
+}
+
+/** GET /chat/gifs?q=&offset= (trending when q is empty) */
+export interface MobileGifSearch {
+  /** False when the server has no GIF provider configured */
+  enabled: boolean;
+  results: MobileGif[];
+  nextOffset: number | null;
+}
+
 /** Short view of the message a reply points to */
 export interface MobileChatReplyTo {
   uuid: string;
@@ -154,8 +177,9 @@ export interface MobileChatReplyTo {
 /**
  * GET /chat/rooms/:roomUuid/messages?afterSeq=&beforeSeq=&limit= (ascending by seq;
  * without a cursor the latest 50). Reading marks the room as read.
- * POST /chat/rooms/:roomUuid/messages { body, replyToUuid? } returns the
- * created message; replyToUuid must be a live message of the same room (400 otherwise).
+ * POST /chat/rooms/:roomUuid/messages { body?, gif?, replyToUuid? } returns the
+ * created message; it needs text or a GIF. replyToUuid must be a live message
+ * of the same room (400 otherwise). A GIF-only message has an empty body.
  */
 export interface MobileChatMessage {
   uuid: string;
@@ -167,6 +191,7 @@ export interface MobileChatMessage {
   isOrganizer: boolean;
   isMine: boolean;
   replyTo: MobileChatReplyTo | null;
+  gif: MobileChatGif | null;
 }
 
 // ---------------------------------------------------------------------------

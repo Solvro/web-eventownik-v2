@@ -4,7 +4,9 @@ import { Copy, Reply } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import type { MobileChatReplyTo } from "@/types/mobile";
+import type { MobileChatGif, MobileChatReplyTo } from "@/types/mobile";
+
+import { ChatGifImage } from "./gif-picker";
 
 /** Distance past which letting go of a swipe starts a reply, in px */
 const REPLY_AT = 56;
@@ -310,11 +312,13 @@ export function ReplyQuote({
 export function MessageActionSheet({
   author,
   body,
+  gif,
   onReply,
   onClose,
 }: {
   author: string;
   body: string;
+  gif: MobileChatGif | null;
   onReply: () => void;
   onClose: () => void;
 }) {
@@ -381,9 +385,14 @@ export function MessageActionSheet({
           <p className="text-muted-foreground text-xs font-semibold">
             {author}
           </p>
-          <p className="line-clamp-4 text-base leading-6 font-medium break-words whitespace-pre-wrap">
-            {body}
-          </p>
+          {gif === null ? null : (
+            <ChatGifImage gif={gif} className="mt-1 w-[140px]" />
+          )}
+          {body === "" ? null : (
+            <p className="line-clamp-4 text-base leading-6 font-medium break-words whitespace-pre-wrap">
+              {body}
+            </p>
+          )}
         </div>
         <div className="bg-card flex flex-col overflow-hidden rounded-3xl">
           <button
@@ -394,15 +403,19 @@ export function MessageActionSheet({
             <Reply className="size-5" aria-hidden />
             Odpowiedz
           </button>
-          <span className="bg-border mx-5 h-px" aria-hidden />
-          <button
-            type="button"
-            onClick={() => void copy()}
-            className="active:bg-secondary flex min-h-14 items-center gap-3 px-5 text-base font-semibold"
-          >
-            <Copy className="size-5" aria-hidden />
-            {copied ? "Skopiowano!" : "Kopiuj tekst"}
-          </button>
+          {body === "" ? null : (
+            <>
+              <span className="bg-border mx-5 h-px" aria-hidden />
+              <button
+                type="button"
+                onClick={() => void copy()}
+                className="active:bg-secondary flex min-h-14 items-center gap-3 px-5 text-base font-semibold"
+              >
+                <Copy className="size-5" aria-hidden />
+                {copied ? "Skopiowano!" : "Kopiuj tekst"}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
