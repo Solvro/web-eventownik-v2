@@ -83,6 +83,13 @@ export function ProfileForm({
         const me = await mobileApi<MobileMe>(eventSlug, "me");
         profile = me.profile ?? profile;
       }
+      // Tinderownik may have been switched on or off: forget its cached answers
+      queryClient.removeQueries({
+        queryKey: mobileKeys.tinderCandidates(eventSlug),
+      });
+      queryClient.removeQueries({
+        queryKey: mobileKeys.tinderMatches(eventSlug),
+      });
       await queryClient.invalidateQueries({
         queryKey: mobileKeys.me(eventSlug),
       });

@@ -229,7 +229,10 @@ function SwipeDeck({ onNoProfile }: { onNoProfile: () => void }) {
     });
   }, [candidatesQuery.data]);
 
-  const noProfile = isNoProfileError(candidatesQuery.error);
+  // A refusal remembered from an earlier visit does not count while a fresh
+  // answer is on its way
+  const noProfile =
+    isNoProfileError(candidatesQuery.error) && !candidatesQuery.isFetching;
   useEffect(() => {
     if (noProfile) {
       onNoProfile();
@@ -523,7 +526,7 @@ function MatchesList({ onNoProfile }: { onNoProfile: () => void }) {
       mobileApi<MobileTinderMatch[]>(eventSlug, "tinder/matches"),
     retry: (count, error) => !isNoProfileError(error) && count < 2,
   });
-  const noProfile = isNoProfileError(query.error);
+  const noProfile = isNoProfileError(query.error) && !query.isFetching;
   useEffect(() => {
     if (noProfile) {
       onNoProfile();
@@ -595,7 +598,13 @@ export function TinderScreen() {
 
   return (
     <MobileScreen title="Tinderownik" backHref={`/${eventSlug}/app`}>
-      {meQuery.isPending ? (
+      {meQuery.isError ? (
+        <ErrorState
+          onRetry={() => {
+            void meQuery.refetch();
+          }}
+        />
+      ) : meQuery.isPending ? (
         // The deck must not ask for candidates before we know whether the
         // participant has joined; that request would be refused
         <div className="flex flex-1 items-center justify-center py-24">
@@ -608,7 +617,7 @@ export function TinderScreen() {
             setNoProfile(false);
           }}
         />
-      ) : noProfile || (meQuery.isSuccess && profile === null) ? (
+      ) : noProfile || profile === null ? (
         <NoProfilePrompt eventSlug={eventSlug} />
       ) : (
         <>
