@@ -26,6 +26,7 @@ import {
   deleteBingoTask,
   updateBingoTask,
 } from "./actions";
+import { BingoCompletions } from "./bingo-completions";
 import {
   DeleteButton,
   EmptyState,
@@ -43,9 +44,12 @@ type BulkValues = z.infer<typeof BulkSchema>;
 function TaskRow({
   eventUuid,
   task,
+  onShowCompletions,
 }: {
   eventUuid: string;
   task: MobileBingoTaskAdmin;
+  /** Filters the completions list below to this task */
+  onShowCompletions: () => void;
 }) {
   const t = useTranslations("MobileAdmin");
   const run = useMobileAction();
@@ -112,9 +116,20 @@ function TaskRow({
       ) : (
         <>
           <p className="min-w-0 flex-1">{task.text}</p>
-          <span className="text-muted-foreground shrink-0 text-sm">
-            {t("bingo.completions", { count: task.completionsCount })}
-          </span>
+          {task.completionsCount === 0 ? (
+            <span className="text-muted-foreground shrink-0 text-sm">
+              {t("bingo.completions", { count: 0 })}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={onShowCompletions}
+              aria-label={t("bingo.showCompletions", { name: task.text })}
+              className="text-muted-foreground hover:text-foreground shrink-0 text-sm underline underline-offset-4"
+            >
+              {t("bingo.completions", { count: task.completionsCount })}
+            </button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -152,6 +167,7 @@ export function BingoTab({
   const run = useMobileAction();
   const required = size * size;
   const sorted = tasks.toSorted((a, b) => a.order - b.order);
+  const [taskFilter, setTaskFilter] = useState<string | null>(null);
 
   const addForm = useForm<TaskValues>({
     resolver: zodResolver(TaskSchema),
@@ -264,10 +280,26 @@ export function BingoTab({
       ) : (
         <ul className="flex flex-col gap-2">
           {sorted.map((task) => (
-            <TaskRow key={task.uuid} eventUuid={eventUuid} task={task} />
+            <TaskRow
+              key={task.uuid}
+              eventUuid={eventUuid}
+              task={task}
+              onShowCompletions={() => {
+                setTaskFilter(task.uuid);
+                document
+                  .querySelector("#bingo-completions")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            />
           ))}
         </ul>
       )}
+      <BingoCompletions
+        eventUuid={eventUuid}
+        tasks={sorted}
+        taskFilter={taskFilter}
+        onTaskFilterChange={setTaskFilter}
+      />
     </div>
   );
 }

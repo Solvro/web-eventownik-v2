@@ -294,6 +294,9 @@ function Leaderboard() {
         <Trophy className="size-5" />
         Ranking
       </h2>
+      <p className="text-muted-foreground -mt-2 mb-4 text-sm font-medium">
+        Przy tej samej liczbie zadań wyżej jest ten, kto zdobył ją pierwszy.
+      </p>
       {query.isPending ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }, (_, index) => (
@@ -328,8 +331,15 @@ function Leaderboard() {
                       : index + 1}
               </span>
               <MobileAvatar person={entry} size={40} />
-              <span className="min-w-0 flex-1 truncate text-base font-semibold">
-                {entry.displayName}
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-base font-semibold">
+                  {entry.displayName}
+                </span>
+                <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                  {format(new Date(entry.lastCompletedAt), "HH:mm:ss", {
+                    locale: pl,
+                  })}
+                </span>
               </span>
               <span className="bg-background rounded-[22px] px-2.5 py-1 text-xs font-bold tabular-nums">
                 {entry.completedCount}
@@ -340,6 +350,23 @@ function Leaderboard() {
       )}
     </section>
   );
+}
+
+/** Polish plural: 1 linia, 2–4 linie (not 12–14), otherwise linii */
+function polishPlural(
+  count: number,
+  one: string,
+  few: string,
+  many: string,
+): string {
+  if (count === 1) {
+    return one;
+  }
+  const lastDigit = count % 10;
+  const lastTwo = count % 100;
+  return lastDigit >= 2 && lastDigit <= 4 && (lastTwo < 12 || lastTwo > 14)
+    ? few
+    : many;
 }
 
 function formatMoment(iso: string): string {
@@ -453,7 +480,7 @@ export function BingoScreen() {
                 <p className="mt-1 text-sm font-semibold text-[var(--mobile-accent-muted)]">
                   {board.bingoLines === 1
                     ? "Masz pełną linię!"
-                    : `Masz ${String(board.bingoLines)} pełne linie!`}
+                    : `Masz ${String(board.bingoLines)} ${polishPlural(board.bingoLines, "pełną linię", "pełne linie", "pełnych linii")}!`}
                 </p>
               </div>
             </div>

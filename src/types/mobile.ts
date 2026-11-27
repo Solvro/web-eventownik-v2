@@ -217,6 +217,8 @@ export interface MobileBingoBoard {
 /** GET /bingo/leaderboard (top 20) */
 export interface MobileBingoLeaderboardEntry extends MobilePerson {
   completedCount: number;
+  /** When they ticked their latest task: with the same count, earlier ranks higher */
+  lastCompletedAt: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -310,6 +312,17 @@ export interface MobileNotificationPayload {
 }
 
 /** /bingo-tasks */
+/** GET /events/:uuid/mobile/bingo-completions: one ticked task, newest first */
+export interface MobileBingoCompletionAdmin {
+  uuid: string;
+  taskUuid: string;
+  taskText: string;
+  participant: MobilePerson & { email: string };
+  photoUrl: string | null;
+  note: string | null;
+  completedAt: string;
+}
+
 export interface MobileBingoTaskAdmin {
   uuid: string;
   text: string;

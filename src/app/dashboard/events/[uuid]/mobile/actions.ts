@@ -11,6 +11,7 @@ import type {
   MobileAppConfigPayload,
   MobileBerealPost,
   MobileBerealRoundAdmin,
+  MobileBingoCompletionAdmin,
   MobileBingoTaskAdmin,
   MobileChatMessage,
   MobileFaqItem,
@@ -236,6 +237,32 @@ export async function deleteMobileNotification(
 }
 
 // Bingo ----------------------------------------------------------------------
+
+export async function getBingoCompletions(
+  eventUuid: string,
+  taskUuid: string | null,
+) {
+  return mobileRequest<MobileBingoCompletionAdmin[]>(
+    eventUuid,
+    taskUuid === null
+      ? "/bingo-completions"
+      : `/bingo-completions?taskUuid=${encodeURIComponent(taskUuid)}`,
+    {},
+    taskUuid === null ? [] : [taskUuid],
+  );
+}
+
+export async function deleteBingoCompletion(
+  eventUuid: string,
+  completionUuid: string,
+) {
+  return mobileRequest<unknown>(
+    eventUuid,
+    `/bingo-completions/${encodeURIComponent(completionUuid)}`,
+    { method: "DELETE" },
+    [completionUuid],
+  );
+}
 
 export async function getBingoTasks(eventUuid: string) {
   return mobileRequest<MobileBingoTaskAdmin[]>(eventUuid, "/bingo-tasks", {});
