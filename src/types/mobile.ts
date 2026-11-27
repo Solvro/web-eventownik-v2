@@ -141,10 +141,21 @@ export interface MobileChatRoom {
   unreadCount: number;
 }
 
+/** Short view of the message a reply points to */
+export interface MobileChatReplyTo {
+  uuid: string;
+  seq: number;
+  /** null when that message was deleted */
+  body: string | null;
+  senderName: string;
+  isMine: boolean;
+}
+
 /**
  * GET /chat/rooms/:roomUuid/messages?afterSeq=&beforeSeq=&limit= (ascending by seq;
  * without a cursor the latest 50). Reading marks the room as read.
- * POST /chat/rooms/:roomUuid/messages { body } returns the created message.
+ * POST /chat/rooms/:roomUuid/messages { body, replyToUuid? } returns the
+ * created message; replyToUuid must be a live message of the same room (400 otherwise).
  */
 export interface MobileChatMessage {
   uuid: string;
@@ -155,6 +166,7 @@ export interface MobileChatMessage {
   sender: MobilePerson | null;
   isOrganizer: boolean;
   isMine: boolean;
+  replyTo: MobileChatReplyTo | null;
 }
 
 // ---------------------------------------------------------------------------

@@ -385,11 +385,20 @@ export async function getChatMessages(eventUuid: string, limit = 100) {
   );
 }
 
-export async function sendChatMessage(eventUuid: string, body: string) {
-  return mobileRequest<MobileChatMessage>(eventUuid, "/chat/messages", {
-    method: "POST",
-    json: { body },
-  });
+export async function sendChatMessage(
+  eventUuid: string,
+  body: string,
+  replyToUuid: string | null = null,
+) {
+  return mobileRequest<MobileChatMessage>(
+    eventUuid,
+    "/chat/messages",
+    {
+      method: "POST",
+      json: replyToUuid === null ? { body } : { body, replyToUuid },
+    },
+    replyToUuid === null ? [] : [replyToUuid],
+  );
 }
 
 export async function deleteChatMessage(

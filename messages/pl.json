@@ -963,7 +963,12 @@
       "organizer": "Organizator",
       "organizerBadge": "Organizator",
       "unknown": "Uczestnik",
-      "deleteMessage": "Usuń wiadomość od {name}"
+      "deleteMessage": "Usuń wiadomość od {name}",
+      "reply": "Odpowiedz: {name}",
+      "replyingTo": "Odpowiadasz: {name}",
+      "cancelReply": "Anuluj odpowiedź",
+      "inReplyTo": "↪ {name}:",
+      "deletedMessage": "wiadomość usunięta"
     },
     "tinder": {
       "title": "Tinderownik",

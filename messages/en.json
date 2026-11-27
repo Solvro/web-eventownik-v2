@@ -964,7 +964,12 @@
       "organizer": "Organizer",
       "organizerBadge": "Organizer",
       "unknown": "Participant",
-      "deleteMessage": "Delete message from {name}"
+      "deleteMessage": "Delete message from {name}",
+      "reply": "Reply to {name}",
+      "replyingTo": "Replying to {name}",
+      "cancelReply": "Cancel reply",
+      "inReplyTo": "↪ {name}:",
+      "deletedMessage": "message deleted"
     },
     "tinder": {
       "title": "Tinderownik",

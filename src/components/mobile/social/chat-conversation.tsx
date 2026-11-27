@@ -1,7 +1,14 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, Megaphone, SendHorizontal } from "lucide-react";
+import {
+  ArrowLeft,
+  Loader2,
+  Megaphone,
+  Reply,
+  SendHorizontal,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import {
   Fragment,
@@ -17,8 +24,17 @@ import { useEventSlug } from "@/components/mobile/use-event-slug";
 import { toast } from "@/hooks/use-toast";
 import { MobileApiError, mobileApi, mobileKeys } from "@/lib/mobile/client";
 import { cn } from "@/lib/utils";
-import type { MobileChatMessage, MobileChatRoom } from "@/types/mobile";
+import type {
+  MobileChatMessage,
+  MobileChatReplyTo,
+  MobileChatRoom,
+} from "@/types/mobile";
 
+import {
+  MessageActionSheet,
+  MessageGestures,
+  ReplyQuote,
+} from "./chat-message-actions";
 import { ErrorState, Skeleton } from "./states";
 import { clockTime, dayLabel } from "./time";
 
@@ -32,7 +48,26 @@ function messagesPath(roomUuid: string): string {
 interface PendingMessage {
   temporaryId: string;
   body: string;
+  replyTo: MobileChatReplyTo | null;
   failed: boolean;
+}
+
+function authorName(message: MobileChatMessage): string {
+  if (message.isOrganizer) {
+    return "Organizator";
+  }
+  return message.sender?.displayName ?? "Uczestnik";
+}
+
+/** The quote a new reply shows before the server answers */
+function toReplyTo(message: MobileChatMessage): MobileChatReplyTo {
+  return {
+    uuid: message.uuid,
+    seq: message.seq,
+    body: message.body,
+    senderName: authorName(message),
+    isMine: message.isMine,
+  };
 }
 
 /**
@@ -77,14 +112,29 @@ function OrganizerAvatar() {
 function MessageBubble({
   message,
   showAuthor,
+  onQuotePress,
 }: {
   message: MobileChatMessage;
   showAuthor: boolean;
+  onQuotePress: (seq: number) => void;
 }) {
+  const quote =
+    message.replyTo === null ? null : (
+      <ReplyQuote
+        replyTo={message.replyTo}
+        onMine={message.isMine}
+        onPress={() => {
+          if (message.replyTo !== null) {
+            onQuotePress(message.replyTo.seq);
+          }
+        }}
+      />
+    );
   if (message.isMine) {
     return (
       <div className="flex justify-end">
         <div className="max-w-[80%] rounded-3xl rounded-br-lg bg-[var(--mobile-accent)] px-4 py-2.5 text-[var(--mobile-accent-foreground)]">
+          {quote}
           <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
             {message.body}
           </p>
@@ -95,9 +145,7 @@ function MessageBubble({
       </div>
     );
   }
-  const name = message.isOrganizer
-    ? "Organizator"
-    : (message.sender?.displayName ?? "Uczestnik");
+  const name = authorName(message);
   return (
     <div className="flex items-end gap-2">
       <div className="w-8 shrink-0">
@@ -138,6 +186,7 @@ function MessageBubble({
             ) : null}
           </p>
         ) : null}
+        {quote}
         <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
           {message.body}
         </p>
@@ -163,6 +212,10 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
   const [draft, setDraft] = useState("");
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [hasOlder, setHasOlder] = useState(true);
+  const [replyTo, setReplyTo] = useState<MobileChatReplyTo | null>(null);
+  const [menuFor, setMenuFor] = useState<MobileChatMessage | null>(null);
+  const [highlighted, setHighlighted] = useState<number | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const roomsQuery = useQuery({
     queryKey: mobileKeys.chatRooms(eventSlug),
@@ -284,11 +337,42 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
     }
   };
 
-  const send = async (body: string, temporaryId: string) => {
+  const startReply = (message: MobileChatMessage) => {
+    setMenuFor(null);
+    setReplyTo(toReplyTo(message));
+    // Still inside the tap or swipe, so phones open the keyboard
+    textareaRef.current?.focus();
+  };
+
+  /** Scrolls to the quoted message and makes it blink, if it is loaded */
+  const showMessage = (seq: number) => {
+    const element = scrollRef.current?.querySelector(
+      `[data-seq="${String(seq)}"]`,
+    );
+    if (element === null || element === undefined) {
+      toast({
+        title: hasOlder
+          ? "Ta wiadomość jest wyżej. Wczytaj starsze, żeby ją zobaczyć."
+          : "Tej wiadomości już nie ma.",
+      });
+      return;
+    }
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHighlighted(seq);
+    globalThis.setTimeout(() => {
+      setHighlighted((current) => (current === seq ? null : current));
+    }, 1500);
+  };
+
+  const send = async (
+    body: string,
+    temporaryId: string,
+    reply: MobileChatReplyTo | null,
+  ) => {
     try {
       const created = await mobileApi<MobileChatMessage>(eventSlug, basePath, {
         method: "POST",
-        json: { body },
+        json: reply === null ? { body } : { body, replyToUuid: reply.uuid },
       });
       queryClient.setQueryData<MobileChatMessage[]>(messagesKey, (current) =>
         mergeMessages(current ?? [], [created]),
@@ -307,7 +391,11 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         title:
           error instanceof MobileApiError && error.status === 429
             ? "Zwolnij trochę! Wysyłasz wiadomości za szybko."
-            : "Nie udało się wysłać wiadomości",
+            : error instanceof MobileApiError &&
+                error.status === 400 &&
+                reply !== null
+              ? "Wiadomość, na którą odpowiadasz, została usunięta"
+              : "Nie udało się wysłać wiadomości",
       });
     }
   };
@@ -318,10 +406,15 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
       return;
     }
     const temporaryId = `${String(Date.now())}-${String(Math.random())}`;
-    setPending((items) => [...items, { temporaryId, body, failed: false }]);
+    const reply = replyTo;
+    setPending((items) => [
+      ...items,
+      { temporaryId, body, replyTo: reply, failed: false },
+    ]);
     setDraft("");
+    setReplyTo(null);
     forceScrollRef.current = true;
-    void send(body, temporaryId);
+    void send(body, temporaryId, reply);
   };
 
   const retry = (item: PendingMessage) => {
@@ -332,7 +425,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           : entry,
       ),
     );
-    void send(item.body, item.temporaryId);
+    void send(item.body, item.temporaryId, item.replyTo);
   };
 
   const title = room?.title ?? (roomsQuery.isPending ? "" : "Czat");
@@ -446,8 +539,29 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
                       </span>
                     </div>
                   ) : null}
-                  <div className={sameAuthor ? "" : "mt-2"}>
-                    <MessageBubble message={message} showAuthor={!sameAuthor} />
+                  <div
+                    data-seq={message.seq}
+                    className={cn(
+                      "-mx-5 px-5 transition-colors duration-500",
+                      sameAuthor ? "" : "mt-2",
+                      highlighted === message.seq &&
+                        "bg-[var(--mobile-accent-soft)]",
+                    )}
+                  >
+                    <MessageGestures
+                      onReply={() => {
+                        startReply(message);
+                      }}
+                      onMenu={() => {
+                        setMenuFor(message);
+                      }}
+                    >
+                      <MessageBubble
+                        message={message}
+                        showAuthor={!sameAuthor}
+                        onQuotePress={showMessage}
+                      />
+                    </MessageGestures>
                   </div>
                 </Fragment>
               );
@@ -460,6 +574,17 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
                     item.failed ? "opacity-60" : "opacity-75",
                   )}
                 >
+                  {item.replyTo === null ? null : (
+                    <ReplyQuote
+                      replyTo={item.replyTo}
+                      onMine
+                      onPress={() => {
+                        if (item.replyTo !== null) {
+                          showMessage(item.replyTo.seq);
+                        }
+                      }}
+                    />
+                  )}
                   <p className="text-base leading-6 font-medium break-words whitespace-pre-wrap">
                     {item.body}
                   </p>
@@ -492,8 +617,37 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         }}
         className="border-border bg-background shrink-0 border-t px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]"
       >
+        {replyTo === null ? null : (
+          <div className="mb-2 flex items-center gap-3 rounded-2xl border-l-[3px] border-[var(--mobile-accent)] bg-[var(--mobile-accent-soft)] py-2 pr-1 pl-3">
+            <Reply
+              className="size-4 shrink-0 text-[var(--mobile-accent)]"
+              aria-hidden
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-[var(--mobile-accent)]">
+                {replyTo.isMine
+                  ? "Odpowiadasz sobie"
+                  : `Odpowiadasz: ${replyTo.senderName}`}
+              </p>
+              <p className="text-muted-foreground truncate text-sm font-medium">
+                {replyTo.body}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setReplyTo(null);
+              }}
+              aria-label="Anuluj odpowiedź"
+              className="text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-full active:bg-black/5"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        )}
         <div className="flex items-end gap-2">
           <textarea
+            ref={textareaRef}
             value={draft}
             onChange={(event) => {
               setDraft(event.target.value.slice(0, MAX_LENGTH));
@@ -506,6 +660,9 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
               ) {
                 event.preventDefault();
                 submit();
+              }
+              if (event.key === "Escape" && replyTo !== null) {
+                setReplyTo(null);
               }
             }}
             rows={1}
@@ -529,6 +686,19 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           </p>
         ) : null}
       </form>
+
+      {menuFor === null ? null : (
+        <MessageActionSheet
+          author={menuFor.isMine ? "Ty" : authorName(menuFor)}
+          body={menuFor.body}
+          onReply={() => {
+            startReply(menuFor);
+          }}
+          onClose={() => {
+            setMenuFor(null);
+          }}
+        />
+      )}
     </div>
   );
 }

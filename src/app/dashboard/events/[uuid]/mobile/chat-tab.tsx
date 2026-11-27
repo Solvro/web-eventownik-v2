@@ -2,10 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Loader, RefreshCw, Send } from "lucide-react";
+import { Loader, RefreshCw, Reply, Send, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -47,6 +47,11 @@ export function ChatTab({
   const router = useRouter();
   const run = useMobileAction();
   const [isRefreshing, startRefresh] = useTransition();
+  const [replyTo, setReplyTo] = useState<{
+    uuid: string;
+    author: string;
+    body: string;
+  } | null>(null);
   const form = useForm<MessageValues>({
     resolver: zodResolver(MessageSchema),
     defaultValues: { body: "" },
@@ -80,14 +85,41 @@ export function ChatTab({
           className="flex flex-col gap-3 rounded-xl border p-4"
           onSubmit={form.handleSubmit(async (values) => {
             const created = await run(
-              sendChatMessage(eventUuid, values.body.trim()),
+              sendChatMessage(
+                eventUuid,
+                values.body.trim(),
+                replyTo?.uuid ?? null,
+              ),
               t("chat.sent"),
             );
             if (created !== null) {
               form.reset();
+              setReplyTo(null);
             }
           })}
         >
+          {replyTo === null ? null : (
+            <div className="bg-muted flex items-start gap-2 rounded-lg border-l-4 border-[var(--event-primary-color)] px-3 py-2 text-sm">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">
+                  {t("chat.replyingTo", { name: replyTo.author })}
+                </p>
+                <p className="text-muted-foreground truncate">{replyTo.body}</p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0"
+                aria-label={t("chat.cancelReply")}
+                onClick={() => {
+                  setReplyTo(null);
+                }}
+              >
+                <X />
+              </Button>
+            </div>
+          )}
           <FormField
             control={form.control}
             name="body"
@@ -146,10 +178,38 @@ export function ChatTab({
                       })}
                     </span>
                   </p>
+                  {message.replyTo === null ? null : (
+                    <p className="text-muted-foreground mt-1 line-clamp-2 border-l-2 pl-2 text-xs">
+                      <span className="font-semibold">
+                        {t("chat.inReplyTo", {
+                          name: message.replyTo.senderName,
+                        })}
+                      </span>{" "}
+                      {message.replyTo.body ?? t("chat.deletedMessage")}
+                    </p>
+                  )}
                   <p className="text-sm break-words whitespace-pre-line">
                     {message.body}
                   </p>
                 </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0"
+                  aria-label={t("chat.reply", { name: author })}
+                  title={t("chat.reply", { name: author })}
+                  onClick={() => {
+                    setReplyTo({
+                      uuid: message.uuid,
+                      author,
+                      body: message.body,
+                    });
+                    form.setFocus("body");
+                  }}
+                >
+                  <Reply />
+                </Button>
                 <DeleteButton
                   label={t("chat.deleteMessage", { name: author })}
                   onConfirm={async () =>
