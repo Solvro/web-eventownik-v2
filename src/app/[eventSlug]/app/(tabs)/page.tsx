@@ -6,6 +6,7 @@ import { pl } from "date-fns/locale";
 import {
   Bell,
   Camera,
+  ChevronRight,
   Clock,
   Flame,
   Grid3x3,
@@ -27,7 +28,11 @@ import {
 import { useMobileMe } from "@/components/mobile/use-me";
 import { mobileApi, mobileKeys } from "@/lib/mobile/client";
 import { cn } from "@/lib/utils";
-import type { MobileNotification, MobileScheduleItem } from "@/types/mobile";
+import type {
+  MobileFeatures,
+  MobileNotification,
+  MobileScheduleItem,
+} from "@/types/mobile";
 
 const HOUR_MS = 60 * 60_000;
 const HOUR_PX = 44;
@@ -46,6 +51,20 @@ function floorHour(time: number): number {
 }
 
 /** Compact day timeline with the current/next schedule items and the red now-line */
+/**
+ * Where an announcement leads when tapped. Only known screens of features that
+ * are switched on; anything else stays a plain announcement.
+ */
+function notificationTarget(
+  link: string | null,
+  features: MobileFeatures,
+): { path: string; label: string } | null {
+  if (link === "bereal" && features.bereal) {
+    return { path: "bereal", label: "Otwórz BeerReal" };
+  }
+  return null;
+}
+
 function UpcomingTimeline({
   items,
   now,
@@ -395,6 +414,7 @@ export default function MobileHomePage() {
           <ul className="flex flex-col gap-4">
             {notifications.data.map((item) => {
               const unread = seenSeq !== null && item.seq > seenSeq;
+              const target = notificationTarget(item.link, features);
               return (
                 <li
                   key={item.uuid}
@@ -420,6 +440,15 @@ export default function MobileHomePage() {
                     <p className="font-semibold">{item.title}</p>
                     <p className="mt-2 whitespace-pre-line">{item.body}</p>
                   </div>
+                  {target === null ? null : (
+                    <Link
+                      href={`${base}/${target.path}`}
+                      className="bg-primary text-primary-foreground flex h-11 w-fit items-center gap-2 rounded-3xl px-5 text-sm font-semibold tracking-[0.01em] transition after:absolute after:inset-0 after:rounded-[32px] active:scale-[0.98]"
+                    >
+                      {target.label}
+                      <ChevronRight className="size-4" aria-hidden />
+                    </Link>
+                  )}
                 </li>
               );
             })}

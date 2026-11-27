@@ -77,6 +77,11 @@ export interface MobileNotification {
   seq: number;
   title: string;
   body: string;
+  /**
+   * Screen of the app the announcement opens when tapped: "bereal" for the
+   * announcement of a new round, null for a plain announcement.
+   */
+  link: string | null;
   createdAt: string;
 }
 
