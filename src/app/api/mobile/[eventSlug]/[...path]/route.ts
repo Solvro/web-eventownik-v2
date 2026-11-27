@@ -70,11 +70,12 @@ async function forward(request: NextRequest, context: RouteContext) {
 
   const hasBody = request.method !== "GET" && request.method !== "HEAD";
 
-  // Writes must come from our own pages. Browsers label every request with
-  // where it came from; anything sent by another site is refused, even one
+  // Requests must come from our own pages. Browsers label every request with
+  // where it came from; anything started by another site is refused, even one
   // on a sibling subdomain that the SameSite cookie rule would let through.
+  // Reads are included because opening a chat also marks it as read.
   const fetchSite = request.headers.get("sec-fetch-site");
-  if (hasBody && (fetchSite === "cross-site" || fetchSite === "same-site")) {
+  if (fetchSite === "cross-site" || fetchSite === "same-site") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

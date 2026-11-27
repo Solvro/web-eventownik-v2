@@ -79,7 +79,13 @@ function NoProfilePrompt({ eventSlug }: { eventSlug: string }) {
 }
 
 /** Shown to participants who have a profile but have not joined Tinderownik yet */
-function JoinPrompt({ profile }: { profile: MobileProfile }) {
+function JoinPrompt({
+  profile,
+  onJoined,
+}: {
+  profile: MobileProfile;
+  onJoined: () => void;
+}) {
   const eventSlug = useEventSlug();
   const queryClient = useQueryClient();
   const [joining, setJoining] = useState(false);
@@ -95,6 +101,7 @@ function JoinPrompt({ profile }: { profile: MobileProfile }) {
           tinderOptIn: true,
         },
       });
+      onJoined();
       await queryClient.invalidateQueries({
         queryKey: mobileKeys.me(eventSlug),
       });
@@ -581,9 +588,20 @@ export function TinderScreen() {
 
   return (
     <MobileScreen title="Tinderownik" backHref={`/${eventSlug}/app`}>
-      {profile !== null && !profile.tinderOptIn ? (
-        <JoinPrompt profile={profile} />
-      ) : noProfile ? (
+      {meQuery.isPending ? (
+        // The deck must not ask for candidates before we know whether the
+        // participant has joined; that request would be refused
+        <div className="flex flex-1 items-center justify-center py-24">
+          <Loader2 className="text-muted-foreground size-6 animate-spin" />
+        </div>
+      ) : profile !== null && !profile.tinderOptIn ? (
+        <JoinPrompt
+          profile={profile}
+          onJoined={() => {
+            setNoProfile(false);
+          }}
+        />
+      ) : noProfile || (meQuery.isSuccess && profile === null) ? (
         <NoProfilePrompt eventSlug={eventSlug} />
       ) : (
         <>

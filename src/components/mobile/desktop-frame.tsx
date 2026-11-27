@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { QRCode } from "react-qr-code";
 
 import { useMobile } from "./mobile-context";
@@ -149,8 +149,12 @@ function SideButton({ className }: { className: string }) {
   );
 }
 
-function PhoneFrame({ source }: { source: string }) {
+function PhoneFrame() {
   const { config } = useMobile();
+  // Read when the frame appears. The iframe keeps the outer address in step
+  // with its own navigation, so a frame that is shown again after the window
+  // was narrowed reopens on the page the visitor was on, not the first one.
+  const source = useMemo(() => globalThis.location.href, []);
   const scale = useDeviceScale();
 
   return (
@@ -247,14 +251,6 @@ function useSyncUrlToParent(isFramed: boolean) {
   }, [isFramed, pathname]);
 }
 
-let initialHref: string | null = null;
-
-/** The address the page was opened at; later navigation happens inside the iframe */
-function getInitialHref(): string {
-  initialHref ??= globalThis.location.href;
-  return initialHref;
-}
-
 /**
  * On a desktop browser the participant app is shown inside a phone frame, as an
  * iframe of the same page, so every screen behaves exactly as on a phone. On
@@ -268,14 +264,9 @@ export function MobileDesktopFrame({
   const isDesktop = useIsDesktop();
   const isFramed = useIsFramed();
   useSyncUrlToParent(isFramed);
-  const source = useSyncExternalStore(
-    subscribeToNothing,
-    getInitialHref,
-    () => "",
-  );
 
-  if (isDesktop && !isFramed && source !== "") {
-    return <PhoneFrame source={source} />;
+  if (isDesktop && !isFramed) {
+    return <PhoneFrame />;
   }
   return children;
 }

@@ -35,7 +35,14 @@ interface PendingMessage {
   failed: boolean;
 }
 
-/** How far behind the newest shown message each poll re-reads */
+/**
+ * Highest message number received from the server, per room. Polling continues
+ * from here, not from the newest message on screen: a message we just sent is
+ * shown immediately and may be numbered well past messages not fetched yet.
+ */
+const syncedSeqByRoom = new Map<string, number>();
+
+/** How far behind the last fetched message each poll re-reads */
 const POLL_OVERLAP = 50;
 
 function mergeMessages(
@@ -178,16 +185,22 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         if (latest.length < PAGE_SIZE) {
           setHasOlder(false);
         }
+        syncedSeqByRoom.set(roomUuid, latest.at(-1)?.seq ?? 0);
         return latest;
       }
-      // Message numbers are handed out before a message is saved, and our own
-      // sent messages land in the cache directly, so a message with a lower
-      // number can appear after a higher one is already shown. Re-reading a
-      // small window behind the newest message picks those up.
-      const lastSeq = previous.at(-1)?.seq ?? 0;
+      // Falls back to the newest cached message after a full page reload
+      const syncedSeq =
+        syncedSeqByRoom.get(roomUuid) ?? previous.at(-1)?.seq ?? 0;
+      // Message numbers are handed out before a message is saved, so one with
+      // a lower number can appear after a higher one was already fetched.
+      // Re-reading a small window behind the cursor picks those up.
       const newer = await mobileApi<MobileChatMessage[]>(
         eventSlug,
-        `${messagesPath(roomUuid)}?afterSeq=${String(Math.max(0, lastSeq - POLL_OVERLAP))}&limit=100`,
+        `${messagesPath(roomUuid)}?afterSeq=${String(Math.max(0, syncedSeq - POLL_OVERLAP))}&limit=100`,
+      );
+      syncedSeqByRoom.set(
+        roomUuid,
+        Math.max(syncedSeq, newer.at(-1)?.seq ?? 0),
       );
       return mergeMessages(
         queryClient.getQueryData<MobileChatMessage[]>(
