@@ -843,6 +843,10 @@
         "berealEnabled": "Rundy wspólnych zdjęć"
       },
       "bingoSize": "Rozmiar planszy bingo",
+      "bingoStartsAt": "Bingo aktywne od",
+      "bingoEndsAt": "Bingo aktywne do",
+      "bingoEndsBeforeStart": "Koniec musi być późniejszy niż początek.",
+      "bingoWindowDescription": "Poza tym czasem uczestnicy widzą planszę, ale nie mogą zaliczać zadań. Puste pola oznaczają brak ograniczenia.",
       "bingoSizeDescription": "Plansza potrzebuje co najmniej rozmiar × rozmiar zadań.",
       "profilesCount": "uczestników dołączyło do aplikacji",
       "participantLink": "Link dla uczestników",

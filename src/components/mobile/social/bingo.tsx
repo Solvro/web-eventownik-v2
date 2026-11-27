@@ -1,11 +1,15 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 import {
   Camera,
   Check,
+  Clock,
   Grid3X3,
   Loader2,
+  Lock,
   PartyPopper,
   Trophy,
   Undo2,
@@ -42,11 +46,15 @@ const MAX_NOTE = 300;
 
 function CellSheet({
   cell,
+  status,
   onClose,
 }: {
   cell: MobileBingoCell | null;
+  /** Outside "active" the task can only be viewed */
+  status: MobileBingoBoard["status"];
   onClose: () => void;
 }) {
+  const readOnly = status !== "active";
   const eventSlug = useEventSlug();
   const { surface } = useMobile();
   const queryClient = useQueryClient();
@@ -136,9 +144,15 @@ function CellSheet({
                 {cell.text}
               </DialogTitle>
               <DialogDescription>
-                {cell.completed
-                  ? "To zadanie masz już zaliczone."
-                  : "Wykonaj zadanie i oznacz je jako zaliczone. Możesz dodać zdjęcie jako dowód."}
+                {readOnly
+                  ? status === "upcoming"
+                    ? "Bingo jeszcze się nie zaczęło. Zadania będzie można zaliczać po starcie."
+                    : cell.completed
+                      ? "To zadanie masz zaliczone. Bingo jest już zakończone."
+                      : "Bingo jest już zakończone, zadań nie można zaliczać."
+                  : cell.completed
+                    ? "To zadanie masz już zaliczone."
+                    : "Wykonaj zadanie i oznacz je jako zaliczone. Możesz dodać zdjęcie jako dowód."}
               </DialogDescription>
             </DialogHeader>
 
@@ -157,7 +171,7 @@ function CellSheet({
               </p>
             ) : null}
 
-            {cell.completed ? (
+            {readOnly ? null : cell.completed ? (
               <Button
                 variant="outline"
                 className="border-border h-[60px] rounded-3xl text-base font-semibold"
@@ -328,12 +342,53 @@ function Leaderboard() {
   );
 }
 
+function formatMoment(iso: string): string {
+  return format(new Date(iso), "d MMM, HH:mm", { locale: pl });
+}
+
+/** Tells the participant when bingo opens, closes, or that it is over */
+function BingoWindowNotice({ board }: { board: MobileBingoBoard }) {
+  if (board.status === "active") {
+    return board.endsAt === null ? null : (
+      <p className="text-muted-foreground flex items-center gap-2 px-1 text-sm font-medium">
+        <Clock className="size-4 shrink-0" aria-hidden />
+        Zadania można zaliczać do {formatMoment(board.endsAt)}
+      </p>
+    );
+  }
+  const upcoming = board.status === "upcoming";
+  return (
+    <div className="bg-card flex items-start gap-3 rounded-[32px] p-5">
+      <span className="bg-secondary text-foreground flex size-11 shrink-0 items-center justify-center rounded-full">
+        {upcoming ? (
+          <Clock className="size-5" aria-hidden />
+        ) : (
+          <Lock className="size-5" aria-hidden />
+        )}
+      </span>
+      <div className="min-w-0">
+        <p className="text-foreground text-base leading-5 font-bold">
+          {upcoming ? "Bingo jeszcze nie wystartowało" : "Bingo zakończone"}
+        </p>
+        <p className="text-muted-foreground mt-1 text-sm leading-5 font-medium">
+          {upcoming
+            ? `Start: ${board.startsAt === null ? "wkrótce" : formatMoment(board.startsAt)}. Do tego czasu możesz obejrzeć swoją planszę.`
+            : "Plansza i ranking są już tylko do podglądu."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function BingoScreen() {
   const eventSlug = useEventSlug();
   const [selected, setSelected] = useState<string | null>(null);
   const query = useQuery({
     queryKey: mobileKeys.bingo(eventSlug),
     queryFn: async () => mobileApi<MobileBingoBoard>(eventSlug, "bingo"),
+    // Picks up the start and the end of the organizer's time window
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
   const selectedCell =
     query.data?.cells.find((cell) => cell.taskUuid === selected) ?? null;
@@ -387,6 +442,7 @@ export function BingoScreen() {
               />
             </div>
           </div>
+          <BingoWindowNotice board={board} />
           {board.hasBingo ? (
             <div className="flex items-center gap-4 rounded-[32px] bg-[var(--mobile-accent)] px-6 py-5 text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]">
               <PartyPopper className="size-8 shrink-0 animate-bounce" />
@@ -450,6 +506,7 @@ export function BingoScreen() {
         <Leaderboard />
         <CellSheet
           cell={selectedCell}
+          status={board.status}
           onClose={() => {
             setSelected(null);
           }}

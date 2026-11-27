@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { Check, Copy, ExternalLink, Save, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -35,19 +36,30 @@ import type { MobileAppConfig } from "@/types/mobile";
 import { updateMobileConfig } from "./actions";
 import { SubmitButton, useMobileAction } from "./shared";
 
-const ConfigSchema = z.object({
-  isEnabled: z.boolean(),
-  welcomeMessage: z.string().max(2000),
-  /** Empty string means "use the event's primary colour" */
-  accentColor: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]),
-  sosEnabled: z.boolean(),
-  scheduleEnabled: z.boolean(),
-  chatEnabled: z.boolean(),
-  tinderEnabled: z.boolean(),
-  bingoEnabled: z.boolean(),
-  berealEnabled: z.boolean(),
-  bingoSize: z.enum(["3", "4", "5"]),
-});
+const ConfigSchema = z
+  .object({
+    isEnabled: z.boolean(),
+    welcomeMessage: z.string().max(2000),
+    /** Empty string means "use the event's primary colour" */
+    accentColor: z.union([z.literal(""), z.string().regex(/^#[0-9a-f]{6}$/i)]),
+    sosEnabled: z.boolean(),
+    scheduleEnabled: z.boolean(),
+    chatEnabled: z.boolean(),
+    tinderEnabled: z.boolean(),
+    bingoEnabled: z.boolean(),
+    berealEnabled: z.boolean(),
+    bingoSize: z.enum(["3", "4", "5"]),
+    /** Values of datetime-local inputs; empty = no limit on that side */
+    bingoStartsAt: z.string(),
+    bingoEndsAt: z.string(),
+  })
+  .refine(
+    (values) =>
+      values.bingoStartsAt === "" ||
+      values.bingoEndsAt === "" ||
+      new Date(values.bingoEndsAt) > new Date(values.bingoStartsAt),
+    { path: ["bingoEndsAt"], message: "bingoEndsBeforeStart" },
+  );
 
 type ConfigValues = z.infer<typeof ConfigSchema>;
 
@@ -63,6 +75,16 @@ const FEATURES = [
   "berealEnabled",
 ] as const;
 
+/** ISO date-time -> value of a datetime-local input in the organizer's time zone */
+function toLocalInput(iso: string | null): string {
+  return iso === null ? "" : format(new Date(iso), "yyyy-MM-dd'T'HH:mm");
+}
+
+/** Value of a datetime-local input -> ISO date-time, null when left empty */
+function fromLocalInput(value: string): string | null {
+  return value === "" ? null : new Date(value).toISOString();
+}
+
 function toFormValues(config: MobileAppConfig): ConfigValues {
   const size = config.bingoSize.toString();
   return {
@@ -76,6 +98,8 @@ function toFormValues(config: MobileAppConfig): ConfigValues {
     bingoEnabled: config.bingoEnabled,
     berealEnabled: config.berealEnabled,
     bingoSize: size === "3" || size === "4" ? size : "5",
+    bingoStartsAt: toLocalInput(config.bingoStartsAt),
+    bingoEndsAt: toLocalInput(config.bingoEndsAt),
   };
 }
 
@@ -111,6 +135,8 @@ export function GeneralTab({
             : values.welcomeMessage.trim(),
         accentColor: values.accentColor === "" ? null : values.accentColor,
         bingoSize: Number(values.bingoSize),
+        bingoStartsAt: fromLocalInput(values.bingoStartsAt),
+        bingoEndsAt: fromLocalInput(values.bingoEndsAt),
       }),
       t("general.saved"),
     );
@@ -293,6 +319,42 @@ export function GeneralTab({
               </FormItem>
             )}
           />
+          <div className="flex flex-col gap-2">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="bingoStartsAt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("general.bingoStartsAt")}</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bingoEndsAt"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>{t("general.bingoEndsAt")}</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                    {fieldState.error === undefined ? null : (
+                      <FormMessage>
+                        {t("general.bingoEndsBeforeStart")}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </div>
+            <p className="text-muted-foreground text-sm">
+              {t("general.bingoWindowDescription")}
+            </p>
+          </div>
           <div>
             <SubmitButton
               isSubmitting={form.formState.isSubmitting}

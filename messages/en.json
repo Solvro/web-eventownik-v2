@@ -844,6 +844,10 @@
         "berealEnabled": "Shared photo rounds"
       },
       "bingoSize": "Bingo board size",
+      "bingoStartsAt": "Bingo active from",
+      "bingoEndsAt": "Bingo active until",
+      "bingoEndsBeforeStart": "The end must be later than the start.",
+      "bingoWindowDescription": "Outside this time participants see the board but cannot tick tasks. Empty fields mean no limit.",
       "bingoSizeDescription": "The board needs at least size × size tasks.",
       "profilesCount": "participants joined the app",
       "participantLink": "Participant link",

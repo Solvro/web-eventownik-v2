@@ -207,6 +207,11 @@ export interface MobileBingoBoard {
   /** Number of complete rows, columns and diagonals */
   bingoLines: number;
   hasBingo: boolean;
+  /** Time window set by the organizer; null = no limit on that side */
+  startsAt: string | null;
+  endsAt: string | null;
+  /** Tasks can be ticked only while "active" */
+  status: "upcoming" | "active" | "ended";
 }
 
 /** GET /bingo/leaderboard (top 20) */
@@ -273,6 +278,9 @@ export interface MobileAppConfig {
   bingoEnabled: boolean;
   berealEnabled: boolean;
   bingoSize: number;
+  /** Bingo can be played only inside this window; null = no limit on that side */
+  bingoStartsAt: string | null;
+  bingoEndsAt: string | null;
   /** Read-only: participants who finished onboarding */
   profilesCount: number;
 }
