@@ -17,7 +17,7 @@ export function OnboardingForm() {
       <h1 className="relative text-center text-2xl leading-[1.2] font-extrabold">
         Witaj na {config.event.name}! 👋🏼
       </h1>
-      <p className="relative mt-3 mb-8 text-center text-base leading-6 font-medium text-[#6F6F6F]">
+      <p className="text-muted-foreground relative mt-3 mb-8 text-center text-base leading-6 font-medium">
         Uzupełnij krótki profil — tak zobaczą Cię inni uczestnicy na czacie i w
         zabawach.
       </p>

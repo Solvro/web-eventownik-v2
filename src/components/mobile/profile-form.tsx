@@ -117,11 +117,11 @@ export function ProfileForm({
             person={{ displayName: displayName || "?", photoUrl }}
             size={112}
           />
-          <span className="absolute right-0 bottom-0 flex size-9 items-center justify-center rounded-full border-2 border-white bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]">
+          <span className="border-background absolute right-0 bottom-0 flex size-9 items-center justify-center rounded-full border-2 bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]">
             <Camera className="size-4" />
           </span>
         </button>
-        <span className="text-xs font-semibold text-[#6F6F6F]">
+        <span className="text-muted-foreground text-xs font-semibold">
           Zdjęcie jest opcjonalne
         </span>
         <input
@@ -145,7 +145,7 @@ export function ProfileForm({
           onChange={(event) => {
             setDisplayName(event.target.value);
           }}
-          className="h-14 rounded-3xl border-none bg-[#F4F4F4] px-5 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)] dark:bg-[#F4F4F4]"
+          className="bg-secondary dark:bg-secondary h-14 rounded-3xl border-none px-5 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm font-semibold">
@@ -158,16 +158,16 @@ export function ProfileForm({
           onChange={(event) => {
             setBio(event.target.value);
           }}
-          className="min-h-28 rounded-3xl border-none bg-[#F4F4F4] px-5 py-4 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)] dark:bg-[#F4F4F4]"
+          className="bg-secondary dark:bg-secondary min-h-28 rounded-3xl border-none px-5 py-4 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
         />
       </label>
       {showTinder ? (
-        <div className="flex items-center justify-between gap-4 rounded-3xl bg-[#F8F8F8] p-5">
+        <div className="bg-card flex items-center justify-between gap-4 rounded-3xl p-5">
           <span className="flex flex-col">
             <label htmlFor="mobile-tinder-opt-in" className="font-semibold">
               Tinderownik
             </label>
-            <span className="text-xs font-semibold text-[#6F6F6F]">
+            <span className="text-muted-foreground text-xs font-semibold">
               Pokazuj mój profil innym uczestnikom do poznawania się
             </span>
           </span>
@@ -186,7 +186,7 @@ export function ProfileForm({
       <Button
         type="submit"
         disabled={saving}
-        className="h-[60px] rounded-3xl bg-[#121212] px-6 text-base font-semibold tracking-[0.01em] text-white hover:bg-[#121212]/90"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 h-[60px] rounded-3xl px-6 text-base font-semibold tracking-[0.01em]"
       >
         {saving ? <Loader2 className="size-5 animate-spin" /> : null}
         {submitLabel}

@@ -18,8 +18,8 @@ export function MobileScreen({
   className?: string;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-white">
-      <header className="sticky top-0 z-20 border-b border-[#E7E7E7] bg-white/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <div className="bg-background flex min-h-dvh flex-col">
+      <header className="border-border bg-background/90 sticky top-0 z-20 border-b px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="flex h-16 w-full items-center gap-2">
           {backHref === undefined ? (
             <span className="w-2" />
@@ -27,7 +27,7 @@ export function MobileScreen({
             <Link
               href={backHref}
               aria-label="Wróć"
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] transition active:scale-95"
+              className="bg-secondary flex size-11 shrink-0 items-center justify-center rounded-full transition active:scale-95"
             >
               <ArrowLeft className="size-5" strokeWidth={2} />
             </Link>

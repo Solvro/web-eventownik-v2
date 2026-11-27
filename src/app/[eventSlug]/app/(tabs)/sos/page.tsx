@@ -53,7 +53,7 @@ export default function MobileSosPage() {
                   <a
                     key={contact.uuid}
                     href={`tel:${contact.phone.replaceAll(/[^\d+]/g, "")}`}
-                    className="flex items-center gap-4 rounded-3xl bg-[#F8F8F8] p-4 transition active:scale-[0.98]"
+                    className="bg-card flex items-center gap-4 rounded-3xl p-4 transition active:scale-[0.98]"
                   >
                     <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[var(--mobile-danger)] text-white shadow-[0_3px_9px_rgba(229,72,77,0.4)]">
                       <Phone className="size-6" />
@@ -66,7 +66,7 @@ export default function MobileSosPage() {
                         {contact.phone}
                       </span>
                       {contact.description === null ? null : (
-                        <span className="text-sm leading-[1.3] font-medium text-[#6F6F6F]">
+                        <span className="text-muted-foreground text-sm leading-[1.3] font-medium">
                           {contact.description}
                         </span>
                       )}
@@ -81,7 +81,7 @@ export default function MobileSosPage() {
           <section>
             <MobileSectionHeading>Najczęstsze pytania</MobileSectionHeading>
             {sos.data.faq.length === 0 ? (
-              <p className="rounded-[32px] bg-[#F8F8F8] p-6 text-base font-medium text-[#6F6F6F]">
+              <p className="bg-card text-muted-foreground rounded-[32px] p-6 text-base font-medium">
                 Brak pytań i odpowiedzi.
               </p>
             ) : (
@@ -96,12 +96,12 @@ export default function MobileSosPage() {
                     <AccordionItem
                       key={item.uuid}
                       value={item.uuid}
-                      className="rounded-3xl border-none bg-[#F8F8F8] px-5"
+                      className="bg-card rounded-3xl border-none px-5"
                     >
-                      <AccordionTrigger className="py-5 text-left text-base leading-[1.2] font-semibold hover:no-underline [&>svg]:size-5 [&>svg]:text-[#121212]">
+                      <AccordionTrigger className="[&>svg]:text-foreground py-5 text-left text-base leading-[1.2] font-semibold hover:no-underline [&>svg]:size-5">
                         {item.question}
                       </AccordionTrigger>
-                      <AccordionContent className="pb-5 text-base leading-6 font-medium whitespace-pre-line text-[#414141]">
+                      <AccordionContent className="pb-5 text-base leading-6 font-medium whitespace-pre-line text-[#414141] dark:text-[#C4C4C4]">
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>

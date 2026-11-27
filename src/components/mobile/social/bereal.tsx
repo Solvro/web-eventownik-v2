@@ -91,7 +91,7 @@ function DualPhoto({
   const main = swapped && selfieUrl !== null ? selfieUrl : photoUrl;
   const inset = swapped ? photoUrl : selfieUrl;
   return (
-    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[32px] bg-[#F4F4F4]">
+    <div className="bg-secondary relative aspect-[3/4] w-full overflow-hidden rounded-[32px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={main}
@@ -233,7 +233,7 @@ function CaptureFlow({
         <button
           type="button"
           onClick={() => photoInputRef.current?.click()}
-          className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-3 rounded-[32px] bg-[#F8F8F8] text-[#121212] transition active:scale-[0.99]"
+          className="bg-card text-foreground flex aspect-[3/4] w-full flex-col items-center justify-center gap-3 rounded-[32px] transition active:scale-[0.99]"
         >
           <span className="flex size-20 items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]">
             <Camera className="size-9" />
@@ -263,7 +263,7 @@ function CaptureFlow({
           <Button
             variant="outline"
             onClick={() => selfieInputRef.current?.click()}
-            className="h-14 rounded-3xl border-[#E4E4E4] text-base font-semibold"
+            className="border-border h-14 rounded-3xl text-base font-semibold"
           >
             <SmilePlus />
             {selfie === null ? "Dodaj selfie (opcjonalnie)" : "Zmień selfie"}
@@ -277,7 +277,7 @@ function CaptureFlow({
               maxLength={MAX_CAPTION}
               placeholder="Dodaj podpis (opcjonalnie)"
               aria-label="Podpis"
-              className="h-14 w-full rounded-3xl bg-[#F4F4F4] px-5 text-base font-medium outline-none placeholder:text-[#868686] focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
+              className="bg-secondary placeholder:text-muted-foreground h-14 w-full rounded-3xl px-5 text-base font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
             />
           </div>
           <Button
@@ -298,7 +298,7 @@ function CaptureFlow({
 
 function LockedFeed() {
   return (
-    <div className="relative mx-5 mt-8 overflow-hidden rounded-[32px] bg-[#F8F8F8]">
+    <div className="bg-card relative mx-5 mt-8 overflow-hidden rounded-[32px]">
       <div className="grid grid-cols-2 gap-2 blur-xl" aria-hidden>
         {Array.from({ length: 4 }, (_, index) => (
           <div
@@ -362,7 +362,7 @@ function Feed({ round }: { round: MobileBerealRound }) {
       {query.data.map((post) => (
         <article
           key={post.uuid}
-          className="flex flex-col gap-4 rounded-[32px] bg-[#F8F8F8] p-4"
+          className="bg-card flex flex-col gap-4 rounded-[32px] p-4"
         >
           <header className="flex items-center gap-3 px-2 pt-2">
             <MobileAvatar person={post.author} size={40} />

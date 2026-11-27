@@ -30,7 +30,7 @@ function RoomRow({
     <li>
       <Link
         href={`/${eventSlug}/app/chats/${room.uuid}`}
-        className="flex items-center gap-4 rounded-3xl bg-[#F4F4F4] px-4 py-4 tracking-[-0.01em] transition active:scale-[0.99] active:bg-[#EDEDED]"
+        className="bg-secondary flex items-center gap-4 rounded-3xl px-4 py-4 tracking-[-0.01em] transition active:scale-[0.99] active:brightness-95"
       >
         {room.type === "EVENT" ? (
           <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]">
@@ -99,7 +99,7 @@ export function ChatRoomList() {
         {Array.from({ length: 6 }, (_, index) => (
           <div
             key={index}
-            className="flex items-center gap-4 rounded-3xl bg-[#F8F8F8] p-4"
+            className="bg-card flex items-center gap-4 rounded-3xl p-4"
           >
             <Skeleton className="size-12 rounded-full" />
             <div className="flex-1 space-y-2">

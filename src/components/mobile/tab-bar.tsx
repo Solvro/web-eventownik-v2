@@ -51,7 +51,7 @@ export function MobileTabBar({
   return (
     <nav
       aria-label="Nawigacja"
-      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md border-t border-[#E7E7E7] bg-white pb-[env(safe-area-inset-bottom)]"
+      className="border-border bg-background fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md border-t pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="flex h-[72px] items-stretch px-2">
         {tabs.map((tab) => {
@@ -66,17 +66,21 @@ export function MobileTabBar({
                 <Link
                   href={tab.href}
                   aria-current={active ? "page" : undefined}
-                  className="flex flex-col items-center gap-2 text-[10px] leading-none font-semibold tracking-normal text-[#2F2F2F]"
+                  className="dark:text-foreground flex flex-col items-center gap-2 text-[10px] leading-none font-semibold tracking-normal text-[#2F2F2F]"
                 >
                   <span
                     className={cn(
-                      "-mt-[19px] flex size-[60px] items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)] ring-4 ring-white transition active:scale-95",
+                      "ring-background -mt-[19px] flex size-[60px] items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)] ring-4 transition active:scale-95",
                       !active && "opacity-90",
                     )}
                   >
                     <Icon className="size-7" strokeWidth={1.8} aria-hidden />
                   </span>
-                  <span className={cn(active ? "text-black" : "opacity-70")}>
+                  <span
+                    className={cn(
+                      active ? "dark:text-foreground text-black" : "opacity-70",
+                    )}
+                  >
                     {tab.label}
                   </span>
                 </Link>
@@ -90,7 +94,9 @@ export function MobileTabBar({
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative flex h-full flex-col items-center justify-center gap-1 text-[10px] leading-none font-semibold tracking-normal transition-colors",
-                  active ? "text-black" : "text-[#2F2F2F]/60",
+                  active
+                    ? "dark:text-foreground text-black"
+                    : "dark:text-foreground/60 text-[#2F2F2F]/60",
                 )}
               >
                 <Icon

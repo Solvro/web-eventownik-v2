@@ -92,10 +92,10 @@ function UpcomingTimeline({
           className="absolute inset-x-0 flex items-center gap-2"
           style={{ top: index * HOUR_PX }}
         >
-          <span className="w-10 shrink-0 text-xs leading-[1.2] font-semibold text-[#6F6F6F]">
+          <span className="text-muted-foreground w-10 shrink-0 text-xs leading-[1.2] font-semibold">
             {format(label, "HH:mm")}
           </span>
-          <span className="h-px flex-1 bg-[#E4E4E4]" />
+          <span className="bg-border h-px flex-1" />
         </div>
       ))}
       {blocks.map(({ item, top, height }) => (
@@ -288,7 +288,7 @@ export default function MobileHomePage() {
       <header className="relative flex flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
           <p className="min-w-0 truncate text-base leading-[1.2] font-semibold">
-            <span className="text-[#414141]">Cześć</span>
+            <span className="text-[#414141] dark:text-[#C4C4C4]">Cześć</span>
             {name === undefined ? "" : `, ${name}`} 👋🏼
           </p>
           <div className="flex shrink-0 items-center gap-4">
@@ -322,7 +322,7 @@ export default function MobileHomePage() {
           <img
             src={config.event.photoUrl}
             alt=""
-            className="h-[245px] w-full rounded-[36px] bg-[#F4F4F4] object-cover"
+            className="bg-secondary h-[245px] w-full rounded-[36px] object-cover"
             onError={() => {
               setPhotoFailed(true);
             }}
@@ -334,7 +334,7 @@ export default function MobileHomePage() {
             {config.event.name}
           </h1>
           {config.app.welcomeMessage === null ? null : (
-            <p className="text-base leading-6 font-medium whitespace-pre-line text-[#6F6F6F]">
+            <p className="text-muted-foreground text-base leading-6 font-medium whitespace-pre-line">
               {config.app.welcomeMessage}
             </p>
           )}
@@ -347,7 +347,7 @@ export default function MobileHomePage() {
             action={
               <Link
                 href={`${base}/schedule`}
-                className="text-xs leading-[1.2] font-semibold text-[#6F6F6F]"
+                className="text-muted-foreground text-xs leading-[1.2] font-semibold"
               >
                 Cały harmonogram→
               </Link>
@@ -357,10 +357,10 @@ export default function MobileHomePage() {
           </MobileSectionHeading>
           <Link
             href={`${base}/schedule`}
-            className="block rounded-[32px] bg-[#F8F8F8] px-6 py-4"
+            className="bg-card block rounded-[32px] px-6 py-4"
           >
             {isToday(upcomingDay) ? null : (
-              <p className="mb-3 text-xs leading-[1.2] font-semibold text-[#6F6F6F] first-letter:uppercase">
+              <p className="text-muted-foreground mb-3 text-xs leading-[1.2] font-semibold first-letter:uppercase">
                 {isTomorrow(upcomingDay)
                   ? "Jutro"
                   : format(upcomingDay, "EEEE, d MMMM", { locale: pl })}
@@ -395,12 +395,12 @@ export default function MobileHomePage() {
                 <li
                   key={item.uuid}
                   className={cn(
-                    "relative flex flex-col gap-3 rounded-[32px] bg-[#F8F8F8] p-6",
+                    "bg-card relative flex flex-col gap-3 rounded-[32px] p-6",
                     unread && "ring-2 ring-[var(--mobile-accent)]",
                   )}
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs leading-[1.2] font-semibold text-[#6F6F6F]">
+                    <p className="text-muted-foreground text-xs leading-[1.2] font-semibold">
                       {formatDistanceToNow(new Date(item.createdAt), {
                         addSuffix: true,
                         locale: pl,
@@ -412,7 +412,7 @@ export default function MobileHomePage() {
                       </span>
                     ) : null}
                   </div>
-                  <div className="text-base leading-6 font-medium text-[#1A1919]">
+                  <div className="text-foreground text-base leading-6 font-medium">
                     <p className="font-semibold">{item.title}</p>
                     <p className="mt-2 whitespace-pre-line">{item.body}</p>
                   </div>

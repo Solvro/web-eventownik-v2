@@ -130,7 +130,7 @@ function JoinPrompt({ profile }: { profile: MobileProfile }) {
 
 function CandidateCard({ candidate }: { candidate: MobileTinderCandidate }) {
   return (
-    <div className="relative size-full overflow-hidden rounded-[32px] bg-[#F8F8F8] tracking-[-0.01em] select-none">
+    <div className="bg-card relative size-full overflow-hidden rounded-[32px] tracking-[-0.01em] select-none">
       {candidate.photoUrl === null ? (
         <div
           className="flex size-full items-center justify-center text-7xl font-extrabold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]"
@@ -348,7 +348,7 @@ function SwipeDeck({ onNoProfile }: { onNoProfile: () => void }) {
     <div className="flex flex-1 flex-col px-5 pt-5">
       <div className="relative mx-auto aspect-[3/4] max-h-[62dvh] w-full">
         {stack.length === 0 ? (
-          <div className="flex size-full items-center justify-center rounded-[32px] bg-[#F8F8F8]">
+          <div className="bg-card flex size-full items-center justify-center rounded-[32px]">
             {isFetching ? (
               <Loader2 className="text-muted-foreground size-8 animate-spin" />
             ) : (
@@ -360,7 +360,7 @@ function SwipeDeck({ onNoProfile }: { onNoProfile: () => void }) {
                 <button
                   type="button"
                   onClick={() => void candidatesQuery.refetch()}
-                  className="flex h-12 items-center rounded-3xl border border-[#E4E4E4] bg-white px-6 text-sm font-semibold"
+                  className="border-border bg-background flex h-12 items-center rounded-3xl border px-6 text-sm font-semibold"
                 >
                   Odśwież
                 </button>
@@ -431,7 +431,7 @@ function SwipeDeck({ onNoProfile }: { onNoProfile: () => void }) {
           onClick={() => {
             flyOut(false);
           }}
-          className="flex size-[68px] items-center justify-center rounded-full border border-[#E4E4E4] bg-white text-[#121212] transition-transform active:scale-90 disabled:opacity-40"
+          className="border-border bg-card text-foreground flex size-[68px] items-center justify-center rounded-full border transition-transform active:scale-90 disabled:opacity-40"
         >
           <X className="size-8" strokeWidth={2.5} />
         </button>
@@ -546,7 +546,7 @@ function MatchesList({ onNoProfile }: { onNoProfile: () => void }) {
         <li key={item.participantUuid}>
           <Link
             href={`/${eventSlug}/app/chats/${item.roomUuid}`}
-            className="flex items-center gap-4 rounded-3xl bg-[#F4F4F4] p-4 tracking-[-0.01em] transition active:scale-[0.99] active:bg-[#EDEDED]"
+            className="bg-secondary flex items-center gap-4 rounded-3xl p-4 tracking-[-0.01em] transition active:scale-[0.99] active:brightness-95"
           >
             <MobileAvatar person={item} size={52} />
             <div className="min-w-0 flex-1">
@@ -588,7 +588,7 @@ export function TinderScreen() {
       ) : (
         <>
           <div className="px-5 pt-4">
-            <div className="grid grid-cols-2 gap-1 rounded-3xl bg-[#F4F4F4] p-1">
+            <div className="bg-secondary grid grid-cols-2 gap-1 rounded-3xl p-1">
               {(
                 [
                   ["swipe", "Odkrywaj"],
@@ -605,7 +605,7 @@ export function TinderScreen() {
                     "min-h-11 rounded-[20px] text-sm font-semibold tracking-[-0.01em] transition-colors",
                     tab === value
                       ? "bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]"
-                      : "text-[#6F6F6F]",
+                      : "text-muted-foreground",
                   )}
                 >
                   {label}

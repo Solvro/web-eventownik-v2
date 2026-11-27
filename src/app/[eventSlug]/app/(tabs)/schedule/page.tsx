@@ -116,8 +116,8 @@ export default function MobileSchedulePage() {
                     className={cn(
                       "flex w-16 shrink-0 flex-col items-center gap-1 rounded-3xl py-3 transition",
                       selected
-                        ? "bg-[#121212] text-white"
-                        : "bg-[#F8F8F8] text-[#121212]",
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-foreground",
                     )}
                   >
                     <span className="text-xl leading-none font-bold">
@@ -126,7 +126,9 @@ export default function MobileSchedulePage() {
                     <span
                       className={cn(
                         "text-xs leading-none font-semibold",
-                        selected ? "text-white/70" : "text-[#6F6F6F]",
+                        selected
+                          ? "text-primary-foreground/70"
+                          : "text-muted-foreground",
                       )}
                     >
                       {format(group.day, "LLL", { locale: pl })}
@@ -141,7 +143,7 @@ export default function MobileSchedulePage() {
               <h2 className="mb-4 text-base leading-[1.2] font-semibold first-letter:uppercase">
                 {format(activeGroup.day, "EEEE, d MMMM", { locale: pl })}
               </h2>
-              <ol className="flex flex-col gap-3 rounded-[32px] bg-[#F8F8F8] px-4 py-5">
+              <ol className="bg-card flex flex-col gap-3 rounded-[32px] px-4 py-5">
                 {activeGroup.items.map((item, index) => {
                   const isCurrent = item.uuid === currentUuid;
                   const isNext = item.uuid === nextUuid;
@@ -168,7 +170,7 @@ export default function MobileSchedulePage() {
                         </div>
                       ) : null}
                       <div className="flex gap-0">
-                        <span className="w-12 shrink-0 pt-3.5 text-xs leading-[1.2] font-semibold text-[#6F6F6F]">
+                        <span className="text-muted-foreground w-12 shrink-0 pt-3.5 text-xs leading-[1.2] font-semibold">
                           {format(start, "HH:mm")}
                         </span>
                         <div
@@ -176,7 +178,7 @@ export default function MobileSchedulePage() {
                             "flex min-w-0 flex-1 flex-col gap-1.5 rounded-[17px] px-[18px] py-3.5",
                             isCurrent || isNext
                               ? "bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]"
-                              : "border border-[#E4E4E4] bg-white",
+                              : "border-border bg-background border",
                           )}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -194,7 +196,7 @@ export default function MobileSchedulePage() {
                               "flex items-center gap-1 text-xs leading-[1.2] font-medium",
                               isCurrent || isNext
                                 ? "text-[var(--mobile-accent-muted)]"
-                                : "text-[#6F6F6F]",
+                                : "text-muted-foreground",
                             )}
                           >
                             <Clock className="size-3.5 shrink-0" />
@@ -209,7 +211,7 @@ export default function MobileSchedulePage() {
                                 "flex items-center gap-1 text-xs leading-[1.2] font-medium",
                                 isCurrent || isNext
                                   ? "text-[var(--mobile-accent-muted)]"
-                                  : "text-[#6F6F6F]",
+                                  : "text-muted-foreground",
                               )}
                             >
                               <MapPin className="size-3.5 shrink-0" />

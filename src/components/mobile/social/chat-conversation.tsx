@@ -106,15 +106,15 @@ function MessageBubble({
         className={cn(
           "max-w-[78%] rounded-3xl rounded-bl-lg px-4 py-2.5",
           message.isOrganizer
-            ? "border-primary border-2 bg-white"
-            : "bg-[#F8F8F8]",
+            ? "border-primary bg-background border-2"
+            : "bg-card",
         )}
       >
         {showAuthor ? (
           <p
             className={cn(
               "mb-1 flex items-center gap-1 text-xs font-semibold",
-              message.isOrganizer ? "text-foreground" : "text-[#6F6F6F]",
+              message.isOrganizer ? "text-foreground" : "text-muted-foreground",
             )}
           >
             {message.isOrganizer ? (
@@ -325,13 +325,13 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
   const title = room?.title ?? (roomsQuery.isPending ? "" : "Czat");
 
   return (
-    <div className="flex h-dvh flex-col bg-white tracking-[-0.01em]">
-      <header className="z-20 flex shrink-0 items-center gap-2 border-b border-[#E7E7E7] bg-white/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <div className="bg-background flex h-dvh flex-col tracking-[-0.01em]">
+      <header className="border-border bg-background/90 z-20 flex shrink-0 items-center gap-2 border-b px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="flex h-16 w-full items-center gap-3">
           <Link
             href={`/${eventSlug}/app/chats`}
             aria-label="Wróć"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] transition active:scale-95"
+            className="bg-secondary flex size-11 shrink-0 items-center justify-center rounded-full transition active:scale-95"
           >
             <ArrowLeft className="size-5" />
           </Link>
@@ -392,7 +392,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
                 type="button"
                 onClick={() => void loadOlder()}
                 disabled={loadingOlder}
-                className="text-muted-foreground mx-auto mb-2 flex min-h-11 items-center gap-2 rounded-3xl border border-[#E4E4E4] bg-white px-5 text-xs font-semibold"
+                className="text-muted-foreground border-border bg-background mx-auto mb-2 flex min-h-11 items-center gap-2 rounded-3xl border px-5 text-xs font-semibold"
               >
                 {loadingOlder ? (
                   <Loader2 className="size-3 animate-spin" />
@@ -422,7 +422,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
                 <Fragment key={message.seq}>
                   {newDay ? (
                     <div className="my-3 flex justify-center">
-                      <span className="rounded-[22px] bg-[#F8F8F8] px-3 py-1 text-xs font-semibold text-[#6F6F6F] first-letter:uppercase">
+                      <span className="bg-card text-muted-foreground rounded-[22px] px-3 py-1 text-xs font-semibold first-letter:uppercase">
                         {dayLabel(message.createdAt)}
                       </span>
                     </div>
@@ -471,7 +471,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           event.preventDefault();
           submit();
         }}
-        className="shrink-0 border-t border-[#E7E7E7] bg-white px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]"
+        className="border-border bg-background shrink-0 border-t px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]"
       >
         <div className="flex items-end gap-2">
           <textarea
@@ -493,7 +493,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
             maxLength={MAX_LENGTH}
             placeholder="Napisz wiadomość…"
             aria-label="Treść wiadomości"
-            className="field-sizing-content max-h-32 min-h-12 flex-1 resize-none rounded-3xl bg-[#F4F4F4] px-5 py-3 text-base font-medium outline-none placeholder:text-[#868686] focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
+            className="bg-secondary placeholder:text-muted-foreground field-sizing-content max-h-32 min-h-12 flex-1 resize-none rounded-3xl px-5 py-3 text-base font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
           />
           <button
             type="submit"

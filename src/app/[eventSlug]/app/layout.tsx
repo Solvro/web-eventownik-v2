@@ -7,7 +7,7 @@ import { MobileDesktopFrame } from "@/components/mobile/desktop-frame";
 import { MobileInstallPrompt } from "@/components/mobile/install-prompt";
 import { MobileProvider } from "@/components/mobile/mobile-context";
 import { getMobilePublicConfig } from "@/lib/mobile/session";
-import { mobileAccent, mobileThemeStyle } from "@/lib/mobile/theme";
+import { mobileThemeStyle } from "@/lib/mobile/theme";
 import { cn } from "@/lib/utils";
 
 const montserrat = Montserrat({
@@ -47,20 +47,16 @@ export async function generateMetadata({
   };
 }
 
-export async function generateViewport({
-  params,
-}: Pick<MobileLayoutProps, "params">): Promise<Viewport> {
-  const { eventSlug } = await params;
-  const config = await loadConfig(eventSlug).catch(() => null);
-  return {
-    width: "device-width",
-    initialScale: 1,
-    viewportFit: "cover",
-    themeColor: mobileAccent(
-      config?.app.accentColor ?? config?.event.primaryColor,
-    ),
-  };
-}
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  // Browser chrome follows the page background of the active colour scheme
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0E0E0E" },
+  ],
+};
 
 export default async function MobileAppLayout({
   children,
@@ -76,7 +72,7 @@ export default async function MobileAppLayout({
     <div
       className={cn(
         montserrat.className,
-        "min-h-dvh bg-white tracking-[-0.01em] text-[#121212] antialiased scheme-light",
+        "mobile-app bg-background text-foreground min-h-dvh tracking-[-0.01em] antialiased",
       )}
       style={mobileThemeStyle(
         config.app.accentColor ?? config.event.primaryColor,
@@ -85,7 +81,7 @@ export default async function MobileAppLayout({
       <MobileProvider eventSlug={eventSlug} config={config}>
         <MobileDesktopFrame>
           {/* Hidden on desktop until the phone frame takes over, to avoid a flash of the bare app */}
-          <div className="relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip bg-white sm:border-x sm:border-[#E7E7E7] [@media(min-width:768px)_and_(hover:hover)_and_(pointer:fine)]:invisible">
+          <div className="bg-background sm:border-border relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip sm:border-x [@media(min-width:768px)_and_(hover:hover)_and_(pointer:fine)]:invisible">
             {children}
             <MobileInstallPrompt />
           </div>

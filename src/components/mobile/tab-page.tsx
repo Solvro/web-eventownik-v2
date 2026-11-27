@@ -14,7 +14,7 @@ export function MobileTabPage({
       <header className="relative mb-8 text-center">
         <h1 className="text-2xl leading-[1.2] font-extrabold">{title}</h1>
         {subtitle === undefined ? null : (
-          <p className="mt-2 text-base leading-[1.2] font-semibold text-[#868686]">
+          <p className="dark:text-muted-foreground mt-2 text-base leading-[1.2] font-semibold text-[#868686]">
             {subtitle}
           </p>
         )}
@@ -29,7 +29,7 @@ export function MobileHeaderGlow() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-[-15%] -top-24 h-[260px] bg-[var(--mobile-accent)] opacity-70 blur-[50px]"
+      className="pointer-events-none absolute inset-x-[-15%] -top-24 h-[260px] bg-[var(--mobile-accent)] opacity-70 blur-[50px] dark:opacity-40"
     />
   );
 }
@@ -60,13 +60,15 @@ export function MobileEmptyState({
   description?: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-[32px] bg-[#F8F8F8] px-6 py-10 text-center">
+    <div className="bg-card flex flex-col items-center gap-3 rounded-[32px] px-6 py-10 text-center">
       <div className="flex size-14 items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)] [&_svg]:size-7">
         {icon}
       </div>
       <p className="text-base font-semibold">{title}</p>
       {description === undefined ? null : (
-        <p className="text-sm font-medium text-[#6F6F6F]">{description}</p>
+        <p className="text-muted-foreground text-sm font-medium">
+          {description}
+        </p>
       )}
     </div>
   );
@@ -78,7 +80,7 @@ export function MobileListSkeleton({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }, (_, index) => (
         <div
           key={index}
-          className="h-24 animate-pulse rounded-[32px] bg-[#F4F4F4]"
+          className="bg-secondary h-24 animate-pulse rounded-[32px]"
         />
       ))}
     </div>
@@ -87,12 +89,12 @@ export function MobileListSkeleton({ rows = 3 }: { rows?: number }) {
 
 export function MobileErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-[32px] bg-[#F8F8F8] px-6 py-8 text-center text-base font-medium text-[#6F6F6F]">
+    <div className="bg-card text-muted-foreground flex flex-col items-center gap-4 rounded-[32px] px-6 py-8 text-center text-base font-medium">
       Nie udało się wczytać danych.
       <button
         type="button"
         onClick={onRetry}
-        className="h-12 rounded-3xl bg-[#121212] px-6 text-base font-semibold tracking-[0.01em] text-white"
+        className="bg-primary text-primary-foreground h-12 rounded-3xl px-6 text-base font-semibold tracking-[0.01em]"
       >
         Spróbuj ponownie
       </button>

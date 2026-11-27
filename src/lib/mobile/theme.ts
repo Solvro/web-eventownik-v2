@@ -33,17 +33,23 @@ function luminance([r, g, b]: [number, number, number]): number {
   return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
 }
 
-/** Readable text colour on top of the accent: dark on light accents, white on dark ones. */
+/** White text is used on the accent whenever it reaches this contrast ratio */
+const MIN_WHITE_CONTRAST = 3;
+
+/**
+ * Readable text colour on top of the accent. White is preferred on saturated
+ * mid-tone colours (blues, reds, greens), where it looks right even though
+ * dark text scores marginally higher; dark text is used only on light accents
+ * such as the design yellow.
+ */
 export function mobileAccentForeground(accent: string): string {
-  const l = luminance(toRgb(accent));
-  const contrastWhite = 1.05 / (l + 0.05);
-  const contrastDark = (l + 0.05) / (luminance(toRgb("#121212")) + 0.05);
-  return contrastDark >= contrastWhite ? "#121212" : "#FFFFFF";
+  const contrastWhite = 1.05 / (luminance(toRgb(accent)) + 0.05);
+  return contrastWhite >= MIN_WHITE_CONTRAST ? "#FFFFFF" : "#121212";
 }
 
 /**
- * CSS variables for the mobile app wrapper. The app is light-only like the design,
- * so the shadcn tokens are pinned to light values here too.
+ * Accent CSS variables for the mobile app wrapper; they are the same in light and dark.
+ * The shadcn colour tokens for both themes live in the `.mobile-app` block of globals.css.
  */
 export function mobileThemeStyle(
   primaryColor: string | null | undefined,
@@ -62,23 +68,5 @@ export function mobileThemeStyle(
         ? "rgba(18, 18, 18, 0.62)"
         : "rgba(255, 255, 255, 0.8)",
     "--mobile-danger": "#E5484D",
-    "--background": "#FFFFFF",
-    "--foreground": "#121212",
-    "--card": "#F8F8F8",
-    "--card-foreground": "#121212",
-    "--popover": "#FFFFFF",
-    "--popover-foreground": "#121212",
-    "--primary": "#121212",
-    "--primary-foreground": "#FFFFFF",
-    "--secondary": "#F4F4F4",
-    "--secondary-foreground": "#121212",
-    "--muted": "#F4F4F4",
-    "--muted-foreground": "#6F6F6F",
-    "--accent": "#F4F4F4",
-    "--accent-foreground": "#121212",
-    "--destructive": "#E5484D",
-    "--border": "#E7E7E7",
-    "--input": "#E4E4E4",
-    "--ring": "#121212",
   } as CSSProperties;
 }

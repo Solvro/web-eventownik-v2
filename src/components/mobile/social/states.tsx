@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function Skeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("animate-pulse rounded-3xl bg-[#F4F4F4]", className)} />
+    <div className={cn("bg-secondary animate-pulse rounded-3xl", className)} />
   );
 }
 
@@ -47,7 +47,7 @@ export function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 px-6 py-16 text-center tracking-[-0.01em]">
-      <div className="flex size-16 items-center justify-center rounded-full bg-[#F8F8F8] text-[var(--mobile-danger)]">
+      <div className="bg-card flex size-16 items-center justify-center rounded-full text-[var(--mobile-danger)]">
         <AlertTriangle className="size-7" />
       </div>
       <p className="text-muted-foreground text-sm font-medium">{message}</p>
@@ -55,7 +55,7 @@ export function ErrorState({
         <Button
           variant="outline"
           onClick={onRetry}
-          className="h-12 rounded-3xl border-[#E4E4E4] px-6 font-semibold"
+          className="border-border h-12 rounded-3xl px-6 font-semibold"
         >
           Spróbuj ponownie
         </Button>

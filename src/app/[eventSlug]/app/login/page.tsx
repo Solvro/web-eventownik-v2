@@ -94,7 +94,7 @@ export default function MobileLoginPage() {
           <img
             src={config.event.photoUrl}
             alt=""
-            className="aspect-square w-full -rotate-3 rounded-[36px] bg-[#F4F4F4] object-cover"
+            className="bg-secondary aspect-square w-full -rotate-3 rounded-[36px] object-cover"
             onError={() => {
               setPhotoFailed(true);
             }}
@@ -112,7 +112,7 @@ export default function MobileLoginPage() {
         <h1 className="text-2xl leading-[1.2] font-extrabold">
           {config.event.name}
         </h1>
-        <p className="text-base leading-6 font-medium text-[#414141]">
+        <p className="text-base leading-6 font-medium text-[#414141] dark:text-[#C4C4C4]">
           {step === "email"
             ? "Zaloguj się adresem e-mail, którego użyłeś przy rejestracji."
             : `Wpisz 6-cyfrowy kod wysłany na ${email}.`}
@@ -140,7 +140,7 @@ export default function MobileLoginPage() {
                 setEmail(event.target.value);
               }}
               placeholder="jan@example.com"
-              className="h-[60px] rounded-3xl border-none bg-[#F4F4F4] px-5 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)] dark:bg-[#F4F4F4]"
+              className="bg-secondary dark:bg-secondary h-[60px] rounded-3xl border-none px-5 text-base font-medium shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
             />
           </label>
           {error === null ? null : (
@@ -151,7 +151,7 @@ export default function MobileLoginPage() {
           <Button
             type="submit"
             disabled={pending || email.trim() === ""}
-            className="h-[60px] rounded-3xl bg-[#121212] px-6 text-base font-semibold tracking-[0.01em] text-white hover:bg-[#121212]/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-[60px] rounded-3xl px-6 text-base font-semibold tracking-[0.01em]"
           >
             {pending ? (
               <Loader2 className="size-5 animate-spin" />
@@ -192,7 +192,7 @@ export default function MobileLoginPage() {
                 }
               }}
               placeholder="000000"
-              className="h-[60px] rounded-3xl border-none bg-[#F4F4F4] text-center font-mono text-2xl tracking-[0.5em] shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)] dark:bg-[#F4F4F4]"
+              className="bg-secondary dark:bg-secondary h-[60px] rounded-3xl border-none text-center font-mono text-2xl tracking-[0.5em] shadow-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
             />
           </label>
           {error === null ? null : (
@@ -203,7 +203,7 @@ export default function MobileLoginPage() {
           <Button
             type="submit"
             disabled={pending || code.length !== 6}
-            className="h-[60px] rounded-3xl bg-[#121212] px-6 text-base font-semibold tracking-[0.01em] text-white hover:bg-[#121212]/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-[60px] rounded-3xl px-6 text-base font-semibold tracking-[0.01em]"
           >
             {pending ? <Loader2 className="size-5 animate-spin" /> : null}
             Zaloguj się
@@ -211,7 +211,7 @@ export default function MobileLoginPage() {
           <Button
             type="button"
             variant="outline"
-            className="h-[60px] rounded-3xl border-[#E4E4E4] bg-white text-base font-semibold text-[#121212] shadow-none hover:bg-[#F8F8F8] dark:bg-white"
+            className="border-border bg-background text-foreground hover:bg-card dark:bg-background dark:hover:bg-card h-[60px] rounded-3xl text-base font-semibold shadow-none"
             disabled={pending || cooldown > 0}
             onClick={() => {
               void sendCode();
@@ -224,7 +224,7 @@ export default function MobileLoginPage() {
           <Button
             type="button"
             variant="ghost"
-            className="h-12 rounded-3xl text-sm font-semibold text-[#6F6F6F] hover:bg-[#F8F8F8]"
+            className="text-muted-foreground hover:bg-card h-12 rounded-3xl text-sm font-semibold"
             onClick={() => {
               setStep("email");
               setError(null);

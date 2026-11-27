@@ -252,7 +252,7 @@ export function MobileInstallPrompt() {
       aria-labelledby="mobile-install-title"
       className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md px-3 pb-[calc(env(safe-area-inset-bottom)+12px)]"
     >
-      <div className="rounded-[32px] border border-[#E7E7E7] bg-[#F8F8F8] p-5 shadow-[0_-8px_40px_rgba(0,0,0,0.16)]">
+      <div className="border-border bg-card rounded-[32px] border p-5 shadow-[0_-8px_40px_rgba(0,0,0,0.16)]">
         <div className="flex items-start gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -267,7 +267,7 @@ export function MobileInstallPrompt() {
             >
               Zainstaluj aplikację
             </h2>
-            <p className="mt-1 text-sm leading-5 font-medium text-[#6F6F6F]">
+            <p className="text-muted-foreground mt-1 text-sm leading-5 font-medium">
               Dodaj „{config.event.name}” do ekranu głównego — będzie zawsze pod
               ręką.
             </p>
@@ -276,7 +276,7 @@ export function MobileInstallPrompt() {
             type="button"
             onClick={dismiss}
             aria-label="Zamknij"
-            className="-mt-1 -mr-1 flex size-9 shrink-0 items-center justify-center rounded-full text-[#6F6F6F] active:bg-[#E7E7E7]"
+            className="text-muted-foreground active:bg-border -mt-1 -mr-1 flex size-9 shrink-0 items-center justify-center rounded-full"
           >
             <X className="size-5" aria-hidden />
           </button>
@@ -288,7 +288,7 @@ export function MobileInstallPrompt() {
             onClick={() => {
               void install();
             }}
-            className="mt-4 flex h-[60px] w-full items-center justify-center gap-2 rounded-3xl bg-[#121212] text-base font-semibold tracking-[0.01em] text-white active:opacity-90"
+            className="bg-primary text-primary-foreground mt-4 flex h-[60px] w-full items-center justify-center gap-2 rounded-3xl text-base font-semibold tracking-[0.01em] active:opacity-90"
           >
             <Download className="size-5" aria-hidden />
             Zainstaluj
@@ -302,7 +302,7 @@ export function MobileInstallPrompt() {
         <button
           type="button"
           onClick={dismiss}
-          className="mt-3 h-11 w-full rounded-3xl text-sm font-semibold text-[#6F6F6F] active:bg-[#E7E7E7]"
+          className="text-muted-foreground active:bg-border mt-3 h-11 w-full rounded-3xl text-sm font-semibold"
         >
           Nie teraz
         </button>

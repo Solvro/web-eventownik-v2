@@ -29,7 +29,7 @@ export function MobileAvatar({
         alt={person.displayName}
         style={style}
         className={cn(
-          "shrink-0 rounded-full bg-[#F4F4F4] object-cover",
+          "bg-secondary shrink-0 rounded-full object-cover",
           className,
         )}
         loading="lazy"

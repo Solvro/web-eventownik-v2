@@ -395,3 +395,54 @@
     @slot;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Participant mobile app (src/app/[eventSlug]/app): shadcn colour tokens for
+ * light and dark, scoped to the `.mobile-app` wrapper. The accent variables
+ * (--mobile-accent*, --mobile-danger, --event-primary-color) are set inline
+ * by src/lib/mobile/theme.ts and are the same in both themes.
+ * ------------------------------------------------------------------------- */
+.mobile-app {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #121212;
+  --card: #f8f8f8;
+  --card-foreground: #121212;
+  --popover: #ffffff;
+  --popover-foreground: #121212;
+  --primary: #121212;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #121212;
+  --muted: #f4f4f4;
+  --muted-foreground: #6f6f6f;
+  --accent: #f4f4f4;
+  --accent-foreground: #121212;
+  --destructive: #e5484d;
+  --border: #e7e7e7;
+  --input: #e7e7e7;
+  --ring: #121212;
+}
+
+.dark .mobile-app {
+  color-scheme: dark;
+  --background: #0e0e0e;
+  --foreground: #f5f5f5;
+  --card: #1a1a1a;
+  --card-foreground: #f5f5f5;
+  --popover: #1a1a1a;
+  --popover-foreground: #f5f5f5;
+  --primary: #f5f5f5;
+  --primary-foreground: #121212;
+  --secondary: #232323;
+  --secondary-foreground: #f5f5f5;
+  --muted: #232323;
+  --muted-foreground: #a3a3a3;
+  --accent: #232323;
+  --accent-foreground: #f5f5f5;
+  --destructive: #e5484d;
+  --border: #2c2c2c;
+  --input: #2c2c2c;
+  --ring: #f5f5f5;
+}
+/* ----------------------------- end mobile app ----------------------------- */

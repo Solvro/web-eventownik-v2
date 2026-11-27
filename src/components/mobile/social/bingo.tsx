@@ -137,7 +137,7 @@ function CellSheet({
             {cell.completed ? (
               <Button
                 variant="outline"
-                className="h-[60px] rounded-3xl border-[#E4E4E4] text-base font-semibold"
+                className="border-border h-[60px] rounded-3xl text-base font-semibold"
                 disabled={mutation.isPending}
                 onClick={() => {
                   mutation.mutate({ taskUuid: cell.taskUuid, complete: false });
@@ -167,7 +167,7 @@ function CellSheet({
                   <button
                     type="button"
                     onClick={() => inputRef.current?.click()}
-                    className="text-muted-foreground flex h-28 flex-col items-center justify-center gap-2 rounded-3xl bg-[#F4F4F4] text-sm font-semibold transition active:scale-[0.99]"
+                    className="text-muted-foreground bg-secondary flex h-28 flex-col items-center justify-center gap-2 rounded-3xl text-sm font-semibold transition active:scale-[0.99]"
                   >
                     <Camera className="size-6" />
                     Dodaj zdjęcie (opcjonalnie)
@@ -254,7 +254,7 @@ function Leaderboard() {
               key={entry.participantUuid}
               className={cn(
                 "flex items-center gap-3 rounded-3xl px-4 py-3",
-                index === 0 ? "bg-[var(--mobile-accent-soft)]" : "bg-[#F8F8F8]",
+                index === 0 ? "bg-[var(--mobile-accent-soft)]" : "bg-card",
               )}
             >
               <span className="w-6 text-center text-sm font-bold tabular-nums">
@@ -270,7 +270,7 @@ function Leaderboard() {
               <span className="min-w-0 flex-1 truncate text-base font-semibold">
                 {entry.displayName}
               </span>
-              <span className="rounded-[22px] bg-white px-2.5 py-1 text-xs font-bold tabular-nums">
+              <span className="bg-background rounded-[22px] px-2.5 py-1 text-xs font-bold tabular-nums">
                 {entry.completedCount}
               </span>
             </li>
@@ -375,7 +375,7 @@ export function BingoScreen() {
                     : "rounded-[20px] text-[11px]",
                   cell.completed
                     ? "bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]"
-                    : "bg-[#F8F8F8] text-[#121212]",
+                    : "bg-card text-foreground",
                 )}
               >
                 {cell.completed && cell.photoUrl !== null ? (
@@ -392,7 +392,7 @@ export function BingoScreen() {
                 </span>
                 {cell.completed ? (
                   <Check
-                    className="absolute top-1 right-1 size-4 rounded-full bg-[#121212] p-0.5 text-white"
+                    className="bg-primary text-primary-foreground absolute top-1 right-1 size-4 rounded-full p-0.5"
                     strokeWidth={4}
                   />
                 ) : null}
