@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
+import { MobileDesktopFrame } from "@/components/mobile/desktop-frame";
 import { MobileInstallPrompt } from "@/components/mobile/install-prompt";
 import { MobileProvider } from "@/components/mobile/mobile-context";
 import { getMobilePublicConfig } from "@/lib/mobile/session";
@@ -81,12 +82,15 @@ export default async function MobileAppLayout({
         config.app.accentColor ?? config.event.primaryColor,
       )}
     >
-      <div className="relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip bg-white sm:border-x sm:border-[#E7E7E7]">
-        <MobileProvider eventSlug={eventSlug} config={config}>
-          {children}
-          <MobileInstallPrompt />
-        </MobileProvider>
-      </div>
+      <MobileProvider eventSlug={eventSlug} config={config}>
+        <MobileDesktopFrame>
+          {/* Hidden on desktop until the phone frame takes over, to avoid a flash of the bare app */}
+          <div className="relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip bg-white sm:border-x sm:border-[#E7E7E7] [@media(min-width:768px)_and_(hover:hover)_and_(pointer:fine)]:invisible">
+            {children}
+            <MobileInstallPrompt />
+          </div>
+        </MobileDesktopFrame>
+      </MobileProvider>
     </div>
   );
 }
