@@ -68,12 +68,19 @@ export default async function DashboardEventMobilePage({
 
   const event = (await eventResponse.json()) as Event;
 
+  // Proxies may send several comma-separated values; only the first is the
+  // visitor-facing one, and the scheme is limited to http(s)
   const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const firstValue = (name: string) =>
+    requestHeaders.get(name)?.split(",")[0]?.trim() ?? null;
+  const host = firstValue("x-forwarded-host") ?? firstValue("host");
+  const forwardedProtocol = firstValue("x-forwarded-proto");
   const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host?.startsWith("localhost") === true ? "http" : "https");
+    forwardedProtocol === "http" || forwardedProtocol === "https"
+      ? forwardedProtocol
+      : host?.startsWith("localhost") === true
+        ? "http"
+        : "https";
   const origin = host === null ? "" : `${protocol}://${host}`;
 
   return (

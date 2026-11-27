@@ -32,7 +32,7 @@ import {
   useMobileAction,
 } from "./shared";
 
-const MessageSchema = z.object({ body: z.string().trim().min(1).max(2000) });
+const MessageSchema = z.object({ body: z.string().trim().min(1).max(1000) });
 type MessageValues = z.infer<typeof MessageSchema>;
 
 export function ChatTab({

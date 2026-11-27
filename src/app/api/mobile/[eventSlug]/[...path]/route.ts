@@ -62,7 +62,8 @@ async function forward(request: NextRequest, context: RouteContext) {
     !MOBILE_SLUG_PATTERN.test(eventSlug) ||
     path.length === 0 ||
     path.some((segment) => !MOBILE_SLUG_PATTERN.test(segment)) ||
-    path[0] === "auth"
+    // Backend routes match case-insensitively
+    path[0].toLowerCase() === "auth"
   ) {
     return NextResponse.json({ message: "Bad request" }, { status: 400 });
   }

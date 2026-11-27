@@ -45,6 +45,12 @@ export async function requestOtp(
         error: "Za dużo prób. Odczekaj chwilę i spróbuj ponownie.",
       };
     }
+    if (response.status >= 500) {
+      return {
+        ok: false,
+        error: "Nie udało się wysłać kodu. Spróbuj ponownie za chwilę.",
+      };
+    }
     if (!response.ok) {
       const body: unknown = await response.json().catch(() => null);
       return {
