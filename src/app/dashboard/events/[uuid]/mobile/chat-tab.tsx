@@ -99,7 +99,11 @@ export function ChatTab({
           })}
         >
           {replyTo === null ? null : (
-            <div className="bg-muted flex items-start gap-2 rounded-lg border-l-4 border-[var(--event-primary-color)] px-3 py-2 text-sm">
+            <div className="bg-muted flex items-start gap-3 rounded-lg px-3 py-2 text-sm">
+              <span
+                aria-hidden
+                className="w-1 shrink-0 self-stretch rounded-full bg-[var(--event-primary-color)]"
+              />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
                   {t("chat.replyingTo", { name: replyTo.author })}

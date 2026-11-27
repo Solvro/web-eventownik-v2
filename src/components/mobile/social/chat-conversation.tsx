@@ -1,14 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Loader2,
-  Megaphone,
-  Reply,
-  SendHorizontal,
-  X,
-} from "lucide-react";
+import { ArrowLeft, Loader2, Megaphone, SendHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import {
   Fragment,
@@ -473,7 +466,7 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4"
+        className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-5 py-4"
       >
         {messagesQuery.isPending ? (
           <div className="space-y-3">
@@ -618,10 +611,10 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         className="border-border bg-background shrink-0 border-t px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]"
       >
         {replyTo === null ? null : (
-          <div className="mb-2 flex items-center gap-3 rounded-2xl border-l-[3px] border-[var(--mobile-accent)] bg-[var(--mobile-accent-soft)] py-2 pr-1 pl-3">
-            <Reply
-              className="size-4 shrink-0 text-[var(--mobile-accent)]"
+          <div className="bg-secondary mb-2 flex items-center gap-3 rounded-3xl py-2.5 pr-1.5 pl-3">
+            <span
               aria-hidden
+              className="w-[3px] shrink-0 self-stretch rounded-full bg-[var(--mobile-accent)]"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-bold text-[var(--mobile-accent)]">

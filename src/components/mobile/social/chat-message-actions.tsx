@@ -24,7 +24,8 @@ function buzz() {
 }
 
 interface Gesture {
-  pointerId: number;
+  /** Touch identifier, or -1 for the mouse */
+  id: number;
   startX: number;
   startY: number;
   mode: "pending" | "swipe" | "scroll";
@@ -35,6 +36,10 @@ interface Gesture {
 /**
  * Swipe a message to the right to reply to it, or hold it (right-click on a
  * computer) to open its menu. Vertical movement is left to the list's scroll.
+ *
+ * Touch goes through native touch listeners, not pointer events: only a
+ * non-passive touchmove can stop the browser from turning a slightly diagonal
+ * swipe into a scroll, which would otherwise cancel the swipe halfway (iOS).
  */
 export function MessageGestures({
   onReply,
@@ -46,100 +51,172 @@ export function MessageGestures({
   children: React.ReactNode;
 }) {
   const [offset, setOffset] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
   const gesture = useRef<Gesture | null>(null);
   /** Swallows the click that follows a hold or a swipe */
   const suppressClick = useRef(false);
+  // The native listeners are attached once; they read the latest callbacks here
+  const callbacks = useRef({ onReply, onMenu });
+  useEffect(() => {
+    callbacks.current = { onReply, onMenu };
+  });
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (root === null) {
+      return;
+    }
+
+    const start = (id: number, x: number, y: number) => {
+      globalThis.clearTimeout(gesture.current?.timer);
+      suppressClick.current = false;
+      const timer = globalThis.setTimeout(() => {
+        if (gesture.current?.mode === "pending") {
+          gesture.current = null;
+          suppressClick.current = true;
+          buzz();
+          callbacks.current.onMenu();
+        }
+      }, HOLD_MS);
+      gesture.current = {
+        id,
+        startX: x,
+        startY: y,
+        mode: "pending",
+        timer,
+        passedThreshold: false,
+      };
+    };
+
+    /** Returns true when the movement belongs to the swipe, not the page */
+    const move = (id: number, x: number, y: number): boolean => {
+      const current = gesture.current;
+      if (current?.id !== id) {
+        return false;
+      }
+      const dx = x - current.startX;
+      const dy = y - current.startY;
+      if (current.mode === "pending") {
+        const horizontal = dx > 0 && Math.abs(dx) > Math.abs(dy);
+        if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) {
+          // Too early to tell; keep the browser from starting a scroll
+          // while the finger is heading sideways
+          return horizontal;
+        }
+        globalThis.clearTimeout(current.timer);
+        if (horizontal) {
+          current.mode = "swipe";
+        } else {
+          current.mode = "scroll";
+          return false;
+        }
+      }
+      if (current.mode !== "swipe") {
+        return false;
+      }
+      // Follows the finger at first, then resists towards the end
+      const travel = Math.max(0, dx - SLOP);
+      const next = Math.min(
+        MAX_OFFSET,
+        travel < REPLY_AT ? travel : REPLY_AT + (travel - REPLY_AT) * 0.3,
+      );
+      if (next >= REPLY_AT && !current.passedThreshold) {
+        current.passedThreshold = true;
+        buzz();
+      } else if (next < REPLY_AT) {
+        current.passedThreshold = false;
+      }
+      setOffset(next);
+      return true;
+    };
+
+    const end = (commit: boolean) => {
+      const current = gesture.current;
+      if (current === null) {
+        return;
+      }
+      globalThis.clearTimeout(current.timer);
+      gesture.current = null;
+      if (current.mode === "swipe") {
+        suppressClick.current = true;
+        if (commit && current.passedThreshold) {
+          callbacks.current.onReply();
+        }
+      }
+      setOffset(0);
+    };
+
+    const findTouch = (event: TouchEvent): Touch | undefined => {
+      const id = gesture.current?.id;
+      return [...event.changedTouches].find((touch) => touch.identifier === id);
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        end(false);
+        return;
+      }
+      const touch = event.touches[0];
+      start(touch.identifier, touch.clientX, touch.clientY);
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = findTouch(event);
+      if (
+        touch !== undefined &&
+        move(touch.identifier, touch.clientX, touch.clientY) &&
+        event.cancelable
+      ) {
+        event.preventDefault();
+      }
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (findTouch(event) !== undefined) {
+        end(event.type === "touchend");
+      }
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button === 0) {
+        start(-1, event.clientX, event.clientY);
+      }
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && gesture.current?.id === -1) {
+        move(-1, event.clientX, event.clientY);
+      }
+    };
+    const onPointerUp = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && gesture.current?.id === -1) {
+        end(event.type === "pointerup");
+      }
+    };
+
+    root.addEventListener("touchstart", onTouchStart, { passive: true });
+    root.addEventListener("touchmove", onTouchMove, { passive: false });
+    root.addEventListener("touchend", onTouchEnd);
+    root.addEventListener("touchcancel", onTouchEnd);
+    root.addEventListener("pointerdown", onPointerDown);
+    // The mouse may leave the message while dragging
+    globalThis.addEventListener("pointermove", onPointerMove);
+    globalThis.addEventListener("pointerup", onPointerUp);
+    globalThis.addEventListener("pointercancel", onPointerUp);
     return () => {
       globalThis.clearTimeout(gesture.current?.timer);
+      root.removeEventListener("touchstart", onTouchStart);
+      root.removeEventListener("touchmove", onTouchMove);
+      root.removeEventListener("touchend", onTouchEnd);
+      root.removeEventListener("touchcancel", onTouchEnd);
+      root.removeEventListener("pointerdown", onPointerDown);
+      globalThis.removeEventListener("pointermove", onPointerMove);
+      globalThis.removeEventListener("pointerup", onPointerUp);
+      globalThis.removeEventListener("pointercancel", onPointerUp);
     };
   }, []);
 
-  const end = (commit: boolean) => {
-    const current = gesture.current;
-    if (current === null) {
-      return;
-    }
-    globalThis.clearTimeout(current.timer);
-    gesture.current = null;
-    if (current.mode === "swipe") {
-      suppressClick.current = true;
-      if (commit && current.passedThreshold) {
-        onReply();
-      }
-    }
-    setOffset(0);
-  };
-
   return (
     <div
+      ref={rootRef}
       className="relative touch-pan-y select-none [-webkit-touch-callout:none]"
-      onPointerDown={(event) => {
-        if (event.pointerType === "mouse" && event.button !== 0) {
-          return;
-        }
-        suppressClick.current = false;
-        const timer = globalThis.setTimeout(() => {
-          if (gesture.current?.mode === "pending") {
-            gesture.current = null;
-            suppressClick.current = true;
-            buzz();
-            onMenu();
-          }
-        }, HOLD_MS);
-        gesture.current = {
-          pointerId: event.pointerId,
-          startX: event.clientX,
-          startY: event.clientY,
-          mode: "pending",
-          timer,
-          passedThreshold: false,
-        };
-      }}
-      onPointerMove={(event) => {
-        const current = gesture.current;
-        if (current?.pointerId !== event.pointerId) {
-          return;
-        }
-        const dx = event.clientX - current.startX;
-        const dy = event.clientY - current.startY;
-        if (current.mode === "pending") {
-          if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) {
-            return;
-          }
-          globalThis.clearTimeout(current.timer);
-          if (dx > 0 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-            current.mode = "swipe";
-            event.currentTarget.setPointerCapture(event.pointerId);
-          } else {
-            current.mode = "scroll";
-            return;
-          }
-        }
-        if (current.mode !== "swipe") {
-          return;
-        }
-        // Follows the finger at first, then resists towards the end
-        const travel = Math.max(0, dx - SLOP);
-        const next = Math.min(
-          MAX_OFFSET,
-          travel < REPLY_AT ? travel : REPLY_AT + (travel - REPLY_AT) * 0.3,
-        );
-        if (next >= REPLY_AT && !current.passedThreshold) {
-          current.passedThreshold = true;
-          buzz();
-        } else if (next < REPLY_AT) {
-          current.passedThreshold = false;
-        }
-        setOffset(next);
-      }}
-      onPointerUp={() => {
-        end(true);
-      }}
-      onPointerCancel={() => {
-        end(false);
-      }}
       onContextMenu={(event) => {
         // Right-click, and the long press of Android browsers
         event.preventDefault();
@@ -192,28 +269,38 @@ export function ReplyQuote({
       type="button"
       onClick={onPress}
       className={cn(
-        "mb-1.5 block w-full rounded-xl border-l-[3px] px-2.5 py-1.5 text-left",
-        onMine
-          ? "border-[var(--mobile-accent-foreground)] bg-black/10"
-          : "bg-secondary border-[var(--mobile-accent)]",
+        "mb-1.5 flex w-full gap-2 rounded-2xl py-2 pr-3 pl-2 text-left",
+        onMine ? "bg-black/15" : "bg-secondary",
       )}
     >
+      {/* A separate bar, not a left border: a border bends with the corners */}
       <span
+        aria-hidden
         className={cn(
-          "block truncate text-xs font-bold",
-          onMine ? "" : "text-[var(--mobile-accent)]",
+          "w-[3px] shrink-0 self-stretch rounded-full",
+          onMine
+            ? "bg-[var(--mobile-accent-foreground)]/70"
+            : "bg-[var(--mobile-accent)]",
         )}
-      >
-        {replyTo.isMine ? "Ty" : replyTo.senderName}
-      </span>
-      <span
-        className={cn(
-          "line-clamp-2 text-sm leading-5 font-medium break-words",
-          onMine ? "opacity-80" : "text-muted-foreground",
-          replyTo.body === null && "italic",
-        )}
-      >
-        {replyTo.body ?? "Wiadomość została usunięta"}
+      />
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            "block truncate text-xs font-bold",
+            onMine ? "" : "text-[var(--mobile-accent)]",
+          )}
+        >
+          {replyTo.isMine ? "Ty" : replyTo.senderName}
+        </span>
+        <span
+          className={cn(
+            "line-clamp-2 text-sm leading-5 font-medium break-words",
+            onMine ? "opacity-80" : "text-muted-foreground",
+            replyTo.body === null && "italic",
+          )}
+        >
+          {replyTo.body ?? "Wiadomość została usunięta"}
+        </span>
       </span>
     </button>
   );
