@@ -801,7 +801,7 @@
       "schedule": "Schedule",
       "notifications": "Notifications",
       "bingo": "Bingo",
-      "bereal": "BeReal",
+      "bereal": "BeerReal",
       "chat": "Chat"
     },
     "save": "Save",
@@ -822,7 +822,7 @@
       "enabledDescription": "Participants can sign in to the app with the email they registered with.",
       "welcomeMessage": "Welcome message",
       "accentColor": "App accent colour",
-      "accentColorDefault": "Event colour",
+      "accentColorDefault": "Event colour ({color})",
       "accentColorReset": "Use the event colour",
       "accentColorDescription": "Colour of buttons and accents in the participant app. By default the event colour from personalization is used.",
       "welcomeMessagePlaceholder": "E.g. Hi! Great to see you at the event.",
@@ -833,7 +833,7 @@
         "chatEnabled": "Chats",
         "tinderEnabled": "Tinderownik",
         "bingoEnabled": "Bingo",
-        "berealEnabled": "BeReal"
+        "berealEnabled": "BeerReal"
       },
       "featureDescription": {
         "sosEnabled": "Emergency contacts and frequent questions",
@@ -913,7 +913,7 @@
       "empty": "No tasks."
     },
     "bereal": {
-      "title": "BeReal",
+      "title": "BeerReal",
       "description": "Start a round – participants get a moment to take a photo.",
       "prompt": "Round prompt (optional)",
       "promptPlaceholder": "E.g. Show what you're eating",

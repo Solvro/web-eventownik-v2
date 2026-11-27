@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { QRCode } from "react-qr-code";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { MobileAppConfig } from "@/types/mobile";
 
 import { updateMobileConfig } from "./actions";
@@ -49,8 +51,8 @@ const ConfigSchema = z.object({
 
 type ConfigValues = z.infer<typeof ConfigSchema>;
 
-/** Shown in the colour picker while no custom colour is set */
-const DEFAULT_ACCENT = "#f9d574";
+/** The site's colour for events that have none, as on the personalization tab */
+const DEFAULT_EVENT_COLOR = "#3672fd";
 
 const FEATURES = [
   "sosEnabled",
@@ -81,11 +83,15 @@ export function GeneralTab({
   eventUuid,
   config,
   participantUrl,
+  eventPrimaryColor,
 }: {
   eventUuid: string;
   config: MobileAppConfig;
   participantUrl: string;
+  /** The event's own colour from personalization, null when it has none */
+  eventPrimaryColor: string | null;
 }) {
+  const eventColor = (eventPrimaryColor ?? DEFAULT_EVENT_COLOR).toLowerCase();
   const t = useTranslations("MobileAdmin");
   const run = useMobileAction();
   const [copied, setCopied] = useState(false);
@@ -171,47 +177,67 @@ export function GeneralTab({
           <FormField
             control={form.control}
             name="accentColor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("general.accentColor")}</FormLabel>
-                <div className="flex flex-wrap items-center gap-3">
+            render={({ field }) => {
+              // Without a custom colour the app uses the event's own colour
+              const shownColor =
+                field.value === "" ? eventColor : field.value.toLowerCase();
+              return (
+                <FormItem className="flex flex-col gap-2 space-y-0">
+                  <FormLabel>{t("general.accentColor")}</FormLabel>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Same editor as the event colour on the personalization tab */}
+                    <FormLabel
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "cursor-pointer justify-start",
+                      )}
+                    >
+                      <span
+                        className="aspect-square w-6 rounded-full"
+                        style={{ backgroundColor: shownColor }}
+                      />
+                      <p>
+                        {field.value === ""
+                          ? t("general.accentColorDefault", {
+                              color: eventColor,
+                            })
+                          : shownColor}
+                      </p>
+                    </FormLabel>
+                    {field.value === "" ? null : (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          field.onChange("");
+                        }}
+                      >
+                        {t("general.accentColorReset")}
+                      </Button>
+                    )}
+                  </div>
                   <FormControl>
-                    <input
+                    <Input
                       type="color"
-                      className="h-10 w-14 cursor-pointer rounded-md border bg-transparent p-1"
-                      value={field.value === "" ? DEFAULT_ACCENT : field.value}
+                      className="pointer-events-none absolute h-0 w-0 pb-14 opacity-0"
+                      disabled={form.formState.isSubmitting}
+                      name={field.name}
+                      ref={field.ref}
+                      onBlur={field.onBlur}
+                      value={shownColor}
                       onChange={(event) => {
                         field.onChange(event.target.value);
                       }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
                     />
                   </FormControl>
-                  <span className="text-muted-foreground font-mono text-sm">
-                    {field.value === ""
-                      ? t("general.accentColorDefault")
-                      : field.value.toUpperCase()}
-                  </span>
-                  {field.value === "" ? null : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        field.onChange("");
-                      }}
-                    >
-                      {t("general.accentColorReset")}
-                    </Button>
-                  )}
-                </div>
-                <FormDescription>
-                  {t("general.accentColorDescription")}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+                  <FormDescription>
+                    {t("general.accentColorDescription")}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <fieldset className="flex flex-col gap-3">
             <legend className="mb-2 text-sm font-medium">

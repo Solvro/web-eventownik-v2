@@ -57,6 +57,7 @@ function Loaded<T>({
 export function MobileAdminTabs({
   eventUuid,
   participantUrl,
+  eventPrimaryColor,
   config,
   sosContacts,
   faq,
@@ -68,6 +69,7 @@ export function MobileAdminTabs({
 }: {
   eventUuid: string;
   participantUrl: string;
+  eventPrimaryColor: string | null;
   config: Result<MobileAppConfig>;
   sosContacts: Result<MobileSosContact[]>;
   faq: Result<MobileFaqItem[]>;
@@ -119,6 +121,7 @@ export function MobileAdminTabs({
               eventUuid={eventUuid}
               config={data}
               participantUrl={participantUrl}
+              eventPrimaryColor={eventPrimaryColor}
             />
           )}
         </Loaded>

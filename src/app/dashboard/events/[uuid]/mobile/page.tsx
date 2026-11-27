@@ -94,6 +94,7 @@ export default async function DashboardEventMobilePage({
       <MobileAdminTabs
         eventUuid={uuid}
         participantUrl={`${origin}/${event.slug}/app`}
+        eventPrimaryColor={event.primaryColor}
         config={config}
         sosContacts={sosContacts}
         faq={faq}

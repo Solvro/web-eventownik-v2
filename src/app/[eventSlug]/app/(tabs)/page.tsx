@@ -240,7 +240,7 @@ export default function MobileHomePage() {
     {
       key: "bereal",
       enabled: features.bereal,
-      eyebrow: "BeReal",
+      eyebrow: "BeerReal",
       title: "Pstryknij fotę i znajdź znajomych.",
       badge: "Pstryk",
       icon: Camera,
@@ -256,10 +256,14 @@ export default function MobileHomePage() {
       title: "Graj, skreślaj i łap wygraną.",
       badge: "Graj",
       icon: Grid3x3,
-      className: "bg-[linear-gradient(221deg,#F4C23C_0%,#ECC354_100%)]",
-      eyebrowClassName: "text-[#F5ECD4]",
-      badgeClassName: "bg-[rgba(254,226,170,0.48)] text-white",
-      iconClassName: "bg-white/25 text-white",
+      // Follows the event colour (the design shows it in the sample event's yellow)
+      className:
+        "bg-[linear-gradient(221deg,var(--mobile-accent)_0%,color-mix(in_srgb,var(--mobile-accent)_80%,#000)_100%)] text-[var(--mobile-accent-foreground)]",
+      eyebrowClassName: "text-[var(--mobile-accent-muted)]",
+      badgeClassName:
+        "bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)] text-[var(--mobile-accent-foreground)]",
+      iconClassName:
+        "bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)] text-[var(--mobile-accent-foreground)]",
     },
     {
       key: "tinder",

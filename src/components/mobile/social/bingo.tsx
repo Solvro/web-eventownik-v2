@@ -327,21 +327,21 @@ export function BingoScreen() {
     content = (
       <>
         <div className="flex flex-col gap-6 px-5 pt-5 tracking-[-0.01em]">
-          <div className="relative overflow-hidden rounded-[23px] bg-[linear-gradient(221deg,#F4C23C_0%,#ECC354_100%)] p-5 text-[#121212]">
+          <div className="relative overflow-hidden rounded-[23px] bg-[linear-gradient(221deg,var(--mobile-accent)_0%,color-mix(in_srgb,var(--mobile-accent)_80%,#000)_100%)] p-5 text-[var(--mobile-accent-foreground)]">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-semibold text-[#F5ECD4]">
+              <span className="text-xs font-semibold text-[var(--mobile-accent-muted)]">
                 Bingo
               </span>
-              <span className="rounded-[22px] bg-[rgba(254,226,170,0.48)] px-1.5 py-1 text-[10px] font-semibold">
+              <span className="rounded-[22px] bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)] px-1.5 py-1 text-[10px] font-semibold">
                 Linie: {board.bingoLines}
               </span>
             </div>
             <p className="mt-3 text-base leading-[1.3] font-semibold">
               Zaliczone: {board.completedCount}/{total}
             </p>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[rgba(254,226,170,0.48)]">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)]">
               <div
-                className="h-full rounded-full bg-[#121212] transition-all"
+                className="h-full rounded-full bg-[var(--mobile-accent-foreground)] transition-all"
                 style={{
                   width: `${String((board.completedCount / total) * 100)}%`,
                 }}

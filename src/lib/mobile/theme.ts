@@ -1,7 +1,10 @@
 import type { CSSProperties } from "react";
 
-/** Design yellow from the Figma mobile app, used when the event has no primary colour. */
-const DEFAULT_ACCENT = "#F9D574";
+/**
+ * Used when neither the app nor the event has a colour: the same blue the rest
+ * of the site falls back to for an event without one.
+ */
+const DEFAULT_ACCENT = "#3672FD";
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 /** The event accent color, falling back to the design yellow for anything that is not a hex color. */

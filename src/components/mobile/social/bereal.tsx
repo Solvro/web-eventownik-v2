@@ -192,7 +192,7 @@ function CaptureFlow({
               className="size-3.5 text-[var(--mobile-accent)]"
               fill="currentColor"
             />
-            {isActive ? "Czas na BeReal!" : "Runda zakończona"}
+            {isActive ? "Czas na BeerReal!" : "Runda zakończona"}
           </p>
           <span className="rounded-[22px] bg-[#2D2D2D] px-1.5 py-1 text-[10px] font-semibold">
             {isActive ? "Twoja kolej" : "Po czasie"}
@@ -420,7 +420,7 @@ export function BerealScreen() {
       <EmptyState
         icon={Camera}
         title="Jeszcze nie było rundy"
-        description="Gdy organizator ogłosi BeReal, dostaniesz kilka minut na zdjęcie tego, co akurat robisz. Bądź gotowy!"
+        description="Gdy organizator ogłosi BeerReal, dostaniesz kilka minut na zdjęcie tego, co akurat robisz. Bądź gotowy!"
       />
     );
   } else {
@@ -432,9 +432,9 @@ export function BerealScreen() {
         ) : (
           <div className="px-5 pt-5">
             <div className="rounded-[32px] bg-[linear-gradient(221deg,#262626_0%,#343434_100%)] p-6 text-white">
-              <p className="text-xs font-semibold text-white/70">BeReal</p>
+              <p className="text-xs font-semibold text-white/70">BeerReal</p>
               <p className="mt-2 text-base leading-[1.3] font-semibold">
-                {round.prompt ?? "BeReal"}
+                {round.prompt ?? "BeerReal"}
               </p>
             </div>
           </div>
@@ -449,7 +449,7 @@ export function BerealScreen() {
   }
 
   return (
-    <MobileScreen title="BeReal" backHref={`/${eventSlug}/app`}>
+    <MobileScreen title="BeerReal" backHref={`/${eventSlug}/app`}>
       {content}
     </MobileScreen>
   );

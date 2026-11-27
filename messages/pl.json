@@ -800,7 +800,7 @@
       "schedule": "Harmonogram",
       "notifications": "Powiadomienia",
       "bingo": "Bingo",
-      "bereal": "BeReal",
+      "bereal": "BeerReal",
       "chat": "Czat"
     },
     "save": "Zapisz",
@@ -821,7 +821,7 @@
       "enabledDescription": "Uczestnicy mogą zalogować się do aplikacji adresem e-mail podanym przy rejestracji.",
       "welcomeMessage": "Wiadomość powitalna",
       "accentColor": "Kolor przewodni aplikacji",
-      "accentColorDefault": "Kolor wydarzenia",
+      "accentColorDefault": "Kolor wydarzenia ({color})",
       "accentColorReset": "Użyj koloru wydarzenia",
       "accentColorDescription": "Kolor przycisków i akcentów w aplikacji uczestnika. Domyślnie używany jest kolor wydarzenia z personalizacji.",
       "welcomeMessagePlaceholder": "Np. Cześć! Miło Cię widzieć na wydarzeniu.",
@@ -832,7 +832,7 @@
         "chatEnabled": "Czaty",
         "tinderEnabled": "Tinderownik",
         "bingoEnabled": "Bingo",
-        "berealEnabled": "BeReal"
+        "berealEnabled": "BeerReal"
       },
       "featureDescription": {
         "sosEnabled": "Kontakty alarmowe i najczęstsze pytania",
@@ -912,7 +912,7 @@
       "empty": "Brak zadań."
     },
     "bereal": {
-      "title": "BeReal",
+      "title": "BeerReal",
       "description": "Rozpocznij rundę – uczestnicy mają chwilę na zrobienie zdjęcia.",
       "prompt": "Hasło rundy (opcjonalnie)",
       "promptPlaceholder": "Np. Pokaż, co teraz jesz",
