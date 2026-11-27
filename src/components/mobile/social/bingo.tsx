@@ -294,9 +294,6 @@ function Leaderboard() {
         <Trophy className="size-5" />
         Ranking
       </h2>
-      <p className="text-muted-foreground -mt-2 mb-4 text-sm font-medium">
-        Przy tej samej liczbie zadań wyżej jest ten, kto zdobył ją pierwszy.
-      </p>
       {query.isPending ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }, (_, index) => (
