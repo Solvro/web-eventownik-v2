@@ -22,6 +22,8 @@ import type {
   MobileScheduleItemPayload,
   MobileSosContact,
   MobileSosContactPayload,
+  MobileTinderOverview,
+  MobileTinderParticipantSwipes,
 } from "@/types/mobile";
 
 export type MobileActionResult<T> =
@@ -233,6 +235,24 @@ export async function deleteMobileNotification(
     `/notifications/${encodeURIComponent(notificationUuid)}`,
     { method: "DELETE" },
     [notificationUuid],
+  );
+}
+
+// Tinderownik ----------------------------------------------------------------
+
+export async function getTinderOverview(eventUuid: string) {
+  return mobileRequest<MobileTinderOverview>(eventUuid, "/tinder", {});
+}
+
+export async function getTinderParticipantSwipes(
+  eventUuid: string,
+  participantUuid: string,
+) {
+  return mobileRequest<MobileTinderParticipantSwipes>(
+    eventUuid,
+    `/tinder/participants/${encodeURIComponent(participantUuid)}`,
+    {},
+    [participantUuid],
   );
 }
 

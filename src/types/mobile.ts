@@ -330,6 +330,52 @@ export interface MobileBingoTaskAdmin {
   completionsCount: number;
 }
 
+// Tinderownik (organizer) --------------------------------------------------
+
+/** One participant with a profile, with their Tinderownik activity */
+export interface MobileTinderPersonAdmin extends MobilePerson {
+  email: string;
+  tinderOptIn: boolean;
+  likesGiven: number;
+  passesGiven: number;
+  likesReceived: number;
+  matchesCount: number;
+}
+
+/** A mutual like; matchedAt is when the second of the two likes happened */
+export interface MobileTinderMatchAdmin {
+  a: MobilePerson;
+  b: MobilePerson;
+  matchedAt: string;
+}
+
+/** GET /events/:uuid/mobile/tinder */
+export interface MobileTinderOverview {
+  totals: { optedIn: number; swipes: number; likes: number; matches: number };
+  /** Most active first */
+  people: MobileTinderPersonAdmin[];
+  /** Newest first */
+  matches: MobileTinderMatchAdmin[];
+}
+
+export interface MobileTinderSwipeAdmin {
+  /** The other side of the swipe */
+  person: MobilePerson;
+  liked: boolean;
+  swipedAt: string;
+  /** How the swipe was answered from the other side; null = not swiped back yet */
+  reciprocal: boolean | null;
+}
+
+/** GET /events/:uuid/mobile/tinder/participants/:participantUuid */
+export interface MobileTinderParticipantSwipes {
+  participant: MobileTinderPersonAdmin;
+  /** Their swipes on others, newest first */
+  given: MobileTinderSwipeAdmin[];
+  /** Others' swipes on them, newest first; reciprocal = their answer */
+  received: MobileTinderSwipeAdmin[];
+}
+
 /** /bereal-rounds; POST body { prompt?, durationMinutes? (default 5) } */
 export interface MobileBerealRoundAdmin extends MobileBerealRound {
   postsCount: number;
