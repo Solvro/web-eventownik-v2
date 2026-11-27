@@ -338,7 +338,9 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
   const title = room?.title ?? (roomsQuery.isPending ? "" : "Czat");
 
   return (
-    <div className="bg-background flex h-dvh flex-col tracking-[-0.01em]">
+    // Pinned to the screen edges instead of sized by viewport height: in the
+    // installed iOS app that height can come out short, leaving a gap under the composer
+    <div className="bg-background fixed inset-0 mx-auto flex w-full max-w-md flex-col tracking-[-0.01em]">
       <header className="border-border bg-background/90 z-20 flex shrink-0 items-center gap-2 border-b px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="flex h-16 w-full items-center gap-3">
           <Link
