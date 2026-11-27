@@ -101,10 +101,10 @@ export default function MobileLoginPage() {
           />
         )}
         <span className="absolute -top-3 -right-4 rotate-6 rounded-[22px] bg-[#2B80FF] px-3 py-1.5 text-base font-medium text-white">
-          Przygoda🏞️
+          Przygoda 🏞️
         </span>
         <span className="absolute -bottom-3 -left-4 -rotate-6 rounded-[22px] bg-[#2B80FF] px-3 py-1.5 text-base font-medium text-white">
-          Super zabawa!🥰
+          Super zabawa! 🥰
         </span>
       </div>
 

@@ -37,6 +37,9 @@ import type {
 import { EmptyState, ErrorState, Skeleton } from "./states";
 import { useObjectUrl } from "./use-object-url";
 
+/** Matches the limit the server applies to a completion note */
+const MAX_NOTE = 300;
+
 function CellSheet({
   cell,
   onClose,
@@ -49,6 +52,7 @@ function CellSheet({
   const queryClient = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<File | null>(null);
+  const [note, setNote] = useState("");
 
   const preview = useObjectUrl(photo);
 
@@ -71,6 +75,9 @@ function CellSheet({
         const blob = await downscaleImage(photo);
         body.append("photo", blob, "photo.jpg");
       }
+      if (note.trim() !== "") {
+        body.append("note", note.trim());
+      }
       return mobileApi<MobileBingoBoard>(eventSlug, path, {
         method: "POST",
         body,
@@ -90,6 +97,7 @@ function CellSheet({
         });
       }
       setPhoto(null);
+      setNote("");
       onClose();
     },
     onError: (error) => {
@@ -109,6 +117,7 @@ function CellSheet({
       onOpenChange={(open) => {
         if (!open && !mutation.isPending) {
           setPhoto(null);
+          setNote("");
           onClose();
         }
       }}
@@ -140,6 +149,12 @@ function CellSheet({
                 alt=""
                 className="max-h-72 w-full rounded-3xl object-cover"
               />
+            ) : null}
+
+            {cell.completed && cell.note !== null ? (
+              <p className="bg-secondary text-foreground rounded-3xl px-5 py-4 text-base leading-6 font-medium whitespace-pre-line">
+                {cell.note}
+              </p>
             ) : null}
 
             {cell.completed ? (
@@ -199,6 +214,30 @@ function CellSheet({
                     </button>
                   </div>
                 )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-baseline justify-between gap-3 px-1">
+                    <label
+                      htmlFor="bingo-note"
+                      className="text-foreground text-sm leading-[1.2] font-semibold"
+                    >
+                      Dodaj opis (opcjonalnie)
+                    </label>
+                    <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                      {note.length}/{MAX_NOTE}
+                    </span>
+                  </div>
+                  <textarea
+                    id="bingo-note"
+                    value={note}
+                    onChange={(event) => {
+                      setNote(event.target.value.slice(0, MAX_NOTE));
+                    }}
+                    maxLength={MAX_NOTE}
+                    rows={2}
+                    placeholder="Np. z kim i gdzie to zrobiłeś"
+                    className="bg-secondary placeholder:text-muted-foreground w-full resize-none rounded-3xl px-5 py-4 text-base leading-6 font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
+                  />
+                </div>
                 <Button
                   disabled={mutation.isPending}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 h-[60px] rounded-3xl text-base font-semibold tracking-[0.01em]"
