@@ -57,20 +57,17 @@ export function MobilePushPrompt() {
   return (
     <section
       aria-labelledby="mobile-push-title"
-      className="bg-card flex flex-col gap-4 rounded-[32px] p-6"
+      className="relative flex flex-col gap-3 rounded-[32px] bg-[var(--mobile-accent)] p-5 text-[var(--mobile-accent-foreground)] shadow-[0_3px_9px_var(--mobile-accent-glow)]"
     >
       <div className="flex items-start gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[var(--mobile-accent)] text-[var(--mobile-accent-foreground)]">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)]">
           <BellRing className="size-5" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <h2
-            id="mobile-push-title"
-            className="text-foreground text-base leading-5 font-bold"
-          >
+          <h2 id="mobile-push-title" className="text-base leading-5 font-bold">
             Włącz powiadomienia
           </h2>
-          <p className="text-muted-foreground mt-1 text-sm leading-5 font-medium">
+          <p className="mt-1 text-sm leading-5 font-medium text-[var(--mobile-accent-muted)]">
             Dostaniesz powiadomienie o ogłoszeniach, rundach BeerReal, matchach
             i wiadomościach.
           </p>
@@ -79,14 +76,16 @@ export function MobilePushPrompt() {
           type="button"
           onClick={dismiss}
           aria-label="Nie teraz"
-          className="text-muted-foreground active:bg-border -mt-1 -mr-1 flex size-9 shrink-0 items-center justify-center rounded-full"
+          className="-mt-1 -mr-1 flex size-9 shrink-0 items-center justify-center rounded-full active:bg-[color-mix(in_srgb,var(--mobile-accent-foreground)_16%,transparent)]"
         >
           <X className="size-5" aria-hidden />
         </button>
       </div>
       {push.error ? (
-        <p className="text-muted-foreground text-sm font-medium">
-          Nie udało się włączyć powiadomień. Spróbuj ponownie.
+        <p className="text-sm font-medium">
+          Nie udało się włączyć powiadomień
+          {push.errorDetail === null ? "" : ` (${push.errorDetail})`}. Spróbuj
+          ponownie.
         </p>
       ) : null}
       <button
@@ -95,7 +94,7 @@ export function MobilePushPrompt() {
         onClick={() => {
           void push.enable();
         }}
-        className="bg-primary text-primary-foreground flex h-12 w-full items-center justify-center rounded-3xl text-base font-semibold tracking-[0.01em] transition active:scale-[0.98] disabled:opacity-60"
+        className="flex h-12 w-full items-center justify-center rounded-3xl bg-[var(--mobile-accent-foreground)] text-base font-semibold tracking-[0.01em] text-[var(--mobile-accent)] transition active:scale-[0.98] disabled:opacity-60"
       >
         {push.busy ? "Włączanie…" : "Włącz powiadomienia"}
       </button>
@@ -163,7 +162,7 @@ export function MobilePushSetting() {
             ? // The very first registration with the browser's push service can take a while
               "Zapisywanie… to może potrwać chwilę."
             : push.error
-              ? "Nie udało się zmienić ustawienia. Spróbuj ponownie."
+              ? `Nie udało się zmienić ustawienia${push.errorDetail === null ? "" : ` (${push.errorDetail})`}. Spróbuj ponownie.`
               : "Ogłoszenia, rundy BeerReal, matche i wiadomości na tym urządzeniu.")}
       </p>
     </div>

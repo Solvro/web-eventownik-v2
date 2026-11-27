@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 
+import { MobileApiError } from "@/lib/mobile/client";
 import {
   disablePush,
   enablePush,
@@ -20,6 +21,17 @@ interface PushDeviceState {
 }
 
 /** Web Push state of this device for the event, plus actions to toggle it */
+/** A short reason to show next to "it failed", so a screenshot is enough to diagnose it */
+function describeError(error: unknown): string | null {
+  if (error instanceof MobileApiError) {
+    return `błąd serwera ${error.status.toString()}`;
+  }
+  if (error instanceof Error) {
+    return error.name === "Error" ? error.message.slice(0, 60) : error.name;
+  }
+  return null;
+}
+
 export function useMobilePush(eventSlug: string) {
   const config = useQuery({
     queryKey: ["mobile", eventSlug, "push"],
@@ -31,6 +43,8 @@ export function useMobilePush(eventSlug: string) {
   const [device, setDevice] = useState<PushDeviceState | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  /** What went wrong, short enough to show: "błąd 500", "NotAllowedError" */
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const support = getPushSupport();
@@ -63,11 +77,13 @@ export function useMobilePush(eventSlug: string) {
     }
     setBusy(true);
     setError(false);
+    setErrorDetail(null);
     try {
       await enablePush(eventSlug, publicKey);
     } catch (error_) {
       console.error("[push] enable failed", error_);
       setError(true);
+      setErrorDetail(describeError(error_));
     } finally {
       await refresh();
       setBusy(false);
@@ -77,11 +93,13 @@ export function useMobilePush(eventSlug: string) {
   const disable = useCallback(async () => {
     setBusy(true);
     setError(false);
+    setErrorDetail(null);
     try {
       await disablePush(eventSlug);
     } catch (error_) {
       console.error("[push] disable failed", error_);
       setError(true);
+      setErrorDetail(describeError(error_));
     } finally {
       await refresh();
       setBusy(false);
@@ -95,6 +113,7 @@ export function useMobilePush(eventSlug: string) {
     device,
     busy,
     error,
+    errorDetail,
     enable,
     disable,
   };

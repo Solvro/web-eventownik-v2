@@ -365,6 +365,9 @@ export default function MobileHomePage() {
         </div>
       </header>
 
+      {/* Right under the header so it is seen without scrolling */}
+      <MobilePushPrompt />
+
       {features.schedule && upcoming.length > 0 && upcomingDay !== null ? (
         <section>
           <MobileSectionHeading
@@ -394,8 +397,6 @@ export default function MobileHomePage() {
           </Link>
         </section>
       ) : null}
-
-      <MobilePushPrompt />
 
       <section>
         <MobileSectionHeading>Ogłoszenia</MobileSectionHeading>
