@@ -101,6 +101,13 @@ function JoinPrompt({
           tinderOptIn: true,
         },
       });
+      // Drop refusals remembered from before joining, so the deck starts clean
+      queryClient.removeQueries({
+        queryKey: mobileKeys.tinderCandidates(eventSlug),
+      });
+      queryClient.removeQueries({
+        queryKey: mobileKeys.tinderMatches(eventSlug),
+      });
       onJoined();
       await queryClient.invalidateQueries({
         queryKey: mobileKeys.me(eventSlug),

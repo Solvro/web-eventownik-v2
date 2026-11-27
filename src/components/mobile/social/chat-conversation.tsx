@@ -182,9 +182,9 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
           eventSlug,
           `${messagesPath(roomUuid)}?limit=${String(PAGE_SIZE)}`,
         );
-        if (latest.length < PAGE_SIZE) {
-          setHasOlder(false);
-        }
+        // Also runs on every poll while the room is still empty, so the answer
+        // can change from "nothing older" to "there is more"
+        setHasOlder(latest.length >= PAGE_SIZE);
         syncedSeqByRoom.set(roomUuid, latest.at(-1)?.seq ?? 0);
         return latest;
       }
