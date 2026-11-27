@@ -6,6 +6,7 @@ import {
   Mail,
   Play,
   SlidersHorizontal,
+  Smartphone,
   Ticket,
   Users,
 } from "lucide-react";
@@ -162,6 +163,11 @@ export function DashboardSidebar({
           icon: <Ticket />,
           route: "tickets",
         },
+        {
+          title: t("mobileApp"),
+          icon: <Smartphone />,
+          route: "mobile",
+        },
       ],
     },
     {
@@ -234,8 +240,8 @@ export function DashboardSidebar({
           </div>
         ))}
       </nav>
-      <nav className="fixed bottom-0 left-0 z-50 flex w-full gap-6 bg-white/70 p-2 shadow-md backdrop-blur-sm sm:hidden dark:bg-gray-900/70 dark:shadow-black/20">
-        <ul className="flex w-full justify-around">
+      <nav className="fixed bottom-0 left-0 z-50 flex w-full gap-6 overflow-x-auto bg-white/70 p-2 shadow-md backdrop-blur-sm sm:hidden dark:bg-gray-900/70 dark:shadow-black/20">
+        <ul className="flex w-full min-w-max justify-around gap-1">
           {[
             ...sections,
             ...(blocks.length > 0

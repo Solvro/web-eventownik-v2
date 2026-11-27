@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 
+import { SessionRecorderScript } from "@/components/mobile/session-recorder-script";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
@@ -92,12 +93,7 @@ export default async function RootLayout({
               data-website-id={umamiWebsiteId}
               data-domains="eventownik.solvro.pl"
             />
-            <Script
-              defer
-              src="https://analytics.solvro.pl/recorder.js"
-              strategy="afterInteractive"
-              data-website-id={umamiWebsiteId}
-            />
+            <SessionRecorderScript websiteId={umamiWebsiteId} />
           </Providers>
         </NextIntlClientProvider>
       </body>
