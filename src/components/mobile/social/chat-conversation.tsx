@@ -35,6 +35,9 @@ interface PendingMessage {
   failed: boolean;
 }
 
+/** How far behind the newest shown message each poll re-reads */
+const POLL_OVERLAP = 50;
+
 function mergeMessages(
   current: MobileChatMessage[],
   incoming: MobileChatMessage[],
@@ -177,10 +180,14 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
         }
         return latest;
       }
+      // Message numbers are handed out before a message is saved, and our own
+      // sent messages land in the cache directly, so a message with a lower
+      // number can appear after a higher one is already shown. Re-reading a
+      // small window behind the newest message picks those up.
       const lastSeq = previous.at(-1)?.seq ?? 0;
       const newer = await mobileApi<MobileChatMessage[]>(
         eventSlug,
-        `${messagesPath(roomUuid)}?afterSeq=${String(lastSeq)}`,
+        `${messagesPath(roomUuid)}?afterSeq=${String(Math.max(0, lastSeq - POLL_OVERLAP))}&limit=100`,
       );
       return mergeMessages(
         queryClient.getQueryData<MobileChatMessage[]>(

@@ -16,11 +16,13 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { MobileAvatar } from "@/components/mobile/avatar";
 import { MobileScreen } from "@/components/mobile/mobile-screen";
 import { useEventSlug } from "@/components/mobile/use-event-slug";
+import { useMobileMe } from "@/components/mobile/use-me";
 import { toast } from "@/hooks/use-toast";
 import { MobileApiError, mobileApi, mobileKeys } from "@/lib/mobile/client";
 import { cn } from "@/lib/utils";
 import type {
   MobileMe,
+  MobileProfile,
   MobileSwipeResult,
   MobileTinderCandidate,
   MobileTinderMatch,
@@ -72,6 +74,56 @@ function NoProfilePrompt({ eventSlug }: { eventSlug: string }) {
       >
         Przejdź do profilu
       </Link>
+    </EmptyState>
+  );
+}
+
+/** Shown to participants who have a profile but have not joined Tinderownik yet */
+function JoinPrompt({ profile }: { profile: MobileProfile }) {
+  const eventSlug = useEventSlug();
+  const queryClient = useQueryClient();
+  const [joining, setJoining] = useState(false);
+
+  const join = async () => {
+    setJoining(true);
+    try {
+      await mobileApi<MobileProfile>(eventSlug, "me/profile", {
+        method: "PUT",
+        json: {
+          displayName: profile.displayName,
+          bio: profile.bio,
+          tinderOptIn: true,
+        },
+      });
+      await queryClient.invalidateQueries({
+        queryKey: mobileKeys.me(eventSlug),
+      });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Nie udało się dołączyć. Spróbuj ponownie.",
+      });
+    } finally {
+      setJoining(false);
+    }
+  };
+
+  return (
+    <EmptyState
+      icon={Heart}
+      title="Dołącz do Tinderownika"
+      description="Twój profil (imię, zdjęcie i opis) będzie widoczny dla innych uczestników, którzy też dołączyli. W każdej chwili możesz to wyłączyć w zakładce Profil."
+    >
+      <button
+        type="button"
+        disabled={joining}
+        onClick={() => {
+          void join();
+        }}
+        className="bg-primary text-primary-foreground flex h-[60px] items-center rounded-3xl px-8 text-base font-semibold tracking-[0.01em] transition active:scale-[0.98] disabled:opacity-60"
+      >
+        {joining ? "Dołączanie…" : "Dołączam"}
+      </button>
     </EmptyState>
   );
 }
@@ -524,10 +576,14 @@ export function TinderScreen() {
   const markNoProfile = useRef(() => {
     setNoProfile(true);
   }).current;
+  const meQuery = useMobileMe(eventSlug);
+  const profile = meQuery.data?.profile ?? null;
 
   return (
     <MobileScreen title="Tinderownik" backHref={`/${eventSlug}/app`}>
-      {noProfile ? (
+      {profile !== null && !profile.tinderOptIn ? (
+        <JoinPrompt profile={profile} />
+      ) : noProfile ? (
         <NoProfilePrompt eventSlug={eventSlug} />
       ) : (
         <>
