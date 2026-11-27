@@ -14,6 +14,8 @@ const RESEND_SECONDS = 60;
 
 export default function MobileLoginPage() {
   const { eventSlug, config } = useMobile();
+  // A photo that fails to load falls back to the same block as "no photo"
+  const [photoFailed, setPhotoFailed] = useState(false);
   const router = useRouter();
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
@@ -81,7 +83,7 @@ export default function MobileLoginPage() {
       </p>
 
       <div className="relative mx-auto mt-10 mb-10 w-full max-w-[300px]">
-        {config.event.photoUrl === null ? (
+        {config.event.photoUrl === null || photoFailed ? (
           <div className="flex aspect-square w-full -rotate-3 items-center justify-center rounded-[36px] bg-[var(--mobile-accent)] p-8 text-center">
             <span className="line-clamp-4 text-3xl leading-[1.1] font-extrabold text-[var(--mobile-accent-foreground)]">
               {config.event.name}
@@ -93,6 +95,9 @@ export default function MobileLoginPage() {
             src={config.event.photoUrl}
             alt=""
             className="aspect-square w-full -rotate-3 rounded-[36px] bg-[#F4F4F4] object-cover"
+            onError={() => {
+              setPhotoFailed(true);
+            }}
           />
         )}
         <span className="absolute -top-3 -right-4 rotate-6 rounded-[22px] bg-[#2B80FF] px-3 py-1.5 text-base font-medium text-white">

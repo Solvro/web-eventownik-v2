@@ -155,6 +155,8 @@ function writeSeenSeq(key: string, value: number) {
 
 export default function MobileHomePage() {
   const { eventSlug, config } = useMobile();
+  // A photo that fails to load falls back to the same block as "no photo"
+  const [photoFailed, setPhotoFailed] = useState(false);
   const me = useMobileMe(eventSlug);
   const features = config.app.features;
   const storageKey = `mobile-seen-seq-${eventSlug}`;
@@ -309,7 +311,7 @@ export default function MobileHomePage() {
           </div>
         </div>
 
-        {config.event.photoUrl === null ? (
+        {config.event.photoUrl === null || photoFailed ? (
           <div className="flex h-[245px] w-full items-center justify-center rounded-[36px] bg-[var(--mobile-accent)] px-8 text-center">
             <span className="line-clamp-3 text-3xl leading-[1.1] font-extrabold text-[var(--mobile-accent-foreground)]">
               {config.event.name}
@@ -321,6 +323,9 @@ export default function MobileHomePage() {
             src={config.event.photoUrl}
             alt=""
             className="h-[245px] w-full rounded-[36px] bg-[#F4F4F4] object-cover"
+            onError={() => {
+              setPhotoFailed(true);
+            }}
           />
         )}
 
