@@ -6,6 +6,7 @@ import { cache } from "react";
 import { MobileDesktopFrame } from "@/components/mobile/desktop-frame";
 import { MobileInstallPrompt } from "@/components/mobile/install-prompt";
 import { MobileProvider } from "@/components/mobile/mobile-context";
+import { MobilePullToRefresh } from "@/components/mobile/pull-to-refresh";
 import { getMobilePublicConfig } from "@/lib/mobile/session";
 import { mobileThemeStyle } from "@/lib/mobile/theme";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,7 @@ export default async function MobileAppLayout({
         <MobileDesktopFrame>
           {/* Hidden on desktop until the phone frame takes over, to avoid a flash of the bare app */}
           <div className="bg-background sm:border-border relative mx-auto min-h-dvh w-full max-w-md overflow-x-clip sm:border-x [@media(min-width:768px)_and_(hover:hover)_and_(pointer:fine)]:invisible">
+            <MobilePullToRefresh />
             {children}
             <MobileInstallPrompt />
           </div>

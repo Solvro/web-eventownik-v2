@@ -363,7 +363,11 @@ function SwipeDeck({ onNoProfile }: { onNoProfile: () => void }) {
 
   return (
     <div className="flex flex-1 flex-col px-5 pt-5">
-      <div className="relative mx-auto aspect-[3/4] max-h-[62dvh] w-full">
+      <div
+        // Dragging a card must not also pull the page down to refresh
+        data-no-pull-refresh
+        className="relative mx-auto aspect-[3/4] max-h-[62dvh] w-full"
+      >
         {stack.length === 0 ? (
           <div className="bg-card flex size-full items-center justify-center rounded-[32px]">
             {isFetching ? (

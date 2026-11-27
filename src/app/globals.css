@@ -408,6 +408,8 @@
 html:has(.mobile-app),
 html:has(.mobile-app) body {
   background-color: #ffffff;
+  /* The app has its own pull-to-refresh; the browser's would reload the page */
+  overscroll-behavior-y: contain;
 }
 
 html.dark:has(.mobile-app),

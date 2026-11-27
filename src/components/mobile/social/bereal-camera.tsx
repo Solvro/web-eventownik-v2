@@ -446,6 +446,7 @@ export function BerealCamera({
       role="dialog"
       aria-modal="true"
       aria-label="Aparat BeerReal"
+      data-no-pull-refresh
       className="fixed inset-0 z-[100] flex flex-col bg-black text-white select-none"
     >
       <div className="flex items-start gap-3 px-4 pt-[max(env(safe-area-inset-top),16px)] pb-3">
