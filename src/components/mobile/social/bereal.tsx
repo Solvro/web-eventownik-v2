@@ -139,6 +139,7 @@ function CaptureFlow({
 }) {
   const eventSlug = useEventSlug();
   const queryClient = useQueryClient();
+  const captionRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const selfieInputRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -147,6 +148,14 @@ function CaptureFlow({
   const [cameraOpen, setCameraOpen] = useState(false);
   const [fromCamera, setFromCamera] = useState(false);
   const photoUrl = useObjectUrl(photo);
+  const hasPhoto = photoUrl !== null;
+
+  // The photo fills the screen, so bring the description and the send button into view
+  useEffect(() => {
+    if (hasPhoto) {
+      captionRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [hasPhoto]);
   const selfieUrl = useObjectUrl(selfie);
 
   const mutation = useMutation({
@@ -319,16 +328,28 @@ function CaptureFlow({
               {selfie === null ? "Dodaj selfie (opcjonalnie)" : "Zmień selfie"}
             </Button>
           )}
-          <div>
-            <input
+          <div ref={captionRef} className="flex scroll-mb-28 flex-col gap-2">
+            <div className="flex items-baseline justify-between gap-3 px-1">
+              <label
+                htmlFor="bereal-caption"
+                className="text-foreground text-base leading-[1.2] font-semibold"
+              >
+                Dodaj opis
+              </label>
+              <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                {caption.length}/{MAX_CAPTION}
+              </span>
+            </div>
+            <textarea
+              id="bereal-caption"
               value={caption}
               onChange={(event) => {
                 setCaption(event.target.value.slice(0, MAX_CAPTION));
               }}
               maxLength={MAX_CAPTION}
-              placeholder="Dodaj podpis (opcjonalnie)"
-              aria-label="Podpis"
-              className="bg-secondary placeholder:text-muted-foreground h-14 w-full rounded-3xl px-5 text-base font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
+              rows={3}
+              placeholder="Napisz coś do swojego zdjęcia (opcjonalnie)"
+              className="bg-secondary placeholder:text-muted-foreground w-full resize-none rounded-3xl px-5 py-4 text-base leading-6 font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--mobile-accent)]"
             />
           </div>
           <Button
