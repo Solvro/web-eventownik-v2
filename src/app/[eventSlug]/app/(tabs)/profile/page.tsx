@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MobileAvatar } from "@/components/mobile/avatar";
 import { useMobile } from "@/components/mobile/mobile-context";
 import { ProfileForm } from "@/components/mobile/profile-form";
+import { MobilePushSetting } from "@/components/mobile/push-prompt";
 import {
   MobileErrorState,
   MobileListSkeleton,
@@ -119,6 +120,7 @@ export default function MobileProfilePage() {
               <span className="flex-1">Wyloguj się</span>
             </button>
           </div>
+          <MobilePushSetting />
           <MobileThemeSwitcher />
         </div>
       )}

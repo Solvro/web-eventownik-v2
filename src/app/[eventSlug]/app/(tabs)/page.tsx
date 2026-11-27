@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { useMobile } from "@/components/mobile/mobile-context";
+import { MobilePushPrompt } from "@/components/mobile/push-prompt";
 import {
   MobileEmptyState,
   MobileErrorState,
@@ -393,6 +394,8 @@ export default function MobileHomePage() {
           </Link>
         </section>
       ) : null}
+
+      <MobilePushPrompt />
 
       <section>
         <MobileSectionHeading>Ogłoszenia</MobileSectionHeading>

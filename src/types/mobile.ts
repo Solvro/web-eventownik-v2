@@ -248,6 +248,12 @@ export interface MobileBerealState {
   canViewFeed: boolean;
 }
 
+/** GET /push — Web Push availability; publicKey is the VAPID key (base64url) */
+export interface MobilePushConfig {
+  enabled: boolean;
+  publicKey: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Organizer (dashboard) — /events/:eventUuid/mobile
 // ---------------------------------------------------------------------------
