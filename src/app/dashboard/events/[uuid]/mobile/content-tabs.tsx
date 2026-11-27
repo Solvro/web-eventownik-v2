@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Clock, MapPin, Pencil, Phone, Plus, Save } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { useState } from "react";
 import type {
   DefaultValues,
@@ -157,15 +157,23 @@ function TextField<T extends FieldValues>({
   );
 }
 
-function AddButton({ children }: { children: ReactNode }) {
+/**
+ * Used as a dialog trigger: the dialog attaches its click handler and ref to
+ * this component, so every extra prop has to reach the real button.
+ */
+function AddButton({ children, ...props }: ComponentProps<typeof Button>) {
   return (
-    <Button variant="outline" className="w-full sm:w-fit">
+    <Button variant="outline" className="w-full sm:w-fit" {...props}>
       <Plus /> {children}
     </Button>
   );
 }
 
-function EditButton({ label }: { label: string }) {
+/** Also a dialog trigger, see AddButton */
+function EditButton({
+  label,
+  ...props
+}: { label: string } & ComponentProps<typeof Button>) {
   return (
     <Button
       variant="ghost"
@@ -173,6 +181,7 @@ function EditButton({ label }: { label: string }) {
       aria-label={label}
       title={label}
       className="shrink-0"
+      {...props}
     >
       <Pencil />
     </Button>
