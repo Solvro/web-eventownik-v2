@@ -461,6 +461,8 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
     }
     setDraft("");
     enqueue(body, null);
+    // Keeps the keyboard up for the next message
+    textareaRef.current?.focus();
   };
 
   /** A GIF goes out on its own, as the reply if one is being written */
@@ -745,6 +747,13 @@ export function ChatConversation({ roomUuid }: { roomUuid: string }) {
             type="submit"
             aria-label="Wyślij"
             disabled={draft.trim() === ""}
+            // Taking focus from the textarea would close the keyboard after every message
+            onPointerDown={(event) => {
+              event.preventDefault();
+            }}
+            onMouseDown={(event) => {
+              event.preventDefault();
+            }}
             className="bg-primary text-primary-foreground flex size-12 shrink-0 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-30"
           >
             <SendHorizontal className="size-5" />
