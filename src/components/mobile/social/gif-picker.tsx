@@ -5,11 +5,14 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { useEventSlug } from "@/components/mobile/use-event-slug";
-import { mobileApi, mobileKeys } from "@/lib/mobile/client";
+import { MobileApiError, mobileApi, mobileKeys } from "@/lib/mobile/client";
 import { cn } from "@/lib/utils";
 import type { MobileChatGif, MobileGif, MobileGifSearch } from "@/types/mobile";
 
-const SEARCH_DELAY_MS = 400;
+/** Waits for a pause in typing: every search counts against GIPHY's hourly limit */
+const SEARCH_DELAY_MS = 600;
+/** Shorter input keeps showing trending GIFs */
+const MIN_QUERY_LENGTH = 2;
 
 function gifsPath(query: string, offset: number): string {
   const parameters = new URLSearchParams({ offset: String(offset) });
@@ -60,7 +63,8 @@ export function GifPicker({
 
   useEffect(() => {
     const timer = globalThis.setTimeout(() => {
-      setQuery(input.trim());
+      const trimmed = input.trim();
+      setQuery(trimmed.length >= MIN_QUERY_LENGTH ? trimmed : "");
     }, SEARCH_DELAY_MS);
     return () => {
       globalThis.clearTimeout(timer);
@@ -85,7 +89,10 @@ export function GifPicker({
       mobileApi<MobileGifSearch>(eventSlug, gifsPath(query, pageParam)),
     initialPageParam: 0,
     getNextPageParam: (last) => last.nextOffset ?? undefined,
-    staleTime: 10 * 60_000,
+    // An empty answer may be a hiccup; ask again next time
+    staleTime: (state) =>
+      (state.state.data?.pages[0]?.results.length ?? 0) > 0 ? 30 * 60_000 : 0,
+    retry: 1,
   });
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = search;
 
@@ -180,12 +187,17 @@ export function GifPicker({
               <Loader2 className="text-muted-foreground size-6 animate-spin" />
             </div>
           ) : search.isError ? (
-            <p className="text-muted-foreground py-16 text-center text-sm font-medium">
-              Nie udało się wczytać GIF-ów. Spróbuj za chwilę.
+            <p className="text-muted-foreground px-6 py-16 text-center text-sm font-medium">
+              {search.error instanceof MobileApiError &&
+              search.error.message.includes("limit")
+                ? "Wyczerpał się limit GIF-ów na tę chwilę. Spróbuj za kilka minut."
+                : "Nie udało się wczytać GIF-ów. Spróbuj za chwilę."}
             </p>
           ) : gifs.length === 0 ? (
-            <p className="text-muted-foreground py-16 text-center text-sm font-medium">
-              Nic nie znaleziono dla „{query}”.
+            <p className="text-muted-foreground px-6 py-16 text-center text-sm font-medium">
+              {query === ""
+                ? "Nie ma teraz GIF-ów do pokazania. Wpisz, czego szukasz."
+                : `Nic nie znaleziono dla „${query}”. Spróbuj innego słowa, np. po angielsku.`}
             </p>
           ) : (
             <div className="columns-2 gap-2">
