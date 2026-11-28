@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format, formatDistanceToNow, isToday, isTomorrow } from "date-fns";
 import { pl } from "date-fns/locale";
 import {
+  AudioLines,
   Bell,
   Camera,
   ChevronRight,
@@ -295,6 +296,18 @@ export default function MobileHomePage() {
       className: "bg-[linear-gradient(221deg,#F25C6B_0%,#E8455A_100%)]",
       eyebrowClassName: "text-[#FFE1E5]",
       badgeClassName: "bg-[rgba(255,214,220,0.35)] text-white",
+      iconClassName: "bg-white/20 text-white",
+    },
+    {
+      key: "soundboard",
+      enabled: features.soundboard,
+      eyebrow: "Soundboard",
+      title: "Nagrywaj i puszczaj wspólne dźwięki.",
+      badge: "Nagraj",
+      icon: AudioLines,
+      className: "bg-[linear-gradient(221deg,#8B5CF6_0%,#6D28D9_100%)]",
+      eyebrowClassName: "text-[#EDE4FF]",
+      badgeClassName: "bg-white/25 text-white",
       iconClassName: "bg-white/20 text-white",
     },
   ].filter((card) => card.enabled);

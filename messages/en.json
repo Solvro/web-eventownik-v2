@@ -803,6 +803,7 @@
       "tinder": "Tinderownik",
       "bingo": "Bingo",
       "bereal": "BeerReal",
+      "soundboard": "Soundboard",
       "chat": "Chat"
     },
     "save": "Save",
@@ -834,7 +835,8 @@
         "chatEnabled": "Chats",
         "tinderEnabled": "Tinderownik",
         "bingoEnabled": "Bingo",
-        "berealEnabled": "BeerReal"
+        "berealEnabled": "BeerReal",
+        "soundboardEnabled": "Soundboard"
       },
       "featureDescription": {
         "sosEnabled": "Emergency contacts and frequent questions",
@@ -842,7 +844,8 @@
         "chatEnabled": "Event chat and private conversations",
         "tinderEnabled": "Meeting other participants",
         "bingoEnabled": "A board of tasks to complete",
-        "berealEnabled": "Shared photo rounds"
+        "berealEnabled": "Shared photo rounds",
+        "soundboardEnabled": "A shared board of nine recorded sounds"
       },
       "bingoSize": "Bingo board size",
       "bingoStartsAt": "Bingo active from",
@@ -1000,6 +1003,19 @@
       "match": "Match",
       "notAnswered": "No answer yet",
       "theirAnswer": "Answer: {answer}"
+    },
+    "soundboard": {
+      "title": "Soundboard",
+      "description": "Nine pads that participants record and replace. You can listen to each one and clear anything inappropriate.",
+      "refresh": "Refresh",
+      "empty": "Empty pad",
+      "pad": "Pad {number}",
+      "by": "Recorded by {name}",
+      "unknownAuthor": "unknown person",
+      "clear": "Clear pad {number}",
+      "clearDescription": "The recording, caption and picture will be deleted. Participants can record something new here.",
+      "cleared": "Pad cleared",
+      "loadFailed": "Could not load the soundboard: {error}"
     }
   },
   "Sidebar": {

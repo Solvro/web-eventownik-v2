@@ -16,6 +16,7 @@ export interface MobileFeatures {
   tinder: boolean;
   bingo: boolean;
   bereal: boolean;
+  soundboard: boolean;
 }
 
 /** GET /mobile/events/:eventSlug (public, 404 when the app is not enabled) */
@@ -316,6 +317,7 @@ export interface MobileAppConfig {
   tinderEnabled: boolean;
   bingoEnabled: boolean;
   berealEnabled: boolean;
+  soundboardEnabled: boolean;
   bingoSize: number;
   /** Bingo can be played only inside this window; null = no limit on that side */
   bingoStartsAt: string | null;
@@ -416,4 +418,26 @@ export interface MobileTinderParticipantSwipes {
 /** /bereal-rounds; POST body { prompt?, durationMinutes? (default 5) } */
 export interface MobileBerealRoundAdmin extends MobileBerealRound {
   postsCount: number;
+}
+
+/** One pad of the shared soundboard */
+export interface MobileSoundboardPad {
+  uuid: string;
+  /** 0-8, row by row */
+  slot: number;
+  caption: string;
+  audioUrl: string;
+  audioMime: string;
+  /** Measured while recording; recordings may not report their own length */
+  durationMs: number | null;
+  imageUrl: string | null;
+  /** Who last recorded or edited it */
+  author: MobilePerson | null;
+  updatedAt: string;
+}
+
+/** GET /mobile/events/:eventSlug/soundboard */
+export interface MobileSoundboard {
+  /** Always nine entries; null marks an empty pad */
+  pads: (MobileSoundboardPad | null)[];
 }

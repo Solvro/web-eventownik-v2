@@ -802,6 +802,7 @@
       "tinder": "Tinderownik",
       "bingo": "Bingo",
       "bereal": "BeerReal",
+      "soundboard": "Soundboard",
       "chat": "Czat"
     },
     "save": "Zapisz",
@@ -833,7 +834,8 @@
         "chatEnabled": "Czaty",
         "tinderEnabled": "Tinderownik",
         "bingoEnabled": "Bingo",
-        "berealEnabled": "BeerReal"
+        "berealEnabled": "BeerReal",
+        "soundboardEnabled": "Soundboard"
       },
       "featureDescription": {
         "sosEnabled": "Kontakty alarmowe i najczęstsze pytania",
@@ -841,7 +843,8 @@
         "chatEnabled": "Czat wydarzenia i rozmowy prywatne",
         "tinderEnabled": "Poznawanie innych uczestników",
         "bingoEnabled": "Plansza zadań do wykonania",
-        "berealEnabled": "Rundy wspólnych zdjęć"
+        "berealEnabled": "Rundy wspólnych zdjęć",
+        "soundboardEnabled": "Wspólna tablica dziewięciu nagranych dźwięków"
       },
       "bingoSize": "Rozmiar planszy bingo",
       "bingoStartsAt": "Bingo aktywne od",
@@ -999,6 +1002,19 @@
       "match": "Match",
       "notAnswered": "Bez odpowiedzi",
       "theirAnswer": "Odpowiedź: {answer}"
+    },
+    "soundboard": {
+      "title": "Soundboard",
+      "description": "Dziewięć pól, które uczestnicy nagrywają i podmieniają. Możesz odsłuchać każde i wyczyścić niestosowne.",
+      "refresh": "Odśwież",
+      "empty": "Puste pole",
+      "pad": "Pole {number}",
+      "by": "Nagrał(a): {name}",
+      "unknownAuthor": "nieznana osoba",
+      "clear": "Wyczyść pole {number}",
+      "clearDescription": "Nagranie, podpis i obrazek zostaną usunięte. Uczestnicy będą mogli nagrać tu coś nowego.",
+      "cleared": "Pole wyczyszczone",
+      "loadFailed": "Nie udało się wczytać soundboardu: {error}"
     }
   },
   "Sidebar": {

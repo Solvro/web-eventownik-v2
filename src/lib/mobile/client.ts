@@ -96,6 +96,8 @@ export const mobileKeys = {
   bingoLeaderboard: (eventSlug: string) =>
     ["mobile", eventSlug, "bingo", "leaderboard"] as const,
   bereal: (eventSlug: string) => ["mobile", eventSlug, "bereal"] as const,
+  soundboard: (eventSlug: string) =>
+    ["mobile", eventSlug, "soundboard"] as const,
   berealPosts: (eventSlug: string, roundUuid: string) =>
     ["mobile", eventSlug, "bereal", "rounds", roundUuid, "posts"] as const,
 };

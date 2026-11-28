@@ -22,6 +22,7 @@ import type {
   MobileScheduleItemPayload,
   MobileSosContact,
   MobileSosContactPayload,
+  MobileSoundboard,
   MobileTinderOverview,
   MobileTinderParticipantSwipes,
 } from "@/types/mobile";
@@ -371,6 +372,23 @@ export async function deleteBerealPost(eventUuid: string, postUuid: string) {
     `/bereal-posts/${encodeURIComponent(postUuid)}`,
     { method: "DELETE" },
     [postUuid],
+  );
+}
+
+// Soundboard -----------------------------------------------------------------
+
+export async function getSoundboard(eventUuid: string) {
+  return mobileRequest<MobileSoundboard>(eventUuid, "/soundboard", {});
+}
+
+export async function clearSoundboardPad(eventUuid: string, slot: number) {
+  if (!Number.isInteger(slot) || slot < 0 || slot > 8) {
+    return { success: false, error: "Invalid pad" } as const;
+  }
+  return mobileRequest<MobileSoundboard>(
+    eventUuid,
+    `/soundboard/pads/${slot.toString()}`,
+    { method: "DELETE" },
   );
 }
 

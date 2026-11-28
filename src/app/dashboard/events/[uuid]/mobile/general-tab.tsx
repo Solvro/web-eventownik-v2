@@ -48,6 +48,7 @@ const ConfigSchema = z
     tinderEnabled: z.boolean(),
     bingoEnabled: z.boolean(),
     berealEnabled: z.boolean(),
+    soundboardEnabled: z.boolean(),
     bingoSize: z.enum(["3", "4", "5"]),
     /** Values of datetime-local inputs; empty = no limit on that side */
     bingoStartsAt: z.string(),
@@ -73,6 +74,7 @@ const FEATURES = [
   "tinderEnabled",
   "bingoEnabled",
   "berealEnabled",
+  "soundboardEnabled",
 ] as const;
 
 /** ISO date-time -> value of a datetime-local input in the organizer's time zone */
@@ -97,6 +99,7 @@ function toFormValues(config: MobileAppConfig): ConfigValues {
     tinderEnabled: config.tinderEnabled,
     bingoEnabled: config.bingoEnabled,
     berealEnabled: config.berealEnabled,
+    soundboardEnabled: config.soundboardEnabled,
     bingoSize: size === "3" || size === "4" ? size : "5",
     bingoStartsAt: toLocalInput(config.bingoStartsAt),
     bingoEndsAt: toLocalInput(config.bingoEndsAt),

@@ -24,6 +24,7 @@ import { FaqTab, ScheduleTab, SosTab } from "./content-tabs";
 import { GeneralTab } from "./general-tab";
 import { NotificationsTab } from "./notifications-tab";
 import { LoadError } from "./shared";
+import { SoundboardTab } from "./soundboard-tab";
 import { TinderTab } from "./tinder-tab";
 
 type Result<T> = MobileActionResult<T>;
@@ -37,6 +38,7 @@ const TAB_VALUES = [
   "tinder",
   "bingo",
   "bereal",
+  "soundboard",
   "chat",
 ] as const;
 
@@ -93,6 +95,7 @@ export function MobileAdminTabs({
     tinder: t("tabs.tinder"),
     bingo: t("tabs.bingo"),
     bereal: t("tabs.bereal"),
+    soundboard: t("tabs.soundboard"),
     chat: t("tabs.chat"),
   };
 
@@ -163,6 +166,9 @@ export function MobileAdminTabs({
         <Loaded result={berealRounds}>
           {(data) => <BerealTab eventUuid={eventUuid} rounds={data} />}
         </Loaded>
+      </Tabs.Content>
+      <Tabs.Content value="soundboard">
+        <SoundboardTab eventUuid={eventUuid} />
       </Tabs.Content>
       <Tabs.Content value="chat">
         <Loaded result={chatMessages}>
